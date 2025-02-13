@@ -24,37 +24,37 @@ export async function fetchStations() {
   return data.data.stations;
 }
 
-export async function fetchTrains(stationCode = "HKI") {
+export async function fetchTrains(stationCode = "HKI", destinationCode = "TKL") {
  
   const where = 'departed_trains:0, departing_trains:100';
 
   const departureDate = new Date().toISOString().split('T')[0];
-  const query = `{
-  trainsByDepartureDate(
-    departureDate:  "${departureDate}"
-    where: {and: [{timeTableRows: {contains: {station: {shortCode: {equals: "PLA"}}}}}, {commuterLineid: {unequals: ""}},{cancelled:{equals:false}}]}
+//   const query = `{
+//   trainsByDepartureDate(
+//     departureDate:  "${departureDate}"
+//     where: {and: [{timeTableRows: {contains: {station: {shortCode: {equals: "PLA"}}}}}, {commuterLineid: {unequals: ""}},{cancelled:{equals:false}}]}
 		
-  ) {
-    cancelled
-    commuterLineid
-    trainNumber
-    timeTableRows(where: {and:[{cancelled:{equals:false}},{type:{equals:"DEPARTURE"}},{trainStopping:{equals:true}},]}) {
-      trainStopping
-      type
-      commercialStop
-      commercialTrack
-      cancelled
-      liveEstimateTime
-      actualTime
-      differenceInMinutes
-      scheduledTime
-      station {
-        name
-        shortCode
-      }
-    }
-  }
-}`;
+//   ) {
+//     cancelled
+//     commuterLineid
+//     trainNumber
+//     timeTableRows(where: {and:[{cancelled:{equals:false}},{type:{equals:"DEPARTURE"}},{trainStopping:{equals:true}},]}) {
+//       trainStopping
+//       type
+//       commercialStop
+//       commercialTrack
+//       cancelled
+//       liveEstimateTime
+//       actualTime
+//       differenceInMinutes
+//       scheduledTime
+//       station {
+//         name
+//         shortCode
+//       }
+//     }
+//   }
+// }`;
 
   // const response = await fetch(GRAPHQL_ENDPOINT, {
   //   method: 'POST',
@@ -64,7 +64,7 @@ export async function fetchTrains(stationCode = "HKI") {
   //   },
   //   body: JSON.stringify({ query }),
   // });
-  const minutesBeforeDeparture = 55;  
+  const minutesBeforeDeparture = 63;  
   const minutesAfterDeparture = 3;
 
   const trainCategories = 'Commuter';
@@ -75,5 +75,21 @@ export async function fetchTrains(stationCode = "HKI") {
   }
 
   const data = await response.json();
-  return data;
+ 
+  const filteredData = data.filter((train: any) => {
+    // Filter timeTableRows to only include origin and destination stations
+    train.timeTableRows = train.timeTableRows.filter((row: any) => 
+      row.stationShortCode === destinationCode || row.stationShortCode === stationCode
+    );
+
+    // Get the rows for origin and destination
+    const originRow = train.timeTableRows.find((row: any) => row.stationShortCode === stationCode);
+    const destinationRow = train.timeTableRows.find((row: any) => row.stationShortCode === destinationCode);
+
+    // Check if both stations exist and destination is after origin
+    return originRow && destinationRow && 
+           new Date(originRow.scheduledTime) < new Date(destinationRow.scheduledTime);
+  });
+
+  return filteredData;
 }
