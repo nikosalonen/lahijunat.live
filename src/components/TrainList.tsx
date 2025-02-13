@@ -10,6 +10,7 @@ interface Props {
 export default function TrainList({ stationCode, destinationCode }: Props) {
   const [trains, setTrains] = useState<Train[]>([]);
   const [loading, setLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -31,7 +32,10 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
   useEffect(() => {
     async function loadTrains() {
       try {
-        setLoading(true);
+        // Only show loading spinner on initial load
+        if (initialLoad) {
+          setLoading(true);
+        }
 
         const trainData = await fetchTrains(stationCode, destinationCode);
         setTrains(trainData);
@@ -41,6 +45,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
         console.error(err);
       } finally {
         setLoading(false);
+        setInitialLoad(false);
       }
     }
 
@@ -59,7 +64,8 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
     };
   }, [stationCode, destinationCode]);
 
-  if (loading) {
+  // Only show loading spinner on initial load
+  if (loading && initialLoad) {
     return <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>;
   }
 
