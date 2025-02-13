@@ -75,7 +75,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 
   return (
     <div class="max-w-4xl mx-auto space-y-6 p-4">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6">Departing Trains</h2>
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Lähtevät junat {stationCode} → {destinationCode}</h2>
       <div class="grid gap-4">
         {trains.map((train) => {
           const departureRow = train.timeTableRows.find(
