@@ -19,7 +19,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
     const departure = new Date(scheduledTime);
     const now = new Date();
     const diffMinutes = (departure.getTime() - now.getTime()) / (1000 * 60);
-    return diffMinutes >= 0 && diffMinutes <= 5;
+    return diffMinutes >= -1 && diffMinutes <= 5;
   };
 
   // Add utility function to format minutes
@@ -90,7 +90,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
               key={`${train.trainNumber}`}
               class={`p-4 border rounded-lg shadow-sm transition-all hover:shadow-md relative
                 ${train.cancelled ? 'bg-red-50 border-red-200' : 
-                  hasDeparted ? 'bg-gray-100 border-gray-300 opacity-60' :
+                  hasDeparted && minutesToDeparture < -1 ? 'bg-gray-100 border-gray-300 opacity-60' :
                   departingSoon ? 'bg-white border-gray-200 animate-soft-blink' : 
                   'bg-white border-gray-200'}`}
             >
