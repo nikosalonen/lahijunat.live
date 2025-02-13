@@ -76,12 +76,14 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
             row => row.stationShortCode === stationCode && row.type === "DEPARTURE"
           );
           const departingSoon = departureRow && isDepartingSoon(departureRow.scheduledTime);
+          const hasDeparted = departureRow && formatMinutesToDeparture(departureRow.scheduledTime) < 0;
           
           return (
             <div
               key={`${train.trainNumber}`}
               class={`p-6 border rounded-xl shadow-sm transition-all hover:shadow-md
-                ${train.cancelled ? 'bg-red-50 border-red-200' : 'bg-white border-gray-200'}
+                ${train.cancelled ? 'bg-red-50 border-red-200' : 
+                  hasDeparted ? 'bg-gray-100 border-gray-300 opacity-60' : 'bg-white border-gray-200'}
                 ${departingSoon ? 'animate-soft-blink' : ''}`}
             >
               <div class="flex justify-between items-center">
