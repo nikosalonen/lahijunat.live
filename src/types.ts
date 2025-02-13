@@ -8,7 +8,7 @@ export interface Train {
   trainCategory: string;
   trainType: string;
   cancelled: boolean;
-  commuterLineid: string;
+  commuterLineID: string;
   trainNumber: string;
   timeTableRows: TimeTableRow[];
 }
