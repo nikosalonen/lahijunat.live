@@ -125,6 +125,9 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
                           r => r.stationShortCode === destinationCode && r.type === "ARRIVAL"
                         );
                         const arrivalTime = arrivalRow?.scheduledTime;
+                        const arrivalLiveTime = arrivalRow?.liveEstimateTime;
+                        const arrivalTimeDifferenceMinutes = arrivalLiveTime ? 
+                          Math.round((new Date(arrivalLiveTime).getTime() - new Date(arrivalRow.scheduledTime).getTime()) / (1000 * 60)) : 0;
                         const duration = arrivalTime ? 
                           Math.round((new Date(arrivalTime).getTime() - new Date(row.scheduledTime).getTime()) / (1000 * 60)) : 
                           null;
@@ -144,11 +147,31 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
                                   departureTime
                                 )}
                                 <span class="mx-2 text-gray-400">→</span> 
-                                {arrivalTime ? 
-                                  new Date(arrivalTime).toLocaleTimeString('fi-FI', {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  }) : ''}
+                                {arrivalTime && (
+                                  <>
+                                    {arrivalLiveTime && arrivalTimeDifferenceMinutes > 1 ? (
+                                      <>
+                                        <span class="line-through">
+                                          {new Date(arrivalTime).toLocaleTimeString('fi-FI', {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                          })}
+                                        </span>
+                                        <span class="text-orange-500 ml-1">
+                                          ({new Date(arrivalLiveTime).toLocaleTimeString('fi-FI', {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                          })})
+                                        </span>
+                                      </>
+                                    ) : (
+                                      new Date(arrivalTime).toLocaleTimeString('fi-FI', {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                      })
+                                    )}
+                                  </>
+                                )}
                               </span>
                               {duration && (
                                 <span class="text-sm text-gray-500">
