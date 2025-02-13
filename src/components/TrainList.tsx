@@ -133,11 +133,15 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
                           <div class="flex flex-col gap-1" key={row.scheduledTime}>
                             <div class="flex items-center gap-2">
                               <span class="text-lg font-medium text-gray-800">
-                                {departureTime}
-                                {liveTime && timeDifferenceMinutes > 2 && (
-                                  <span class="text-orange-500 ml-1">
-                                    ({liveTime})
-                                  </span>
+                                {liveTime && timeDifferenceMinutes > 2 ? (
+                                  <>
+                                    <span class="line-through">{departureTime}</span>
+                                    <span class="text-orange-500 ml-1">
+                                      ({liveTime})
+                                    </span>
+                                  </>
+                                ) : (
+                                  departureTime
                                 )}
                                 <span class="mx-2 text-gray-400">→</span> 
                                 {arrivalTime ? 
