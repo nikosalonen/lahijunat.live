@@ -83,14 +83,13 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
           );
           const minutesToDeparture = departureRow ? formatMinutesToDeparture(departureRow.scheduledTime) : null;
           const departingSoon = departureRow && isDepartingSoon(departureRow.scheduledTime);
-          const hasDeparted = minutesToDeparture !== null && minutesToDeparture < 0;
 
           return (
             <div
               key={`${train.trainNumber}`}
               class={`p-4 border rounded-lg shadow-sm transition-all hover:shadow-md relative
                 ${train.cancelled ? 'bg-red-50 border-red-200' : 
-                  hasDeparted && minutesToDeparture < -1 ? 'bg-gray-100 border-gray-300 opacity-60' :
+                  minutesToDeparture !== null && minutesToDeparture < -1 ? 'bg-gray-100 border-gray-300 opacity-60' :
                   departingSoon ? 'bg-white border-gray-200 animate-soft-blink' : 
                   'bg-white border-gray-200'}`}
             >
