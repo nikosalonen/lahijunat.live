@@ -18,14 +18,18 @@ const { title } = Astro.props;
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+    <div class="bg-[hsl(290.49deg,36.61%,43.92%)]">
+      <div class="px-4 mx-auto max-w-7xl">
+        <nav class="py-4">
+          <div class="flex items-center justify-between">
+            <a href="/" class="text-2xl font-bold text-white hover:text-blue-100 transition-colors">
+              🚂 Lähijunat Live
+            </a>
+          </div>
+        </nav>
+      </div>
+    </div>
     <div class="px-4 py-8 mx-auto max-w-7xl">
-      <nav class="mb-8">
-        <div class="flex items-center justify-between">
-          <a href="/" class="text-2xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
-            🚂 Lähijunat Live
-          </a>
-        </div>
-      </nav>
       <slot />
       <footer class="mt-16 py-8 text-center text-sm text-gray-500">
         <p>Data provided by Fintraffic</p>
