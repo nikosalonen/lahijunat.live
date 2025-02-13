@@ -93,7 +93,7 @@ export default function StationManager({ stations }: Props) {
             <path d="M7 10l5 5 5-5" />
             <path d="M17 14l-5-5-5 5" />
           </svg>
-          Swap Stations
+          Käännä menosuunta
         </button>
 
         <div className="space-y-2">
