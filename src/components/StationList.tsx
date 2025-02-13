@@ -4,12 +4,14 @@ import type { Station } from '../types';
 interface Props {
   stations: Station[];
   onStationSelect: (station: Station) => void;
+  selectedValue?: string | null;
 }
 
-export default function StationList({ stations, onStationSelect }: Props) {
+export default function StationList({ stations, onStationSelect, selectedValue }: Props) {
   return (
     <div class="w-full max-w-xs mx-auto p-4">
       <select
+        value={selectedValue || ""}
         onChange={(e) => {
           const station = stations.find(s => s.shortCode === e.currentTarget.value);
           if (station) onStationSelect(station);
