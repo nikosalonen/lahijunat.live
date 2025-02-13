@@ -24,11 +24,25 @@ const setStoredValue = (key: string, value: string): void => {
 export default function StationManager({ stations }: Props) {
   const [selectedOrigin, setSelectedOrigin] = useState<string | null>(null);
   const [selectedDestination, setSelectedDestination] = useState<string | null>(null);
+  const [availableDestinations, setAvailableDestinations] = useState<Station[]>(stations);
 
   useEffect(() => {
     setSelectedOrigin(getStoredValue('selectedOrigin'));
     setSelectedDestination(getStoredValue('selectedDestination'));
   }, []);
+
+  useEffect(() => {
+    if (selectedOrigin) {
+      setAvailableDestinations(stations);
+      
+      if (selectedDestination && !availableDestinations.some(s => s.shortCode === selectedDestination)) {
+        setSelectedDestination(null);
+        localStorage.removeItem('selectedDestination');
+      }
+    } else {
+      setAvailableDestinations(stations);
+    }
+  }, [selectedOrigin, stations]);
 
   const handleOriginSelect = (station: Station) => {
     setSelectedOrigin(station.shortCode);
@@ -85,7 +99,7 @@ export default function StationManager({ stations }: Props) {
         <div className="space-y-2">
           <h3 className="text-lg font-medium text-gray-900">Minne</h3>
           <StationList 
-            stations={stations} 
+            stations={availableDestinations}
             onStationSelect={handleDestinationSelect}
             selectedValue={selectedDestination}
           />
