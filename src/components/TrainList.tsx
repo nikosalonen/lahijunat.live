@@ -156,7 +156,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
                       return (
                         <div key={row.scheduledTime} class=" top-4 right-4 flex flex-col items-end gap-1">
                           <span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-sm">
-                            Track {row.commercialTrack}
+                            Raide {row.commercialTrack}
                           </span>
                           {/* Departure countdown */}
                           {departureRow && formatMinutesToDeparture(departureRow.scheduledTime) <= 30 && formatMinutesToDeparture(departureRow.scheduledTime) >= 0 && (
