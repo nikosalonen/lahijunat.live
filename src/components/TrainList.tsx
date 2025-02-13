@@ -62,40 +62,51 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
          
 
                   {train.commuterLineID && (
-                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                      {train.commuterLineID}
+                    <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full text-lg font-medium h-full flex items-center">
+                      {train.commuterLineID} {train.trainNumber}
                     </span>
                   )}
                 </div>
+                {train.timeTableRows.map((row) => {
+                  if (row.stationShortCode === stationCode && row.type === "DEPARTURE") {
+                    return (
+                      <div class="flex items-center gap-2" key={row.scheduledTime}>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm">
+                          Track {row.commercialTrack}
+                        </span>
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
 
                 {train.timeTableRows.map((row) => {
+                  // Show departure and arrival times together
+                  if (row.stationShortCode === stationCode && row.type === "DEPARTURE") {
+                    const departureTime = new Date(row.scheduledTime).toLocaleTimeString('fi-FI', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    });
+                    
+                    const arrivalTime = train.timeTableRows.find(
+                      r => r.stationShortCode === destinationCode && r.type === "ARRIVAL"
+                    )?.scheduledTime;
 
-
-                 if(row.stationShortCode === stationCode && row.type === "DEPARTURE") { 
-                  return (
-                    <div class="flex items-center gap-2" key={row.scheduledTime}>
-                      <svg
-                        class="w-4 h-4 text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span class="text-gray-600 font-medium">
-                      {new Date(row.scheduledTime).toLocaleTimeString('fi-FI', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </span>
-                  </div>
-                  )
-                }
+                    return (
+                      <div class="space-y-2" key={row.scheduledTime}>
+                        <div class="flex items-center gap-2">
+                          <span class="text-gray-600 font-medium">
+                            {stationCode} {departureTime} →  {arrivalTime ? 
+                              new Date(arrivalTime).toLocaleTimeString('fi-FI', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              }) : ''} {destinationCode}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
                 })}
               </div>
 
