@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+@keyframes soft-blink {
+  0%, 100% { background-color: rgb(255, 255, 255); }
+  50% { background-color: rgb(254, 243, 199); }
+}
+
+.animate-soft-blink {
+  animation: soft-blink 2s ease-in-out infinite;
+} 
