@@ -89,7 +89,12 @@ export async function fetchTrains(stationCode = "HKI", destinationCode = "TKL") 
     // Check if both stations exist and destination is after origin
     return originRow && destinationRow && 
            new Date(originRow.scheduledTime) < new Date(destinationRow.scheduledTime);
+  }).sort((a: any, b: any) => {
+    const aDeparture = a.timeTableRows.find((row: any) => row.stationShortCode === stationCode)?.scheduledTime;
+    const bDeparture = b.timeTableRows.find((row: any) => row.stationShortCode === stationCode)?.scheduledTime;
+    return new Date(aDeparture).getTime() - new Date(bDeparture).getTime();
   });
+
 
   return filteredData;
 }
