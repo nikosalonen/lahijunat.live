@@ -11,6 +11,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
   const [trains, setTrains] = useState<Train[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // Add utility function to check if train is departing soon (within 5 minutes)
   const isDepartingSoon = (scheduledTime: string) => {
@@ -18,6 +19,13 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
     const now = new Date();
     const diffMinutes = (departure.getTime() - now.getTime()) / (1000 * 60);
     return diffMinutes >= 0 && diffMinutes <= 5;
+  };
+
+  // Add utility function to format minutes
+  const formatMinutesToDeparture = (scheduledTime: string) => {
+    const departure = new Date(scheduledTime);
+    const diffMinutes = Math.round((departure.getTime() - currentTime.getTime()) / (1000 * 60));
+    return diffMinutes;
   };
 
   useEffect(() => {
@@ -40,7 +48,16 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
     loadTrains();
     // Refresh data every minute
     const interval = setInterval(loadTrains, 60000);
-    return () => clearInterval(interval);
+
+    // Update current time every 10 seconds
+    const timeInterval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 10000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(timeInterval);
+    };
   }, [stationCode, destinationCode]);
 
   if (loading) {
@@ -99,6 +116,9 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
                         minute: '2-digit'
                       });
                       
+                      const minutesToDeparture = formatMinutesToDeparture(row.scheduledTime);
+                      const showCountdown = minutesToDeparture <= 30 && minutesToDeparture >= 0;
+                      
                       const arrivalTime = train.timeTableRows.find(
                         r => r.stationShortCode === destinationCode && r.type === "ARRIVAL"
                       )?.scheduledTime;
@@ -113,6 +133,11 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
                                   minute: '2-digit'
                                 }) : ''} {destinationCode}
                             </span>
+                            {showCountdown && (
+                              <span class="text-sm text-green-600 font-medium">
+                                ({minutesToDeparture} min)
+                              </span>
+                            )}
                           </div>
                         </div>
                       );
