@@ -68,7 +68,7 @@ export async function fetchTrains(stationCode = "HKI", destinationCode = "TKL") 
   const minutesAfterDeparture = 1;
 
   const trainCategories = 'Commuter';
-  const response = await fetch(LIVE_ENDPOINT + stationCode + '?minutes_before_departure=' + minutesBeforeDeparture + '&arriving_trains=0&arrived_trains=0&departing_trains=100&minutes_after_departure=' + minutesAfterDeparture +  '&train_categories=' + trainCategories);
+  const response = await fetch(LIVE_ENDPOINT + stationCode + '?minutes_before_departure=' + minutesBeforeDeparture + '&arriving_trains=0&departed_trains=0&arrived_trains=0&departing_trains=100&minutes_after_departure=' + minutesAfterDeparture +  '&train_categories=' + trainCategories);
 
   if (!response.ok) {
     throw new Error('Failed to fetch trains', { cause: response.statusText });
