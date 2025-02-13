@@ -112,7 +112,14 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
                           minute: '2-digit'
                         });
                         
+                        // Add live estimate time display
+                        const liveTime = row.liveEstimateTime ? new Date(row.liveEstimateTime).toLocaleTimeString('fi-FI', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        }) : null;
                         
+                        const timeDifferenceMinutes = row.liveEstimateTime ? 
+                          Math.round((new Date(row.liveEstimateTime).getTime() - new Date(row.scheduledTime).getTime()) / (1000 * 60)) : 0;
                         
                         const arrivalRow = train.timeTableRows.find(
                           r => r.stationShortCode === destinationCode && r.type === "ARRIVAL"
@@ -124,10 +131,14 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 
                         return (
                           <div class="flex flex-col gap-1" key={row.scheduledTime}>
-                            
                             <div class="flex items-center gap-2">
                               <span class="text-lg font-medium text-gray-800">
-                                {departureTime} 
+                                {departureTime}
+                                {liveTime && timeDifferenceMinutes > 2 && (
+                                  <span class="text-orange-500 ml-1">
+                                    ({liveTime})
+                                  </span>
+                                )}
                                 <span class="mx-2 text-gray-400">→</span> 
                                 {arrivalTime ? 
                                   new Date(arrivalTime).toLocaleTimeString('fi-FI', {
