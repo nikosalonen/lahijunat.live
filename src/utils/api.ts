@@ -1,5 +1,6 @@
 const GRAPHQL_ENDPOINT = 'https://rata.digitraffic.fi/api/v2/graphql/graphql';
 const REST_ENDPOINT = 'https://rata.digitraffic.fi/api/v1/metadata/stations';
+const LIVE_ENDPOINT = 'https://rata.digitraffic.fi/api/v1//live-trains/station/';
 
 export async function fetchStations() {
   const query = `{
@@ -26,30 +27,7 @@ export async function fetchStations() {
 export async function fetchTrains(stationCode = "HKI") {
  
   const where = 'departed_trains:0, departing_trains:100';
-  /**
-   * viewer {
-      getStationsTrainsUsingGET(${where}, station: "${stationCode}", arrived_trains:0, arriving_trains:0) {
-        operatorUICCode
-        trainCategory
-        trainType
-        cancelled
-        commuterLineID
-        trainNumber
-        timeTableRows {
-          trainStopping
-          stationShortCode
-          type
-          commercialStop
-          commercialTrack
-          cancelled
-          scheduledTime
-          liveEstimateTime
-          actualTime
-          differenceInMinutes
-        }
-      }
-    }
-   */
+
   const departureDate = new Date().toISOString().split('T')[0];
   const query = `{
   trainsByDepartureDate(
@@ -78,19 +56,24 @@ export async function fetchTrains(stationCode = "HKI") {
   }
 }`;
 
-  const response = await fetch(GRAPHQL_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept-Encoding': 'gzip',
-    },
-    body: JSON.stringify({ query }),
-  });
+  // const response = await fetch(GRAPHQL_ENDPOINT, {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //     'Accept-Encoding': 'gzip',
+  //   },
+  //   body: JSON.stringify({ query }),
+  // });
+  const minutesBeforeDeparture = 55;  
+  const minutesAfterDeparture = 3;
+
+  const trainCategories = 'Commuter';
+  const response = await fetch(LIVE_ENDPOINT + stationCode + '?minutes_before_departure=' + minutesBeforeDeparture + '&minutes_after_departure=' + minutesAfterDeparture +  '&train_categories=' + trainCategories);
 
   if (!response.ok) {
     throw new Error('Failed to fetch trains', { cause: response.statusText });
   }
 
   const data = await response.json();
-  return data.data.trainsByDepartureDate;
+  return data;
 }
