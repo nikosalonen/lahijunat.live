@@ -1,6 +1,6 @@
 const GRAPHQL_ENDPOINT = 'https://rata.digitraffic.fi/api/v2/graphql/graphql';
 const REST_ENDPOINT = 'https://rata.digitraffic.fi/api/v1/metadata/stations';
-const LIVE_ENDPOINT = 'https://rata.digitraffic.fi/api/v1//live-trains/station/';
+const LIVE_ENDPOINT = 'https://rata.digitraffic.fi/api/v1/live-trains/station/';
 
 export async function fetchStations() {
   const query = `{
