@@ -9,20 +9,35 @@ interface Props {
 }
 
 export default function StationManager({ stations }: Props) {
-  const [selectedStation, setSelectedStation] = useState<string | null>(null);
+  const [selectedOrigin, setSelectedOrigin] = useState<string | null>(null);
+  const [selectedDestination, setSelectedDestination] = useState<string | null>(null);
 
-  const handleStationSelect = (station: Station) => {
-    setSelectedStation(station.shortCode);
+  const handleOriginSelect = (station: Station) => {
+    setSelectedOrigin(station.shortCode);
+  };
+
+  const handleDestinationSelect = (station: Station) => {
+    setSelectedDestination(station.shortCode);
   };
 
   return (
     <div>
-      <StationList 
-        stations={stations} 
-        onStationSelect={handleStationSelect} 
-      />
-      {selectedStation && (
-        <TrainList stationCode={selectedStation} />
+      <div>
+        <h3>Select Origin Station</h3>
+        <StationList 
+          stations={stations} 
+          onStationSelect={handleOriginSelect} 
+        />
+      </div>
+      <div>
+        <h3>Select Destination Station</h3>
+        <StationList 
+          stations={stations} 
+          onStationSelect={handleDestinationSelect} 
+        />
+      </div>
+      {selectedOrigin && selectedDestination && (
+        <TrainList stationCode={selectedOrigin} destinationCode={selectedDestination} />
       )}
     </div>
   );
