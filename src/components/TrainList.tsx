@@ -34,7 +34,6 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
         setLoading(true);
 
         const trainData = await fetchTrains(stationCode, destinationCode);
-        console.log(trainData);
         setTrains(trainData);
         setError(null);
       } catch (err) {
@@ -77,7 +76,6 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
             row => row.stationShortCode === stationCode && row.type === "DEPARTURE"
           );
           const departingSoon = departureRow && isDepartingSoon(departureRow.scheduledTime);
-          console.log(departingSoon);
           
           return (
             <div
