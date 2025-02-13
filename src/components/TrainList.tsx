@@ -74,7 +74,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
   }
 
   return (
-    <div class="max-w-4xl mx-auto space-y-6 p-4">
+    <div class="max-w-4xl mx-auto space-y-6 px-2 sm:p-4">
       <h2 class="text-2xl font-bold text-gray-800 mb-6">Lähtevät junat {stationCode} → {destinationCode}</h2>
       <div class="grid gap-4">
         {trains.map((train) => {
@@ -87,7 +87,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
           return (
             <div
               key={`${train.trainNumber}`}
-              class={`p-4 border rounded-lg shadow-sm transition-all hover:shadow-md relative
+              class={`p-2 sm:p-4 border rounded-lg shadow-sm transition-all hover:shadow-md relative
                 ${train.cancelled ? 'bg-red-50 border-red-200' : 
                   minutesToDeparture !== null && minutesToDeparture < -1 ? 'bg-gray-100 border-gray-300 opacity-60' :
                   departingSoon ? 'bg-white border-gray-200 animate-soft-blink' : 
@@ -154,7 +154,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
                   {train.timeTableRows.map((row) => {
                     if (row.stationShortCode === stationCode && row.type === "DEPARTURE") {
                       return (
-                        <div key={row.scheduledTime} class="absolute top-4 right-4 flex flex-col items-end gap-1">
+                        <div key={row.scheduledTime} class=" top-4 right-4 flex flex-col items-end gap-1">
                           <span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-sm">
                             Track {row.commercialTrack}
                           </span>
