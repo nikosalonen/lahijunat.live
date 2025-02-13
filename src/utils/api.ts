@@ -68,7 +68,9 @@ export async function fetchTrains(stationCode = "HKI", destinationCode = "TKL") 
   const minutesAfterDeparture = 1;
 
   const trainCategories = 'Commuter';
-  const response = await fetch(LIVE_ENDPOINT + stationCode + '?minutes_before_departure=' + minutesBeforeDeparture + '&arriving_trains=0&departed_trains=0&arrived_trains=0&departing_trains=100&minutes_after_departure=' + minutesAfterDeparture +  '&train_categories=' + trainCategories);
+  // const response = await fetch(LIVE_ENDPOINT + stationCode + '?minutes_before_departure=' + minutesBeforeDeparture + '&arriving_trains=0&departed_trains=0&arrived_trains=0&departing_trains=100&minutes_after_departure=' + minutesAfterDeparture +  '&train_categories=' + trainCategories);
+
+  const response = await fetch(`https://rata.digitraffic.fi/api/v1/live-trains/station/${stationCode}/${destinationCode}?limit=100`)
 
   if (!response.ok) {
     throw new Error('Failed to fetch trains', { cause: response.statusText });
@@ -77,6 +79,11 @@ export async function fetchTrains(stationCode = "HKI", destinationCode = "TKL") 
   const data = await response.json();
  
   const filteredData = data.filter((train: any) => {
+    // Check if train is a commuter train
+    if (train.trainCategory !== "Commuter") {
+      return false;
+    }
+
     // Filter timeTableRows to only include origin and destination stations
     train.timeTableRows = train.timeTableRows.filter((row: any) => 
       row.stationShortCode === destinationCode || row.stationShortCode === stationCode
@@ -95,6 +102,6 @@ export async function fetchTrains(stationCode = "HKI", destinationCode = "TKL") 
     return new Date(aDeparture).getTime() - new Date(bDeparture).getTime();
   });
 
-
+console.log(filteredData);
   return filteredData;
 }
