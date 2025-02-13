@@ -81,16 +81,18 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
           const departureRow = train.timeTableRows.find(
             row => row.stationShortCode === stationCode && row.type === "DEPARTURE"
           );
+          const minutesToDeparture = departureRow ? formatMinutesToDeparture(departureRow.scheduledTime) : null;
           const departingSoon = departureRow && isDepartingSoon(departureRow.scheduledTime);
-          const hasDeparted = departureRow && formatMinutesToDeparture(departureRow.scheduledTime) < 0;
-          
+          const hasDeparted = minutesToDeparture !== null && minutesToDeparture < 0;
+
           return (
             <div
               key={`${train.trainNumber}`}
               class={`p-4 border rounded-lg shadow-sm transition-all hover:shadow-md
                 ${train.cancelled ? 'bg-red-50 border-red-200' : 
-                  hasDeparted ? 'bg-gray-100 border-gray-300 opacity-60' : 'bg-white border-gray-200'}
-                ${departingSoon ? 'animate-soft-blink' : ''}`}
+                  hasDeparted ? 'bg-gray-100 border-gray-300 opacity-60' :
+                  departingSoon ? 'bg-white border-gray-200 animate-soft-blink' : 
+                  'bg-white border-gray-200'}`}
             >
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
