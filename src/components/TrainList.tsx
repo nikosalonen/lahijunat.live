@@ -60,39 +60,43 @@ export default function TrainList({ stationCode }: Props) {
                   <span class="font-mono text-sm px-2 py-1 bg-blue-100 text-blue-800 rounded">
                     {train.trainType}
                   </span>
-                 
+
                   {train.commuterLineid && (
                     <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
                       {train.commuterLineid}
                     </span>
                   )}
                 </div>
-                
-                {train.timeTableRows.map((row) => 
-                  row.station.shortCode === stationCode && (
+
+                {train.timeTableRows.map((row) => {
+
+
+                 if(row.stationShortCode === stationCode) { 
+                  return (
                     <div class="flex items-center gap-2" key={row.scheduledTime}>
-                      <svg 
-                        class="w-4 h-4 text-gray-500" 
-                        fill="none" 
-                        stroke="currentColor" 
+                      <svg
+                        class="w-4 h-4 text-gray-500"
+                        fill="none"
+                        stroke="currentColor"
                         viewBox="0 0 24 24"
-                      >
-                        <path 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round" 
-                          strokeWidth={2} 
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" 
-                        />
-                      </svg>
-                      <span class="text-gray-600 font-medium">
-                        {new Date(row.scheduledTime).toLocaleTimeString('fi-FI', { 
-                          hour: '2-digit', 
-                          minute: '2-digit'
-                        })}
-                      </span>
-                    </div>
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span class="text-gray-600 font-medium">
+                      {new Date(row.scheduledTime).toLocaleTimeString('fi-FI', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </span>
+                  </div>
                   )
-                )}
+                }
+                })}
               </div>
 
               {train.cancelled && (
