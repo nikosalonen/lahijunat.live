@@ -4,9 +4,10 @@ import { fetchTrains } from '../utils/api';
 
 interface Props {
   stationCode: string;
+  destinationCode: string;
 }
 
-export default function TrainList({ stationCode }: Props) {
+export default function TrainList({ stationCode, destinationCode }: Props) {
   const [trains, setTrains] = useState<Train[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,8 +19,8 @@ export default function TrainList({ stationCode }: Props) {
       try {
         setLoading(true);
 
-        const trainData = await fetchTrains(stationCode);
-        console.log(trainData)
+        const trainData = await fetchTrains(stationCode, destinationCode);
+        console.log(trainData);
         setTrains(trainData);
         setError(null);
       } catch (err) {
@@ -34,7 +35,7 @@ export default function TrainList({ stationCode }: Props) {
     // Refresh data every minute
     const interval = setInterval(loadTrains, 60000);
     return () => clearInterval(interval);
-  }, [stationCode]);
+  }, [stationCode, destinationCode]);
 
   if (loading) {
     return <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>;
@@ -49,6 +50,7 @@ export default function TrainList({ stationCode }: Props) {
       <h2 class="text-2xl font-bold text-gray-800 mb-6">Departing Trains</h2>
       <div class="grid gap-4">
         {trains.map((train) => (
+        
           <div
             key={`${train.trainNumber}`}
             class={`p-6 border rounded-xl shadow-sm transition-all hover:shadow-md
@@ -57,13 +59,11 @@ export default function TrainList({ stationCode }: Props) {
             <div class="flex justify-between items-center">
               <div class="space-y-2">
                 <div class="flex items-center gap-3">
-                  <span class="font-mono text-sm px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                    {train.trainType}
-                  </span>
+         
 
-                  {train.commuterLineid && (
+                  {train.commuterLineID && (
                     <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                      {train.commuterLineid}
+                      {train.commuterLineID}
                     </span>
                   )}
                 </div>
@@ -71,7 +71,7 @@ export default function TrainList({ stationCode }: Props) {
                 {train.timeTableRows.map((row) => {
 
 
-                 if(row.stationShortCode === stationCode) { 
+                 if(row.stationShortCode === stationCode && row.type === "DEPARTURE") { 
                   return (
                     <div class="flex items-center gap-2" key={row.scheduledTime}>
                       <svg
