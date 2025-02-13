@@ -81,76 +81,96 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
           return (
             <div
               key={`${train.trainNumber}`}
-              class={`p-6 border rounded-xl shadow-sm transition-all hover:shadow-md
+              class={`p-4 border rounded-lg shadow-sm transition-all hover:shadow-md
                 ${train.cancelled ? 'bg-red-50 border-red-200' : 
                   hasDeparted ? 'bg-gray-100 border-gray-300 opacity-60' : 'bg-white border-gray-200'}
                 ${departingSoon ? 'animate-soft-blink' : ''}`}
             >
-              <div class="flex justify-between items-center">
-                <div class="space-y-2">
-                  <div class="flex items-center gap-3">
-                    {train.commuterLineID && (
-                      <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full text-lg font-medium h-full flex items-center">
-                        {train.commuterLineID} {train.trainNumber}
-                      </span>
-                    )}
-                  </div>
-                  {train.timeTableRows.map((row) => {
-                    if (row.stationShortCode === stationCode && row.type === "DEPARTURE") {
-                      return (
-                        <div class="flex items-center gap-2" key={row.scheduledTime}>
-                          <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm">
-                            Track {row.commercialTrack}
-                          </span>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
-
-                  {train.timeTableRows.map((row) => {
-                    // Show departure and arrival times together
-                    if (row.stationShortCode === stationCode && row.type === "DEPARTURE") {
-                      const departureTime = new Date(row.scheduledTime).toLocaleTimeString('fi-FI', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      });
-                      
-                      const minutesToDeparture = formatMinutesToDeparture(row.scheduledTime);
-                      const showCountdown = minutesToDeparture <= 30 && minutesToDeparture >= 0;
-                      
-                      const arrivalTime = train.timeTableRows.find(
-                        r => r.stationShortCode === destinationCode && r.type === "ARRIVAL"
-                      )?.scheduledTime;
-
-                      return (
-                        <div class="space-y-2" key={row.scheduledTime}>
-                          <div class="flex items-center gap-2">
-                            <span class="text-gray-600 font-medium">
-                              {stationCode} {departureTime} →  {arrivalTime ? 
-                                new Date(arrivalTime).toLocaleTimeString('fi-FI', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                }) : ''} {destinationCode}
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  {/* Train identifier */}
+                  {train.commuterLineID && (
+                    <div class="h-12 w-12 bg-green-100 text-green-800 rounded-full flex items-center justify-center text-lg font-medium">
+                      {train.commuterLineID}
+                    </div>
+                  )}
+                  
+                  {/* Main train info */}
+                  <div class="space-y-1">
+                    {/* Train number and track */}
+                    <div class="flex items-center gap-2">
+                      <span class="font-medium text-gray-900">Train {train.trainNumber}</span>
+                      {train.timeTableRows.map((row) => {
+                        if (row.stationShortCode === stationCode && row.type === "DEPARTURE") {
+                          return (
+                            <span key={row.scheduledTime} class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-sm">
+                              Track {row.commercialTrack}
                             </span>
-                            {showCountdown && (
-                              <span class="text-sm text-green-600 font-medium">
-                                ({minutesToDeparture} min)
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+
+                    {/* Time information */}
+                    {train.timeTableRows.map((row) => {
+                      if (row.stationShortCode === stationCode && row.type === "DEPARTURE") {
+                        const departureTime = new Date(row.scheduledTime).toLocaleTimeString('fi-FI', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        });
+                        
+                        const minutesToDeparture = formatMinutesToDeparture(row.scheduledTime);
+                        const showCountdown = minutesToDeparture <= 30 && minutesToDeparture >= 0;
+                        
+                        const arrivalRow = train.timeTableRows.find(
+                          r => r.stationShortCode === destinationCode && r.type === "ARRIVAL"
+                        );
+                        const arrivalTime = arrivalRow?.scheduledTime;
+                        const duration = arrivalTime ? 
+                          Math.round((new Date(arrivalTime).getTime() - new Date(row.scheduledTime).getTime()) / (1000 * 60)) : 
+                          null;
+
+                        return (
+                          <div class="flex flex-col gap-1" key={row.scheduledTime}>
+                            
+                            <div class="flex items-center gap-2">
+                              <span class="text-lg font-medium text-gray-800">
+                                {departureTime} 
+                                <span class="mx-2 text-gray-400">→</span> 
+                                {arrivalTime ? 
+                                  new Date(arrivalTime).toLocaleTimeString('fi-FI', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  }) : ''}
                               </span>
-                            )}
+                              {duration && (
+                                <span class="text-sm text-gray-500">
+                                  ({Math.floor(duration / 60)}h {duration % 60}m)
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
+                        );
+                      }
+                      return null;
+                    })}
+                  </div>
                 </div>
 
-                {train.cancelled && (
-                  <span class="text-red-600 font-medium text-sm">
-                    Cancelled
-                  </span>
-                )}
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                  
+                  {departureRow && (
+                    <span class={`font-medium ${
+                      formatMinutesToDeparture(departureRow.scheduledTime) >= 0 
+                        ? 'text-green-600' 
+                        : 'text-gray-500'
+                    }`}>
+                      {formatMinutesToDeparture(departureRow.scheduledTime)} min
+                    </span>
+                  )}
+                 
+                </div>
               </div>
             </div>
           );
