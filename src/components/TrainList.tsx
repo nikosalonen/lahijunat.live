@@ -88,7 +88,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
           return (
             <div
               key={`${train.trainNumber}`}
-              class={`p-4 border rounded-lg shadow-sm transition-all hover:shadow-md
+              class={`p-4 border rounded-lg shadow-sm transition-all hover:shadow-md relative
                 ${train.cancelled ? 'bg-red-50 border-red-200' : 
                   hasDeparted ? 'bg-gray-100 border-gray-300 opacity-60' :
                   departingSoon ? 'bg-white border-gray-200 animate-soft-blink' : 
@@ -105,21 +105,6 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
                   
                   {/* Main train info */}
                   <div class="space-y-1">
-                    {/* Train number and track */}
-                    <div class="flex items-center gap-2">
-                      <span class="font-medium text-gray-900">Train {train.trainNumber}</span>
-                      {train.timeTableRows.map((row) => {
-                        if (row.stationShortCode === stationCode && row.type === "DEPARTURE") {
-                          return (
-                            <span key={row.scheduledTime} class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-sm">
-                              Track {row.commercialTrack}
-                            </span>
-                          );
-                        }
-                        return null;
-                      })}
-                    </div>
-
                     {/* Time information */}
                     {train.timeTableRows.map((row) => {
                       if (row.stationShortCode === stationCode && row.type === "DEPARTURE") {
@@ -128,8 +113,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
                           minute: '2-digit'
                         });
                         
-                        const minutesToDeparture = formatMinutesToDeparture(row.scheduledTime);
-                        const showCountdown = minutesToDeparture <= 30 && minutesToDeparture >= 0;
+                        
                         
                         const arrivalRow = train.timeTableRows.find(
                           r => r.stationShortCode === destinationCode && r.type === "ARRIVAL"
@@ -167,17 +151,29 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
                 </div>
 
                 <div class="flex items-center gap-2 text-sm text-gray-600">
-                  
-                  {departureRow && (
-                    <span class={`font-medium ${
-                      formatMinutesToDeparture(departureRow.scheduledTime) >= 0 
-                        ? 'text-green-600' 
-                        : 'text-gray-500'
-                    }`}>
-                      {formatMinutesToDeparture(departureRow.scheduledTime)} min
-                    </span>
-                  )}
-                 
+                  {/* Track info */}
+                  {train.timeTableRows.map((row) => {
+                    if (row.stationShortCode === stationCode && row.type === "DEPARTURE") {
+                      return (
+                        <div key={row.scheduledTime} class="absolute top-4 right-4 flex flex-col items-end gap-1">
+                          <span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-sm">
+                            Track {row.commercialTrack}
+                          </span>
+                          {/* Departure countdown */}
+                          {departureRow && formatMinutesToDeparture(departureRow.scheduledTime) <= 30 && formatMinutesToDeparture(departureRow.scheduledTime) >= 0 && (
+                            <span class={`font-medium text-lg ${
+                              formatMinutesToDeparture(departureRow.scheduledTime) >= 0 
+                                ? 'text-green-600' 
+                                : 'text-gray-500'
+                            }`}>
+                              {formatMinutesToDeparture(departureRow.scheduledTime)} min
+                            </span>
+                          )}
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
                 </div>
               </div>
             </div>
