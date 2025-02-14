@@ -7,17 +7,17 @@ const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="fi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta
       name="description"
-      content="Real-time departure times for local trains in Finland. Get up-to-date information about Lähijunat schedules and platforms."
+      content="Reaaliaikaiset lähtöajat Suomen lähijunille. Saat ajantasaista tietoa lähijunien aikatauluista ja laitureista."
     />
     <meta
       name="keywords"
-      content="lähijunat, local trains, finland trains, helsinki trains, train schedules, real-time trains"
+      content="lähijunat, paikallisjunat, suomen junat, helsingin junat, juna-aikataulut, reaaliaikaiset junat"
     />
     <meta name="author" content="Lähijunat Live" />
     <meta name="robots" content="index, follow" />
@@ -27,7 +27,7 @@ const { title } = Astro.props;
     <meta property="og:title" content={title} />
     <meta
       property="og:description"
-      content="Real-time departure times for local trains in Finland"
+      content="Reaaliaikaiset lähtöajat Suomen lähijunille"
     />
     <meta property="og:site_name" content="Lähijunat Live" />
 
@@ -36,7 +36,7 @@ const { title } = Astro.props;
     <meta name="twitter:title" content={title} />
     <meta
       name="twitter:description"
-      content="Real-time departure times for local trains in Finland"
+      content="Reaaliaikaiset lähtöajat Suomen lähijunille"
     />
 
     <title>{title}</title>
@@ -65,7 +65,7 @@ const { title } = Astro.props;
     <div class="px-4 py-8 mx-auto max-w-7xl">
       <slot />
       <footer class="mt-16 py-8 text-center text-sm text-gray-500">
-        <p>Data provided by Fintraffic</p>
+        <p>Tiedot toimittaa Fintraffic</p>
       </footer>
     </div>
   </body>
