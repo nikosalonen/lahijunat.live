@@ -72,7 +72,7 @@ export async function fetchTrains(
 	const trainCategories = "Commuter";
 	// const response = await fetch(LIVE_ENDPOINT + stationCode + '?minutes_before_departure=' + minutesBeforeDeparture + '&arriving_trains=0&departed_trains=0&arrived_trains=0&departing_trains=100&minutes_after_departure=' + minutesAfterDeparture +  '&train_categories=' + trainCategories);
 
-	const startDate = new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString();
+	const startDate = new Date().toISOString();
 	const endDate = new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString();
 
 	const response = await fetch(
