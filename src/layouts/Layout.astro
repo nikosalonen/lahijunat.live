@@ -49,14 +49,17 @@ const { title } = Astro.props;
   </head>
   <body class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
     <div class="min-h-screen flex flex-col">
-      <div class="container mx-auto px-4 flex-grow">
-        <nav class="py-4">
+      <nav class="py-4 bg-[#8c4799] w-full">
+        <div class="container mx-auto px-4">
           <div class="flex items-center justify-between">
             <a
               href="/"
               class="text-2xl font-bold text-white hover:text-blue-100 transition-colors"
             >
-              🚂 Lähijunat Live
+              <div class="flex items-center gap-2">
+                <img src="/Juna.png" alt="Lähijunat Live" class="h-8" />
+                <span>Lähijunat Live</span>
+              </div>
             </a>
             <a
               href="https://github.com/nikosalonen/lahijunat.live"
@@ -67,12 +70,14 @@ const { title } = Astro.props;
               GitHub
             </a>
           </div>
-        </nav>
+        </div>
+      </nav>
+      <div class="container mx-auto px-4 flex-grow">
         <main>
           <slot />
         </main>
       </div>
-      <footer class="py-4 text-center text-white bg-gray-800/50 w-full mt-auto">
+      <footer class="py-4 text-center text-white bg-[#8c4799] w-full mt-auto">
         <p>
           Made by{" "}
           <a
