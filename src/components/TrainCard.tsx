@@ -37,7 +37,6 @@ export default function TrainCard({
 		: null;
 	const departingSoon =
 		departureRow && isDepartingSoon(departureRow.scheduledTime);
-
 	return (
 		<div
 			class={`p-2 sm:p-4 border rounded-lg shadow-sm transition-all hover:shadow-md relative
@@ -116,11 +115,11 @@ export default function TrainCard({
 									<div class="flex flex-col gap-1" key={row.scheduledTime}>
 										<div class="flex flex-col sm:flex-row sm:items-center gap-2">
 											<span class="text-lg font-medium text-gray-800 break-words min-w-0">
-												{liveTime && timeDifferenceMinutes > 2 ? (
+												{liveTime && timeDifferenceMinutes > 0 ? (
 													<span class="inline-flex flex-wrap items-center">
-														<span class="line-through">{departureTime}</span>
-														<span class="text-orange-500 ml-1">
-															({liveTime})
+														<span>{departureTime}</span>
+														<span class="ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-700 text-sm rounded">
+															+{timeDifferenceMinutes} min
 														</span>
 													</span>
 												) : (
