@@ -45,7 +45,7 @@ export default function TrainCard({
 								? "bg-red-50 border-red-200"
 								: minutesToDeparture !== null && minutesToDeparture < -1
 									? "bg-gray-100 border-gray-300 opacity-60"
-									: departingSoon
+									: departingSoon && !train.cancelled
 										? "bg-white border-gray-200 animate-soft-blink"
 										: "bg-white border-gray-200"
 						}`}
