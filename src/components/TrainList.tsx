@@ -78,11 +78,11 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 	}
 
 	return (
-		<div class="max-w-4xl mx-auto space-y-6 px-2 sm:p-4">
-			<h2 class="text-2xl font-bold text-gray-800 mb-6">
+		<div class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4">
+			<h2 class="text-2xl font-bold text-gray-800 mb-6 px-2">
 				Lähtevät junat {stationCode} → {destinationCode}
 			</h2>
-			<div class="grid gap-4">
+			<div class="grid gap-4 px-2">
 				{trains.map((train) => {
 					const departureRow = train.timeTableRows.find(
 						(row) =>
@@ -109,7 +109,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 								}`}
 						>
 							<div class="flex items-center justify-between">
-								<div class="flex items-center gap-4">
+								<div class="flex items-center gap-4 flex-1">
 									{/* Train identifier */}
 									{train.commuterLineID && (
 										<div class="h-12 w-12 bg-green-100 text-green-800 rounded-full flex items-center justify-center text-lg font-medium">
@@ -178,17 +178,17 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 														class="flex flex-col gap-1"
 														key={row.scheduledTime}
 													>
-														<div class="flex items-center gap-2">
-															<span class="text-lg font-medium text-gray-800">
+														<div class="flex flex-col sm:flex-row sm:items-center gap-2">
+															<span class="text-lg font-medium text-gray-800 break-words min-w-0">
 																{liveTime && timeDifferenceMinutes > 2 ? (
-																	<>
+																	<span class="inline-flex flex-wrap items-center">
 																		<span class="line-through">
 																			{departureTime}
 																		</span>
 																		<span class="text-orange-500 ml-1">
 																			({liveTime})
 																		</span>
-																	</>
+																	</span>
 																) : (
 																	departureTime
 																)}
@@ -196,7 +196,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 																{arrivalTime &&
 																	(arrivalLiveTime &&
 																	arrivalTimeDifferenceMinutes > 1 ? (
-																		<>
+																		<span class="inline-flex flex-wrap items-center">
 																			<span class="line-through">
 																				{new Date(
 																					arrivalTime,
@@ -215,7 +215,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 																				})}
 																				)
 																			</span>
-																		</>
+																		</span>
 																	) : (
 																		new Date(arrivalTime).toLocaleTimeString(
 																			"fi-FI",
@@ -227,7 +227,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 																	))}
 															</span>
 															{duration && (
-																<span class="text-sm text-gray-500">
+																<span class="text-sm text-gray-500 -mt-1 sm:mt-0">
 																	({Math.floor(duration / 60)}h {duration % 60}
 																	m)
 																</span>
@@ -241,7 +241,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 									</div>
 								</div>
 
-								<div class="flex items-center gap-2 text-sm text-gray-600">
+								<div class="flex items-center gap-2 text-sm text-gray-600 min-w-[90px] text-right">
 									{/* Track info */}
 									{train.timeTableRows.map((row) => {
 										if (
