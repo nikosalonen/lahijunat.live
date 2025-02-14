@@ -10,7 +10,16 @@
     {
       "src": "/Juna.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "orientation": "portrait",
+  "categories": [
+    "travel",
+    "transportation",
+    "commuting"
+  ],
+  "lang": "fi",
+  "prefer_related_applications": false
 }
