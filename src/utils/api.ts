@@ -1,7 +1,8 @@
-import type { TimeTableRow, Train } from "../types";
+import type { Station, TimeTableRow, Train } from "../types";
 
 const GRAPHQL_ENDPOINT = "https://rata.digitraffic.fi/api/v2/graphql/graphql";
-const REST_ENDPOINT = "https://rata.digitraffic.fi/api/v1/metadata/stations";
+const STATIONS_ENDPOINT =
+	"https://rata.digitraffic.fi/api/v1/metadata/stations";
 const LIVE_ENDPOINT = "https://rata.digitraffic.fi/api/v1/live-trains/station/";
 
 export async function fetchStations() {
@@ -24,6 +25,56 @@ export async function fetchStations() {
 
 	const data = await response.json();
 	return data.data.stations;
+}
+
+export async function fetchTrainsLeavingFromStation(
+	stationCode: string,
+): Promise<Station[]> {
+	const response = await fetch(
+		`${LIVE_ENDPOINT}${stationCode}?arrived_trains=100&arriving_trains=100&departed_trains=100&departing_trains=100&include_nonstopping=false&train_categories=Commuter`,
+	);
+	if (!response.ok) {
+		throw new Error("Failed to fetch station");
+	}
+	const data = await response.json();
+	// Filter trains that have the destination station in their timetable
+	const shortCodes = [
+		...new Set(
+			data.flatMap((train: Train) =>
+				train.timeTableRows
+					.filter(
+						(row: TimeTableRow) => row.commercialStop && row.trainStopping,
+					)
+					.map((row: TimeTableRow) => row.stationShortCode),
+			),
+		),
+	];
+
+	console.log(shortCodes);
+	interface RESTStation {
+		stationShortCode: string;
+		name: string;
+		passengerTraffic: boolean;
+		type: string;
+		stationName: string;
+		stationUICCode: number;
+		countryCode: string;
+		longitude: number;
+		latitude: number;
+	}
+	const stations = await fetch(STATIONS_ENDPOINT);
+	const stationsData = await stations.json();
+
+	const filteredStations = stationsData.filter(
+		(station: RESTStation) =>
+			shortCodes.includes(station.stationShortCode) && station.passengerTraffic,
+	);
+	return filteredStations.map(
+		(station: RESTStation): Station => ({
+			name: station.stationName,
+			shortCode: station.stationShortCode,
+		}),
+	);
 }
 
 export async function fetchTrains(
