@@ -1,6 +1,7 @@
 // src/components/StationManager.tsx
 import { useEffect, useState } from "preact/hooks";
 import type { Station } from "../types";
+import { fetchTrainsLeavingFromStation } from "../utils/api";
 import StationList from "./StationList";
 import TrainList from "./TrainList";
 
@@ -35,20 +36,26 @@ export default function StationManager({ stations }: Props) {
 	}, []);
 
 	useEffect(() => {
-		if (selectedOrigin) {
-			setAvailableDestinations(stations);
+		const fetchDestinations = async () => {
+			if (selectedOrigin) {
+				const destinations =
+					await fetchTrainsLeavingFromStation(selectedOrigin);
+				setAvailableDestinations(destinations);
 
-			if (
-				selectedDestination &&
-				!availableDestinations.some((s) => s.shortCode === selectedDestination)
-			) {
-				setSelectedDestination(null);
-				localStorage.removeItem("selectedDestination");
+				if (
+					selectedDestination &&
+					!destinations.some((s) => s.shortCode === selectedDestination)
+				) {
+					setSelectedDestination(null);
+					localStorage.removeItem("selectedDestination");
+				}
+			} else {
+				setAvailableDestinations(stations);
 			}
-		} else {
-			setAvailableDestinations(stations);
-		}
-	}, [selectedOrigin, stations, availableDestinations, selectedDestination]);
+		};
+
+		fetchDestinations();
+	}, [selectedOrigin, selectedDestination, stations]);
 
 	const handleOriginSelect = (station: Station) => {
 		setSelectedOrigin(station.shortCode);
