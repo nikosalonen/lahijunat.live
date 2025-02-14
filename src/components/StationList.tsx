@@ -24,7 +24,7 @@ export default function StationList({
 				}}
 				class="w-full p-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
 			>
-				<option value="">Select a station...</option>
+				<option value="">Valitse asema...</option>
 				{stations.map((station) => (
 					<option key={station.shortCode} value={station.shortCode}>
 						{station.name} ({station.shortCode})
