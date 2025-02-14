@@ -55,7 +55,7 @@ export default function StationManager({ stations }: Props) {
 		};
 
 		fetchDestinations();
-	}, [selectedOrigin, selectedDestination, stations]);
+	}, [selectedOrigin, stations]);
 
 	const handleOriginSelect = (station: Station) => {
 		setSelectedOrigin(station.shortCode);
