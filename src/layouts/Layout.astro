@@ -11,7 +11,34 @@ const { title } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="description" content="Lähijunien lähtöajat" />
+    <meta
+      name="description"
+      content="Real-time departure times for local trains in Finland. Get up-to-date information about Lähijunat schedules and platforms."
+    />
+    <meta
+      name="keywords"
+      content="lähijunat, local trains, finland trains, helsinki trains, train schedules, real-time trains"
+    />
+    <meta name="author" content="Lähijunat Live" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta
+      property="og:description"
+      content="Real-time departure times for local trains in Finland"
+    />
+    <meta property="og:site_name" content="Lähijunat Live" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta
+      name="twitter:description"
+      content="Real-time departure times for local trains in Finland"
+    />
+
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
