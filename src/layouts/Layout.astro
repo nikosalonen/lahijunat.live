@@ -10,7 +10,10 @@ const { title } = Astro.props;
 <html lang="fi">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <meta
       name="description"
       content="Reaaliaikaiset lähtöajat Suomen lähijunille. Saat ajantasaista tietoa lähijunien aikatauluista ja laitureista."
@@ -38,6 +41,23 @@ const { title } = Astro.props;
       name="twitter:description"
       content="Reaaliaikaiset lähtöajat Suomen lähijunille"
     />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/Juna.png" />
+
+    <!-- iOS meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content={title} />
+    <link rel="apple-touch-icon" href="/Juna.png" />
+
+    <!-- Android meta tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#8c4799" />
+    <link rel="manifest" href="/manifest.json" />
 
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />

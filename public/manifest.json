@@ -1,0 +1,16 @@
+{
+  "name": "Lähijunat Live",
+  "short_name": "Lähijunat",
+  "description": "Reaaliaikaiset lähtöajat Suomen lähijunille",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8c4799",
+  "icons": [
+    {
+      "src": "/Juna.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
