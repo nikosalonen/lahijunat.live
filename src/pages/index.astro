@@ -6,7 +6,7 @@ import { fetchStations } from "../utils/api";
 const stations = await fetchStations();
 ---
 
-<Layout title="Train Stations">
+<Layout title="Lähijunat.live">
   <main>
     <div class="container mx-auto">
       <StationManager client:load stations={stations} />
