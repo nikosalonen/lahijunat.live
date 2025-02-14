@@ -174,7 +174,7 @@ export default function TrainCard({
 				</div>
 
 				<div class="flex items-center gap-2 text-sm text-gray-600 min-w-[90px] text-right">
-					{/* Track info */}
+					{/* Track info or Cancelled status */}
 					{train.timeTableRows.map((row) => {
 						if (
 							row.stationShortCode === stationCode &&
@@ -185,36 +185,44 @@ export default function TrainCard({
 									key={row.scheduledTime}
 									class="top-4 right-4 flex flex-col items-end gap-1"
 								>
-									<span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-sm">
-										Raide {row.commercialTrack}
-									</span>
-									{/* Departure countdown */}
-									{departureRow &&
-										formatMinutesToDeparture(
-											departureRow.scheduledTime,
-											currentTime,
-										) <= 30 &&
-										formatMinutesToDeparture(
-											departureRow.scheduledTime,
-											currentTime,
-										) >= 0 && (
-											<span
-												class={`font-medium text-lg ${
-													formatMinutesToDeparture(
-														departureRow.scheduledTime,
-														currentTime,
-													) >= 0
-														? "text-green-600"
-														: "text-gray-500"
-												}`}
-											>
-												{formatMinutesToDeparture(
+									{train.cancelled ? (
+										<span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-sm">
+											Peruttu
+										</span>
+									) : (
+										<>
+											<span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-sm">
+												Raide {row.commercialTrack}
+											</span>
+											{/* Departure countdown */}
+											{departureRow &&
+												formatMinutesToDeparture(
 													departureRow.scheduledTime,
 													currentTime,
-												)}{" "}
-												min
-											</span>
-										)}
+												) <= 30 &&
+												formatMinutesToDeparture(
+													departureRow.scheduledTime,
+													currentTime,
+												) >= 0 && (
+													<span
+														class={`font-medium text-lg ${
+															formatMinutesToDeparture(
+																departureRow.scheduledTime,
+																currentTime,
+															) >= 0
+																? "text-green-600"
+																: "text-gray-500"
+														}`}
+													>
+														{formatMinutesToDeparture(
+															departureRow.scheduledTime,
+															currentTime,
+														)}{" "}
+														min
+													</span>
+												)}
+										</>
+									)}
 								</div>
 							);
 						}
