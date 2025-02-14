@@ -1,3 +1,5 @@
+import type { TimeTableRow, Train } from "../types";
+
 const GRAPHQL_ENDPOINT = "https://rata.digitraffic.fi/api/v2/graphql/graphql";
 const REST_ENDPOINT = "https://rata.digitraffic.fi/api/v1/metadata/stations";
 const LIVE_ENDPOINT = "https://rata.digitraffic.fi/api/v1/live-trains/station/";
@@ -86,7 +88,7 @@ export async function fetchTrains(
 	const data = await response.json();
 
 	const filteredData = data
-		.filter((train: any) => {
+		.filter((train: Train) => {
 			// Check if train is a commuter train
 			if (train.trainCategory !== "Commuter") {
 				return false;
@@ -94,17 +96,17 @@ export async function fetchTrains(
 
 			// Filter timeTableRows to only include origin and destination stations
 			train.timeTableRows = train.timeTableRows.filter(
-				(row: any) =>
+				(row: TimeTableRow) =>
 					row.stationShortCode === destinationCode ||
 					row.stationShortCode === stationCode,
 			);
 
 			// Get the rows for origin and destination
 			const originRow = train.timeTableRows.find(
-				(row: any) => row.stationShortCode === stationCode,
+				(row: TimeTableRow) => row.stationShortCode === stationCode,
 			);
 			const destinationRow = train.timeTableRows.find(
-				(row: any) => row.stationShortCode === destinationCode,
+				(row: TimeTableRow) => row.stationShortCode === destinationCode,
 			);
 
 			// Check if both stations exist and destination is after origin
@@ -115,16 +117,18 @@ export async function fetchTrains(
 					new Date(destinationRow.scheduledTime)
 			);
 		})
-		.sort((a: any, b: any) => {
+		.sort((a: Train, b: Train) => {
 			const aDeparture = a.timeTableRows.find(
-				(row: any) => row.stationShortCode === stationCode,
+				(row: TimeTableRow) => row.stationShortCode === stationCode,
 			)?.scheduledTime;
 			const bDeparture = b.timeTableRows.find(
-				(row: any) => row.stationShortCode === stationCode,
+				(row: TimeTableRow) => row.stationShortCode === stationCode,
 			)?.scheduledTime;
-			return new Date(aDeparture).getTime() - new Date(bDeparture).getTime();
+			return (
+				new Date(aDeparture ?? "").getTime() -
+				new Date(bDeparture ?? "").getTime()
+			);
 		});
 
-	console.log(filteredData);
 	return filteredData;
 }
