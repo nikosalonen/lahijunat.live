@@ -6,7 +6,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "lint": "biome check --write src",
+    "format": "biome format --write src"
   },
   "dependencies": {
     "@astrojs/preact": "^4.0.4",
