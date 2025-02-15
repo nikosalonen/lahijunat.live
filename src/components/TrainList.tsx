@@ -36,7 +36,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 		}
 
 		loadTrains();
-		const interval = setInterval(loadTrains, 60000);
+		const interval = setInterval(loadTrains, 30000);
 
 		const progressInterval = setInterval(() => {
 			setProgress((prev) => Math.max(0, prev - 100 / 60));
