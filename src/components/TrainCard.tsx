@@ -58,7 +58,7 @@ export default function TrainCard({
 							class={`h-12 w-12 ${
 								train.cancelled
 									? "bg-[#dc0451] text-white"
-									: "bg-[#007ac9] text-white"
+									: "bg-[#8c4799] text-white"
 							} rounded-full flex items-center justify-center text-lg font-medium`}
 						>
 							{train.commuterLineID}
@@ -236,7 +236,7 @@ export default function TrainCard({
 																departureRow.scheduledTime,
 																currentTime,
 															) >= 0
-																? "text-green-600"
+																? "text-[#00985f]"
 																: "text-gray-500"
 														}`}
 													>
