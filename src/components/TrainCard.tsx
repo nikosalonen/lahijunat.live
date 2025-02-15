@@ -124,27 +124,40 @@ export default function TrainCard({
 					{/* Main train info */}
 					<div class="space-y-1">
 						<div class="flex flex-col gap-1">
-							<div class="flex flex-col sm:flex-row sm:items-center gap-2">
+							<div class="flex flex-col gap-2">
 								<span class="text-lg font-medium text-gray-800 break-words min-w-0">
 									{departureRow.liveEstimateTime &&
 									timeDifferenceMinutes > 0 ? (
-										<span class="inline-flex flex-wrap items-center">
-											<span>{formatTime(departureRow.scheduledTime)}</span>
-											<span class="ml-1 px-1.5 py-0.5 bg-[#fed100] text-black text-sm rounded">
+										<span class="flex flex-col">
+											{/* Delay indicator above */}
+											<span class="mb-1 px-1.5 py-0.5 bg-[#fed100] text-black text-sm rounded self-start">
 												+{timeDifferenceMinutes} min
+											</span>
+											{/* Time row */}
+											<span>
+												{formatTime(departureRow.scheduledTime)}
+												<span class="mx-2 text-gray-400">→</span>
+												{arrivalRow &&
+													formatTime(
+														arrivalRow.liveEstimateTime ||
+															arrivalRow.scheduledTime,
+													)}
 											</span>
 										</span>
 									) : (
-										formatTime(departureRow.scheduledTime)
+										<>
+											{formatTime(departureRow.scheduledTime)}
+											<span class="mx-2 text-gray-400">→</span>
+											{arrivalRow &&
+												formatTime(
+													arrivalRow.liveEstimateTime ||
+														arrivalRow.scheduledTime,
+												)}
+										</>
 									)}
-									<span class="mx-2 text-gray-400">→</span>
-									{arrivalRow &&
-										formatTime(
-											arrivalRow.liveEstimateTime || arrivalRow.scheduledTime,
-										)}
 								</span>
 								{duration && (
-									<span class="text-sm text-gray-500 -mt-1 sm:mt-0">
+									<span class="text-sm text-gray-500 -mt-1">
 										({duration.hours}h {duration.minutes}m)
 									</span>
 								)}
