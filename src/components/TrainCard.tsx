@@ -8,6 +8,23 @@ interface Props {
 }
 
 // Utility functions
+const formatTime = (date: string) => {
+	return new Date(date).toLocaleTimeString("fi-FI", {
+		hour: "2-digit",
+		minute: "2-digit",
+	});
+};
+
+const calculateDuration = (start: string, end: string) => {
+	const durationMinutes = Math.round(
+		(new Date(end).getTime() - new Date(start).getTime()) / (1000 * 60),
+	);
+	return {
+		hours: Math.floor(durationMinutes / 60),
+		minutes: durationMinutes % 60,
+	};
+};
+
 const formatMinutesToDeparture = (scheduledTime: string, currentTime: Date) => {
 	const departure = new Date(scheduledTime);
 	const diffMinutes = Math.round(
@@ -32,23 +49,42 @@ export default function TrainCard({
 	const departureRow = train.timeTableRows.find(
 		(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
 	);
+	const arrivalRow = train.timeTableRows.find(
+		(row) => row.stationShortCode === destinationCode && row.type === "ARRIVAL",
+	);
+
 	const minutesToDeparture = departureRow
 		? formatMinutesToDeparture(departureRow.scheduledTime, currentTime)
 		: null;
 	const departingSoon =
 		departureRow && isDepartingSoon(departureRow.scheduledTime);
+
+	const getCardStyle = () => {
+		if (train.cancelled) return "bg-red-50 border-red-200";
+		if (minutesToDeparture !== null && minutesToDeparture < -1)
+			return "bg-gray-100 border-gray-300 opacity-60";
+		if (departingSoon && !train.cancelled)
+			return "bg-white border-gray-200 animate-soft-blink";
+		return "bg-white border-gray-200";
+	};
+
+	if (!departureRow) return null;
+
+	const timeDifferenceMinutes = departureRow.liveEstimateTime
+		? Math.round(
+				(new Date(departureRow.liveEstimateTime).getTime() -
+					new Date(departureRow.scheduledTime).getTime()) /
+					(1000 * 60),
+			)
+		: 0;
+
+	const duration = arrivalRow?.scheduledTime
+		? calculateDuration(departureRow.scheduledTime, arrivalRow.scheduledTime)
+		: null;
+
 	return (
 		<div
-			class={`p-2 sm:p-4 border rounded-lg shadow-sm transition-all hover:shadow-md relative
-            ${
-							train.cancelled
-								? "bg-red-50 border-red-200"
-								: minutesToDeparture !== null && minutesToDeparture < -1
-									? "bg-gray-100 border-gray-300 opacity-60"
-									: departingSoon && !train.cancelled
-										? "bg-white border-gray-200 animate-soft-blink"
-										: "bg-white border-gray-200"
-						}`}
+			class={`p-2 sm:p-4 border rounded-lg shadow-sm transition-all hover:shadow-md relative ${getCardStyle()}`}
 		>
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4 flex-1">
@@ -87,153 +123,60 @@ export default function TrainCard({
 
 					{/* Main train info */}
 					<div class="space-y-1">
-						{/* Time information */}
-						{train.timeTableRows.map((row) => {
-							if (
-								row.stationShortCode === stationCode &&
-								row.type === "DEPARTURE"
-							) {
-								const departureTime = new Date(
-									row.scheduledTime,
-								).toLocaleTimeString("fi-FI", {
-									hour: "2-digit",
-									minute: "2-digit",
-								});
-
-								const liveTime = row.liveEstimateTime
-									? new Date(row.liveEstimateTime).toLocaleTimeString("fi-FI", {
-											hour: "2-digit",
-											minute: "2-digit",
-										})
-									: null;
-
-								const timeDifferenceMinutes = row.liveEstimateTime
-									? Math.round(
-											(new Date(row.liveEstimateTime).getTime() -
-												new Date(row.scheduledTime).getTime()) /
-												(1000 * 60),
-										)
-									: 0;
-
-								const arrivalRow = train.timeTableRows.find(
-									(r) =>
-										r.stationShortCode === destinationCode &&
-										r.type === "ARRIVAL",
-								);
-								const arrivalTime = arrivalRow?.scheduledTime;
-								const arrivalLiveTime = arrivalRow?.liveEstimateTime;
-
-								const duration = arrivalTime
-									? Math.round(
-											(new Date(arrivalTime).getTime() -
-												new Date(row.scheduledTime).getTime()) /
-												(1000 * 60),
-										)
-									: null;
-
-								return (
-									<div class="flex flex-col gap-1" key={row.scheduledTime}>
-										<div class="flex flex-col sm:flex-row sm:items-center gap-2">
-											<span class="text-lg font-medium text-gray-800 break-words min-w-0">
-												{liveTime && timeDifferenceMinutes > 0 ? (
-													<span class="inline-flex flex-wrap items-center">
-														<span>{departureTime}</span>
-														<span class="ml-1 px-1.5 py-0.5 bg-[#fed100] text-black text-sm rounded">
-															+{timeDifferenceMinutes} min
-														</span>
-													</span>
-												) : (
-													departureTime
-												)}
-												<span class="mx-2 text-gray-400">→</span>
-												{arrivalTime &&
-													(arrivalLiveTime ? (
-														<span class="">
-															{new Date(arrivalLiveTime).toLocaleTimeString(
-																"fi-FI",
-																{
-																	hour: "2-digit",
-																	minute: "2-digit",
-																},
-															)}
-														</span>
-													) : (
-														new Date(arrivalTime).toLocaleTimeString("fi-FI", {
-															hour: "2-digit",
-															minute: "2-digit",
-														})
-													))}
+						<div class="flex flex-col gap-1">
+							<div class="flex flex-col sm:flex-row sm:items-center gap-2">
+								<span class="text-lg font-medium text-gray-800 break-words min-w-0">
+									{departureRow.liveEstimateTime &&
+									timeDifferenceMinutes > 0 ? (
+										<span class="inline-flex flex-wrap items-center">
+											<span>{formatTime(departureRow.scheduledTime)}</span>
+											<span class="ml-1 px-1.5 py-0.5 bg-[#fed100] text-black text-sm rounded">
+												+{timeDifferenceMinutes} min
 											</span>
-											{duration && (
-												<span class="text-sm text-gray-500 -mt-1 sm:mt-0">
-													({Math.floor(duration / 60)}h {duration % 60}
-													m)
-												</span>
-											)}
-										</div>
-									</div>
-								);
-							}
-							return null;
-						})}
+										</span>
+									) : (
+										formatTime(departureRow.scheduledTime)
+									)}
+									<span class="mx-2 text-gray-400">→</span>
+									{arrivalRow &&
+										formatTime(
+											arrivalRow.liveEstimateTime || arrivalRow.scheduledTime,
+										)}
+								</span>
+								{duration && (
+									<span class="text-sm text-gray-500 -mt-1 sm:mt-0">
+										({duration.hours}h {duration.minutes}m)
+									</span>
+								)}
+							</div>
+						</div>
 					</div>
 				</div>
 
+				{/* Track info and departure countdown */}
 				<div class="flex items-center gap-2 text-sm text-gray-600 min-w-[90px] text-right">
-					{/* Track info or Cancelled status */}
-					{train.timeTableRows.map((row) => {
-						if (
-							row.stationShortCode === stationCode &&
-							row.type === "DEPARTURE"
-						) {
-							return (
-								<div
-									key={row.scheduledTime}
-									class="top-4 right-4 flex flex-col items-end gap-1"
-								>
-									{train.cancelled ? (
-										<span class="px-2 py-0.5 bg-[#dc0451] text-white rounded text-sm">
-											Peruttu
+					<div class="top-4 right-4 flex flex-col items-end gap-1">
+						{train.cancelled ? (
+							<span class="px-2 py-0.5 bg-[#dc0451] text-white rounded text-sm">
+								Peruttu
+							</span>
+						) : (
+							<>
+								<span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-sm">
+									Raide {departureRow.commercialTrack}
+								</span>
+								{minutesToDeparture !== null &&
+									minutesToDeparture <= 30 &&
+									minutesToDeparture >= 0 && (
+										<span
+											class={`font-medium text-lg ${minutesToDeparture >= 0 ? "text-[#00985f]" : "text-gray-500"}`}
+										>
+											{minutesToDeparture} min
 										</span>
-									) : (
-										<>
-											<span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-sm">
-												Raide {row.commercialTrack}
-											</span>
-											{/* Departure countdown */}
-											{departureRow &&
-												formatMinutesToDeparture(
-													departureRow.scheduledTime,
-													currentTime,
-												) <= 30 &&
-												formatMinutesToDeparture(
-													departureRow.scheduledTime,
-													currentTime,
-												) >= 0 && (
-													<span
-														class={`font-medium text-lg ${
-															formatMinutesToDeparture(
-																departureRow.scheduledTime,
-																currentTime,
-															) >= 0
-																? "text-[#00985f]"
-																: "text-gray-500"
-														}`}
-													>
-														{formatMinutesToDeparture(
-															departureRow.scheduledTime,
-															currentTime,
-														)}{" "}
-														min
-													</span>
-												)}
-										</>
 									)}
-								</div>
-							);
-						}
-						return null;
-					})}
+							</>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>
