@@ -55,7 +55,11 @@ export default function TrainCard({
 					{/* Train identifier */}
 					{train.commuterLineID && (
 						<div
-							class={`h-12 w-12 ${train.cancelled ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"} rounded-full flex items-center justify-center text-lg font-medium`}
+							class={`h-12 w-12 ${
+								train.cancelled
+									? "bg-[#dc0451] text-white"
+									: "bg-[#007ac9] text-white"
+							} rounded-full flex items-center justify-center text-lg font-medium`}
 						>
 							{train.commuterLineID}
 						</div>
@@ -140,7 +144,7 @@ export default function TrainCard({
 												{liveTime && timeDifferenceMinutes > 0 ? (
 													<span class="inline-flex flex-wrap items-center">
 														<span>{departureTime}</span>
-														<span class="ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-700 text-sm rounded">
+														<span class="ml-1 px-1.5 py-0.5 bg-[#fed100] text-black text-sm rounded">
 															+{timeDifferenceMinutes} min
 														</span>
 													</span>
@@ -208,7 +212,7 @@ export default function TrainCard({
 									class="top-4 right-4 flex flex-col items-end gap-1"
 								>
 									{train.cancelled ? (
-										<span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-sm">
+										<span class="px-2 py-0.5 bg-[#dc0451] text-white rounded text-sm">
 											Peruttu
 										</span>
 									) : (

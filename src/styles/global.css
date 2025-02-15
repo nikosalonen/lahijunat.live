@@ -29,7 +29,7 @@
 
 @keyframes soft-blink {
   0%, 100% { background-color: rgb(255, 255, 255); }
-  50% { background-color: rgb(254, 243, 199); }
+  50% { background-color: #bee4f8; }
 }
 
 .animate-soft-blink {

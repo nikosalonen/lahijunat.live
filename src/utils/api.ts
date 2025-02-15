@@ -60,7 +60,6 @@ export async function fetchTrainsLeavingFromStation(
 		),
 	];
 
-	console.log(shortCodes);
 	interface RESTStation {
 		stationShortCode: string;
 		name: string;
