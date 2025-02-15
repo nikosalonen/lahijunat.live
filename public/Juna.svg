@@ -5,8 +5,11 @@
  width="512.000000pt" height="512.000000pt" viewBox="0 0 512.000000 512.000000"
  preserveAspectRatio="xMidYMid meet">
 
+<!-- Rounded square background -->
+<rect x="0" y="0" width="512" height="512" rx="100" ry="100" fill="#8c4799"/>
+
 <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
-fill="#000000" stroke="none">
+fill="#ffffff" stroke="none">
 <path d="M532 5109 c-131 -22 -243 -81 -342 -179 -103 -104 -158 -212 -180
 -357 -7 -46 -10 -703 -8 -2058 3 -1836 5 -1994 20 -2045 71 -227 245 -395 468
 -451 81 -21 4057 -21 4140 0 228 56 413 242 471 471 21 82 21 4058 0 4140 -56

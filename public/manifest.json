@@ -8,9 +8,15 @@
   "theme_color": "#8c4799",
   "icons": [
     {
-      "src": "/Juna.png",
+      "src": "/Juna.svg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/Juna.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ],

@@ -43,7 +43,7 @@ const { title } = Astro.props;
     />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/Juna.png" />
+    <link rel="icon" type="image/svg+xml" href="/Juna.svg" />
 
     <!-- iOS meta tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -52,7 +52,7 @@ const { title } = Astro.props;
       content="black-translucent"
     />
     <meta name="apple-mobile-web-app-title" content={title} />
-    <link rel="apple-touch-icon" href="/Juna.png" />
+    <link rel="apple-touch-icon" href="/Juna.svg" />
 
     <!-- Android meta tags -->
     <meta name="mobile-web-app-capable" content="yes" />
@@ -66,7 +66,7 @@ const { title } = Astro.props;
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-<meta name="google-adsense-account" content="ca-pub-0748442567853482">
+    <meta name="google-adsense-account" content="ca-pub-0748442567853482" />
   </head>
   <body class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
     <div class="min-h-screen flex flex-col">
@@ -78,7 +78,7 @@ const { title } = Astro.props;
               class="text-2xl font-bold text-white hover:text-blue-100 transition-colors"
             >
               <div class="flex items-center gap-2">
-                <img src="/Juna.png" alt="Lähijunat Live" class="h-8" />
+                <img src="/Juna.svg" alt="Lähijunat Live" class="h-8" />
                 <span>Lähijunat Live</span>
               </div>
             </a>
@@ -112,8 +112,10 @@ const { title } = Astro.props;
         </p>
       </footer>
     </div>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0748442567853482"
-     crossorigin="anonymous"></script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0748442567853482"
+      crossorigin="anonymous"></script>
   </body>
 </html>
 
