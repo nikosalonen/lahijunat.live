@@ -1,37 +1,42 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Gotham Rounded';
-  src: url('/fonts/gothamrounded-medium-webfont.woff') format('woff'),
-       url('/fonts/gothamrounded-medium-webfont.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
+	font-family: "Gotham Rounded";
+	src: url("/fonts/gothamrounded-medium-webfont.woff") format("woff"),
+		url("/fonts/gothamrounded-medium-webfont.ttf") format("truetype");
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
 }
 
 @font-face {
-  font-family: 'Gotham Rounded';
-  src: url('/fonts/gothamrounded-book-webfont.woff') format('woff'),
-       url('/fonts/gothamrounded-book-webfont.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+	font-family: "Gotham Rounded";
+	src: url("/fonts/gothamrounded-book-webfont.woff") format("woff"),
+		url("/fonts/gothamrounded-book-webfont.ttf") format("truetype");
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
 }
 
 @font-face {
-  font-family: 'Gotham Rounded';
-  src: url('/fonts/gothamrounded-bold-webfont.woff') format('woff'),
-       url('/fonts/gothamrounded-bold-webfont.ttf') format('truetype');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
+	font-family: "Gotham Rounded";
+	src: url("/fonts/gothamrounded-bold-webfont.woff") format("woff"),
+		url("/fonts/gothamrounded-bold-webfont.ttf") format("truetype");
+	font-weight: bold;
+	font-style: normal;
+	font-display: swap;
 }
 
 @keyframes soft-blink {
-  0%, 100% { background-color: rgb(255, 255, 255); }
-  50% { background-color: #bee4f8; }
+	0%,
+	100% {
+		background-color: rgb(255, 255, 255);
+	}
+	50% {
+		background-color: #bee4f8;
+	}
 }
 
 .animate-soft-blink {
-  animation: soft-blink 2s ease-in-out infinite;
+	animation: soft-blink 2s ease-in-out infinite;
 }
