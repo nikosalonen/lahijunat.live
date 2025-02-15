@@ -122,13 +122,7 @@ export default function TrainCard({
 								);
 								const arrivalTime = arrivalRow?.scheduledTime;
 								const arrivalLiveTime = arrivalRow?.liveEstimateTime;
-								const arrivalTimeDifferenceMinutes = arrivalLiveTime
-									? Math.round(
-											(new Date(arrivalLiveTime).getTime() -
-												new Date(arrivalRow.scheduledTime).getTime()) /
-												(1000 * 60),
-										)
-									: 0;
+
 								const duration = arrivalTime
 									? Math.round(
 											(new Date(arrivalTime).getTime() -
@@ -153,29 +147,15 @@ export default function TrainCard({
 												)}
 												<span class="mx-2 text-gray-400">→</span>
 												{arrivalTime &&
-													(arrivalLiveTime &&
-													arrivalTimeDifferenceMinutes > 1 ? (
-														<span class="inline-flex flex-wrap items-center">
-															<span class="line-through">
-																{new Date(arrivalTime).toLocaleTimeString(
-																	"fi-FI",
-																	{
-																		hour: "2-digit",
-																		minute: "2-digit",
-																	},
-																)}
-															</span>
-															<span class="text-orange-500 ml-1">
-																(
-																{new Date(arrivalLiveTime).toLocaleTimeString(
-																	"fi-FI",
-																	{
-																		hour: "2-digit",
-																		minute: "2-digit",
-																	},
-																)}
-																)
-															</span>
+													(arrivalLiveTime ? (
+														<span class="">
+															{new Date(arrivalLiveTime).toLocaleTimeString(
+																"fi-FI",
+																{
+																	hour: "2-digit",
+																	minute: "2-digit",
+																},
+															)}
 														</span>
 													) : (
 														new Date(arrivalTime).toLocaleTimeString("fi-FI", {
