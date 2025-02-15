@@ -15,23 +15,6 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 	const [error, setError] = useState<string | null>(null);
 	const [currentTime, setCurrentTime] = useState(new Date());
 
-	// Add utility function to check if train is departing soon (within 5 minutes)
-	const isDepartingSoon = (scheduledTime: string) => {
-		const departure = new Date(scheduledTime);
-		const now = new Date();
-		const diffMinutes = (departure.getTime() - now.getTime()) / (1000 * 60);
-		return diffMinutes >= -1 && diffMinutes <= 5;
-	};
-
-	// Add utility function to format minutes
-	const formatMinutesToDeparture = (scheduledTime: string) => {
-		const departure = new Date(scheduledTime);
-		const diffMinutes = Math.round(
-			(departure.getTime() - currentTime.getTime()) / (1000 * 60),
-		);
-		return diffMinutes;
-	};
-
 	useEffect(() => {
 		async function loadTrains() {
 			try {
