@@ -35,6 +35,7 @@ export default function StationManager({ stations }: Props) {
 		setSelectedDestination(getStoredValue("selectedDestination"));
 	}, []);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		const fetchDestinations = async () => {
 			if (selectedOrigin) {
