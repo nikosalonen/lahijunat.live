@@ -1,6 +1,7 @@
-import { useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { fetchTrains } from "../utils/api";
+import ProgressCircle from "./ProgressCircle";
 import TrainCard from "./TrainCard";
 
 interface Props {
@@ -16,42 +17,41 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const [progress, setProgress] = useState(100);
 
-	useEffect(() => {
-		async function loadTrains() {
-			try {
-				if (initialLoad) {
-					setLoading(true);
-				}
-				setProgress(100);
-				const trainData = await fetchTrains(stationCode, destinationCode);
-				setTrains(trainData);
-				setError(null);
-			} catch (err) {
-				setError("Failed to load train data");
-				console.error(err);
-			} finally {
-				setLoading(false);
-				setInitialLoad(false);
+	const loadTrains = useCallback(async () => {
+		try {
+			if (initialLoad) {
+				setLoading(true);
 			}
+			setProgress(100);
+			const trainData = await fetchTrains(stationCode, destinationCode);
+			setTrains(trainData);
+			setError(null);
+		} catch (err) {
+			setError("Failed to load train data");
+			console.error(err);
+		} finally {
+			setLoading(false);
+			setInitialLoad(false);
 		}
+	}, [stationCode, destinationCode, initialLoad]);
 
+	useEffect(() => {
 		loadTrains();
-		const interval = setInterval(loadTrains, 30000);
+
+		const intervalId = setInterval(() => {
+			loadTrains();
+			setCurrentTime(new Date());
+		}, 30000);
 
 		const progressInterval = setInterval(() => {
 			setProgress((prev) => Math.max(0, prev - 100 / 60));
 		}, 1000);
 
-		const timeInterval = setInterval(() => {
-			setCurrentTime(new Date());
-		}, 10000);
-
 		return () => {
-			clearInterval(interval);
-			clearInterval(timeInterval);
+			clearInterval(intervalId);
 			clearInterval(progressInterval);
 		};
-	}, [stationCode, destinationCode, initialLoad]);
+	}, [loadTrains]);
 
 	if (loading && initialLoad) {
 		return (
@@ -69,33 +69,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 				<h2 class="text-2xl font-bold text-gray-800">
 					Lähtevät junat {stationCode} → {destinationCode}
 				</h2>
-				<div class="relative h-6 w-6">
-					<svg class="transform -rotate-90 w-6 h-6" title="Progress indicator">
-						<circle
-							class="text-gray-200"
-							stroke-width="2"
-							stroke="currentColor"
-							fill="transparent"
-							r="10"
-							cx="12"
-							cy="12"
-						/>
-						<title>Seuraava lataus</title>
-						<circle
-							class="text-[#8c4799] transition-all duration-1000"
-							stroke-width="4"
-							stroke="currentColor"
-							fill="transparent"
-							r="10"
-							cx="12"
-							cy="12"
-							style={{
-								strokeDasharray: `${2 * Math.PI * 10}`,
-								strokeDashoffset: `${2 * Math.PI * 10 * (progress / 100)}`,
-							}}
-						/>
-					</svg>
-				</div>
+				<ProgressCircle progress={progress} />
 			</div>
 			<div class="grid gap-4 px-2">
 				{trains.map((train) => (
