@@ -1,37 +1,47 @@
 import type { Station, TimeTableRow, Train } from "../types";
 
-const GRAPHQL_ENDPOINT = "https://rata.digitraffic.fi/api/v2/graphql/graphql";
-const STATIONS_ENDPOINT =
-	"https://rata.digitraffic.fi/api/v1/metadata/stations";
-const LIVE_ENDPOINT = "https://rata.digitraffic.fi/api/v1/live-trains/station/";
+const BASE_URL = "https://rata.digitraffic.fi/api";
+const ENDPOINTS = {
+	GRAPHQL: `${BASE_URL}/v2/graphql/graphql`,
+	STATIONS: `${BASE_URL}/v1/metadata/stations`,
+	LIVE_TRAINS: `${BASE_URL}/v1/live-trains/station`,
+} as const;
 
-export async function fetchStations() {
-	const query = `{
-    stations(where:{passengerTraffic: {equals: true}}){name, shortCode}
-  }`;
+const DEFAULT_HEADERS = {
+	"Content-Type": "application/json",
+	"Accept-Encoding": "gzip",
+} as const;
 
-	const response = await fetch(GRAPHQL_ENDPOINT, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"Accept-Encoding": "gzip",
-		},
-		body: JSON.stringify({ query }),
-	});
+export async function fetchStations(): Promise<Station[]> {
+	try {
+		const query = `{
+			stations(where:{passengerTraffic: {equals: true}}){name, shortCode}
+		}`;
 
-	if (!response.ok) {
-		throw new Error("Failed to fetch stations");
+		const response = await fetch(ENDPOINTS.GRAPHQL, {
+			method: "POST",
+			headers: DEFAULT_HEADERS,
+			body: JSON.stringify({ query }),
+		});
+
+		if (!response.ok) {
+			throw new Error(`Failed to fetch stations: ${response.statusText}`);
+		}
+
+		const { data } = await response.json();
+		return data.stations;
+	} catch (error) {
+		console.error("Error fetching stations:", error);
+		throw error;
 	}
-
-	const data = await response.json();
-	return data.data.stations;
 }
 
 export async function fetchTrainsLeavingFromStation(
 	stationCode: string,
 ): Promise<Station[]> {
 	const response = await fetch(
-		`${LIVE_ENDPOINT}${stationCode}?arrived_trains=100&arriving_trains=100&departed_trains=100&departing_trains=100&include_nonstopping=false&train_categories=Commuter`,
+		`${ENDPOINTS.LIVE_TRAINS}/${stationCode}?arrived_trains=100&arriving_trains=100&departed_trains=100&departing_trains=100&include_nonstopping=false&train_categories=Commuter`,
+		{ headers: DEFAULT_HEADERS },
 	);
 	if (!response.ok) {
 		throw new Error("Failed to fetch station");
@@ -62,7 +72,7 @@ export async function fetchTrainsLeavingFromStation(
 		longitude: number;
 		latitude: number;
 	}
-	const stations = await fetch(STATIONS_ENDPOINT);
+	const stations = await fetch(ENDPOINTS.STATIONS);
 	const stationsData = await stations.json();
 
 	const filteredStations = stationsData.filter(
@@ -80,106 +90,58 @@ export async function fetchTrainsLeavingFromStation(
 export async function fetchTrains(
 	stationCode = "HKI",
 	destinationCode = "TKL",
-) {
-	const where = "departed_trains:0, departing_trains:100";
-
-	const departureDate = new Date().toISOString().split("T")[0];
-	//   const query = `{
-	//   trainsByDepartureDate(
-	//     departureDate:  "${departureDate}"
-	//     where: {and: [{timeTableRows: {contains: {station: {shortCode: {equals: "PLA"}}}}}, {commuterLineid: {unequals: ""}},{cancelled:{equals:false}}]}
-
-	//   ) {
-	//     cancelled
-	//     commuterLineid
-	//     trainNumber
-	//     timeTableRows(where: {and:[{cancelled:{equals:false}},{type:{equals:"DEPARTURE"}},{trainStopping:{equals:true}},]}) {
-	//       trainStopping
-	//       type
-	//       commercialStop
-	//       commercialTrack
-	//       cancelled
-	//       liveEstimateTime
-	//       actualTime
-	//       differenceInMinutes
-	//       scheduledTime
-	//       station {
-	//         name
-	//         shortCode
-	//       }
-	//     }
-	//   }
-	// }`;
-
-	// const response = await fetch(GRAPHQL_ENDPOINT, {
-	//   method: 'POST',
-	//   headers: {
-	//     'Content-Type': 'application/json',
-	//     'Accept-Encoding': 'gzip',
-	//   },
-	//   body: JSON.stringify({ query }),
-	// });
-	const minutesBeforeDeparture = 60;
-	const minutesAfterDeparture = 1;
-
-	const trainCategories = "Commuter";
-	// const response = await fetch(LIVE_ENDPOINT + stationCode + '?minutes_before_departure=' + minutesBeforeDeparture + '&arriving_trains=0&departed_trains=0&arrived_trains=0&departing_trains=100&minutes_after_departure=' + minutesAfterDeparture +  '&train_categories=' + trainCategories);
-
-	const startDate = new Date().toISOString();
-	const endDate = new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString();
-
-	const response = await fetch(
-		`https://rata.digitraffic.fi/api/v1/live-trains/station/${stationCode}/${destinationCode}?limit=100&startDate=${startDate}&endDate=${endDate}`,
-	);
-
-	if (!response.ok) {
-		throw new Error("Failed to fetch trains", { cause: response.statusText });
-	}
-
-	const data = await response.json();
-
-	const filteredData = data
-		.filter((train: Train) => {
-			// Check if train is a commuter train
-			if (train.trainCategory !== "Commuter") {
-				return false;
-			}
-
-			// Filter timeTableRows to only include origin and destination stations
-			train.timeTableRows = train.timeTableRows.filter(
-				(row: TimeTableRow) =>
-					row.stationShortCode === destinationCode ||
-					row.stationShortCode === stationCode,
-			);
-
-			// Get the rows for origin and destination
-			const originRow = train.timeTableRows.find(
-				(row: TimeTableRow) => row.stationShortCode === stationCode,
-			);
-			const destinationRow = train.timeTableRows.find(
-				(row: TimeTableRow) => row.stationShortCode === destinationCode,
-			);
-
-			// Check if both stations exist and destination is after origin
-			return (
-				originRow &&
-				destinationRow &&
-				new Date(originRow.scheduledTime) <
-					new Date(destinationRow.scheduledTime)
-			);
-		})
-		.sort((a: Train, b: Train) => {
-			const aDeparture = a.timeTableRows.find(
-				(row: TimeTableRow) => row.stationShortCode === stationCode,
-			)?.scheduledTime;
-			const bDeparture = b.timeTableRows.find(
-				(row: TimeTableRow) => row.stationShortCode === stationCode,
-			)?.scheduledTime;
-			return (
-				new Date(aDeparture ?? "").getTime() -
-				new Date(bDeparture ?? "").getTime()
-			);
+): Promise<Train[]> {
+	try {
+		const params = new URLSearchParams({
+			limit: "100",
+			startDate: new Date().toISOString(),
+			endDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
 		});
 
-	return filteredData;
+		const url = `${ENDPOINTS.LIVE_TRAINS}/${stationCode}/${destinationCode}?${params}`;
+		const response = await fetch(url, {
+			headers: DEFAULT_HEADERS,
+		});
+
+		if (!response.ok) {
+			throw new Error(`Failed to fetch trains: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+
+		return data
+			.filter((train: Train) => {
+				if (train.trainCategory !== "Commuter") return false;
+
+				const relevantRows = train.timeTableRows.filter((row: TimeTableRow) =>
+					[destinationCode, stationCode].includes(row.stationShortCode),
+				);
+
+				const [originRow, destinationRow] = [
+					relevantRows.find((row) => row.stationShortCode === stationCode),
+					relevantRows.find((row) => row.stationShortCode === destinationCode),
+				];
+
+				return (
+					originRow &&
+					destinationRow &&
+					new Date(originRow.scheduledTime) <
+						new Date(destinationRow.scheduledTime)
+				);
+			})
+			.sort((a: Train, b: Train) => {
+				const getDepartureTime = (train: Train) =>
+					train.timeTableRows.find(
+						(row) => row.stationShortCode === stationCode,
+					)?.scheduledTime ?? "";
+
+				return (
+					new Date(getDepartureTime(a)).getTime() -
+					new Date(getDepartureTime(b)).getTime()
+				);
+			});
+	} catch (error) {
+		console.error("Error fetching trains:", error);
+		throw error;
+	}
 }
