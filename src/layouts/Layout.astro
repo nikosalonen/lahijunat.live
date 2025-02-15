@@ -60,12 +60,7 @@ const { title } = Astro.props;
     <link rel="manifest" href="/manifest.json" />
 
     <title>{title}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+
     <meta name="google-adsense-account" content="ca-pub-0748442567853482" />
   </head>
   <body class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
@@ -98,18 +93,44 @@ const { title } = Astro.props;
           <slot />
         </main>
       </div>
-      <footer class="py-4 text-center text-white bg-[#8c4799] w-full mt-auto">
-        <p>
-          Made by{" "}
-          <a
-            href="https://bsky.app/profile/niko.torttu.fi"
-            class="hover:text-blue-100 transition-colors"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            🦋 niko.torttu.fi
-          </a>
-        </p>
+      <footer
+        class="py-4 text-center text-white bg-[#8c4799] w-full mt-auto font-['Gotham_Rounded']"
+      >
+        <div class="space-y-2">
+          <p>
+            Made by{" "}
+            <a
+              href="https://bsky.app/profile/niko.torttu.fi"
+              class="hover:text-blue-100 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              🦋 niko.torttu.fi
+            </a>
+          </p>
+          <p class="text-sm">
+            Datalähde: {" "}
+            <a
+              href="https://www.digitraffic.fi/"
+              class="hover:text-blue-100 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Fintraffic
+            </a>
+          </p>
+          <p class="text-sm">
+            Juna-ikoni lainattu{" "}
+            <a
+              href="https://tyyliopas.hsl.fi/"
+              class="hover:text-blue-100 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              HSL.fi
+            </a>
+          </p>
+        </div>
       </footer>
     </div>
     <script
@@ -123,7 +144,7 @@ const { title } = Astro.props;
   :root {
     --font-fallback: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
       Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-    --font-body: "Inter", var(--font-fallback);
+    --font-body: "Gotham Rounded", var(--font-fallback);
   }
 
   html {
