@@ -6,9 +6,7 @@ import { fetchStations } from "../utils/api";
 const stations = await fetchStations();
 ---
 
-<Layout
-  title="lahijunat.live | Lähijunien aikataulut | Reaaliaikaiset junavuorot Suomessa"
->
+<Layout title="lahijunat.live | Lähijunien aikataulut reaaliaikaisesti">
   <main>
     <div class="container mx-auto">
       <StationManager client:load stations={stations} />
