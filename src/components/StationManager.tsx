@@ -72,12 +72,11 @@ export default function StationManager({ stations }: Props) {
 		}
 
 		let lastUpdate = 0;
-		const FIVE_MINUTES = 5 * 60 * 5000; // 5 minutes in milliseconds
+		const FIVE_MINUTES = 5 * 60 * 1000; // Fixed: 5 minutes in milliseconds
 
 		watchIdRef.current = navigator.geolocation.watchPosition(
 			(position) => {
 				const now = Date.now();
-				// Only update if 5 minutes have passed since last update
 				if (now - lastUpdate >= FIVE_MINUTES) {
 					console.log("Updating location after 5 minute interval");
 					lastUpdate = now;
@@ -114,7 +113,13 @@ export default function StationManager({ stations }: Props) {
 						) {
 							handleSwapStations();
 						} else if (nearestStation.station.shortCode !== selectedOrigin) {
-							handleOriginSelect(nearestStation.station);
+							// Add confirmation before changing origin
+							const confirmed = window.confirm(
+								`Olet lähellä asemaa ${nearestStation.station.name}. Haluatko vaihtaa lähtöaseman?`,
+							);
+							if (confirmed) {
+								handleOriginSelect(nearestStation.station);
+							}
 						}
 					}
 				}
