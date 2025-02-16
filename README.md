@@ -15,17 +15,48 @@ Real-time commuter train schedules for Finnish trains.
 - Live updates for schedule changes and delays
 - Easy station selection with origin and destination
 - Track information for departures
-- Journey duration calculation
+- Journey duration info in minutes
 - Mobile-friendly interface
+- Automatic location-based station selection
+- Progressive Web App (PWA) support
 
 ## Tech Stack
 
 - [Astro](https://astro.build/) - Web framework
 - [Preact](https://preactjs.com/) - UI components
 - [TailwindCSS](https://tailwindcss.com/) - Styling
+- [Biome](https://biomejs.dev/) - Linting and formatting
 - Data provided by [Fintraffic's Railway Traffic API](https://www.digitraffic.fi/rautatieliikenne/)
 
 ## Development
 
 1. Clone the repository
 2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+4. For production build:
+   ```bash
+   npm run build
+   ```
+
+## Scripts
+
+- `dev`: Start development server
+- `build`: Build for production
+- `preview`: Preview production build
+- `lint`: Run Biome linter
+- `format`: Format code with Biome
+
+
+## License
+
+This project is open source and available under the MIT license.
+
+## Data Source
+
+Train data is provided by Fintraffic's digitraffic.fi service under the CC 4.0 BY license.
