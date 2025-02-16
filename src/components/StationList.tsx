@@ -12,25 +12,65 @@ export default function StationList({
 	onStationSelect,
 	selectedValue,
 }: Props) {
+	const [searchTerm, setSearchTerm] = useState("");
+	const [isOpen, setIsOpen] = useState(false);
+
+	const filteredStations = stations.filter((station) => {
+		const search = searchTerm.toLowerCase();
+		return (
+			station.name.toLowerCase().includes(search) ||
+			station.shortCode.toLowerCase().includes(search)
+		);
+	});
+
+	const selectedStation = stations.find((s) => s.shortCode === selectedValue);
+
 	return (
 		<div class="w-full max-w-xs mx-auto p-4">
-			<select
-				value={selectedValue || ""}
-				onChange={(e) => {
-					const station = stations.find(
-						(s) => s.shortCode === e.currentTarget.value,
-					);
-					if (station) onStationSelect(station);
-				}}
-				class="w-full p-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-			>
-				<option value="">Valitse asema...</option>
-				{stations.map((station) => (
-					<option key={station.shortCode} value={station.shortCode}>
-						{station.name} ({station.shortCode})
-					</option>
-				))}
-			</select>
+			<div class="relative">
+				<input
+					type="text"
+					value={
+						isOpen
+							? searchTerm
+							: selectedStation
+								? `${selectedStation.name} (${selectedStation.shortCode})`
+								: ""
+					}
+					onFocus={() => {
+						setIsOpen(true);
+						setSearchTerm("");
+					}}
+					onInput={(e) => setSearchTerm(e.currentTarget.value)}
+					placeholder="Valitse asema..."
+					class="w-full p-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+				/>
+				{isOpen && (
+					<div class="absolute w-full mt-1 max-h-60 overflow-auto border rounded-lg bg-white shadow-lg z-50">
+						{filteredStations.map((station) => (
+							<option
+								key={station.shortCode}
+								onClick={() => {
+									onStationSelect(station);
+									setIsOpen(false);
+									setSearchTerm("");
+								}}
+								onKeyDown={(e) => {
+									if (e.key === "Enter" || e.key === " ") {
+										onStationSelect(station);
+										setIsOpen(false);
+										setSearchTerm("");
+									}
+								}}
+								tabIndex={0}
+								class="p-2 hover:bg-gray-100 cursor-pointer"
+							>
+								{station.name} ({station.shortCode})
+							</option>
+						))}
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }
