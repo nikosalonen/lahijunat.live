@@ -12,10 +12,20 @@ const DEFAULT_HEADERS = {
 	"Accept-Encoding": "gzip",
 } as const;
 
+interface GraphQLStation {
+	name: string;
+	shortCode: string;
+	location: [number, number];
+}
+
 export async function fetchStations(): Promise<Station[]> {
 	try {
 		const query = `{
-			stations(where:{passengerTraffic: {equals: true}}){name, shortCode}
+			stations(where:{passengerTraffic: {equals: true}}){
+				name
+				shortCode
+				location
+			}
 		}`;
 
 		const response = await fetch(ENDPOINTS.GRAPHQL, {
@@ -29,7 +39,13 @@ export async function fetchStations(): Promise<Station[]> {
 		}
 
 		const { data } = await response.json();
-		return data.stations;
+		return data.stations.map((station: GraphQLStation) => ({
+			...station,
+			location: {
+				longitude: station.location[0],
+				latitude: station.location[1],
+			},
+		}));
 	} catch (error) {
 		console.error("Error fetching stations:", error);
 		throw error;
@@ -82,6 +98,10 @@ export async function fetchTrainsLeavingFromStation(
 		(station: RESTStation): Station => ({
 			name: station.stationName,
 			shortCode: station.stationShortCode,
+			location: {
+				latitude: station.latitude,
+				longitude: station.longitude,
+			},
 		}),
 	);
 }

@@ -1,6 +1,10 @@
 export interface Station {
 	name: string;
 	shortCode: string;
+	location: {
+		latitude: number;
+		longitude: number;
+	};
 }
 
 export interface Train {
