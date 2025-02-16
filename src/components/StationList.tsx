@@ -38,6 +38,14 @@ export default function StationList({
 
 	const selectedStation = stations.find((s) => s.shortCode === selectedValue);
 
+	const handleKeyDown = (e: KeyboardEvent) => {
+		if (e.key === "Enter" && filteredStations.length === 1) {
+			onStationSelect(filteredStations[0]);
+			setIsOpen(false);
+			setSearchTerm("");
+		}
+	};
+
 	return (
 		<div class="w-full max-w-xs mx-auto p-4">
 			<div class="relative station-list-container">
@@ -55,6 +63,7 @@ export default function StationList({
 						setSearchTerm("");
 					}}
 					onInput={(e) => setSearchTerm(e.currentTarget.value)}
+					onKeyDown={handleKeyDown}
 					placeholder="Valitse asema..."
 					class="w-full p-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
 				/>
