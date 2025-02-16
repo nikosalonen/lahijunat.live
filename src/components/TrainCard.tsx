@@ -1,3 +1,4 @@
+import { useMemo } from "preact/hooks";
 import type { Train } from "../types";
 
 interface Props {
@@ -40,41 +41,64 @@ const isDepartingSoon = (scheduledTime: string) => {
 	return diffMinutes >= -1 && diffMinutes <= 5;
 };
 
+// Move utility functions outside component to avoid recreating them on each render
+const getDelayInMinutes = (liveTime: string, scheduledTime: string) => {
+	return Math.round(
+		(new Date(liveTime).getTime() - new Date(scheduledTime).getTime()) /
+			(1000 * 60),
+	);
+};
+
+const getCardStyle = (
+	isCancelled: boolean,
+	minutesToDeparture: number | null,
+	isDepartingSoon: boolean,
+) => {
+	if (isCancelled) return "bg-red-50 border-red-200";
+	if (minutesToDeparture !== null && minutesToDeparture < -1)
+		return "bg-gray-100 border-gray-300 opacity-60";
+	if (isDepartingSoon && !isCancelled)
+		return "bg-white border-gray-200 animate-soft-blink";
+	return "bg-white border-gray-200";
+};
+
 export default function TrainCard({
 	train,
 	stationCode,
 	destinationCode,
 	currentTime,
 }: Props) {
-	const departureRow = train.timeTableRows.find(
-		(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
-	);
-	const arrivalRow = train.timeTableRows.find(
-		(row) => row.stationShortCode === destinationCode && row.type === "ARRIVAL",
+	// Memoize row lookups since they're used multiple times
+	const departureRow = useMemo(
+		() =>
+			train.timeTableRows.find(
+				(row) =>
+					row.stationShortCode === stationCode && row.type === "DEPARTURE",
+			),
+		[train.timeTableRows, stationCode],
 	);
 
-	const minutesToDeparture = departureRow
-		? formatMinutesToDeparture(departureRow.scheduledTime, currentTime)
-		: null;
-	const departingSoon =
-		departureRow && isDepartingSoon(departureRow.scheduledTime);
-
-	const getCardStyle = () => {
-		if (train.cancelled) return "bg-red-50 border-red-200";
-		if (minutesToDeparture !== null && minutesToDeparture < -1)
-			return "bg-gray-100 border-gray-300 opacity-60";
-		if (departingSoon && !train.cancelled)
-			return "bg-white border-gray-200 animate-soft-blink";
-		return "bg-white border-gray-200";
-	};
+	const arrivalRow = useMemo(
+		() =>
+			train.timeTableRows.find(
+				(row) =>
+					row.stationShortCode === destinationCode && row.type === "ARRIVAL",
+			),
+		[train.timeTableRows, destinationCode],
+	);
 
 	if (!departureRow) return null;
 
+	const minutesToDeparture = formatMinutesToDeparture(
+		departureRow.scheduledTime,
+		currentTime,
+	);
+	const departingSoon = isDepartingSoon(departureRow.scheduledTime);
+
 	const timeDifferenceMinutes = departureRow.liveEstimateTime
-		? Math.round(
-				(new Date(departureRow.liveEstimateTime).getTime() -
-					new Date(departureRow.scheduledTime).getTime()) /
-					(1000 * 60),
+		? getDelayInMinutes(
+				departureRow.liveEstimateTime,
+				departureRow.scheduledTime,
 			)
 		: 0;
 
@@ -82,9 +106,33 @@ export default function TrainCard({
 		? calculateDuration(departureRow.scheduledTime, arrivalRow.scheduledTime)
 		: null;
 
+	// Extract components for better readability
+	const TimeDisplay = () => (
+		<span class="text-lg font-medium text-gray-800 break-words min-w-0">
+			{departureRow.liveEstimateTime && timeDifferenceMinutes > 0 ? (
+				<span class="flex flex-col">
+					<span class="mb-1 px-1.5 py-0.5 bg-[#fed100] text-black text-sm rounded self-start">
+						+{timeDifferenceMinutes} min
+					</span>
+					<TimeRow />
+				</span>
+			) : (
+				<TimeRow />
+			)}
+		</span>
+	);
+
+	const TimeRow = () => (
+		<span class="whitespace-nowrap">
+			{formatTime(departureRow.scheduledTime)}
+			<span class="mx-2 text-gray-400">→</span>
+			{arrivalRow && formatTime(arrivalRow.scheduledTime)}
+		</span>
+	);
+
 	return (
 		<div
-			class={`p-2 sm:p-4 border rounded-lg shadow-sm transition-all hover:shadow-md relative ${getCardStyle()}`}
+			class={`p-2 sm:p-4 border rounded-lg shadow-sm transition-all hover:shadow-md relative ${getCardStyle(train.cancelled, minutesToDeparture, departingSoon)}`}
 		>
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4 flex-1">
@@ -125,37 +173,7 @@ export default function TrainCard({
 					<div class="space-y-1">
 						<div class="flex flex-col gap-1">
 							<div class="flex flex-col gap-2">
-								<span class="text-lg font-medium text-gray-800 break-words min-w-0">
-									{departureRow.liveEstimateTime &&
-									timeDifferenceMinutes > 0 ? (
-										<span class="flex flex-col">
-											{/* Delay indicator above */}
-											<span class="mb-1 px-1.5 py-0.5 bg-[#fed100] text-black text-sm rounded self-start">
-												+{timeDifferenceMinutes} min
-											</span>
-											{/* Time row */}
-											<span>
-												{formatTime(departureRow.scheduledTime)}
-												<span class="mx-2 text-gray-400">→</span>
-												{arrivalRow &&
-													formatTime(
-														arrivalRow.liveEstimateTime ||
-															arrivalRow.scheduledTime,
-													)}
-											</span>
-										</span>
-									) : (
-										<>
-											{formatTime(departureRow.scheduledTime)}
-											<span class="mx-2 text-gray-400">→</span>
-											{arrivalRow &&
-												formatTime(
-													arrivalRow.liveEstimateTime ||
-														arrivalRow.scheduledTime,
-												)}
-										</>
-									)}
-								</span>
+								<TimeDisplay />
 								{duration && (
 									<span class="text-sm text-gray-500 -mt-1">
 										({duration.hours}h {duration.minutes}m)
