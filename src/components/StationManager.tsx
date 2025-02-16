@@ -68,7 +68,30 @@ export default function StationManager({ stations }: Props) {
 		}
 	}, []);
 
-	// Modify the location watching logic
+	const handleNearestStation = useCallback(
+		(nearestStation: { station: Station }) => {
+			if (!selectedOrigin) {
+				setSelectedOrigin(nearestStation.station.shortCode);
+				setStoredValue("selectedOrigin", nearestStation.station.shortCode);
+			} else if (nearestStation.station.shortCode === selectedDestination) {
+				const tempOrigin = selectedOrigin;
+				setSelectedOrigin(selectedDestination);
+				setSelectedDestination(tempOrigin);
+				setStoredValue("selectedDestination", selectedOrigin);
+				setStoredValue("selectedOrigin", selectedDestination);
+			} else if (nearestStation.station.shortCode !== selectedOrigin) {
+				const confirmed = window.confirm(
+					`Olet lähellä asemaa ${nearestStation.station.name}. Haluatko vaihtaa lähtöaseman?`,
+				);
+				if (confirmed) {
+					setSelectedOrigin(nearestStation.station.shortCode);
+					setStoredValue("selectedOrigin", nearestStation.station.shortCode);
+				}
+			}
+		},
+		[selectedOrigin, selectedDestination],
+	);
+
 	const startWatchingLocation = useCallback(() => {
 		console.log("Starting location watch");
 		if (!navigator.geolocation) {
@@ -76,97 +99,88 @@ export default function StationManager({ stations }: Props) {
 			return;
 		}
 
-		// Clear any existing watch
+		// Clear any existing watch and interval
 		if (watchIdRef.current) {
-			navigator.geolocation.clearWatch(watchIdRef.current);
-		}
-
-		let lastUpdate = 0;
-		const FIVE_MINUTES = 5 * 60 * 1000; // Fixed: 5 minutes in milliseconds
-
-		watchIdRef.current = navigator.geolocation.watchPosition(
-			(position) => {
-				const now = Date.now();
-				if (now - lastUpdate >= FIVE_MINUTES) {
-					console.log("Updating location after 5 minute interval");
-					lastUpdate = now;
-
-					const userLocation = {
-						latitude: position.coords.latitude,
-						longitude: position.coords.longitude,
-					};
-
-					// Find the nearest station
-					const nearestStation = stations
-						.filter(
-							(station) =>
-								station.location.latitude && station.location.longitude,
-						)
-						.reduce(
-							(nearest, station) => {
-								const distance = calculateDistance(userLocation, {
-									latitude: station.location.latitude,
-									longitude: station.location.longitude,
-								});
-								return !nearest || distance < nearest.distance
-									? { station, distance }
-									: nearest;
-							},
-							null as { station: Station; distance: number } | null,
-						);
-
-					if (nearestStation) {
-						if (!selectedOrigin) {
-							handleOriginSelect(nearestStation.station);
-						} else if (
-							nearestStation.station.shortCode === selectedDestination
-						) {
-							handleSwapStations();
-						} else if (nearestStation.station.shortCode !== selectedOrigin) {
-							// Add confirmation before changing origin
-							const confirmed = window.confirm(
-								`Olet lähellä asemaa ${nearestStation.station.name}. Haluatko vaihtaa lähtöaseman?`,
-							);
-							if (confirmed) {
-								handleOriginSelect(nearestStation.station);
-							}
-						}
-					}
-				}
-			},
-			(error) => {
-				console.error("Watch position error:", error);
-				if (error.code === error.PERMISSION_DENIED) {
-					alert(
-						"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
-					);
-					setAutoLocation(false);
-					setStoredValue("autoLocation", "false");
-				}
-			},
-			{
-				enableHighAccuracy: true,
-				timeout: 5000,
-			},
-		);
-	}, [selectedOrigin, selectedDestination, stations]);
-
-	// Stop watching when component unmounts or autoLocation is disabled
-	useEffect(() => {
-		if (autoLocation) {
-			startWatchingLocation();
-		} else if (watchIdRef.current) {
 			navigator.geolocation.clearWatch(watchIdRef.current);
 			watchIdRef.current = null;
 		}
 
-		return () => {
-			if (watchIdRef.current) {
-				navigator.geolocation.clearWatch(watchIdRef.current);
-				watchIdRef.current = null;
+		let lastUpdate = 0;
+		const FIVE_MINUTES = 5 * 60 * 1000;
+
+		// Function to update location
+		const updateLocation = (position: GeolocationPosition) => {
+			const now = Date.now();
+			if (now - lastUpdate >= FIVE_MINUTES) {
+				console.log("Updating location");
+				lastUpdate = now;
+
+				const userLocation = {
+					latitude: position.coords.latitude,
+					longitude: position.coords.longitude,
+				};
+
+				// Find the nearest station
+				const nearestStation = stations
+					.filter(
+						(station) =>
+							station.location.latitude && station.location.longitude,
+					)
+					.reduce(
+						(nearest, station) => {
+							const distance = calculateDistance(userLocation, {
+								latitude: station.location.latitude,
+								longitude: station.location.longitude,
+							});
+							return !nearest || distance < nearest.distance
+								? { station, distance }
+								: nearest;
+						},
+						null as { station: Station; distance: number } | null,
+					);
+
+				if (nearestStation) {
+					handleNearestStation(nearestStation);
+				}
 			}
 		};
-	}, [autoLocation, startWatchingLocation]);
+
+		// Handle errors
+		const handleError = (error: GeolocationPositionError) => {
+			console.error("Position error:", error);
+			if (error.code === error.PERMISSION_DENIED) {
+				alert(
+					"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
+				);
+				setAutoLocation(false);
+				setStoredValue("autoLocation", "false");
+			}
+		};
+
+		// Use getCurrentPosition when page becomes visible
+		const handleVisibilityChange = () => {
+			if (document.visibilityState === "visible") {
+				navigator.geolocation.getCurrentPosition(updateLocation, handleError, {
+					enableHighAccuracy: true,
+					timeout: 5000,
+				});
+			}
+		};
+
+		// Add visibility change listener
+		document.addEventListener("visibilitychange", handleVisibilityChange);
+
+		// Initial position check
+		navigator.geolocation.getCurrentPosition(updateLocation, handleError, {
+			enableHighAccuracy: true,
+			timeout: 5000,
+		});
+
+		// Return cleanup function
+		return () => {
+			document.removeEventListener("visibilitychange", handleVisibilityChange);
+		};
+	}, [stations, handleNearestStation]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
@@ -191,23 +205,9 @@ export default function StationManager({ stations }: Props) {
 		fetchDestinations();
 	}, [selectedOrigin, stations]);
 
-	const handleOriginSelect = (station: Station) => {
-		setSelectedOrigin(station.shortCode);
-		setStoredValue("selectedOrigin", station.shortCode);
-	};
-
 	const handleDestinationSelect = (station: Station) => {
 		setSelectedDestination(station.shortCode);
 		setStoredValue("selectedDestination", station.shortCode);
-	};
-
-	const handleSwapStations = () => {
-		if (!selectedOrigin || !selectedDestination) return;
-		const tempOrigin = selectedOrigin;
-		setSelectedOrigin(selectedDestination);
-		setSelectedDestination(tempOrigin);
-		setStoredValue("selectedDestination", selectedOrigin);
-		setStoredValue("selectedOrigin", selectedDestination);
 	};
 
 	const handleLocationRequest = async () => {
@@ -255,16 +255,7 @@ export default function StationManager({ stations }: Props) {
 			console.log("Nearest station:", nearestStation);
 
 			if (nearestStation) {
-				if (!selectedOrigin) {
-					// Simply select the nearest station if no origin is selected
-					handleOriginSelect(nearestStation.station);
-				} else if (nearestStation.station.shortCode === selectedDestination) {
-					handleSwapStations();
-				} else if (nearestStation.station.shortCode !== selectedOrigin) {
-					handleOriginSelect(nearestStation.station);
-				} else {
-					console.log("No nearest station found or already selected");
-				}
+				handleNearestStation(nearestStation);
 			}
 		} catch (error) {
 			console.error("Location error:", error);
@@ -293,6 +284,19 @@ export default function StationManager({ stations }: Props) {
 		setAutoLocation(checked);
 		setStoredValue("autoLocation", checked.toString());
 	};
+
+	useEffect(() => {
+		if (autoLocation) {
+			const cleanup = startWatchingLocation();
+			return () => {
+				if (watchIdRef.current) {
+					navigator.geolocation.clearWatch(watchIdRef.current);
+					watchIdRef.current = null;
+				}
+				cleanup?.();
+			};
+		}
+	}, [autoLocation, startWatchingLocation]);
 
 	return (
 		<div className="w-full max-w-2xl mx-auto p-2 sm:p-4">
@@ -334,7 +338,16 @@ export default function StationManager({ stations }: Props) {
 						</button>
 						<button
 							type="button"
-							onClick={handleSwapStations}
+							onClick={() => {
+								const tempOrigin = selectedOrigin;
+								setSelectedOrigin(selectedDestination);
+								setSelectedDestination(tempOrigin);
+								if (selectedOrigin && selectedDestination) {
+									setSelectedDestination(tempOrigin);
+									setStoredValue("selectedDestination", selectedOrigin);
+									setStoredValue("selectedOrigin", selectedDestination);
+								}
+							}}
 							disabled={!selectedOrigin || !selectedDestination}
 							className="py-2.5 px-4 bg-blue-50 hover:bg-blue-100 disabled:opacity-50
 								disabled:cursor-not-allowed transition-colors duration-200 rounded-full
@@ -378,7 +391,7 @@ export default function StationManager({ stations }: Props) {
 					)}
 					<StationList
 						stations={stations}
-						onStationSelect={handleOriginSelect}
+						onStationSelect={(station) => handleNearestStation({ station })}
 						selectedValue={selectedOrigin}
 						isOpen={openList === "from"}
 						onOpenChange={(isOpen) => setOpenList(isOpen ? "from" : null)}
