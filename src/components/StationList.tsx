@@ -85,7 +85,9 @@ export default function StationList({
 									}
 								}}
 								tabIndex={0}
+								// biome-ignore lint/a11y/useSemanticElements: <explanation>
 								role="option"
+								aria-selected={selectedStation?.shortCode === station.shortCode}
 								class="p-2 hover:bg-gray-100 cursor-pointer"
 							>
 								{station.name} ({station.shortCode})
