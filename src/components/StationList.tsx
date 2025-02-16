@@ -15,6 +15,19 @@ export default function StationList({
 	const [searchTerm, setSearchTerm] = useState("");
 	const [isOpen, setIsOpen] = useState(false);
 
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			const target = event.target as HTMLElement;
+			if (!target.closest(".station-list-container")) {
+				setIsOpen(false);
+				setSearchTerm("");
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, []);
+
 	const filteredStations = stations.filter((station) => {
 		const search = searchTerm.toLowerCase();
 		return (
@@ -27,7 +40,7 @@ export default function StationList({
 
 	return (
 		<div class="w-full max-w-xs mx-auto p-4">
-			<div class="relative">
+			<div class="relative station-list-container">
 				<input
 					type="text"
 					value={
