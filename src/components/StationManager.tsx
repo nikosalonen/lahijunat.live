@@ -23,6 +23,7 @@ const setStoredValue = (key: string, value: string): void => {
 };
 
 export default function StationManager({ stations }: Props) {
+	const [openList, setOpenList] = useState<"from" | "to" | null>(null);
 	const [selectedOrigin, setSelectedOrigin] = useState<string | null>(null);
 	const [selectedDestination, setSelectedDestination] = useState<string | null>(
 		null,
@@ -93,6 +94,8 @@ export default function StationManager({ stations }: Props) {
 						stations={stations}
 						onStationSelect={handleOriginSelect}
 						selectedValue={selectedOrigin}
+						isOpen={openList === "from"}
+						onOpenChange={(isOpen) => setOpenList(isOpen ? "from" : null)}
 					/>
 				</div>
 
@@ -132,6 +135,8 @@ export default function StationManager({ stations }: Props) {
 						stations={availableDestinations}
 						onStationSelect={handleDestinationSelect}
 						selectedValue={selectedDestination}
+						isOpen={openList === "to"}
+						onOpenChange={(isOpen) => setOpenList(isOpen ? "to" : null)}
 					/>
 					<p className="text-sm text-gray-500 mt-1">
 						Määränpäät on suodatettu näyttämään vain asemat, joihin on suoria

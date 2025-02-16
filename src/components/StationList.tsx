@@ -5,28 +5,31 @@ interface Props {
 	stations: Station[];
 	onStationSelect: (station: Station) => void;
 	selectedValue?: string | null;
+	isOpen: boolean;
+	onOpenChange: (isOpen: boolean) => void;
 }
 
 export default function StationList({
 	stations,
 	onStationSelect,
 	selectedValue,
+	isOpen,
+	onOpenChange,
 }: Props) {
 	const [searchTerm, setSearchTerm] = useState("");
-	const [isOpen, setIsOpen] = useState(false);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			const target = event.target as HTMLElement;
 			if (!target.closest(".station-list-container")) {
-				setIsOpen(false);
+				onOpenChange(false);
 				setSearchTerm("");
 			}
 		};
 
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
-	}, []);
+	}, [onOpenChange]);
 
 	const filteredStations = stations.filter((station) => {
 		const search = searchTerm.toLowerCase();
@@ -41,7 +44,7 @@ export default function StationList({
 	const handleKeyDown = (e: KeyboardEvent) => {
 		if (e.key === "Enter" && filteredStations.length === 1) {
 			onStationSelect(filteredStations[0]);
-			setIsOpen(false);
+			onOpenChange(false);
 			setSearchTerm("");
 		}
 	};
@@ -59,7 +62,7 @@ export default function StationList({
 								: ""
 					}
 					onFocus={() => {
-						setIsOpen(true);
+						onOpenChange(true);
 						setSearchTerm("");
 					}}
 					onInput={(e) => setSearchTerm(e.currentTarget.value)}
@@ -74,13 +77,13 @@ export default function StationList({
 								key={station.shortCode}
 								onClick={() => {
 									onStationSelect(station);
-									setIsOpen(false);
+									onOpenChange(false);
 									setSearchTerm("");
 								}}
 								onKeyDown={(e) => {
 									if (e.key === "Enter" || e.key === " ") {
 										onStationSelect(station);
-										setIsOpen(false);
+										onOpenChange(false);
 										setSearchTerm("");
 									}
 								}}
