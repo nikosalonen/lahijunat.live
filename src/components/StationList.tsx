@@ -46,7 +46,10 @@ export default function StationList({
 					class="w-full p-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
 				/>
 				{isOpen && (
-					<div class="absolute w-full mt-1 max-h-60 overflow-auto border rounded-lg bg-white shadow-lg z-50">
+					<div
+						class="absolute w-full mt-1 max-h-60 overflow-auto border rounded-lg bg-white shadow-lg z-50"
+						onTouchMove={(e) => e.stopPropagation()}
+					>
 						{filteredStations.map((station) => (
 							<option
 								key={station.shortCode}
