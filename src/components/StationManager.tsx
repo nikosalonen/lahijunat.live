@@ -98,95 +98,112 @@ export default function StationManager({ stations }: Props) {
 		[selectedOrigin, selectedDestination, autoLocation],
 	);
 
-	const startWatchingLocation = useCallback(() => {
-		console.log("Starting location watch");
-		if (!navigator.geolocation) {
-			console.log("Geolocation not supported");
-			return;
-		}
+	// Memoize stations filter and reduce operations
+	const findNearestStation = useCallback(
+		(userLocation: { latitude: number; longitude: number }) => {
+			return stations
+				.filter(
+					(station) => station.location.latitude && station.location.longitude,
+				)
+				.reduce(
+					(nearest, station) => {
+						const distance = calculateDistance(userLocation, {
+							latitude: station.location.latitude,
+							longitude: station.location.longitude,
+						});
+						return !nearest || distance < nearest.distance
+							? { station, distance }
+							: nearest;
+					},
+					null as { station: Station; distance: number } | null,
+				);
+		},
+		[stations],
+	);
 
-		// Clear any existing watch and interval
-		if (watchIdRef.current) {
-			navigator.geolocation.clearWatch(watchIdRef.current);
-			watchIdRef.current = null;
+	// Optimize location update logic
+	const updateLocation = useCallback(
+		(position: GeolocationPosition) => {
+			const userLocation = {
+				latitude: position.coords.latitude,
+				longitude: position.coords.longitude,
+			};
+
+			const nearestStation = findNearestStation(userLocation);
+			if (nearestStation) {
+				handleNearestStation(nearestStation);
+			}
+		},
+		[findNearestStation, handleNearestStation],
+	);
+
+	// Optimize location watching with better cleanup
+	const startWatchingLocation = useCallback(() => {
+		if (!navigator.geolocation) {
+			console.warn("Geolocation not supported");
+			return;
 		}
 
 		let lastUpdate = 0;
 		const FIVE_MINUTES = 5 * 60 * 1000;
 
-		// Function to update location
-		const updateLocation = (position: GeolocationPosition) => {
-			const now = Date.now();
-			if (now - lastUpdate >= FIVE_MINUTES) {
-				console.log("Updating location");
-				lastUpdate = now;
-
-				const userLocation = {
-					latitude: position.coords.latitude,
-					longitude: position.coords.longitude,
-				};
-
-				// Find the nearest station
-				const nearestStation = stations
-					.filter(
-						(station) =>
-							station.location.latitude && station.location.longitude,
-					)
-					.reduce(
-						(nearest, station) => {
-							const distance = calculateDistance(userLocation, {
-								latitude: station.location.latitude,
-								longitude: station.location.longitude,
-							});
-							return !nearest || distance < nearest.distance
-								? { station, distance }
-								: nearest;
-						},
-						null as { station: Station; distance: number } | null,
-					);
-
-				if (nearestStation) {
-					handleNearestStation(nearestStation);
+		const watchId = navigator.geolocation.watchPosition(
+			(position) => {
+				const now = Date.now();
+				if (now - lastUpdate >= FIVE_MINUTES) {
+					lastUpdate = now;
+					updateLocation(position);
 				}
-			}
-		};
+			},
+			(error) => {
+				console.error("Position error:", error);
+				if (error.code === error.PERMISSION_DENIED) {
+					alert(
+						"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
+					);
+					setAutoLocation(false);
+					setStoredValue("autoLocation", "false");
+				}
+			},
+			{
+				enableHighAccuracy: true,
+				timeout: 5000,
+			},
+		);
 
-		// Handle errors
-		const handleError = (error: GeolocationPositionError) => {
-			console.error("Position error:", error);
-			if (error.code === error.PERMISSION_DENIED) {
-				alert(
-					"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
-				);
-				setAutoLocation(false);
-				setStoredValue("autoLocation", "false");
-			}
-		};
-
-		// Use getCurrentPosition when page becomes visible
-		const handleVisibilityChange = () => {
-			if (document.visibilityState === "visible") {
-				navigator.geolocation.getCurrentPosition(updateLocation, handleError, {
-					enableHighAccuracy: true,
-					timeout: 5000,
-				});
-			}
-		};
+		watchIdRef.current = watchId;
 
 		// Add visibility change listener
-		document.addEventListener("visibilitychange", handleVisibilityChange);
-
-		// Initial position check
-		navigator.geolocation.getCurrentPosition(updateLocation, handleError, {
-			enableHighAccuracy: true,
-			timeout: 5000,
+		document.addEventListener("visibilitychange", () => {
+			if (document.visibilityState === "visible") {
+				navigator.geolocation.getCurrentPosition(
+					updateLocation,
+					(error) => {
+						console.error("Position error:", error);
+						if (error.code === error.PERMISSION_DENIED) {
+							alert(
+								"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
+							);
+							setAutoLocation(false);
+							setStoredValue("autoLocation", "false");
+						}
+					},
+					{
+						enableHighAccuracy: true,
+						timeout: 5000,
+					},
+				);
+			}
 		});
 
 		// Return cleanup function
 		return () => {
-			document.removeEventListener("visibilitychange", handleVisibilityChange);
+			if (watchIdRef.current) {
+				navigator.geolocation.clearWatch(watchIdRef.current);
+				watchIdRef.current = null;
+			}
 		};
-	}, [stations, handleNearestStation]);
+	}, [updateLocation]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
@@ -241,22 +258,7 @@ export default function StationManager({ stations }: Props) {
 			};
 
 			// Find the nearest station
-			const nearestStation = stations
-				.filter(
-					(station) => station.location.latitude && station.location.longitude,
-				)
-				.reduce(
-					(nearest, station) => {
-						const distance = calculateDistance(userLocation, {
-							latitude: station.location.latitude,
-							longitude: station.location.longitude,
-						});
-						return !nearest || distance < nearest.distance
-							? { station, distance }
-							: nearest;
-					},
-					null as { station: Station; distance: number } | null,
-				);
+			const nearestStation = findNearestStation(userLocation);
 
 			console.log("Nearest station:", nearestStation);
 
