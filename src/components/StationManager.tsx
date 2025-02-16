@@ -1,5 +1,5 @@
 // src/components/StationManager.tsx
-import { useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { Station } from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
 import { calculateDistance } from "../utils/location";
@@ -41,17 +41,117 @@ export default function StationManager({ stations }: Props) {
 	const [availableDestinations, setAvailableDestinations] =
 		useState<Station[]>(stations);
 	const [isLocating, setIsLocating] = useState<boolean | null>(null);
+	const [autoLocation, setAutoLocation] = useState<boolean>(false);
+
+	// Add ref to store the watch position ID
+	const watchIdRef = useRef<number | null>(null);
 
 	useEffect(() => {
 		setIsLocating(false);
 		setSelectedOrigin(getStoredValue("selectedOrigin"));
 		setSelectedDestination(getStoredValue("selectedDestination"));
+		setAutoLocation(getStoredValue("autoLocation") === "true");
 		if (isLocalStorageAvailable()) {
 			setShowHint(localStorage.getItem("hideDestinationHint") !== "true");
 		} else {
 			setShowHint(true);
 		}
 	}, []);
+
+	// Modify the location watching logic
+	const startWatchingLocation = useCallback(() => {
+		console.log("Starting location watch");
+		if (!navigator.geolocation) {
+			console.log("Geolocation not supported");
+			return;
+		}
+
+		// Clear any existing watch
+		if (watchIdRef.current) {
+			navigator.geolocation.clearWatch(watchIdRef.current);
+		}
+
+		let lastUpdate = 0;
+		const FIVE_MINUTES = 5 * 60 * 5000; // 5 minutes in milliseconds
+
+		watchIdRef.current = navigator.geolocation.watchPosition(
+			(position) => {
+				const now = Date.now();
+				// Only update if 5 minutes have passed since last update
+				if (now - lastUpdate >= FIVE_MINUTES) {
+					console.log("Updating location after 5 minute interval");
+					lastUpdate = now;
+
+					const userLocation = {
+						latitude: position.coords.latitude,
+						longitude: position.coords.longitude,
+					};
+
+					// Find the nearest station
+					const nearestStation = stations
+						.filter(
+							(station) =>
+								station.location.latitude && station.location.longitude,
+						)
+						.reduce(
+							(nearest, station) => {
+								const distance = calculateDistance(userLocation, {
+									latitude: station.location.latitude,
+									longitude: station.location.longitude,
+								});
+								return !nearest || distance < nearest.distance
+									? { station, distance }
+									: nearest;
+							},
+							null as { station: Station; distance: number } | null,
+						);
+
+					if (nearestStation) {
+						if (!selectedOrigin) {
+							handleOriginSelect(nearestStation.station);
+						} else if (
+							nearestStation.station.shortCode === selectedDestination
+						) {
+							handleSwapStations();
+						} else if (nearestStation.station.shortCode !== selectedOrigin) {
+							handleOriginSelect(nearestStation.station);
+						}
+					}
+				}
+			},
+			(error) => {
+				console.error("Watch position error:", error);
+				if (error.code === error.PERMISSION_DENIED) {
+					alert(
+						"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
+					);
+					setAutoLocation(false);
+					setStoredValue("autoLocation", "false");
+				}
+			},
+			{
+				enableHighAccuracy: true,
+				timeout: 5000,
+			},
+		);
+	}, [selectedOrigin, selectedDestination, stations]);
+
+	// Stop watching when component unmounts or autoLocation is disabled
+	useEffect(() => {
+		if (autoLocation) {
+			startWatchingLocation();
+		} else if (watchIdRef.current) {
+			navigator.geolocation.clearWatch(watchIdRef.current);
+			watchIdRef.current = null;
+		}
+
+		return () => {
+			if (watchIdRef.current) {
+				navigator.geolocation.clearWatch(watchIdRef.current);
+				watchIdRef.current = null;
+			}
+		};
+	}, [autoLocation, startWatchingLocation]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
@@ -87,20 +187,12 @@ export default function StationManager({ stations }: Props) {
 	};
 
 	const handleSwapStations = () => {
-		if (!selectedOrigin || !selectedDestination) {
-			return;
-		}
-
+		if (!selectedOrigin || !selectedDestination) return;
 		const tempOrigin = selectedOrigin;
 		setSelectedOrigin(selectedDestination);
 		setSelectedDestination(tempOrigin);
-
-		if (selectedOrigin) {
-			setStoredValue("selectedDestination", selectedOrigin);
-		}
-		if (selectedDestination) {
-			setStoredValue("selectedOrigin", selectedDestination);
-		}
+		setStoredValue("selectedDestination", selectedOrigin);
+		setStoredValue("selectedOrigin", selectedDestination);
 	};
 
 	const handleLocationRequest = async () => {
@@ -110,44 +202,11 @@ export default function StationManager({ stations }: Props) {
 			return;
 		}
 
-		// Check permission status first
-		if (navigator.permissions) {
-			try {
-				const result = await navigator.permissions.query({
-					name: "geolocation",
-				});
-				console.log("Geolocation permission status:", result.state);
-
-				if (result.state === "prompt") {
-					// Request permission by calling getCurrentPosition
-					await new Promise<void>((resolve, reject) => {
-						navigator.geolocation.getCurrentPosition(
-							() => resolve(),
-							(error) => reject(error),
-						);
-					});
-				} else if (result.state === "denied") {
-					alert(
-						"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
-					);
-					return;
-				}
-			} catch (error) {
-				console.error("Permission check failed:", error);
-			}
-		}
-
 		setIsLocating(true);
 		try {
-			console.log("Requesting location...");
 			const position = await new Promise<GeolocationPosition>(
 				(resolve, reject) => {
-					if (!navigator?.geolocation?.getCurrentPosition) {
-						reject(new Error("Geolocation not available"));
-						return;
-					}
 					navigator.geolocation.getCurrentPosition(resolve, reject, {
-						// Add options to ensure we get fresh position
 						maximumAge: 0,
 						timeout: 5000,
 						enableHighAccuracy: true,
@@ -155,15 +214,11 @@ export default function StationManager({ stations }: Props) {
 				},
 			);
 
-			console.log("Got position:", {
-				lat: position.coords.latitude,
-				lng: position.coords.longitude,
-			});
-
 			const userLocation = {
 				latitude: position.coords.latitude,
 				longitude: position.coords.longitude,
 			};
+
 			// Find the nearest station
 			const nearestStation = stations
 				.filter(
@@ -216,6 +271,12 @@ export default function StationManager({ stations }: Props) {
 		} finally {
 			setIsLocating(false);
 		}
+	};
+
+	const handleAutoLocationChange = (e: Event) => {
+		const checked = (e.target as HTMLInputElement).checked;
+		setAutoLocation(checked);
+		setStoredValue("autoLocation", checked.toString());
 	};
 
 	return (
@@ -286,6 +347,17 @@ export default function StationManager({ stations }: Props) {
 							</svg>
 						</button>
 					</div>
+					{navigator?.geolocation && (
+						<div className="flex items-center gap-2 text-sm text-gray-600 mt-2">
+							<input
+								type="checkbox"
+								checked={autoLocation}
+								onChange={handleAutoLocationChange}
+								className="rounded text-blue-600 focus:ring-blue-500"
+							/>
+							<span>Päivitä asema automaattisesti sijainnin mukaan</span>
+						</div>
+					)}
 					<StationList
 						stations={stations}
 						onStationSelect={handleOriginSelect}
