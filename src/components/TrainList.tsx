@@ -1,3 +1,4 @@
+import { memo } from "preact/compat";
 import { useCallback, useEffect, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { fetchTrains } from "../utils/api";
@@ -9,43 +10,61 @@ interface Props {
 	destinationCode: string;
 }
 
+const MemoizedTrainCard = memo(TrainCard);
+
 export default function TrainList({ stationCode, destinationCode }: Props) {
-	const [trains, setTrains] = useState<Train[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [initialLoad, setInitialLoad] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+	const [state, setState] = useState({
+		trains: [] as Train[],
+		loading: true,
+		initialLoad: true,
+		error: null as string | null,
+		progress: 100,
+	});
 	const [currentTime, setCurrentTime] = useState(new Date());
-	const [progress, setProgress] = useState(100);
 
 	const loadTrains = useCallback(async () => {
 		try {
-			if (initialLoad) {
-				setLoading(true);
+			if (state.initialLoad) {
+				setState((prev) => ({ ...prev, loading: true }));
 			}
-			setProgress(100);
+			setState((prev) => ({ ...prev, progress: 100 }));
+
 			const trainData = await fetchTrains(stationCode, destinationCode);
-			setTrains(trainData);
-			setError(null);
+			setState((prev) => ({
+				...prev,
+				trains: trainData,
+				error: null,
+				loading: false,
+				initialLoad: false,
+			}));
 		} catch (err) {
-			setError("Failed to load train data");
+			setState((prev) => ({
+				...prev,
+				error: "Failed to load train data",
+				loading: false,
+				initialLoad: false,
+			}));
 			console.error(err);
-		} finally {
-			setLoading(false);
-			setInitialLoad(false);
 		}
-	}, [stationCode, destinationCode, initialLoad]);
+	}, [stationCode, destinationCode, state.initialLoad]);
 
 	useEffect(() => {
 		loadTrains();
 
+		const updateInterval = 30000; // 30 seconds
+		const progressSteps = 30;
+
 		const intervalId = setInterval(() => {
 			loadTrains();
 			setCurrentTime(new Date());
-		}, 30000);
+		}, updateInterval);
 
 		const progressInterval = setInterval(() => {
-			setProgress((prev) => Math.max(0, prev - 100 / 30));
-		}, 1000);
+			setState((prev) => ({
+				...prev,
+				progress: Math.max(0, prev.progress - 100 / progressSteps),
+			}));
+		}, updateInterval / progressSteps);
 
 		return () => {
 			clearInterval(intervalId);
@@ -53,14 +72,14 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 		};
 	}, [loadTrains]);
 
-	if (loading && initialLoad) {
+	if (state.loading && state.initialLoad) {
 		return (
 			<div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto" />
 		);
 	}
 
-	if (error) {
-		return <div class="text-red-500 text-center p-4">{error}</div>;
+	if (state.error) {
+		return <div class="text-red-500 text-center p-4">{state.error}</div>;
 	}
 
 	return (
@@ -70,11 +89,11 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 					<h2 class="text-2xl font-bold text-gray-800">
 						Lähtevät junat {stationCode} → {destinationCode}
 					</h2>
-					<ProgressCircle progress={progress} />
+					<ProgressCircle progress={state.progress} />
 				</div>
 				<div class="grid gap-4 px-2">
-					{trains.map((train) => (
-						<TrainCard
+					{state.trains.map((train) => (
+						<MemoizedTrainCard
 							key={`${train.trainNumber}`}
 							train={train}
 							stationCode={stationCode}
