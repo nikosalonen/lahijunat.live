@@ -33,6 +33,16 @@ const { title } = Astro.props;
       content="Reaaliaikaiset lähtöajat Suomen lähijunille"
     />
     <meta property="og:site_name" content="Lähijunat Live" />
+    <meta
+      property="og:url"
+      content={new URL(Astro.url.pathname, Astro.site).toString()}
+    />
+    <meta
+      property="og:image"
+      content={new URL("/Juna.png", Astro.site).toString()}
+    />
+    <meta property="og:image:alt" content="Lähijunat Live logo" />
+    <meta property="og:locale" content="fi_FI" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary" />
@@ -41,6 +51,11 @@ const { title } = Astro.props;
       name="twitter:description"
       content="Reaaliaikaiset lähtöajat Suomen lähijunille"
     />
+    <meta
+      name="twitter:image"
+      content={new URL("/Juna.png", Astro.site).toString()}
+    />
+    <meta name="twitter:image:alt" content="Lähijunat Live logo" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/Juna.svg" />
@@ -59,7 +74,35 @@ const { title } = Astro.props;
     <meta name="theme-color" content="#8c4799" />
     <link rel="manifest" href="/manifest.json" />
 
+    <link
+      rel="canonical"
+      href={new URL(Astro.url.pathname, Astro.site).toString()}
+    />
+
+    <link
+      rel="alternate"
+      hreflang="fi"
+      href={new URL(Astro.url.pathname, Astro.site).toString()}
+    />
+
     <title>{title}</title>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Lähijunat Live",
+        "description": "Reaaliaikaiset lähtöajat Suomen lähijunille",
+        "url": {new URL(Astro.url.pathname, Astro.site).toString()},
+        "applicationCategory": "Transportation",
+        "operatingSystem": "Any",
+        "inLanguage": "fi-FI",
+        "author": {
+          "@type": "Person",
+          "name": "Niko Salonen"
+        }
+      }
+    </script>
   </head>
   <body class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
     <div class="min-h-screen flex flex-col">
