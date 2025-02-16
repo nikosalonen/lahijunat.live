@@ -79,7 +79,10 @@ export default function StationManager({ stations }: Props) {
 				setSelectedDestination(tempOrigin);
 				setStoredValue("selectedDestination", selectedOrigin);
 				setStoredValue("selectedOrigin", selectedDestination);
-			} else if (nearestStation.station.shortCode !== selectedOrigin) {
+			} else if (
+				nearestStation.station.shortCode !== selectedOrigin &&
+				autoLocation
+			) {
 				const confirmed = window.confirm(
 					`Olet lähellä asemaa ${nearestStation.station.name}. Haluatko vaihtaa lähtöaseman?`,
 				);
@@ -87,9 +90,12 @@ export default function StationManager({ stations }: Props) {
 					setSelectedOrigin(nearestStation.station.shortCode);
 					setStoredValue("selectedOrigin", nearestStation.station.shortCode);
 				}
+			} else if (nearestStation.station.shortCode !== selectedOrigin) {
+				setSelectedOrigin(nearestStation.station.shortCode);
+				setStoredValue("selectedOrigin", nearestStation.station.shortCode);
 			}
 		},
-		[selectedOrigin, selectedDestination],
+		[selectedOrigin, selectedDestination, autoLocation],
 	);
 
 	const startWatchingLocation = useCallback(() => {
