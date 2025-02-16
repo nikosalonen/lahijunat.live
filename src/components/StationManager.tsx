@@ -130,6 +130,10 @@ export default function StationManager({ stations }: Props) {
 						onStationSelect={handleDestinationSelect}
 						selectedValue={selectedDestination}
 					/>
+					<p className="text-sm text-gray-500 mt-1">
+						Määränpäät on suodatettu näyttämään vain asemat, joihin on suoria
+						junayhteyksiä valitulta lähtöasemalta.
+					</p>
 				</div>
 
 				{selectedOrigin && selectedDestination && (
