@@ -1,20 +1,32 @@
 function ProgressCircle({ progress }: { progress: number }) {
 	return (
 		<div class="relative h-6 w-6">
-			<svg class="transform -rotate-90 w-6 h-6" title="Progress indicator">
+			{/* biome-ignore lint/a11y/useFocusableInteractive: <explanation> */}
+			<svg
+				class="transform -rotate-90 w-6 h-6"
+				viewBox="0 0 24 24"
+				aria-valuemin={0}
+				aria-valuemax={100}
+				aria-valuenow={progress}
+				// biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: <explanation>
+				role="progressbar"
+			>
+				{/* Background circle */}
 				<circle
 					class="text-gray-200"
-					stroke-width="2"
+					stroke-width="2.5"
 					stroke="currentColor"
 					fill="transparent"
 					r="10"
 					cx="12"
 					cy="12"
 				/>
-				<title>Seuraava lataus</title>
+				<title>Seuraava lataus: {progress}%</title>
+				{/* Progress circle */}
 				<circle
-					class="text-[#8c4799] transition-all duration-1000"
-					stroke-width="4"
+					class="text-[#8c4799] transition-all duration-1000 ease-in-out"
+					stroke-width="2.5"
+					stroke-linecap="round"
 					stroke="currentColor"
 					fill="transparent"
 					r="10"
