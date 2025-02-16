@@ -84,7 +84,7 @@ export default function StationList({
 										setSearchTerm("");
 									}
 								}}
-								tabIndex={0}
+								tabIndex={filteredStations.indexOf(station)}
 								class="p-2 hover:bg-gray-100 cursor-pointer"
 							>
 								{station.name} ({station.shortCode})
