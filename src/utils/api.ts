@@ -127,25 +127,37 @@ export async function fetchTrains(
 		}
 
 		const data = await response.json();
-
 		return data
 			.filter((train: Train) => {
 				if (train.trainCategory !== "Commuter") return false;
 
-				const relevantRows = train.timeTableRows.filter((row: TimeTableRow) =>
-					[destinationCode, stationCode].includes(row.stationShortCode),
+				// Get all occurrences of origin and destination stations
+				const stationOccurrences = train.timeTableRows.reduce(
+					(acc, row, index) => {
+						if ([stationCode, destinationCode].includes(row.stationShortCode)) {
+							acc.push({ ...row, index });
+						}
+						return acc;
+					},
+					[] as (TimeTableRow & { index: number })[],
 				);
 
-				const [originRow, destinationRow] = [
-					relevantRows.find((row) => row.stationShortCode === stationCode),
-					relevantRows.find((row) => row.stationShortCode === destinationCode),
-				];
+				// Group occurrences by station
+				const originOccurrences = stationOccurrences.filter(
+					(row) => row.stationShortCode === stationCode,
+				);
+				const destinationOccurrences = stationOccurrences.filter(
+					(row) => row.stationShortCode === destinationCode,
+				);
 
-				return (
-					originRow &&
-					destinationRow &&
-					new Date(originRow.scheduledTime) <
-						new Date(destinationRow.scheduledTime)
+				// Find the first valid pair of origin-destination
+				return originOccurrences.some((origin, i) =>
+					destinationOccurrences.some(
+						(destination) =>
+							destination.index > origin.index &&
+							new Date(origin.scheduledTime) <
+								new Date(destination.scheduledTime),
+					),
 				);
 			})
 			.sort((a: Train, b: Train) => {
