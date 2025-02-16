@@ -31,6 +31,14 @@ const isLocalStorageAvailable = () => {
 	}
 };
 
+function useHasMounted() {
+	const [hasMounted, setHasMounted] = useState(false);
+	useEffect(() => {
+		setHasMounted(true);
+	}, []);
+	return hasMounted;
+}
+
 export default function StationManager({ stations }: Props) {
 	const [openList, setOpenList] = useState<"from" | "to" | null>(null);
 	const [selectedOrigin, setSelectedOrigin] = useState<string | null>(null);
@@ -45,6 +53,8 @@ export default function StationManager({ stations }: Props) {
 
 	// Add ref to store the watch position ID
 	const watchIdRef = useRef<number | null>(null);
+
+	const hasMounted = useHasMounted();
 
 	useEffect(() => {
 		setIsLocating(false);
@@ -352,15 +362,18 @@ export default function StationManager({ stations }: Props) {
 							</svg>
 						</button>
 					</div>
-					{navigator?.geolocation && (
+					{hasMounted && navigator?.geolocation && (
 						<div className="flex items-center gap-2 text-sm text-gray-600 mt-2">
 							<input
 								type="checkbox"
+								id="autoLocation"
 								checked={autoLocation}
 								onChange={handleAutoLocationChange}
 								className="rounded text-blue-600 focus:ring-blue-500"
 							/>
-							<span>Päivitä asema automaattisesti sijainnin mukaan</span>
+							<label htmlFor="autoLocation">
+								Päivitä asema automaattisesti sijainnin mukaan
+							</label>
 						</div>
 					)}
 					<StationList
@@ -381,41 +394,44 @@ export default function StationManager({ stations }: Props) {
 						isOpen={openList === "to"}
 						onOpenChange={(isOpen) => setOpenList(isOpen ? "to" : null)}
 					/>
-					{showHint !== null && showHint && isLocalStorageAvailable() && (
-						<div className="flex items-center justify-between text-sm text-gray-500 mt-1">
-							<p>
-								Määränpäät on suodatettu näyttämään vain asemat, joihin on
-								suoria junayhteyksiä valitulta lähtöasemalta.
-							</p>
-							<button
-								type="button"
-								onClick={() => {
-									setShowHint(false);
-									if (isLocalStorageAvailable()) {
-										localStorage.setItem("hideDestinationHint", "true");
-									}
-								}}
-								className="ml-2 p-1 hover:bg-gray-100 rounded"
-								aria-label="Sulje vihje"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
+					{hasMounted &&
+						showHint !== null &&
+						showHint &&
+						isLocalStorageAvailable() && (
+							<div className="flex items-center justify-between text-sm text-gray-500 mt-1">
+								<p>
+									Määränpäät on suodatettu näyttämään vain asemat, joihin on
+									suoria junayhteyksiä valitulta lähtöasemalta.
+								</p>
+								<button
+									type="button"
+									onClick={() => {
+										setShowHint(false);
+										if (isLocalStorageAvailable()) {
+											localStorage.setItem("hideDestinationHint", "true");
+										}
+									}}
+									className="ml-2 p-1 hover:bg-gray-100 rounded"
+									aria-label="Sulje vihje"
 								>
-									<title>Sulje vihje</title>
-									<line x1="18" y1="6" x2="6" y2="18" />
-									<line x1="6" y1="6" x2="18" y2="18" />
-								</svg>
-							</button>
-						</div>
-					)}
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="16"
+										height="16"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									>
+										<title>Sulje vihje</title>
+										<line x1="18" y1="6" x2="6" y2="18" />
+										<line x1="6" y1="6" x2="18" y2="18" />
+									</svg>
+								</button>
+							</div>
+						)}
 				</div>
 
 				{selectedOrigin && selectedDestination && (
