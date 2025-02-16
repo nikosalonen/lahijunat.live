@@ -1,4 +1,4 @@
-import { useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
 import type { Station } from "../types";
 
 interface Props {
@@ -7,6 +7,39 @@ interface Props {
 	selectedValue?: string | null;
 	isOpen: boolean;
 	onOpenChange: (isOpen: boolean) => void;
+}
+
+const CONTAINER_CLASS = "station-list-container";
+
+function StationOption({
+	station,
+	isSelected,
+	onSelect,
+}: {
+	station: Station;
+	isSelected: boolean;
+	onSelect: (station: Station) => void;
+}) {
+	const handleKeyDown = (e: KeyboardEvent) => {
+		if (e.key === "Enter" || e.key === " ") {
+			onSelect(station);
+		}
+	};
+
+	return (
+		<div
+			key={station.shortCode}
+			onClick={() => onSelect(station)}
+			onKeyDown={handleKeyDown}
+			tabIndex={0}
+			// biome-ignore lint/a11y/useSemanticElements: <explanation>
+			role="option"
+			aria-selected={isSelected}
+			class="p-2 hover:bg-gray-100 cursor-pointer"
+		>
+			{station.name} ({station.shortCode})
+		</div>
+	);
 }
 
 export default function StationList({
@@ -18,10 +51,19 @@ export default function StationList({
 }: Props) {
 	const [searchTerm, setSearchTerm] = useState("");
 
+	const handleStationSelect = useCallback(
+		(station: Station) => {
+			onStationSelect(station);
+			onOpenChange(false);
+			setSearchTerm("");
+		},
+		[onStationSelect, onOpenChange],
+	);
+
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			const target = event.target as HTMLElement;
-			if (!target.closest(".station-list-container")) {
+			if (!target.closest(`.${CONTAINER_CLASS}`)) {
 				onOpenChange(false);
 				setSearchTerm("");
 			}
@@ -31,27 +73,29 @@ export default function StationList({
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, [onOpenChange]);
 
-	const filteredStations = stations.filter((station) => {
+	const filteredStations = useMemo(() => {
 		const search = searchTerm.toLowerCase();
-		return (
-			station.name.toLowerCase().includes(search) ||
-			station.shortCode.toLowerCase().includes(search)
+		return stations.filter(
+			(station) =>
+				station.name.toLowerCase().includes(search) ||
+				station.shortCode.toLowerCase().includes(search),
 		);
-	});
+	}, [stations, searchTerm]);
 
-	const selectedStation = stations.find((s) => s.shortCode === selectedValue);
+	const selectedStation = useMemo(
+		() => stations.find((s) => s.shortCode === selectedValue),
+		[stations, selectedValue],
+	);
 
 	const handleKeyDown = (e: KeyboardEvent) => {
 		if (e.key === "Enter" && filteredStations.length === 1) {
-			onStationSelect(filteredStations[0]);
-			onOpenChange(false);
-			setSearchTerm("");
+			handleStationSelect(filteredStations[0]);
 		}
 	};
 
 	return (
 		<div class="w-full max-w-xs mx-auto p-4">
-			<div class="relative station-list-container">
+			<div class={`relative ${CONTAINER_CLASS}`}>
 				<input
 					type="text"
 					value={
@@ -73,28 +117,12 @@ export default function StationList({
 				{isOpen && (
 					<div class="absolute w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
 						{filteredStations.map((station) => (
-							<div
+							<StationOption
 								key={station.shortCode}
-								onClick={() => {
-									onStationSelect(station);
-									onOpenChange(false);
-									setSearchTerm("");
-								}}
-								onKeyDown={(e) => {
-									if (e.key === "Enter" || e.key === " ") {
-										onStationSelect(station);
-										onOpenChange(false);
-										setSearchTerm("");
-									}
-								}}
-								tabIndex={0}
-								// biome-ignore lint/a11y/useSemanticElements: <explanation>
-								role="option"
-								aria-selected={selectedStation?.shortCode === station.shortCode}
-								class="p-2 hover:bg-gray-100 cursor-pointer"
-							>
-								{station.name} ({station.shortCode})
-							</div>
+								station={station}
+								isSelected={selectedStation?.shortCode === station.shortCode}
+								onSelect={handleStationSelect}
+							/>
 						))}
 					</div>
 				)}
