@@ -181,7 +181,10 @@ export default function StationManager({ stations }: Props) {
 			console.log("Nearest station:", nearestStation);
 
 			if (nearestStation) {
-				if (nearestStation.station.shortCode === selectedDestination) {
+				if (!selectedOrigin) {
+					// Simply select the nearest station if no origin is selected
+					handleOriginSelect(nearestStation.station);
+				} else if (nearestStation.station.shortCode === selectedDestination) {
 					handleSwapStations();
 				} else if (nearestStation.station.shortCode !== selectedOrigin) {
 					handleOriginSelect(nearestStation.station);
