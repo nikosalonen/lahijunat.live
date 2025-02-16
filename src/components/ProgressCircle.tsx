@@ -22,7 +22,7 @@ function ProgressCircle({ progress }: { progress: number }) {
 					cy="12"
 					style={{
 						strokeDasharray: `${2 * Math.PI * 10}`,
-						strokeDashoffset: `${2 * Math.PI * 10 * (progress / 100)}`,
+						strokeDashoffset: `${2 * Math.PI * 10 * (1 - progress / 100)}`,
 					}}
 				/>
 			</svg>
