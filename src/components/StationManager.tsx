@@ -22,18 +22,30 @@ const setStoredValue = (key: string, value: string): void => {
 	}
 };
 
+const isLocalStorageAvailable = () => {
+	try {
+		return typeof window !== "undefined" && window.localStorage !== null;
+	} catch (e) {
+		return false;
+	}
+};
+
 export default function StationManager({ stations }: Props) {
 	const [openList, setOpenList] = useState<"from" | "to" | null>(null);
 	const [selectedOrigin, setSelectedOrigin] = useState<string | null>(null);
 	const [selectedDestination, setSelectedDestination] = useState<string | null>(
 		null,
 	);
+	const [showHint, setShowHint] = useState(true);
 	const [availableDestinations, setAvailableDestinations] =
 		useState<Station[]>(stations);
 
 	useEffect(() => {
 		setSelectedOrigin(getStoredValue("selectedOrigin"));
 		setSelectedDestination(getStoredValue("selectedDestination"));
+		if (isLocalStorageAvailable()) {
+			setShowHint(localStorage.getItem("hideDestinationHint") !== "true");
+		}
 	}, []);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -138,10 +150,41 @@ export default function StationManager({ stations }: Props) {
 						isOpen={openList === "to"}
 						onOpenChange={(isOpen) => setOpenList(isOpen ? "to" : null)}
 					/>
-					<p className="text-sm text-gray-500 mt-1">
-						Määränpäät on suodatettu näyttämään vain asemat, joihin on suoria
-						junayhteyksiä valitulta lähtöasemalta.
-					</p>
+					{isLocalStorageAvailable() && showHint && (
+						<div className="flex items-center justify-between text-sm text-gray-500 mt-1">
+							<p>
+								Määränpäät on suodatettu näyttämään vain asemat, joihin on
+								suoria junayhteyksiä valitulta lähtöasemalta.
+							</p>
+							<button
+								type="button"
+								onClick={() => {
+									setShowHint(false);
+									if (isLocalStorageAvailable()) {
+										localStorage.setItem("hideDestinationHint", "true");
+									}
+								}}
+								className="ml-2 p-1 hover:bg-gray-100 rounded"
+								aria-label="Sulje vihje"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								>
+									<title>Sulje vihje</title>
+									<line x1="18" y1="6" x2="6" y2="18" />
+									<line x1="6" y1="6" x2="18" y2="18" />
+								</svg>
+							</button>
+						</div>
+					)}
 				</div>
 
 				{selectedOrigin && selectedDestination && (
