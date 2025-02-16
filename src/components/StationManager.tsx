@@ -83,6 +83,9 @@ export default function StationManager({ stations }: Props) {
 
 	return (
 		<div className="w-full max-w-2xl mx-auto p-2 sm:p-4">
+			<h1 className="text-2xl font-bold mb-4 text-center">
+				Lähijunien aikataulut
+			</h1>
 			<div className="space-y-6">
 				<div className="space-y-2">
 					<h3 className="text-lg font-medium text-gray-900">Mistä</h3>

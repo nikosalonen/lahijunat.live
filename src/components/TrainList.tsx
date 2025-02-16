@@ -64,23 +64,25 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 	}
 
 	return (
-		<div class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4">
-			<div class="flex items-center justify-between px-2">
-				<h2 class="text-2xl font-bold text-gray-800">
-					Lähtevät junat {stationCode} → {destinationCode}
-				</h2>
-				<ProgressCircle progress={progress} />
-			</div>
-			<div class="grid gap-4 px-2">
-				{trains.map((train) => (
-					<TrainCard
-						key={`${train.trainNumber}`}
-						train={train}
-						stationCode={stationCode}
-						destinationCode={destinationCode}
-						currentTime={currentTime}
-					/>
-				))}
+		<div>
+			<div class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4">
+				<div class="flex items-center justify-between px-2">
+					<h2 class="text-2xl font-bold text-gray-800">
+						Lähtevät junat {stationCode} → {destinationCode}
+					</h2>
+					<ProgressCircle progress={progress} />
+				</div>
+				<div class="grid gap-4 px-2">
+					{trains.map((train) => (
+						<TrainCard
+							key={`${train.trainNumber}`}
+							train={train}
+							stationCode={stationCode}
+							destinationCode={destinationCode}
+							currentTime={currentTime}
+						/>
+					))}
+				</div>
 			</div>
 		</div>
 	);
