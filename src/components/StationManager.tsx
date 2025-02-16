@@ -87,6 +87,10 @@ export default function StationManager({ stations }: Props) {
 	};
 
 	const handleSwapStations = () => {
+		if (!selectedOrigin || !selectedDestination) {
+			return;
+		}
+
 		const tempOrigin = selectedOrigin;
 		setSelectedOrigin(selectedDestination);
 		setSelectedDestination(tempOrigin);
