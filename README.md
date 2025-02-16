@@ -1,3 +1,9 @@
+<div align="center">
+  <img src="public/Juna-meta-header.png" alt="Juna-meta-header">
+</div>
+
+
+
 # lahijunat.live
 [![Netlify Status](https://api.netlify.com/api/v1/badges/4ed9ab1e-8726-4a3b-b1e4-6010e92f50b8/deploy-status)](https://app.netlify.com/sites/beautiful-sable-b9b106/deploys)
 
