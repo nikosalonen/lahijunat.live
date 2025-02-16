@@ -70,7 +70,7 @@ export default function StationList({
 				{isOpen && (
 					<div class="absolute w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
 						{filteredStations.map((station) => (
-							<option
+							<div
 								key={station.shortCode}
 								onClick={() => {
 									onStationSelect(station);
@@ -84,11 +84,12 @@ export default function StationList({
 										setSearchTerm("");
 									}
 								}}
-								tabIndex={filteredStations.indexOf(station)}
+								tabIndex={0}
+								role="option"
 								class="p-2 hover:bg-gray-100 cursor-pointer"
 							>
 								{station.name} ({station.shortCode})
-							</option>
+							</div>
 						))}
 					</div>
 				)}
