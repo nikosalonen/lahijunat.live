@@ -64,39 +64,37 @@ export default function StationList({
 	};
 
 	return (
-		<div class="w-full max-w-xs mx-auto p-4">
-			<div class={`relative ${CONTAINER_CLASS}`}>
-				<input
-					type="text"
-					value={
-						isOpen
-							? searchTerm
-							: selectedStation
-								? `${selectedStation.name} (${selectedStation.shortCode})`
-								: ""
-					}
-					onFocus={() => {
-						onOpenChange(true);
-						setSearchTerm("");
-					}}
-					onInput={(e) => setSearchTerm(e.currentTarget.value)}
-					onKeyDown={handleKeyDown}
-					placeholder="Valitse asema..."
-					class="w-full p-2 border rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-				/>
-				{isOpen && (
-					<div class="absolute w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
-						{filteredStations.map((station) => (
-							<StationOption
-								key={station.shortCode}
-								station={station}
-								isSelected={selectedStation?.shortCode === station.shortCode}
-								onSelect={handleStationSelect}
-							/>
-						))}
-					</div>
-				)}
-			</div>
+		<div className="relative station-list-container">
+			<input
+				type="text"
+				value={
+					isOpen
+						? searchTerm
+						: selectedStation
+							? `${selectedStation.name} (${selectedStation.shortCode})`
+							: ""
+				}
+				onFocus={() => {
+					onOpenChange(true);
+					setSearchTerm("");
+				}}
+				onInput={(e) => setSearchTerm(e.currentTarget.value)}
+				onKeyDown={handleKeyDown}
+				placeholder="Valitse asema..."
+				className="w-full p-3 border border-gray-700 dark:text-white dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+			/>
+			{isOpen && (
+				<div class="absolute w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
+					{filteredStations.map((station) => (
+						<StationOption
+							key={station.shortCode}
+							station={station}
+							isSelected={selectedStation?.shortCode === station.shortCode}
+							onSelect={handleStationSelect}
+						/>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }
