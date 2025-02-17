@@ -50,6 +50,9 @@ export default function StationManager({ stations }: Props) {
 		useState<Station[]>(stations);
 	const [isLocating, setIsLocating] = useState<boolean | null>(null);
 	const [autoLocation, setAutoLocation] = useState<boolean>(false);
+	const [hasGeolocationPermission, setHasGeolocationPermission] = useState<
+		boolean | null
+	>(null);
 
 	// Add ref to store the watch position ID
 	const watchIdRef = useRef<number | null>(null);
@@ -65,6 +68,22 @@ export default function StationManager({ stations }: Props) {
 			setShowHint(localStorage.getItem("hideDestinationHint") !== "true");
 		} else {
 			setShowHint(true);
+		}
+	}, []);
+
+	// Check geolocation permission on mount
+	useEffect(() => {
+		if (navigator?.permissions) {
+			navigator.permissions
+				.query({ name: "geolocation" })
+				.then((permissionStatus) => {
+					setHasGeolocationPermission(permissionStatus.state === "granted");
+					// Listen for permission changes
+					permissionStatus.addEventListener("change", () => {
+						setHasGeolocationPermission(permissionStatus.state === "granted");
+					});
+				})
+				.catch(() => setHasGeolocationPermission(false));
 		}
 	}, []);
 
@@ -353,8 +372,8 @@ export default function StationManager({ stations }: Props) {
 							/>
 						</div>
 					</div>
-					{hasMounted && navigator?.geolocation && (
-						<div className="flex items-center  gap-2 text-sm text-gray-600 dark:text-gray-300 mt-2">
+					{hasMounted && hasGeolocationPermission && (
+						<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mt-2">
 							<input
 								type="checkbox"
 								id="autoLocation"
