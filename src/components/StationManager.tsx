@@ -374,15 +374,6 @@ export default function StationManager({ stations }: Props) {
 						Minne
 					</h3>
 					<div className="flex items-center justify-between gap-1">
-						<div className="flex-grow">
-							<StationList
-								stations={availableDestinations}
-								onStationSelect={handleDestinationSelect}
-								selectedValue={selectedDestination}
-								isOpen={openList === "to"}
-								onOpenChange={(isOpen) => setOpenList(isOpen ? "to" : null)}
-							/>
-						</div>
 						<button
 							type="button"
 							onClick={() => {
@@ -421,6 +412,15 @@ export default function StationManager({ stations }: Props) {
 								<path d="M21 13v2a4 4 0 0 1-4 4H3" />
 							</svg>
 						</button>
+						<div className="flex-grow">
+							<StationList
+								stations={availableDestinations}
+								onStationSelect={handleDestinationSelect}
+								selectedValue={selectedDestination}
+								isOpen={openList === "to"}
+								onOpenChange={(isOpen) => setOpenList(isOpen ? "to" : null)}
+							/>
+						</div>
 					</div>
 					{hasMounted &&
 						showHint !== null &&
