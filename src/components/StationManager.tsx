@@ -329,10 +329,11 @@ export default function StationManager({ stations }: Props) {
 								type="button"
 								onClick={handleLocationRequest}
 								disabled={isLocating === null || isLocating}
-								className="w-10 h-10 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800
+								className={`w-10 h-10 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800
 									disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-full
 									text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
-									border border-blue-200 dark:border-blue-700 shadow-sm hover:shadow-md"
+									border border-blue-200 dark:border-blue-700 shadow-sm hover:shadow-md
+									${isLocating ? "animate-pulse" : ""}`}
 								aria-label="Käytä sijaintia"
 							>
 								<svg
