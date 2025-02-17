@@ -18,7 +18,27 @@ interface GraphQLStation {
 	location: [number, number];
 }
 
+// Add caching utilities only for stations
+const STATION_CACHE_DURATION = 60 * 60 * 1000; // 1 hour since stations rarely change
+const stationCache = new Map<string, { data: Station[]; timestamp: number }>();
+
+function getCachedStations(): Station[] | null {
+	const cached = stationCache.get("stations");
+	if (!cached) return null;
+
+	if (Date.now() - cached.timestamp > STATION_CACHE_DURATION) {
+		stationCache.delete("stations");
+		return null;
+	}
+
+	return cached.data;
+}
+
+// Improved fetchStations with caching
 export async function fetchStations(): Promise<Station[]> {
+	const cached = getCachedStations();
+	if (cached) return cached;
+
 	try {
 		const query = `{
 			stations(where:{passengerTraffic: {equals: true}}){
@@ -39,13 +59,16 @@ export async function fetchStations(): Promise<Station[]> {
 		}
 
 		const { data } = await response.json();
-		return data.stations.map((station: GraphQLStation) => ({
+		const stations = data.stations.map((station: GraphQLStation) => ({
 			...station,
 			location: {
 				longitude: station.location[0],
 				latitude: station.location[1],
 			},
 		}));
+
+		stationCache.set("stations", { data: stations, timestamp: Date.now() });
+		return stations;
 	} catch (error) {
 		console.error("Error fetching stations:", error);
 		throw error;
@@ -106,6 +129,7 @@ export async function fetchTrainsLeavingFromStation(
 	);
 }
 
+// Fetch trains without caching for real-time data
 export async function fetchTrains(
 	stationCode = "HKI",
 	destinationCode = "TKL",
@@ -127,52 +151,65 @@ export async function fetchTrains(
 		}
 
 		const data = await response.json();
-		return data
-			.filter((train: Train) => {
-				if (train.trainCategory !== "Commuter") return false;
-
-				// Get all occurrences of origin and destination stations
-				const stationOccurrences = train.timeTableRows.reduce(
-					(acc, row, index) => {
-						if ([stationCode, destinationCode].includes(row.stationShortCode)) {
-							acc.push({ ...row, index });
-						}
-						return acc;
-					},
-					[] as (TimeTableRow & { index: number })[],
-				);
-
-				// Group occurrences by station
-				const originOccurrences = stationOccurrences.filter(
-					(row) => row.stationShortCode === stationCode,
-				);
-				const destinationOccurrences = stationOccurrences.filter(
-					(row) => row.stationShortCode === destinationCode,
-				);
-
-				// Find the first valid pair of origin-destination
-				return originOccurrences.some((origin, i) =>
-					destinationOccurrences.some(
-						(destination) =>
-							destination.index > origin.index &&
-							new Date(origin.scheduledTime) <
-								new Date(destination.scheduledTime),
-					),
-				);
-			})
-			.sort((a: Train, b: Train) => {
-				const getDepartureTime = (train: Train) =>
-					train.timeTableRows.find(
-						(row) => row.stationShortCode === stationCode,
-					)?.scheduledTime ?? "";
-
-				return (
-					new Date(getDepartureTime(a)).getTime() -
-					new Date(getDepartureTime(b)).getTime()
-				);
-			});
+		return processTrainData(data, stationCode, destinationCode);
 	} catch (error) {
 		console.error("Error fetching trains:", error);
 		throw error;
 	}
+}
+
+// Separate data processing logic for better maintainability
+function processTrainData(
+	data: Train[],
+	stationCode: string,
+	destinationCode: string,
+): Train[] {
+	return data
+		.filter((train) => {
+			if (train.trainCategory !== "Commuter") return false;
+			return isValidJourney(train, stationCode, destinationCode);
+		})
+		.sort((a, b) => sortByDepartureTime(a, b, stationCode));
+}
+
+function isValidJourney(
+	train: Train,
+	stationCode: string,
+	destinationCode: string,
+): boolean {
+	const stationOccurrences = train.timeTableRows.reduce(
+		(acc, row, index) => {
+			if ([stationCode, destinationCode].includes(row.stationShortCode)) {
+				acc.push({ ...row, index });
+			}
+			return acc;
+		},
+		[] as (TimeTableRow & { index: number })[],
+	);
+
+	const originOccurrences = stationOccurrences.filter(
+		(row) => row.stationShortCode === stationCode,
+	);
+	const destinationOccurrences = stationOccurrences.filter(
+		(row) => row.stationShortCode === destinationCode,
+	);
+
+	return originOccurrences.some((origin) =>
+		destinationOccurrences.some(
+			(destination) =>
+				destination.index > origin.index &&
+				new Date(origin.scheduledTime) < new Date(destination.scheduledTime),
+		),
+	);
+}
+
+function sortByDepartureTime(a: Train, b: Train, stationCode: string): number {
+	const getDepartureTime = (train: Train) =>
+		train.timeTableRows.find((row) => row.stationShortCode === stationCode)
+			?.scheduledTime ?? "";
+
+	return (
+		new Date(getDepartureTime(a)).getTime() -
+		new Date(getDepartureTime(b)).getTime()
+	);
 }
