@@ -317,15 +317,6 @@ export default function StationManager({ stations }: Props) {
 						Mistä
 					</h3>
 					<div className="flex items-center justify-between gap-1 mb-2">
-						<div className="flex-grow">
-							<StationList
-								stations={stations}
-								onStationSelect={(station) => handleNearestStation({ station })}
-								selectedValue={selectedOrigin}
-								isOpen={openList === "from"}
-								onOpenChange={(isOpen) => setOpenList(isOpen ? "from" : null)}
-							/>
-						</div>
 						<button
 							type="button"
 							onClick={handleLocationRequest}
@@ -352,6 +343,15 @@ export default function StationManager({ stations }: Props) {
 								<path d="M12 2L19 21l-7-4-7 4L12 2z" />
 							</svg>
 						</button>
+						<div className="flex-grow">
+							<StationList
+								stations={stations}
+								onStationSelect={(station) => handleNearestStation({ station })}
+								selectedValue={selectedOrigin}
+								isOpen={openList === "from"}
+								onOpenChange={(isOpen) => setOpenList(isOpen ? "from" : null)}
+							/>
+						</div>
 					</div>
 					{hasMounted && navigator?.geolocation && (
 						<div className="flex items-center  gap-2 text-sm text-gray-600 dark:text-gray-300 mt-2">
