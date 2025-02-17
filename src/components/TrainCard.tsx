@@ -129,7 +129,7 @@ export default function TrainCard({
 	);
 
 	const TimeRow = () => (
-		<span class="whitespace-nowrap text-gray-400 dark:text-gray-500">
+		<span class="whitespace-nowrap text-gray-600 dark:text-gray-500">
 			{formatTime(departureRow.scheduledTime)}
 			<span class="mx-2">→</span>
 			{arrivalRow && formatTime(arrivalRow.scheduledTime)}
