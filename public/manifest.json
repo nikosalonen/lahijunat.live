@@ -4,7 +4,7 @@
   "description": "Reaaliaikaiset lähtöajat Suomen lähijunille",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#8c4799",
   "theme_color": "#8c4799",
   "icons": [
     {
