@@ -5,11 +5,7 @@ function ProgressCircle({ progress }: { progress: number }) {
 			<svg
 				class="transform -rotate-90 w-6 h-6"
 				viewBox="0 0 24 24"
-				aria-valuemin={0}
-				aria-valuemax={100}
-				aria-valuenow={progress}
-				// biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: <explanation>
-				role="progressbar"
+				aria-label={`Loading progress: ${progress}%`}
 			>
 				{/* Background circle */}
 				<circle

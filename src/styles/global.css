@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
 @font-face {
 	font-family: "Gotham Rounded";
 	src: url("/fonts/gothamrounded-medium-webfont.woff") format("woff"),
@@ -19,6 +20,20 @@
 	}
 }
 
+@keyframes soft-blink-dark {
+	0%,
+	100% {
+		background-color: rgb(31, 41, 55); /* dark gray for dark mode */
+	}
+	50% {
+		background-color: #1e40af; /* darker blue for dark mode */
+	}
+}
+
 .animate-soft-blink {
-	animation: soft-blink 2s ease-in-out infinite;
+	animation: soft-blink 2.5s ease-in-out infinite;
+}
+
+.dark .animate-soft-blink {
+	animation: soft-blink-dark 2.5s ease-in-out infinite;
 }

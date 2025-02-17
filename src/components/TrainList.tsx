@@ -74,19 +74,23 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 
 	if (state.loading && state.initialLoad) {
 		return (
-			<div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto" />
+			<div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 dark:border-blue-400 mx-auto" />
 		);
 	}
 
 	if (state.error) {
-		return <div class="text-red-500 text-center p-4">{state.error}</div>;
+		return (
+			<div class="text-red-500 dark:text-red-400 text-center p-4">
+				{state.error}
+			</div>
+		);
 	}
 
 	return (
 		<div>
 			<div class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4">
 				<div class="flex items-center justify-between px-2">
-					<h2 class="text-2xl font-bold text-gray-800">
+					<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
 						Lähtevät junat {stationCode} → {destinationCode}
 					</h2>
 					<ProgressCircle progress={state.progress} />

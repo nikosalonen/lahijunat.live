@@ -82,10 +82,10 @@ export default function StationList({
 					onInput={(e) => setSearchTerm(e.currentTarget.value)}
 					onKeyDown={handleKeyDown}
 					placeholder="Valitse asema..."
-					class="w-full p-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+					class="w-full p-2 border rounded-lg bg-white dark:bg-gray-800 dark:text-white dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
 				/>
 				{isOpen && (
-					<div class="absolute w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
+					<div class="absolute w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
 						{filteredStations.map((station) => (
 							<StationOption
 								key={station.shortCode}

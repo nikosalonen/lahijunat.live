@@ -54,12 +54,18 @@ const getCardStyle = (
 	minutesToDeparture: number | null,
 	isDepartingSoon: boolean,
 ) => {
-	if (isCancelled) return "bg-red-50 border-red-200";
+	const baseStyles =
+		"border rounded-lg shadow-sm transition-all hover:shadow-md relative";
+
+	if (isCancelled)
+		return `${baseStyles} bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800`;
 	if (minutesToDeparture !== null && minutesToDeparture < -1)
-		return "bg-gray-100 border-gray-300 opacity-60";
+		return `${baseStyles} bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-60`;
 	if (isDepartingSoon && !isCancelled)
-		return "bg-white border-gray-200 animate-soft-blink";
-	return "bg-white border-gray-200";
+		return `${baseStyles} border-gray-200 dark:border-gray-700 dark:bg-gray-950 ${
+			isDepartingSoon ? "animate-soft-blink dark:animate-soft-blink-dark" : ""
+		}`;
+	return `${baseStyles} bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700`;
 };
 
 export default function TrainCard({
@@ -108,10 +114,10 @@ export default function TrainCard({
 
 	// Extract components for better readability
 	const TimeDisplay = () => (
-		<span class="text-lg font-medium text-gray-800 break-words min-w-0">
+		<span class="text-lg font-medium text-gray-800 dark:text-gray-200 break-words min-w-0">
 			{departureRow.liveEstimateTime && timeDifferenceMinutes > 0 ? (
 				<span class="flex flex-col">
-					<span class="mb-1 px-1.5 py-0.5 bg-[#fed100] text-black text-sm rounded self-start">
+					<span class="mb-1 px-2 py-0.5 bg-[#fed100] text-black rounded text-sm self-start">
 						+{timeDifferenceMinutes} min
 					</span>
 					<TimeRow />
@@ -123,16 +129,16 @@ export default function TrainCard({
 	);
 
 	const TimeRow = () => (
-		<span class="whitespace-nowrap">
+		<span class="whitespace-nowrap text-gray-400 dark:text-gray-500">
 			{formatTime(departureRow.scheduledTime)}
-			<span class="mx-2 text-gray-400">→</span>
+			<span class="mx-2">→</span>
 			{arrivalRow && formatTime(arrivalRow.scheduledTime)}
 		</span>
 	);
 
 	return (
 		<div
-			class={`p-2 sm:p-4 border rounded-lg shadow-sm transition-all hover:shadow-md relative ${getCardStyle(train.cancelled, minutesToDeparture, departingSoon)}`}
+			class={`p-2 sm:p-4 ${getCardStyle(train.cancelled, minutesToDeparture, departingSoon)}`}
 		>
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4 flex-1">
@@ -175,7 +181,7 @@ export default function TrainCard({
 							<div class="flex flex-col gap-2">
 								<TimeDisplay />
 								{duration && (
-									<span class="text-sm text-gray-500 -mt-1">
+									<span class="text-sm text-gray-500 dark:text-gray-400 -mt-1">
 										({duration.hours}h {duration.minutes}m)
 									</span>
 								)}
@@ -185,7 +191,7 @@ export default function TrainCard({
 				</div>
 
 				{/* Track info and departure countdown */}
-				<div class="flex items-center gap-2 text-sm text-gray-600 min-w-[90px] text-right">
+				<div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 min-w-[90px] text-right">
 					<div class="top-4 right-4 flex flex-col items-end gap-1">
 						{train.cancelled ? (
 							<span class="px-2 py-0.5 bg-[#dc0451] text-white rounded text-sm">
@@ -193,14 +199,14 @@ export default function TrainCard({
 							</span>
 						) : (
 							<>
-								<span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-sm">
+								<span class="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded text-sm">
 									Raide {departureRow.commercialTrack}
 								</span>
 								{minutesToDeparture !== null &&
 									minutesToDeparture <= 30 &&
 									minutesToDeparture >= 0 && (
 										<span
-											class={`font-medium text-lg ${minutesToDeparture >= 0 ? "text-[#00985f]" : "text-gray-500"}`}
+											class={`font-medium text-lg ${minutesToDeparture >= 0 ? "text-[#00985f] dark:text-[#00c77d]" : "text-gray-500 dark:text-gray-400"}`}
 										>
 											{minutesToDeparture} min
 										</span>

@@ -24,7 +24,7 @@ function StationOption({
 			// biome-ignore lint/a11y/useSemanticElements: <explanation>
 			role="option"
 			aria-selected={isSelected}
-			class="p-2 hover:bg-gray-100 cursor-pointer"
+			class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer dark:text-white"
 		>
 			{station.name} ({station.shortCode})
 		</div>

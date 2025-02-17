@@ -308,21 +308,23 @@ export default function StationManager({ stations }: Props) {
 
 	return (
 		<div className="w-full max-w-2xl mx-auto p-2 sm:p-4">
-			<h1 className="text-2xl font-bold mb-4 text-center">
+			<h1 className="text-2xl font-bold mb-4 text-center dark:text-white">
 				Lähijunien aikataulut
 			</h1>
 			<div className="space-y-6">
 				<div className="space-y-2">
-					<h3 className="text-lg font-medium text-gray-900">Mistä</h3>
+					<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+						Mistä
+					</h3>
 					<div className="flex gap-2 mb-2">
 						<button
 							type="button"
 							onClick={handleLocationRequest}
 							disabled={isLocating === null || isLocating}
-							className="flex-1 py-2.5 px-4 bg-blue-50 hover:bg-blue-100 disabled:opacity-50
-								disabled:cursor-not-allowed transition-colors duration-200 rounded-full
-								text-blue-700 font-medium flex items-center justify-center gap-2.5
-								border border-blue-200 shadow-sm hover:shadow-md"
+							className="flex-1 py-2.5 px-4 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800
+								disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-full
+								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center gap-2.5
+								border border-blue-200 dark:border-blue-700 shadow-sm hover:shadow-md"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -357,10 +359,10 @@ export default function StationManager({ stations }: Props) {
 								}
 							}}
 							disabled={!selectedOrigin || !selectedDestination}
-							className="py-2.5 px-4 bg-blue-50 hover:bg-blue-100 disabled:opacity-50
-								disabled:cursor-not-allowed transition-colors duration-200 rounded-full
-								text-blue-700 font-medium flex items-center justify-center gap-2.5
-								border border-blue-200 shadow-sm hover:shadow-md"
+							className="py-2.5 px-4 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800
+								disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-full
+								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center gap-2.5
+								border border-blue-200 dark:border-blue-700 shadow-sm hover:shadow-md"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -384,13 +386,13 @@ export default function StationManager({ stations }: Props) {
 						</button>
 					</div>
 					{hasMounted && navigator?.geolocation && (
-						<div className="flex items-center gap-2 text-sm text-gray-600 mt-2">
+						<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mt-2">
 							<input
 								type="checkbox"
 								id="autoLocation"
 								checked={autoLocation}
 								onChange={handleAutoLocationChange}
-								className="rounded text-blue-600 focus:ring-blue-500"
+								className="rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
 							/>
 							<label htmlFor="autoLocation">
 								Päivitä asema automaattisesti sijainnin mukaan
@@ -407,7 +409,9 @@ export default function StationManager({ stations }: Props) {
 				</div>
 
 				<div className="space-y-2">
-					<h3 className="text-lg font-medium text-gray-900">Minne</h3>
+					<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+						Minne
+					</h3>
 					<StationList
 						stations={availableDestinations}
 						onStationSelect={handleDestinationSelect}
@@ -419,7 +423,7 @@ export default function StationManager({ stations }: Props) {
 						showHint !== null &&
 						showHint &&
 						isLocalStorageAvailable() && (
-							<div className="flex items-center justify-between text-sm text-gray-500 mt-1">
+							<div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
 								<p>
 									Määränpäät on suodatettu näyttämään vain asemat, joihin on
 									suoria junayhteyksiä valitulta lähtöasemalta.
@@ -432,7 +436,7 @@ export default function StationManager({ stations }: Props) {
 											localStorage.setItem("hideDestinationHint", "true");
 										}
 									}}
-									className="ml-2 p-1 hover:bg-gray-100 rounded"
+									className="ml-2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
 									aria-label="Sulje vihje"
 								>
 									<svg
