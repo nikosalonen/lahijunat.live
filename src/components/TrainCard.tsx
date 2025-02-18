@@ -38,7 +38,7 @@ const isDepartingSoon = (scheduledTime: string) => {
 	const departure = new Date(scheduledTime);
 	const now = new Date();
 	const diffMinutes = (departure.getTime() - now.getTime()) / (1000 * 60);
-	return diffMinutes >= -1 && diffMinutes <= 5;
+	return diffMinutes >= 0 && diffMinutes <= 5;
 };
 
 // Move utility functions outside component to avoid recreating them on each render
@@ -60,7 +60,7 @@ const getCardStyle = (
 	if (isCancelled)
 		return `${baseStyles} bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800`;
 	if (minutesToDeparture !== null && minutesToDeparture < -1)
-		return `${baseStyles} bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-60`;
+		return `${baseStyles} bg-gray-200 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-30`;
 	if (isDepartingSoon && !isCancelled)
 		return `${baseStyles} border-gray-200 dark:border-gray-700 dark:bg-gray-950 ${
 			isDepartingSoon ? "animate-soft-blink dark:animate-soft-blink-dark" : ""
@@ -99,7 +99,10 @@ export default function TrainCard({
 		departureRow.scheduledTime,
 		currentTime,
 	);
-	const departingSoon = isDepartingSoon(departureRow.scheduledTime);
+
+	const departingSoon = isDepartingSoon(
+		departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+	);
 
 	const timeDifferenceMinutes = departureRow.liveEstimateTime
 		? getDelayInMinutes(
@@ -130,7 +133,7 @@ export default function TrainCard({
 
 	const TimeRow = () => (
 		<span class="whitespace-nowrap text-gray-600 dark:text-gray-500">
-			{formatTime(departureRow.scheduledTime)}
+			{formatTime(departureRow.liveEstimateTime ?? departureRow.scheduledTime)}
 			<span class="mx-2">→</span>
 			{arrivalRow && formatTime(arrivalRow.scheduledTime)}
 		</span>
