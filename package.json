@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && workbox generateSW workbox-config.cjs",
+    "build": "astro build && npx workbox generateSW workbox-config.cjs",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "biome check --write src",
