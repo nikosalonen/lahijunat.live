@@ -290,6 +290,12 @@ function processTrainData(
 	stationCode: string,
 	destinationCode: string,
 ): Train[] {
+	console.log(
+		data.filter((train) => {
+			if (train.trainCategory !== "Commuter") return false;
+			return isValidJourney(train, stationCode, destinationCode);
+		}),
+	);
 	return data
 		.filter((train) => {
 			if (train.trainCategory !== "Commuter") return false;
@@ -340,38 +346,34 @@ function isValidJourney(
 	stationCode: string,
 	destinationCode: string,
 ): boolean {
-	let lastValidOriginIndex = -1;
-	let lastValidOriginTime = new Date(0);
-	let lastValidDestinationTime = new Date(0);
+	let foundValidOrigin = false;
+	let foundValidDestination = false;
+	let lastOriginTime = new Date(0);
 
-	for (let i = 0; i < train.timeTableRows.length; i++) {
-		const row = train.timeTableRows[i];
+	for (const row of train.timeTableRows) {
 		const currentTime = new Date(row.scheduledTime);
 
-		if (
-			row.stationShortCode === stationCode &&
-			currentTime > lastValidOriginTime
-		) {
-			lastValidOriginIndex = i;
-			lastValidOriginTime = currentTime;
+		if (row.stationShortCode === stationCode && row.type === "DEPARTURE") {
+			foundValidOrigin = true;
+			lastOriginTime = currentTime;
 		} else if (
 			row.stationShortCode === destinationCode &&
-			i > lastValidOriginIndex &&
-			currentTime > lastValidOriginTime
+			row.type === "ARRIVAL" &&
+			currentTime > lastOriginTime
 		) {
-			lastValidDestinationTime = currentTime;
+			foundValidDestination = true;
 		}
 	}
 
-	return lastValidDestinationTime > lastValidOriginTime;
+	return foundValidOrigin && foundValidDestination;
 }
 
 function sortByDepartureTime(a: Train, b: Train, stationCode: string): number {
 	const getDepartureTime = (train: Train) => {
-		const lastDeparture = train.timeTableRows.findLast(
-			(row) => row.stationShortCode === stationCode,
+		const departureRow = train.timeTableRows.find(
+			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
 		);
-		return lastDeparture?.scheduledTime ?? "";
+		return departureRow?.scheduledTime ?? "";
 	};
 
 	return (
