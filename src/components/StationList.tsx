@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "preact/hooks";
 import type { Station } from "../types";
 import StationOption from "./StationOption";
 
@@ -20,12 +26,14 @@ export default function StationList({
 	onOpenChange,
 }: Props) {
 	const [searchTerm, setSearchTerm] = useState("");
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	const handleStationSelect = useCallback(
 		(station: Station) => {
 			onStationSelect(station);
 			onOpenChange(false);
 			setSearchTerm("");
+			inputRef.current?.blur();
 		},
 		[onStationSelect, onOpenChange],
 	);
@@ -66,6 +74,7 @@ export default function StationList({
 	return (
 		<div className="relative station-list-container">
 			<input
+				ref={inputRef}
 				type="text"
 				value={
 					isOpen
