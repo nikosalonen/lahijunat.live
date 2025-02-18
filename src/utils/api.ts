@@ -292,16 +292,35 @@ function processTrainData(
 	stationCode: string,
 	destinationCode: string,
 ): Train[] {
+	// Early return for empty data
+	if (!data.length) return [];
+
+	const isPSLHKIRoute = stationCode === "PSL" && destinationCode === "HKI";
+
 	return data
-		.filter((train) => {
-			if (train.trainCategory !== "Commuter") return false;
-			return isValidJourney(train, stationCode, destinationCode);
+		.filter((train) => train.trainCategory === "Commuter")
+		.map((train) => {
+			// Find and slice timeTableRows once
+			const firstStationIndex = train.timeTableRows.findIndex(
+				(row) => row.stationShortCode === stationCode,
+			);
+			if (firstStationIndex === -1) return null;
+
+			// Create new train object to avoid mutating original
+			return {
+				...train,
+				timeTableRows: train.timeTableRows.slice(firstStationIndex),
+			};
 		})
-		.filter((train) => {
-			if (stationCode === "PSL" && destinationCode === "HKI") {
+		.filter((train): train is Train => {
+			if (!train) return false;
+
+			// Special handling for PSL to HKI route
+			if (isPSLHKIRoute) {
 				return isPSLtoHKI(train);
 			}
-			return true;
+
+			return isValidJourney(train, stationCode, destinationCode);
 		})
 		.sort((a, b) => sortByDepartureTime(a, b, stationCode));
 }
