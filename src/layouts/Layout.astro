@@ -1,6 +1,6 @@
 ---
 interface Props {
-  title: string;
+	title: string;
 }
 import { Image } from "astro:assets";
 import "../styles/global.css";
@@ -144,6 +144,10 @@ const { title } = Astro.props;
       src="https://cdn.counter.dev/script.js"
       data-id="da3ed73f-eedb-4dd0-acac-8e7366f8508e"
       data-utcoffset="2"></script>
+    <script>
+      import { registerSWUpdateHandler } from "../utils/swUpdate";
+      registerSWUpdateHandler();
+    </script>
   </head>
   <body
     class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"

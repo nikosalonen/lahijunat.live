@@ -22,6 +22,11 @@ const mySwPlugin = () => {
                             window.addEventListener('load', () => {
                                 navigator.serviceWorker.register('${swUrl}');
                             });
+														self.addEventListener('message', (event) => {
+														if (event.data && event.data.type === 'SKIP_WAITING') {
+															self.skipWaiting();
+														}
+													});
                         }
                     </script>`
 					.split("\n")
