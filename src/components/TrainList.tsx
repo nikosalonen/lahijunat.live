@@ -30,6 +30,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 			setState((prev) => ({ ...prev, progress: 100 }));
 
 			const trainData = await fetchTrains(stationCode, destinationCode);
+			setCurrentTime(new Date());
 			setState((prev) => ({
 				...prev,
 				trains: trainData,
@@ -56,7 +57,6 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 
 		const intervalId = setInterval(() => {
 			loadTrains();
-			setCurrentTime(new Date());
 		}, updateInterval);
 
 		const progressInterval = setInterval(() => {
