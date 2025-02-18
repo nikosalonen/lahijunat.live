@@ -241,7 +241,9 @@ export async function fetchTrainsLeavingFromStation(
 
 	const filteredStations = stationsData.filter(
 		(station: RESTStation) =>
-			shortCodes.includes(station.stationShortCode) && station.passengerTraffic,
+			shortCodes.includes(station.stationShortCode) &&
+			station.passengerTraffic &&
+			station.stationShortCode !== stationCode,
 	);
 	return filteredStations.map(
 		(station: RESTStation): Station => ({
