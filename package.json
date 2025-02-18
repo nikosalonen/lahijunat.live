@@ -8,7 +8,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "lint": "biome check --write src",
-    "format": "biome format --write src"
+    "format": "biome format --write src",
+    "check-stations": "npx tsx scripts/findStationsWithoutDestinations.ts"
   },
   "dependencies": {
     "@astrojs/preact": "^4.0.4",
