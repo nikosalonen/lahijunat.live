@@ -1,6 +1,6 @@
 ---
 interface Props {
-	title: string;
+  title: string;
 }
 import { Image } from "astro:assets";
 import "../styles/global.css";
@@ -40,7 +40,10 @@ const { title } = Astro.props;
     />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image" content={new URL("/Juna-meta-header.png", Astro.site).toString()} />
+    <meta
+      property="og:image"
+      content={new URL("/Juna-meta-header.png", Astro.site).toString()}
+    />
     <meta property="og:image:alt" content="Lähijunat Live logo" />
     <meta property="og:locale" content="fi_FI" />
 
@@ -53,7 +56,10 @@ const { title } = Astro.props;
     />
     <meta name="twitter:image:width" content="1200" />
     <meta name="twitter:image:height" content="600" />
-    <meta name="twitter:image" content={new URL("/Juna-twitter-header.png", Astro.site).toString()} />
+    <meta
+      name="twitter:image"
+      content={new URL("/Juna-twitter-header.png", Astro.site).toString()}
+    />
     <meta name="twitter:image:alt" content="Lähijunat Live logo" />
 
     <!-- Favicon -->
@@ -91,7 +97,7 @@ const { title } = Astro.props;
         "@type": "WebApplication",
         "name": "Lähijunat Live",
         "description": "Reaaliaikaiset lähtöajat Suomen lähijunille",
-        "url": {new URL(Astro.url.pathname, Astro.site).toString()},
+        "url": "https://www.lahijunat.live",
         "applicationCategory": "Transportation",
         "operatingSystem": "Any",
         "inLanguage": "fi-FI",
@@ -107,35 +113,41 @@ const { title } = Astro.props;
           ]
         }
       }
-
-
     </script>
 
     <script is:inline>
       // Check for saved theme preference or use system preference
       const theme = (() => {
-        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-          return localStorage.getItem('theme');
+        if (
+          typeof localStorage !== "undefined" &&
+          localStorage.getItem("theme")
+        ) {
+          return localStorage.getItem("theme");
         }
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          return "dark";
         }
         // Default to light theme if no preference is set
-        return 'light';
+        return "light";
       })();
 
       // Apply theme immediately to prevent flash
-      if (theme === 'dark') {
-        document.documentElement.classList.remove('light');
-        document.documentElement.classList.add('dark');
+      if (theme === "dark") {
+        document.documentElement.classList.remove("light");
+        document.documentElement.classList.add("dark");
       } else {
-        document.documentElement.classList.remove('dark');
-        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove("dark");
+        document.documentElement.classList.add("light");
       }
     </script>
-    <script src="https://cdn.counter.dev/script.js" data-id="da3ed73f-eedb-4dd0-acac-8e7366f8508e" data-utcoffset="2"></script>
+    <script
+      src="https://cdn.counter.dev/script.js"
+      data-id="da3ed73f-eedb-4dd0-acac-8e7366f8508e"
+      data-utcoffset="2"></script>
   </head>
-  <body class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+  <body
+    class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
+  >
     <div class="min-h-screen flex flex-col">
       <nav class="py-4 bg-[#8c4799] w-full">
         <div class="container mx-auto px-4">
@@ -171,7 +183,9 @@ const { title } = Astro.props;
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                  <path
+                    d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+                  ></path>
                 </svg>
                 <svg
                   id="theme-toggle-light-icon"
@@ -254,35 +268,42 @@ const { title } = Astro.props;
     </div>
 
     <script>
-      const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-      const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-      const themeToggleBtn = document.getElementById('theme-toggle');
+      const themeToggleDarkIcon = document.getElementById(
+        "theme-toggle-dark-icon"
+      );
+      const themeToggleLightIcon = document.getElementById(
+        "theme-toggle-light-icon"
+      );
+      const themeToggleBtn = document.getElementById("theme-toggle");
 
       // Change the icons inside the button based on previous settings
-      if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        themeToggleLightIcon?.classList.remove('hidden');
+      if (
+        localStorage.getItem("theme") === "dark" ||
+        (!localStorage.getItem("theme") &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        themeToggleLightIcon?.classList.remove("hidden");
       } else {
-        themeToggleDarkIcon?.classList.remove('hidden');
+        themeToggleDarkIcon?.classList.remove("hidden");
       }
 
-      themeToggleBtn?.addEventListener('click', function() {
+      themeToggleBtn?.addEventListener("click", function () {
         // Toggle icons
-        themeToggleDarkIcon?.classList.toggle('hidden');
-        themeToggleLightIcon?.classList.toggle('hidden');
+        themeToggleDarkIcon?.classList.toggle("hidden");
+        themeToggleLightIcon?.classList.toggle("hidden");
 
         // If is dark mode
-        if (document.documentElement.classList.contains('dark')) {
-          document.documentElement.classList.remove('dark');
-          document.documentElement.classList.add('light');
-          localStorage.setItem('theme', 'light');
+        if (document.documentElement.classList.contains("dark")) {
+          document.documentElement.classList.remove("dark");
+          document.documentElement.classList.add("light");
+          localStorage.setItem("theme", "light");
         } else {
-          document.documentElement.classList.remove('light');
-          document.documentElement.classList.add('dark');
-          localStorage.setItem('theme', 'dark');
+          document.documentElement.classList.remove("light");
+          document.documentElement.classList.add("dark");
+          localStorage.setItem("theme", "dark");
         }
       });
     </script>
-
   </body>
 </html>
 
@@ -297,9 +318,4 @@ const { title } = Astro.props;
     font-family: var(--font-body);
     scroll-behavior: smooth;
   }
-
-
-
-
-
 </style>
