@@ -238,6 +238,7 @@ export default function StationManager({ stations }: Props) {
 					await fetchTrainsLeavingFromStation(selectedOrigin);
 				setAvailableDestinations(destinations);
 
+				// Clear destination if it's not in the available destinations
 				if (
 					selectedDestination &&
 					!destinations.some((s) => s.shortCode === selectedDestination)
@@ -499,6 +500,7 @@ export default function StationManager({ stations }: Props) {
 						<TrainList
 							stationCode={selectedOrigin}
 							destinationCode={selectedDestination}
+							key={`${selectedOrigin}-${selectedDestination}`}
 						/>
 					</div>
 				)}
