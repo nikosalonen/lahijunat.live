@@ -290,12 +290,6 @@ function processTrainData(
 	stationCode: string,
 	destinationCode: string,
 ): Train[] {
-	console.log(
-		data.filter((train) => {
-			if (train.trainCategory !== "Commuter") return false;
-			return isValidJourney(train, stationCode, destinationCode);
-		}),
-	);
 	return data
 		.filter((train) => {
 			if (train.trainCategory !== "Commuter") return false;
