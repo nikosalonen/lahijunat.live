@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { Station } from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
-import { calculateDistance } from "../utils/location";
+import { calculateDistance, isInFinland } from "../utils/location";
 import StationList from "./StationList";
 import TrainList from "./TrainList";
 
@@ -148,6 +148,12 @@ export default function StationManager({ stations }: Props) {
 				longitude: position.coords.longitude,
 			};
 
+			if (!isInFinland(userLocation)) {
+				setAutoLocation(false);
+				setStoredValue("autoLocation", "false");
+				return;
+			}
+
 			const nearestStation = findNearestStation(userLocation);
 			if (nearestStation) {
 				handleNearestStation(nearestStation);
@@ -275,6 +281,13 @@ export default function StationManager({ stations }: Props) {
 				latitude: position.coords.latitude,
 				longitude: position.coords.longitude,
 			};
+
+			if (!isInFinland(userLocation)) {
+				alert("Paikannus toimii vain Suomessa");
+				setAutoLocation(false);
+				setStoredValue("autoLocation", "false");
+				return;
+			}
 
 			// Find the nearest station
 			const nearestStation = findNearestStation(userLocation);
