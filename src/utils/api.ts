@@ -192,16 +192,17 @@ function isPSLtoHKI(train: Train): boolean {
 	}
 
 	// Get last PSL departure and HKI arrival
-	const lastPslDeparture = pslDepartures[pslDepartures.length - 1];
-	const lastHkiArrival = hkiArrivals[hkiArrivals.length - 1];
+	const [lastPslDeparture] = pslDepartures.slice(-1);
+	const [lastHkiArrival] = hkiArrivals.slice(-1);
+
+	if (!lastPslDeparture || !lastHkiArrival) return false;
+
+	// Cache Date objects
+	const pslTime = new Date(lastPslDeparture.scheduledTime);
+	const hkiTime = new Date(lastHkiArrival.scheduledTime);
 
 	// Ensure PSL departure is before HKI arrival
-	if (
-		new Date(lastPslDeparture.scheduledTime) >=
-		new Date(lastHkiArrival.scheduledTime)
-	) {
-		return false;
-	}
+	if (pslTime >= hkiTime) return false;
 
 	// Update timeTableRows to only include these two stops
 	train.timeTableRows = [lastPslDeparture, lastHkiArrival];
@@ -213,44 +214,38 @@ function isValidJourney(
 	stationCode: string,
 	destinationCode: string,
 ): boolean {
-	const stationOccurrences = train.timeTableRows.reduce(
-		(acc, row, index) => {
-			if ([stationCode, destinationCode].includes(row.stationShortCode)) {
-				acc.push({ ...row, index });
-			}
-			return acc;
-		},
-		[] as (TimeTableRow & { index: number })[],
-	);
+	let lastValidOriginIndex = -1;
+	let lastValidOriginTime = new Date(0);
+	let lastValidDestinationTime = new Date(0);
 
-	const originOccurrences = stationOccurrences.filter(
-		(row) => row.stationShortCode === stationCode,
-	);
-	const destinationOccurrences = stationOccurrences.filter(
-		(row) => row.stationShortCode === destinationCode,
-	);
+	for (let i = 0; i < train.timeTableRows.length; i++) {
+		const row = train.timeTableRows[i];
+		const currentTime = new Date(row.scheduledTime);
 
-	// Find the last valid origin-destination pair
-	let lastValidPair = null;
-	for (const origin of originOccurrences) {
-		for (const destination of destinationOccurrences) {
-			if (
-				destination.index > origin.index &&
-				new Date(origin.scheduledTime) < new Date(destination.scheduledTime)
-			) {
-				lastValidPair = { origin, destination };
-			}
+		if (
+			row.stationShortCode === stationCode &&
+			currentTime > lastValidOriginTime
+		) {
+			lastValidOriginIndex = i;
+			lastValidOriginTime = currentTime;
+		} else if (
+			row.stationShortCode === destinationCode &&
+			i > lastValidOriginIndex &&
+			currentTime > lastValidOriginTime
+		) {
+			lastValidDestinationTime = currentTime;
 		}
 	}
-	return lastValidPair !== null;
+
+	return lastValidDestinationTime > lastValidOriginTime;
 }
 
 function sortByDepartureTime(a: Train, b: Train, stationCode: string): number {
 	const getDepartureTime = (train: Train) => {
-		const rows = train.timeTableRows.filter(
+		const lastDeparture = train.timeTableRows.findLast(
 			(row) => row.stationShortCode === stationCode,
 		);
-		return rows[rows.length - 1]?.scheduledTime ?? "";
+		return lastDeparture?.scheduledTime ?? "";
 	};
 
 	return (
