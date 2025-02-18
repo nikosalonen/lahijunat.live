@@ -6,10 +6,8 @@ import path, { join } from "node:path";
 import preact from "@astrojs/preact";
 import tailwindcss from "@tailwindcss/vite";
 
-
-
 const mySwPlugin = () => {
-	let config: Config;
+	let config;
 	return {
 		name: "customSw",
 		hooks: {
