@@ -25,3 +25,27 @@ export function calculateDistance(
 function toRad(degrees: number): number {
 	return degrees * (Math.PI / 180);
 }
+
+export function finlandBounds(): {
+	minLat: number;
+	maxLat: number;
+	minLon: number;
+	maxLon: number;
+} {
+	return {
+		minLat: 59.7,
+		maxLat: 70.1,
+		minLon: 19.1,
+		maxLon: 31.6,
+	};
+}
+
+export function isInFinland(coord: Coordinates): boolean {
+	const bounds = finlandBounds();
+	return (
+		coord.latitude >= bounds.minLat &&
+		coord.latitude <= bounds.maxLat &&
+		coord.longitude >= bounds.minLon &&
+		coord.longitude <= bounds.maxLon
+	);
+}
