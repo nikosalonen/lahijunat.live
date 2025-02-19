@@ -41,14 +41,6 @@ const isDepartingSoon = (scheduledTime: string) => {
 	return diffMinutes >= 0 && diffMinutes <= 5;
 };
 
-// Move utility functions outside component to avoid recreating them on each render
-const getDelayInMinutes = (liveTime: string, scheduledTime: string) => {
-	return Math.round(
-		(new Date(liveTime).getTime() - new Date(scheduledTime).getTime()) /
-			(1000 * 60),
-	);
-};
-
 const getCardStyle = (
 	isCancelled: boolean,
 	minutesToDeparture: number | null,
@@ -104,12 +96,7 @@ export default function TrainCard({
 		departureRow.liveEstimateTime ?? departureRow.scheduledTime,
 	);
 
-	const timeDifferenceMinutes = departureRow.liveEstimateTime
-		? getDelayInMinutes(
-				departureRow.liveEstimateTime,
-				departureRow.scheduledTime,
-			)
-		: 0;
+	const timeDifferenceMinutes = departureRow.differenceInMinutes ?? 0;
 
 	const duration = arrivalRow?.scheduledTime
 		? calculateDuration(departureRow.scheduledTime, arrivalRow.scheduledTime)
