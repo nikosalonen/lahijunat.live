@@ -1,9 +1,10 @@
 ---
 interface Props {
-	title: string;
+  title: string;
 }
 import { Image } from "astro:assets";
 import "../styles/global.css";
+import pkg from "../../package.json";
 const { title } = Astro.props;
 ---
 
@@ -245,6 +246,7 @@ const { title } = Astro.props;
               🦋 niko.torttu.fi
             </a>
           </p>
+          <p class="text-sm">v{pkg.version}</p>
           <p class="text-sm">
             Datalähde: {" "}
             <a
@@ -255,9 +257,7 @@ const { title } = Astro.props;
             >
               Fintraffic
             </a>
-          </p>
-          <p class="text-sm">
-            Juna-ikoni lainattu{" "}
+            - Juna-ikoni lainattu{" "}
             <a
               href="https://tyyliopas.hsl.fi/"
               class="hover:text-blue-100 transition-colors"
