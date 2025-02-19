@@ -120,6 +120,11 @@ export default function TrainCard({
 
 	const TimeRow = () => (
 		<span class="whitespace-nowrap text-gray-600 dark:text-gray-500">
+			{departureRow.liveEstimateTime &&
+			departureRow.differenceInMinutes &&
+			departureRow.differenceInMinutes > 0
+				? "~"
+				: " "}
 			{formatTime(departureRow.liveEstimateTime ?? departureRow.scheduledTime)}
 			<span class="mx-2">→</span>
 			{arrivalRow && formatTime(arrivalRow.scheduledTime)}
