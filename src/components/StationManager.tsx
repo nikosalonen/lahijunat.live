@@ -303,13 +303,13 @@ export default function StationManager({ stations }: Props) {
 	};
 
 	return (
-		<div className="w-full max-w-2xl mx-auto p-2 sm:p-4">
-			<h1 className="text-2xl font-bold mb-4 text-center dark:text-white">
+		<div className="w-full max-w-4xl mx-auto p-2 sm:p-6">
+			<h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center dark:text-white">
 				Lähijunien aikataulut
 			</h1>
-			<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4">
+			<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
 				<div className="space-y-2">
-					<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+					<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
 						Mistä
 					</h3>
 					<div className="flex flex-row-reverse items-center gap-2">
@@ -402,7 +402,7 @@ export default function StationManager({ stations }: Props) {
 				</div>
 
 				<div className="space-y-2">
-					<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+					<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
 						Minne
 					</h3>
 					<div className="flex flex-row-reverse items-center gap-2">
@@ -497,7 +497,7 @@ export default function StationManager({ stations }: Props) {
 				</div>
 
 				{selectedOrigin && selectedDestination && (
-					<div className="sm:col-span-2">
+					<div className="sm:col-span-2 mt-6">
 						<TrainList
 							stationCode={selectedOrigin}
 							destinationCode={selectedDestination}
