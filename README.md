@@ -17,8 +17,9 @@ Real-time commuter train schedules for Finnish trains.
 - Track information for departures
 - Journey duration info in minutes
 - Mobile-friendly interface
-- Automatic location-based station selection
+- ~~Automatic location-based station selection~~
 - Progressive Web App (PWA) support
+- Dark mode
 
 ## Tech Stack
 
