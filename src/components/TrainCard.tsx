@@ -110,7 +110,7 @@ export default function TrainCard({
 					<span
 						role="status"
 						aria-label={`Myöhässä noin ${timeDifferenceMinutes} minuuttia`}
-						class="mb-1 px-2 py-0.5 bg-[#cc9900] text-black rounded text-sm self-start"
+						class="mb-1 px-2 py-0.5 bg-[#fed100] text-black rounded text-sm self-start"
 					>
 						{`+${timeDifferenceMinutes} min`}
 					</span>
