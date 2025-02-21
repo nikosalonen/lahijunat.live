@@ -89,11 +89,13 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 	return (
 		<div>
 			<div class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4">
-				<div class="flex items-center justify-between px-2">
-					<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-2">
+					<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 order-2 sm:order-1">
 						Lähtevät junat {stationCode} → {destinationCode}
 					</h2>
-					<ProgressCircle progress={state.progress} />
+					<div class="self-end sm:self-auto order-1 sm:order-2">
+						<ProgressCircle progress={state.progress} />
+					</div>
 				</div>
 				<div class="grid gap-4 px-2">
 					{state.trains.map((train) => (
