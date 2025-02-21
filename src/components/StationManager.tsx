@@ -312,7 +312,7 @@ export default function StationManager({ stations }: Props) {
 					<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
 						Mistä
 					</h3>
-					<div className="flex items-center gap-2">
+					<div className="flex flex-row-reverse items-center gap-2">
 						<button
 							type="button"
 							onClick={handleLocationRequest}
@@ -405,7 +405,7 @@ export default function StationManager({ stations }: Props) {
 					<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
 						Minne
 					</h3>
-					<div className="flex items-center gap-2">
+					<div className="flex flex-row-reverse items-center gap-2">
 						<button
 							type="button"
 							onClick={() => {
