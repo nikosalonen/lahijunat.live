@@ -46,16 +46,16 @@ export default function StationManager({ stations }: Props) {
 		null,
 	);
 	const [showHint, setShowHint] = useState<boolean | null>(null);
+	const [showLocationHint, setShowLocationHint] = useState<boolean | null>(
+		null,
+	);
 	const [availableDestinations, setAvailableDestinations] =
 		useState<Station[]>(stations);
 	const [isLocating, setIsLocating] = useState<boolean | null>(null);
-	const [autoLocation, setAutoLocation] = useState<boolean>(false);
+
 	const [hasGeolocationPermission, setHasGeolocationPermission] = useState<
 		boolean | null
 	>(null);
-
-	// Add ref to store the watch position ID
-	const watchIdRef = useRef<number | null>(null);
 
 	const hasMounted = useHasMounted();
 
@@ -63,11 +63,12 @@ export default function StationManager({ stations }: Props) {
 		setIsLocating(false);
 		setSelectedOrigin(getStoredValue("selectedOrigin"));
 		setSelectedDestination(getStoredValue("selectedDestination"));
-		setAutoLocation(getStoredValue("autoLocation") === "true");
 		if (isLocalStorageAvailable()) {
 			setShowHint(localStorage.getItem("hideDestinationHint") !== "true");
+			setShowLocationHint(localStorage.getItem("hideLocationHint") !== "true");
 		} else {
 			setShowHint(true);
+			setShowLocationHint(true);
 		}
 	}, []);
 
@@ -98,23 +99,12 @@ export default function StationManager({ stations }: Props) {
 				setSelectedDestination(tempOrigin);
 				setStoredValue("selectedDestination", selectedOrigin);
 				setStoredValue("selectedOrigin", selectedDestination);
-			} else if (
-				nearestStation.station.shortCode !== selectedOrigin &&
-				autoLocation
-			) {
-				const confirmed = window.confirm(
-					`Olet lähellä asemaa ${nearestStation.station.name}. Haluatko vaihtaa lähtöaseman?`,
-				);
-				if (confirmed) {
-					setSelectedOrigin(nearestStation.station.shortCode);
-					setStoredValue("selectedOrigin", nearestStation.station.shortCode);
-				}
 			} else if (nearestStation.station.shortCode !== selectedOrigin) {
 				setSelectedOrigin(nearestStation.station.shortCode);
 				setStoredValue("selectedOrigin", nearestStation.station.shortCode);
 			}
 		},
-		[selectedOrigin, selectedDestination, autoLocation],
+		[selectedOrigin, selectedDestination],
 	);
 
 	// Memoize stations filter and reduce operations
@@ -149,8 +139,6 @@ export default function StationManager({ stations }: Props) {
 			};
 
 			if (!isInFinland(userLocation)) {
-				setAutoLocation(false);
-				setStoredValue("autoLocation", "false");
 				return;
 			}
 
@@ -186,8 +174,6 @@ export default function StationManager({ stations }: Props) {
 					alert(
 						"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
 					);
-					setAutoLocation(false);
-					setStoredValue("autoLocation", "false");
 				}
 			},
 			{
@@ -195,8 +181,6 @@ export default function StationManager({ stations }: Props) {
 				timeout: 5000,
 			},
 		);
-
-		watchIdRef.current = watchId;
 
 		// Add visibility change listener
 		document.addEventListener("visibilitychange", () => {
@@ -209,8 +193,6 @@ export default function StationManager({ stations }: Props) {
 							alert(
 								"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
 							);
-							setAutoLocation(false);
-							setStoredValue("autoLocation", "false");
 						}
 					},
 					{
@@ -223,9 +205,8 @@ export default function StationManager({ stations }: Props) {
 
 		// Return cleanup function
 		return () => {
-			if (watchIdRef.current) {
-				navigator.geolocation.clearWatch(watchIdRef.current);
-				watchIdRef.current = null;
+			if (watchId) {
+				navigator.geolocation.clearWatch(watchId);
 			}
 		};
 	}, [updateLocation]);
@@ -260,6 +241,9 @@ export default function StationManager({ stations }: Props) {
 	};
 
 	const handleLocationRequest = async () => {
+		// Prevent multiple requests while locating
+		if (isLocating) return;
+
 		if (!navigator.geolocation) {
 			console.log("Geolocation not supported");
 			alert("Paikannus ei ole tuettu selaimessasi");
@@ -285,8 +269,6 @@ export default function StationManager({ stations }: Props) {
 
 			if (!isInFinland(userLocation)) {
 				alert("Paikannus toimii vain Suomessa");
-				setAutoLocation(false);
-				setStoredValue("autoLocation", "false");
 				return;
 			}
 
@@ -320,25 +302,6 @@ export default function StationManager({ stations }: Props) {
 		}
 	};
 
-	const handleAutoLocationChange = (e: Event) => {
-		const checked = (e.target as HTMLInputElement).checked;
-		setAutoLocation(checked);
-		setStoredValue("autoLocation", checked.toString());
-	};
-
-	useEffect(() => {
-		if (autoLocation) {
-			const cleanup = startWatchingLocation();
-			return () => {
-				if (watchIdRef.current) {
-					navigator.geolocation.clearWatch(watchIdRef.current);
-					watchIdRef.current = null;
-				}
-				cleanup?.();
-			};
-		}
-	}, [autoLocation, startWatchingLocation]);
-
 	return (
 		<div className="w-full max-w-2xl mx-auto p-2 sm:p-4">
 			<h1 className="text-2xl font-bold mb-4 text-center dark:text-white">
@@ -353,7 +316,6 @@ export default function StationManager({ stations }: Props) {
 						<button
 							type="button"
 							onClick={handleLocationRequest}
-							disabled={isLocating === null || isLocating}
 							className={`flex-shrink-0 w-10 h-10 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800
 								disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-full
 								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
@@ -386,20 +348,45 @@ export default function StationManager({ stations }: Props) {
 							/>
 						</div>
 					</div>
-					{hasMounted && hasGeolocationPermission && (
-						<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mt-2">
-							<input
-								type="checkbox"
-								id="autoLocation"
-								checked={autoLocation}
-								onChange={handleAutoLocationChange}
-								className="rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
-							/>
-							<label htmlFor="autoLocation">
-								Päivitä asema automaattisesti sijainnin mukaan
-							</label>
-						</div>
-					)}
+					{hasMounted &&
+						showLocationHint !== null &&
+						showLocationHint &&
+						isLocalStorageAvailable() && (
+							<div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
+								<p>
+									Huom! Automaattinen sijainnin seuranta on poistettu käytöstä
+									koska selaimet eivät katso sitä hyvällä. Voit yhä päivittää
+									sijaintisi manuaalisesti painamalla kuvaketta.
+								</p>
+								<button
+									type="button"
+									onClick={() => {
+										setShowLocationHint(false);
+										if (isLocalStorageAvailable()) {
+											localStorage.setItem("hideLocationHint", "true");
+										}
+									}}
+									className="ml-2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+									aria-label="Sulje vihje"
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="16"
+										height="16"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									>
+										<title>Sulje vihje</title>
+										<line x1="18" y1="6" x2="6" y2="18" />
+										<line x1="6" y1="6" x2="18" y2="18" />
+									</svg>
+								</button>
+							</div>
+						)}
 				</div>
 
 				<div className="space-y-2">
