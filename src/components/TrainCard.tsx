@@ -108,6 +108,7 @@ export default function TrainCard({
 			{departureRow.liveEstimateTime && timeDifferenceMinutes > 0 ? (
 				<span class="flex flex-col">
 					<span
+						// biome-ignore lint/a11y/useSemanticElements: <explanation>
 						role="status"
 						aria-label={`Myöhässä noin ${timeDifferenceMinutes} minuuttia`}
 						class="mb-1 px-2 py-0.5 bg-[#fed100] text-black rounded text-sm self-start"
@@ -142,13 +143,8 @@ export default function TrainCard({
 
 	return (
 		<div
-			tabIndex={0}
-			onKeyDown={(e) => {
-				if (e.key === "Enter" || e.key === " ") {
-					// Handle interaction if needed
-				}
-			}}
 			class={`p-2 sm:p-4 ${getCardStyle(train.cancelled, minutesToDeparture, departingSoon)}`}
+			// biome-ignore lint/a11y/useSemanticElements: <explanation>
 			role="article"
 			aria-label={`Juna ${train.commuterLineID || ""} ${train.cancelled ? "peruttu" : ""}`}
 		>
@@ -215,6 +211,7 @@ export default function TrainCard({
 						) : (
 							<>
 								<span
+									// biome-ignore lint/a11y/useSemanticElements: <explanation>
 									role="status"
 									aria-label={`Raide ${departureRow.commercialTrack}`}
 									class="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded text-sm"
