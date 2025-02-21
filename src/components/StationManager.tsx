@@ -211,7 +211,7 @@ export default function StationManager({ stations }: Props) {
 		};
 	}, [updateLocation]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: not needed
 	useEffect(() => {
 		const fetchDestinations = async () => {
 			if (selectedOrigin) {
