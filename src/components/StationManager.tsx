@@ -307,17 +307,17 @@ export default function StationManager({ stations }: Props) {
 			<h1 className="text-2xl font-bold mb-4 text-center dark:text-white">
 				Lähijunien aikataulut
 			</h1>
-			<div className="space-y-6 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4">
+			<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4">
 				<div className="space-y-2">
 					<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
 						Mistä
 					</h3>
-					<div className="flex items-center justify-between gap-1 mb-2">
+					<div className="flex items-center gap-2">
 						<button
 							type="button"
 							onClick={handleLocationRequest}
-							className={`flex-shrink-0 w-10 h-10 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800
-								disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-full
+							className={`flex-shrink-0 w-16 sm:w-12 h-12 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800
+								disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-lg
 								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
 								border border-blue-200 dark:border-blue-700 shadow-sm hover:shadow-md
 								${isLocating ? "animate-pulse" : ""}`}
@@ -325,8 +325,8 @@ export default function StationManager({ stations }: Props) {
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
-								width="18"
-								height="18"
+								width="28"
+								height="28"
 								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"
@@ -339,13 +339,17 @@ export default function StationManager({ stations }: Props) {
 							</svg>
 						</button>
 						<div className="flex-grow">
-							<StationList
-								stations={stations}
-								onStationSelect={(station) => handleNearestStation({ station })}
-								selectedValue={selectedOrigin}
-								isOpen={openList === "from"}
-								onOpenChange={(isOpen) => setOpenList(isOpen ? "from" : null)}
-							/>
+							<div className="h-full">
+								<StationList
+									stations={stations}
+									onStationSelect={(station) =>
+										handleNearestStation({ station })
+									}
+									selectedValue={selectedOrigin}
+									isOpen={openList === "from"}
+									onOpenChange={(isOpen) => setOpenList(isOpen ? "from" : null)}
+								/>
+							</div>
 						</div>
 					</div>
 					{hasMounted &&
@@ -390,10 +394,10 @@ export default function StationManager({ stations }: Props) {
 				</div>
 
 				<div className="space-y-2">
-					<h3 className="text-lg  font-medium text-gray-900 dark:text-gray-100">
+					<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
 						Minne
 					</h3>
-					<div className="flex items-center justify-between gap-1">
+					<div className="flex items-center gap-2">
 						<button
 							type="button"
 							onClick={() => {
@@ -407,15 +411,15 @@ export default function StationManager({ stations }: Props) {
 								}
 							}}
 							disabled={!selectedOrigin || !selectedDestination}
-							className="w-10 h-10 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800
-								disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-full
+							className="flex-shrink-0 w-16 sm:w-12 h-12 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800
+								disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-lg
 								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
 								border border-blue-200 dark:border-blue-700 shadow-sm hover:shadow-md"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
-								width="18"
-								height="18"
+								width="28"
+								height="28"
 								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"
@@ -433,13 +437,15 @@ export default function StationManager({ stations }: Props) {
 							</svg>
 						</button>
 						<div className="flex-grow">
-							<StationList
-								stations={availableDestinations}
-								onStationSelect={handleDestinationSelect}
-								selectedValue={selectedDestination}
-								isOpen={openList === "to"}
-								onOpenChange={(isOpen) => setOpenList(isOpen ? "to" : null)}
-							/>
+							<div className="h-full">
+								<StationList
+									stations={availableDestinations}
+									onStationSelect={handleDestinationSelect}
+									selectedValue={selectedDestination}
+									isOpen={openList === "to"}
+									onOpenChange={(isOpen) => setOpenList(isOpen ? "to" : null)}
+								/>
+							</div>
 						</div>
 					</div>
 					{hasMounted &&
