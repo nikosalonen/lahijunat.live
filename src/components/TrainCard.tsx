@@ -107,14 +107,12 @@ export default function TrainCard({
 		<span class="text-lg font-medium text-gray-800 dark:text-gray-200 break-words min-w-0">
 			{departureRow.liveEstimateTime && timeDifferenceMinutes > 0 ? (
 				<span class="flex flex-col">
-					<span
-						// biome-ignore lint/a11y/useSemanticElements: <explanation>
-						role="status"
+					<output
 						aria-label={`Myöhässä noin ${timeDifferenceMinutes} minuuttia`}
 						class="mb-1 px-2 py-0.5 bg-[#fed100] text-black rounded text-sm self-start"
 					>
 						{`+${timeDifferenceMinutes} min`}
-					</span>
+					</output>
 					<TimeRow />
 				</span>
 			) : (
@@ -142,10 +140,8 @@ export default function TrainCard({
 	);
 
 	return (
-		<div
+		<article
 			class={`p-2 sm:p-4 ${getCardStyle(train.cancelled, minutesToDeparture, departingSoon)}`}
-			// biome-ignore lint/a11y/useSemanticElements: <explanation>
-			role="article"
 			aria-label={`Juna ${train.commuterLineID || ""} ${train.cancelled ? "peruttu" : ""}`}
 		>
 			<div class="flex items-center justify-between">
@@ -202,34 +198,30 @@ export default function TrainCard({
 				</div>
 
 				{/* Track info and departure countdown */}
-				<div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 min-w-[90px] text-right">
-					<div class="top-4 right-4 flex flex-col items-end gap-1">
-						{train.cancelled ? (
-							<span class="px-2 py-0.5 bg-[#d4004d] text-white rounded text-sm">
-								Peruttu
-							</span>
-						) : (
-							<>
-								<span
-									// biome-ignore lint/a11y/useSemanticElements: <explanation>
-									role="status"
-									aria-label={`Raide ${departureRow.commercialTrack}`}
-									class="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded text-sm"
-								>
-									Raide {departureRow.commercialTrack}
-								</span>
-								{minutesToDeparture !== null &&
-									minutesToDeparture <= 30 &&
-									minutesToDeparture >= 0 && (
-										<span
-											class={`font-medium text-lg ${minutesToDeparture >= 0 ? "text-[#007549] dark:text-[#00e38f]" : "text-gray-600 dark:text-gray-400"}`}
-										>
-											{minutesToDeparture} min
-										</span>
-									)}
-							</>
-						)}
-					</div>
+				<div class="flex items-end flex-col text-sm text-gray-600 dark:text-gray-400 min-w-[90px]">
+					{train.cancelled ? (
+						<span class="px-2 py-0.5 bg-[#d4004d] text-white rounded text-sm">
+							Peruttu
+						</span>
+					) : (
+						<>
+							<output
+								aria-label={`Raide ${departureRow.commercialTrack}`}
+								class="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded text-sm"
+							>
+								Raide {departureRow.commercialTrack}
+							</output>
+							{minutesToDeparture !== null &&
+								minutesToDeparture <= 30 &&
+								minutesToDeparture >= 0 && (
+									<span
+										class={`font-medium text-lg mt-1 ${minutesToDeparture >= 0 ? "text-[#007549] dark:text-[#00e38f]" : "text-gray-600 dark:text-gray-400"}`}
+									>
+										{minutesToDeparture} min
+									</span>
+								)}
+						</>
+					)}
 				</div>
 			</div>
 			<div aria-live="polite" class="sr-only">
@@ -239,6 +231,6 @@ export default function TrainCard({
 						? "Juna lähtee pian"
 						: ""}
 			</div>
-		</div>
+		</article>
 	);
 }
