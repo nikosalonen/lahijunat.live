@@ -321,21 +321,29 @@ export default function StationManager({ stations }: Props) {
 								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
 								border border-blue-200 dark:border-blue-700 shadow-sm hover:shadow-md
 								${isLocating ? "animate-pulse" : ""}`}
-							aria-label="Käytä sijaintia"
+							aria-label="Paikanna"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 100 100"
 								width="28"
 								height="28"
-								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
+								strokeWidth="4"
 							>
-								<title>Käytä sijaintia</title>
-								<path d="M12 2L19 21l-7-4-7 4L12 2z" />
+								<title>Paikanna</title>
+								{/* Outer Circle */}
+								<circle cx="50" cy="50" r="40" />
+								{/* Inner Circle with smaller radius */}
+								<circle cx="50" cy="50" r="8" />
+								{/* Shorter Crosshair Lines for cleaner look */}
+								<line x1="50" y1="10" x2="50" y2="35" />
+								<line x1="50" y1="65" x2="50" y2="90" />
+								<line x1="10" y1="50" x2="35" y2="50" />
+								<line x1="65" y1="50" x2="90" y2="50" />
+								{/* Slightly smaller center dot */}
+								<circle cx="50" cy="50" r="2" fill="currentColor" />
 							</svg>
 						</button>
 						<div className="flex-grow">
