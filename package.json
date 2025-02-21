@@ -1,7 +1,7 @@
 {
   "name": "lahijunat-live",
   "type": "module",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && workbox generateSW workbox-config.cjs",
