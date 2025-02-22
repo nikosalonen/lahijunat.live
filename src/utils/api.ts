@@ -388,7 +388,7 @@ function sortByDepartureTime(a: Train, b: Train, stationCode: string): number {
 		const departureRow = train.timeTableRows.find(
 			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
 		);
-		return departureRow?.scheduledTime ?? "";
+		return departureRow?.liveEstimateTime ?? departureRow?.scheduledTime ?? "";
 	};
 
 	return (
