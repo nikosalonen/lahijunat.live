@@ -30,3 +30,8 @@ export interface TimeTableRow {
 	differenceInMinutes?: number;
 	station: Station;
 }
+
+export type Duration = {
+	hours: number;
+	minutes: number;
+};

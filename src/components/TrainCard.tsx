@@ -1,5 +1,6 @@
 import { useMemo } from "preact/hooks";
 import type { Train } from "../types";
+import TimeDisplay from "./TimeDisplay";
 
 interface Props {
 	train: Train;
@@ -106,43 +107,6 @@ export default function TrainCard({
 			)
 		: null;
 
-	// Extract components for better readability
-	const TimeDisplay = () => (
-		<span class="text-lg font-medium text-gray-800 dark:text-gray-200 break-words min-w-0">
-			{departureRow.liveEstimateTime && timeDifferenceMinutes > 0 ? (
-				<span class="flex flex-col">
-					<output
-						aria-label={`Myöhässä noin ${timeDifferenceMinutes} minuuttia`}
-						class="mb-1 px-2 py-0.5 bg-[#fed100] text-black rounded text-sm self-start"
-					>
-						{`+${timeDifferenceMinutes} min`}
-					</output>
-					<TimeRow />
-				</span>
-			) : (
-				<TimeRow />
-			)}
-		</span>
-	);
-
-	const TimeRow = () => (
-		<span class="whitespace-nowrap text-gray-600 dark:text-gray-500">
-			{departureRow.liveEstimateTime &&
-			departureRow.differenceInMinutes &&
-			departureRow.differenceInMinutes > 0
-				? "~"
-				: " "}
-			<time
-				datetime={departureRow.scheduledTime}
-				aria-label={`Lähtöaika ${formatTime(departureRow.scheduledTime)}`}
-			>
-				{formatTime(departureRow.scheduledTime)}
-			</time>
-			<span class="mx-2">→</span>
-			{arrivalRow && formatTime(arrivalRow.scheduledTime)}
-		</span>
-	);
-
 	return (
 		<article
 			class={`p-2 sm:p-4 ${getCardStyle(train.cancelled, minutesToDeparture, departingSoon)}`}
@@ -187,7 +151,11 @@ export default function TrainCard({
 					<div class="space-y-1">
 						<div class="flex flex-col gap-1">
 							<div class="flex flex-col gap-2">
-								<TimeDisplay />
+								<TimeDisplay
+									departureRow={departureRow}
+									arrivalRow={arrivalRow}
+									timeDifferenceMinutes={timeDifferenceMinutes}
+								/>
 								{duration && (
 									<span
 										class="text-sm text-gray-500 dark:text-gray-400 -mt-1"
