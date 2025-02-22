@@ -88,7 +88,7 @@ export default function TrainCard({
 	if (!departureRow) return null;
 
 	const minutesToDeparture = formatMinutesToDeparture(
-		departureRow.scheduledTime,
+		departureRow.liveEstimateTime ?? departureRow.scheduledTime,
 		currentTime,
 	);
 
