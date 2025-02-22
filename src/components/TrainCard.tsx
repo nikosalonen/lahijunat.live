@@ -98,8 +98,12 @@ export default function TrainCard({
 
 	const timeDifferenceMinutes = departureRow.differenceInMinutes ?? 0;
 
-	const duration = arrivalRow?.scheduledTime
-		? calculateDuration(departureRow.scheduledTime, arrivalRow.scheduledTime)
+	const arrivalTime = arrivalRow?.liveEstimateTime ?? arrivalRow?.scheduledTime;
+	const duration = arrivalTime
+		? calculateDuration(
+				departureRow.actualTime ?? departureRow.scheduledTime,
+				arrivalTime,
+			)
 		: null;
 
 	// Extract components for better readability
