@@ -1,3 +1,5 @@
+import type { Duration } from "../types";
+
 export const formatTime = (date: string) => {
 	return new Date(date).toLocaleTimeString("fi-FI", {
 		hour: "2-digit",
@@ -14,5 +16,3 @@ export const calculateDuration = (start: string, end: string): Duration => {
 		minutes: durationMinutes % 60,
 	};
 };
-
-// ... rest of the utility functions ...
