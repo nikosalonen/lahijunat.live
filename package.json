@@ -12,15 +12,15 @@
     "check-stations": "npx tsx scripts/findStationsWithoutDestinations.ts"
   },
   "dependencies": {
-    "@astrojs/preact": "^4.0.4",
-    "@tailwindcss/vite": "^4.0.8",
-    "astro": "^5.3.1",
-    "preact": "^10.26.2",
-    "tailwindcss": "^4.0.8"
+    "@astrojs/preact": "^4.0.5",
+    "@tailwindcss/vite": "^4.0.9",
+    "astro": "^5.4.2",
+    "preact": "^10.26.4",
+    "tailwindcss": "^4.0.9"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@types/node": "^22.13.5",
+    "@types/node": "^22.13.9",
     "workbox-cli": "^7.3.0"
   }
 }
