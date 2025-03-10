@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@types/node": "^22.13.9",
+    "@types/node": "^22.13.10",
     "workbox-cli": "^7.3.0"
   }
 }
