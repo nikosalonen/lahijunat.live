@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@astrojs/preact": "^4.0.5",
-    "@tailwindcss/vite": "^4.0.14",
+    "@tailwindcss/vite": "^4.0.15",
     "astro": "^5.5.2",
     "preact": "^10.26.4",
     "tailwindcss": "^4.0.9"
