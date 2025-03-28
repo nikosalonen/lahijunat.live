@@ -1,6 +1,8 @@
+import { useLanguageChange } from '../hooks/useLanguageChange';
 import { t } from "../utils/translations";
 
 function ProgressCircle({ progress }: { progress: number }) {
+	useLanguageChange();
 	return (
 		<div class="relative h-6 w-6">
 			<svg

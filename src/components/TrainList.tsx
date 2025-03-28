@@ -1,10 +1,12 @@
 import { memo } from "preact/compat";
 import { useCallback, useEffect, useState } from "preact/hooks";
+import { useLanguageChange } from '../hooks/useLanguageChange';
 import type { Train } from "../types";
 import { fetchTrains } from "../utils/api";
 import { t } from "../utils/translations";
 import ProgressCircle from "./ProgressCircle";
 import TrainCard from "./TrainCard";
+
 interface Props {
 	stationCode: string;
 	destinationCode: string;
@@ -13,6 +15,7 @@ interface Props {
 const MemoizedTrainCard = memo(TrainCard);
 
 export default function TrainList({ stationCode, destinationCode }: Props) {
+	useLanguageChange();
 	const [state, setState] = useState({
 		trains: [] as Train[],
 		loading: true,

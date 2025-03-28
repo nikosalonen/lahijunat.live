@@ -1,4 +1,5 @@
 import { useMemo } from "preact/hooks";
+import { useLanguageChange } from '../hooks/useLanguageChange';
 import type { Train } from "../types";
 import { t } from "../utils/translations";
 import TimeRow from "./TimeRow";
@@ -12,6 +13,7 @@ const TimeDisplay = ({
 	arrivalRow?: Train["timeTableRows"][0];
 	timeDifferenceMinutes: number;
 }) => {
+	useLanguageChange();
 	return useMemo(
 		() => (
 			<span class="text-lg font-medium text-gray-800 dark:text-gray-200 break-words min-w-0">

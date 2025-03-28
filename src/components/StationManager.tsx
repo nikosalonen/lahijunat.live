@@ -1,5 +1,6 @@
 // src/components/StationManager.tsx
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import { useLanguageChange } from '../hooks/useLanguageChange';
 import type { Station } from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
 import { calculateDistance, isInFinland } from "../utils/location";
@@ -60,6 +61,8 @@ export default function StationManager({ stations }: Props) {
 
 	const hasMounted = useHasMounted();
 	const [, forceUpdate] = useState({});
+
+	useLanguageChange();
 
 	useEffect(() => {
 		setIsLocating(false);

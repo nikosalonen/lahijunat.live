@@ -1,15 +1,14 @@
-import { useMemo } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
+
 interface Props {
 	train: Train;
 	stationCode: string;
 	destinationCode: string;
 	currentTime: Date;
 }
-
-
 
 const calculateDuration = (start: string, end: string) => {
 	const durationMinutes = Math.round(
@@ -61,6 +60,18 @@ export default function TrainCard({
 	destinationCode,
 	currentTime,
 }: Props) {
+	// Add state to force re-render on language change
+	const [, setLanguageChange] = useState(0);
+
+	useEffect(() => {
+		const handleLanguageChange = () => {
+			setLanguageChange(prev => prev + 1);
+		};
+
+		window.addEventListener('languagechange', handleLanguageChange);
+		return () => window.removeEventListener('languagechange', handleLanguageChange);
+	}, []);
+
 	// Memoize row lookups since they're used multiple times
 	const departureRow = useMemo(
 		() =>
