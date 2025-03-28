@@ -5,9 +5,11 @@ import {
 	useRef,
 	useState,
 } from "preact/hooks";
+import { useLanguageChange } from '../hooks/useLanguageChange';
 import type { Station } from "../types";
 import { t } from "../utils/translations";
 import StationOption from "./StationOption";
+
 interface Props {
 	stations: Station[];
 	onStationSelect: (station: Station) => void;
@@ -27,6 +29,8 @@ export default function StationList({
 }: Props) {
 	const [searchTerm, setSearchTerm] = useState("");
 	const inputRef = useRef<HTMLInputElement>(null);
+
+	useLanguageChange();
 
 	const handleStationSelect = useCallback(
 		(station: Station) => {
