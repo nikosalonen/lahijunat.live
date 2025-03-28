@@ -56,7 +56,7 @@
     "transportation",
     "commuting"
   ],
-  "lang": "fi",
+  "lang": ["fi", "en"],
   "prefer_related_applications": false,
   "update_via_cache": "none"
 }

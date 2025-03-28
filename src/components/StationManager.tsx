@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { Station } from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
 import { calculateDistance, isInFinland } from "../utils/location";
+import { t } from "../utils/translations";
 import StationList from "./StationList";
 import TrainList from "./TrainList";
 
@@ -58,6 +59,7 @@ export default function StationManager({ stations }: Props) {
 	>(null);
 
 	const hasMounted = useHasMounted();
+	const [, forceUpdate] = useState({});
 
 	useEffect(() => {
 		setIsLocating(false);
@@ -86,6 +88,12 @@ export default function StationManager({ stations }: Props) {
 				})
 				.catch(() => setHasGeolocationPermission(false));
 		}
+	}, []);
+
+	useEffect(() => {
+		const handleLanguageChange = () => forceUpdate({});
+		window.addEventListener('languagechange', handleLanguageChange);
+		return () => window.removeEventListener('languagechange', handleLanguageChange);
 	}, []);
 
 	const handleNearestStation = useCallback(
@@ -305,12 +313,12 @@ export default function StationManager({ stations }: Props) {
 	return (
 		<div className="w-full max-w-4xl mx-auto p-2 sm:p-6">
 			<h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center dark:text-white">
-				Lähijunien aikataulut
+				{t('h1title')}
 			</h1>
 			<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
 				<div className="space-y-2">
 					<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
-						Mistä
+						{t('from')}
 					</h3>
 					<div className="flex flex-row-reverse items-center gap-2">
 						<button
@@ -332,7 +340,7 @@ export default function StationManager({ stations }: Props) {
 								stroke="currentColor"
 								strokeWidth="4"
 							>
-								<title>Paikanna</title>
+								<title>{t('locate')}</title>
 								{/* Outer Circle */}
 								<circle cx="50" cy="50" r="40" />
 								{/* Inner Circle with smaller radius */}
@@ -365,7 +373,7 @@ export default function StationManager({ stations }: Props) {
 
 				<div className="space-y-2">
 					<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
-						Minne
+						{t('to')}
 					</h3>
 					<div className="flex flex-row-reverse items-center gap-2">
 						<button
@@ -399,7 +407,7 @@ export default function StationManager({ stations }: Props) {
 								className="rotate-90"
 								aria-labelledby="swapDirectionIcon"
 							>
-								<title id="swapDirectionIcon">Vaihda suuntaa</title>
+								<title id="swapDirectionIcon">{t('swapDirection')}</title>
 								<polyline points="17 1 21 5 17 9" />
 								<path d="M3 11V9a4 4 0 0 1 4-4h14" />
 								<polyline points="7 23 3 19 7 15" />
@@ -424,8 +432,7 @@ export default function StationManager({ stations }: Props) {
 						isLocalStorageAvailable() && (
 							<div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
 								<p>
-									Määränpäät on suodatettu näyttämään vain asemat, joihin on
-									suoria junayhteyksiä valitulta lähtöasemalta.
+									{t('hint')}
 								</p>
 								<button
 									type="button"
@@ -449,7 +456,7 @@ export default function StationManager({ stations }: Props) {
 										strokeLinecap="round"
 										strokeLinejoin="round"
 									>
-										<title>Sulje vihje</title>
+										<title>{t('closeHint')}</title>
 										<line x1="18" y1="6" x2="6" y2="18" />
 										<line x1="6" y1="6" x2="18" y2="18" />
 									</svg>

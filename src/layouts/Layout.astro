@@ -5,11 +5,12 @@ interface Props {
 import { Image } from "astro:assets";
 import "../styles/global.css";
 import pkg from "../../package.json";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="fi" class="light">
+<html lang={`fi`} class="light">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -88,6 +89,12 @@ const { title } = Astro.props;
       rel="alternate"
       hreflang="fi"
       href={new URL(Astro.url.pathname, Astro.site).toString()}
+    />
+
+    <link
+      rel="alternate"
+      hreflang="en"
+      href={new URL(`/en${Astro.url.pathname}`, Astro.site).toString()}
     />
 
     <title>{title}</title>
@@ -175,6 +182,7 @@ const { title } = Astro.props;
               </div>
             </a>
             <div class="flex items-center gap-4">
+              <LanguageSwitcher client:load />
               <button
                 id="theme-toggle"
                 type="button"

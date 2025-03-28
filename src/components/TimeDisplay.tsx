@@ -1,5 +1,6 @@
 import { useMemo } from "preact/hooks";
 import type { Train } from "../types";
+import { t } from "../utils/translations";
 import TimeRow from "./TimeRow";
 // Memoize TimeDisplay
 const TimeDisplay = ({
@@ -17,7 +18,7 @@ const TimeDisplay = ({
 				{departureRow.liveEstimateTime && timeDifferenceMinutes > 0 ? (
 					<span class="flex flex-col">
 						<output
-							aria-label={`Myöhässä noin ${timeDifferenceMinutes} minuuttia`}
+							aria-label={`${t('late')} ${timeDifferenceMinutes} ${t('minutes')}`}
 							class="mb-1 px-2 py-0.5 bg-[#fed100] text-black rounded text-sm self-start"
 						>
 							{`+${timeDifferenceMinutes} min`}

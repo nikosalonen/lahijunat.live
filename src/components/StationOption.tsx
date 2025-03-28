@@ -1,5 +1,5 @@
 import type { Station } from "../types";
-
+import { t } from "../utils/translations";
 function StationOption({
 	station,
 	isSelected,

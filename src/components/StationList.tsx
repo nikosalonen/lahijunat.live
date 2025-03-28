@@ -6,8 +6,8 @@ import {
 	useState,
 } from "preact/hooks";
 import type { Station } from "../types";
+import { t } from "../utils/translations";
 import StationOption from "./StationOption";
-
 interface Props {
 	stations: Station[];
 	onStationSelect: (station: Station) => void;
@@ -89,7 +89,7 @@ export default function StationList({
 				}}
 				onInput={(e) => setSearchTerm(e.currentTarget.value)}
 				onKeyDown={handleKeyDown}
-				placeholder="Valitse asema..."
+				placeholder={t('placeholder')}
 				className="w-full p-3 border border-gray-700 dark:text-white dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
 			/>
 			{isOpen && (

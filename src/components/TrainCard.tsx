@@ -1,7 +1,7 @@
 import { useMemo } from "preact/hooks";
 import type { Train } from "../types";
+import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
-
 interface Props {
 	train: Train;
 	stationCode: string;
@@ -9,13 +9,7 @@ interface Props {
 	currentTime: Date;
 }
 
-// Utility functions
-const formatTime = (date: string) => {
-	return new Date(date).toLocaleTimeString("fi-FI", {
-		hour: "2-digit",
-		minute: "2-digit",
-	});
-};
+
 
 const calculateDuration = (start: string, end: string) => {
 	const durationMinutes = Math.round(
@@ -110,7 +104,7 @@ export default function TrainCard({
 	return (
 		<article
 			class={`p-2 sm:p-4 ${getCardStyle(train.cancelled, minutesToDeparture, departingSoon)}`}
-			aria-label={`Juna ${train.commuterLineID || ""} ${train.cancelled ? "peruttu" : ""}`}
+			aria-label={`${t('train')} ${train.commuterLineID || ""} ${train.cancelled ? t('cancelled') : ""}`}
 		>
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4 flex-1">
@@ -137,7 +131,7 @@ export default function TrainCard({
 								class="w-6 h-6"
 								aria-label="Juna peruttu"
 							>
-								<title>Juna peruttu</title>
+								<title>{t('cancelled')}</title>
 								<path
 									fill-rule="evenodd"
 									d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
@@ -159,7 +153,7 @@ export default function TrainCard({
 								{duration && (
 									<span
 										class="text-sm text-gray-500 dark:text-gray-400 -mt-1"
-										aria-label={`Matkan kesto ${duration.hours} tuntia ${duration.minutes} minuuttia`}
+										aria-label={`${t('duration')} ${duration.hours} ${t('hours')} ${duration.minutes} ${t('minutes')}`}
 									>
 										({duration.hours}h {duration.minutes}m)
 									</span>
@@ -173,15 +167,15 @@ export default function TrainCard({
 				<div class="flex items-end flex-col text-sm text-gray-600 dark:text-gray-400 min-w-[90px]">
 					{train.cancelled ? (
 						<span class="px-2 py-0.5 bg-[#d4004d] text-white rounded text-sm">
-							Peruttu
+							{t('cancelled')}
 						</span>
 					) : (
 						<>
 							<output
-								aria-label={`Raide ${departureRow.commercialTrack}`}
+								aria-label={`${t('track')} ${departureRow.commercialTrack}`}
 								class="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded text-sm"
 							>
-								Raide {departureRow.commercialTrack}
+								{t('track')} {departureRow.commercialTrack}
 							</output>
 							{minutesToDeparture !== null &&
 								minutesToDeparture <= 30 &&
@@ -198,9 +192,9 @@ export default function TrainCard({
 			</div>
 			<div aria-live="polite" class="sr-only">
 				{train.cancelled
-					? "Juna peruttu"
+					? t('cancelled')
 					: departingSoon
-						? "Juna lähtee pian"
+						? t('departingSoon')
 						: ""}
 			</div>
 		</article>

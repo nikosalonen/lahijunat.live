@@ -2,9 +2,9 @@ import { memo } from "preact/compat";
 import { useCallback, useEffect, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { fetchTrains } from "../utils/api";
+import { t } from "../utils/translations";
 import ProgressCircle from "./ProgressCircle";
 import TrainCard from "./TrainCard";
-
 interface Props {
 	stationCode: string;
 	destinationCode: string;
@@ -41,7 +41,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 		} catch (err) {
 			setState((prev) => ({
 				...prev,
-				error: "Failed to load train data",
+				error: t('error'),
 				loading: false,
 				initialLoad: false,
 			}));
@@ -91,7 +91,7 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 			<div class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4">
 				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-2">
 					<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 order-2 sm:order-1">
-						Lähtevät junat {stationCode} → {destinationCode}
+						{t('departingTrains')} {stationCode} → {destinationCode}
 					</h2>
 					<div class="self-end sm:self-auto order-1 sm:order-2">
 						<ProgressCircle progress={state.progress} />
