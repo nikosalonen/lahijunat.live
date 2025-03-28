@@ -360,45 +360,7 @@ export default function StationManager({ stations }: Props) {
 							</div>
 						</div>
 					</div>
-					{hasMounted &&
-						showLocationHint !== null &&
-						showLocationHint &&
-						isLocalStorageAvailable() && (
-							<div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
-								<p>
-									Huom! Automaattinen sijainnin seuranta on poistettu käytöstä
-									koska selaimet eivät katso sitä hyvällä. Voit yhä päivittää
-									sijaintisi manuaalisesti painamalla kuvaketta.
-								</p>
-								<button
-									type="button"
-									onClick={() => {
-										setShowLocationHint(false);
-										if (isLocalStorageAvailable()) {
-											localStorage.setItem("hideLocationHint", "true");
-										}
-									}}
-									className="ml-2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-									aria-label="Sulje vihje"
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeWidth="4"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-									>
-										<title>Sulje vihje</title>
-										<line x1="18" y1="6" x2="6" y2="18" />
-										<line x1="6" y1="6" x2="18" y2="18" />
-									</svg>
-								</button>
-							</div>
-						)}
+
 				</div>
 
 				<div className="space-y-2">
