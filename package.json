@@ -12,9 +12,9 @@
     "check-stations": "npx tsx scripts/findStationsWithoutDestinations.ts"
   },
   "dependencies": {
-    "@astrojs/preact": "^4.0.7",
+    "@astrojs/preact": "^4.0.8",
     "@tailwindcss/vite": "^4.0.17",
-    "astro": "^5.5.5",
+    "astro": "^5.6.1",
     "preact": "^10.26.4",
     "tailwindcss": "^4.0.17"
   },
