@@ -126,7 +126,7 @@ export default function TrainCard({
 								train.cancelled
 									? "bg-[#d4004d] text-white"
 									: "bg-[#6b2c75] text-white"
-							} rounded-full flex items-center justify-center text-lg font-medium`}
+							} rounded-full flex items-center justify-center text-xl font-bold`}
 						>
 							{train.commuterLineID}
 						</div>
@@ -134,13 +134,13 @@ export default function TrainCard({
 
 					{/* Warning triangle for cancelled trains */}
 					{train.cancelled && (
-						<div class="flex-shrink-0 text-red-600" title="Juna peruttu">
+						<div class="flex-shrink-0 text-red-600" title={t('cancelled')}>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
 								fill="currentColor"
-								class="w-6 h-6"
-								aria-label="Juna peruttu"
+								class="w-7 h-7"
+								aria-label={t('cancelled')}
 							>
 								<title>{t('cancelled')}</title>
 								<path
@@ -153,7 +153,7 @@ export default function TrainCard({
 					)}
 
 					{/* Main train info */}
-					<div class="space-y-1 min-w-0 flex-1">
+					<div class="space-y-2 min-w-0 flex-1">
 						<div class="flex flex-col gap-1">
 							<div class="flex flex-col gap-2">
 								<TimeDisplay
@@ -163,10 +163,13 @@ export default function TrainCard({
 								/>
 								{duration && (
 									<span
-										class="text-sm text-gray-500 dark:text-gray-400 -mt-1"
+										class="text-sm text-gray-500 dark:text-gray-400"
 										aria-label={`${t('duration')} ${duration.hours} ${t('hours')} ${duration.minutes} ${t('minutes')}`}
 									>
-										({duration.hours}h {duration.minutes}m)
+										<svg class="w-4 h-4 inline-block mr-1 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+										</svg>
+										{duration.hours}h {duration.minutes}m
 									</span>
 								)}
 							</div>
@@ -177,14 +180,14 @@ export default function TrainCard({
 				{/* Track info and departure countdown */}
 				<div class="flex items-end flex-col text-sm text-gray-600 dark:text-gray-400 ml-4 flex-shrink-0">
 					{train.cancelled ? (
-						<span class="px-2 py-0.5 bg-[#d4004d] text-white rounded text-sm">
+						<span class="px-3 py-1 bg-[#d4004d] text-white rounded-md text-sm font-medium shadow-sm">
 							{t('cancelled')}
 						</span>
 					) : (
 						<>
 							<output
 								aria-label={`${t('track')} ${departureRow.commercialTrack}`}
-								class="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded text-sm"
+								class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md text-sm font-medium shadow-sm"
 							>
 								{t('track')} {departureRow.commercialTrack}
 							</output>
@@ -192,8 +195,16 @@ export default function TrainCard({
 								minutesToDeparture <= 30 &&
 								minutesToDeparture >= 0 && (
 									<span
-										class={`font-medium text-lg mt-1 ${minutesToDeparture >= 0 ? "text-[#007549] dark:text-[#00e38f]" : "text-gray-600 dark:text-gray-400"}`}
+										class={`font-medium text-lg mt-2 ${
+											minutesToDeparture >= 0
+												? "text-[#007549] dark:text-[#00e38f]"
+												: "text-gray-600 dark:text-gray-400"
+										}`}
 									>
+										<svg class="w-5 h-5 inline-block mr-1 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l2 2" />
+											<circle cx="12" cy="12" r="9" stroke-width="2" fill="none" />
+										</svg>
 										{minutesToDeparture} min
 									</span>
 								)}

@@ -8,15 +8,17 @@ const TimeDisplay = ({
 	departureRow,
 	arrivalRow,
 	timeDifferenceMinutes,
+	isCancelled,
 }: {
 	departureRow: Train["timeTableRows"][0];
 	arrivalRow?: Train["timeTableRows"][0];
 	timeDifferenceMinutes: number;
+	isCancelled?: boolean;
 }) => {
 	useLanguageChange();
 	return useMemo(
 		() => (
-			<span class="text-lg font-medium text-gray-800 dark:text-gray-200 break-words min-w-0">
+			<span class={`text-lg font-medium ${isCancelled ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200'} break-words min-w-0`}>
 				{departureRow.liveEstimateTime && timeDifferenceMinutes > 0 ? (
 					<span class="flex flex-col">
 						<output
@@ -32,7 +34,7 @@ const TimeDisplay = ({
 				)}
 			</span>
 		),
-		[departureRow, arrivalRow, timeDifferenceMinutes],
+		[departureRow, arrivalRow, timeDifferenceMinutes, isCancelled],
 	);
 };
 
