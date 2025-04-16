@@ -15,7 +15,7 @@ const { title } = Astro.props;
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover"
     />
     <meta
       name="description"
@@ -329,5 +329,16 @@ const { title } = Astro.props;
   html {
     font-family: var(--font-body);
     scroll-behavior: smooth;
+  }
+
+  /* iOS status bar fix */
+  body {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  nav {
+    padding-top: max(1rem, env(safe-area-inset-top));
+    margin-top: calc(-1 * env(safe-area-inset-top));
+    background-color: #8c4799;
   }
 </style>
