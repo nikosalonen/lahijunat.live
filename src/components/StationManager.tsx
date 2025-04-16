@@ -10,6 +10,8 @@ import TrainList from "./TrainList";
 
 interface Props {
 	stations: Station[];
+	initialFromStation?: string | null;
+	initialToStation?: string | null;
 }
 
 const getStoredValue = (key: string): string | null => {
@@ -41,11 +43,11 @@ function useHasMounted() {
 	return hasMounted;
 }
 
-export default function StationManager({ stations }: Props) {
+export default function StationManager({ stations, initialFromStation, initialToStation }: Props) {
 	const [openList, setOpenList] = useState<"from" | "to" | null>(null);
-	const [selectedOrigin, setSelectedOrigin] = useState<string | null>(null);
+	const [selectedOrigin, setSelectedOrigin] = useState<string | null>(initialFromStation || null);
 	const [selectedDestination, setSelectedDestination] = useState<string | null>(
-		null,
+		initialToStation || null,
 	);
 	const [showHint, setShowHint] = useState<boolean | null>(null);
 	const [showLocationHint, setShowLocationHint] = useState<boolean | null>(
@@ -66,8 +68,12 @@ export default function StationManager({ stations }: Props) {
 
 	useEffect(() => {
 		setIsLocating(false);
-		setSelectedOrigin(getStoredValue("selectedOrigin"));
-		setSelectedDestination(getStoredValue("selectedDestination"));
+		if (!initialFromStation) {
+			setSelectedOrigin(getStoredValue("selectedOrigin"));
+		}
+		if (!initialToStation) {
+			setSelectedDestination(getStoredValue("selectedDestination"));
+		}
 		if (isLocalStorageAvailable()) {
 			setShowHint(localStorage.getItem("hideDestinationHint") !== "true");
 			setShowLocationHint(localStorage.getItem("hideLocationHint") !== "true");
@@ -75,7 +81,7 @@ export default function StationManager({ stations }: Props) {
 			setShowHint(true);
 			setShowLocationHint(true);
 		}
-	}, []);
+	}, [initialFromStation, initialToStation]);
 
 	// Check geolocation permission on mount
 	useEffect(() => {
