@@ -2,7 +2,8 @@
   "name": "Lähijunat Live",
   "short_name": "Lähijunat",
   "description": "Reaaliaikaiset lähtöajat Suomen lähijunille",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#8c4799",
   "theme_color": "#8c4799",
@@ -58,5 +59,13 @@
   ],
   "lang": ["fi", "en"],
   "prefer_related_applications": false,
-  "update_via_cache": "none"
+  "update_via_cache": "none",
+  "shortcuts": [
+    {
+      "name": "Viimeisin reitti",
+      "short_name": "Viimeisin",
+      "description": "Avaa viimeksi käytetyn reitin",
+      "url": "/?source=shortcut"
+    }
+  ]
 }
