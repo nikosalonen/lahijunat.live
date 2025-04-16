@@ -1,0 +1,23 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+- Use Astro best practices
+- Create UI components using React
+- Keep the code style constant
+- Use tailwind for styling
+- If unsure, ask first
+- Write comments when functionality is complex 
+- use conventional commits:
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
