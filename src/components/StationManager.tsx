@@ -68,12 +68,36 @@ export default function StationManager({ stations, initialFromStation, initialTo
 
 	useEffect(() => {
 		setIsLocating(false);
-		if (!initialFromStation) {
-			setSelectedOrigin(getStoredValue("selectedOrigin"));
+
+		// Check if launched from PWA
+		const urlParams = new URLSearchParams(window.location.search);
+		const isPwaLaunch = urlParams.get('source') === 'pwa' || urlParams.get('source') === 'shortcut';
+
+		if (isPwaLaunch) {
+			// If launched from PWA, restore last used route from localStorage
+			const savedOrigin = getStoredValue("selectedOrigin");
+			const savedDestination = getStoredValue("selectedDestination");
+
+			if (savedOrigin) {
+				setSelectedOrigin(savedOrigin);
+				if (savedDestination) {
+					setSelectedDestination(savedDestination);
+					// Update URL to match the restored route
+					window.history.replaceState({}, '', `/${savedOrigin}/${savedDestination}`);
+				} else {
+					window.history.replaceState({}, '', `/${savedOrigin}`);
+				}
+			}
+		} else {
+			// Normal web launch, use initial values or localStorage as fallback
+			if (!initialFromStation) {
+				setSelectedOrigin(getStoredValue("selectedOrigin"));
+			}
+			if (!initialToStation) {
+				setSelectedDestination(getStoredValue("selectedDestination"));
+			}
 		}
-		if (!initialToStation) {
-			setSelectedDestination(getStoredValue("selectedDestination"));
-		}
+
 		if (isLocalStorageAvailable()) {
 			setShowHint(localStorage.getItem("hideDestinationHint") !== "true");
 			setShowLocationHint(localStorage.getItem("hideLocationHint") !== "true");
@@ -323,15 +347,21 @@ export default function StationManager({ stations, initialFromStation, initialTo
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
 
-		const newPath = selectedOrigin && selectedDestination
-			? `/${selectedOrigin}/${selectedDestination}`
-			: selectedOrigin
-				? `/${selectedOrigin}`
-				: '/';
+		const urlParams = new URLSearchParams(window.location.search);
+		const isPwaLaunch = urlParams.get('source') === 'pwa' || urlParams.get('source') === 'shortcut';
 
-		// Only update if the URL is different
-		if (window.location.pathname !== newPath) {
-			window.history.pushState({}, '', newPath);
+		// Only update URL if not a PWA launch or if it's not the initial load
+		if (!isPwaLaunch || document.visibilityState === 'visible') {
+			const newPath = selectedOrigin && selectedDestination
+				? `/${selectedOrigin}/${selectedDestination}`
+				: selectedOrigin
+					? `/${selectedOrigin}`
+					: '/';
+
+			// Only update if the URL is different
+			if (window.location.pathname !== newPath) {
+				window.history.pushState({}, '', newPath);
+			}
 		}
 	}, [selectedOrigin, selectedDestination]);
 
