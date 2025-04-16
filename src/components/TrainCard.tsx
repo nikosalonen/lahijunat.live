@@ -118,11 +118,11 @@ export default function TrainCard({
 			aria-label={`${t('train')} ${train.commuterLineID || ""} ${train.cancelled ? t('cancelled') : ""}`}
 		>
 			<div class="flex items-center justify-between">
-				<div class="flex items-center gap-4 flex-1">
+				<div class="flex items-center gap-4 flex-1 min-w-0">
 					{/* Train identifier */}
 					{train.commuterLineID && (
 						<div
-							class={`h-12 w-12 ${
+							class={`flex-shrink-0 h-12 w-12 ${
 								train.cancelled
 									? "bg-[#d4004d] text-white"
 									: "bg-[#6b2c75] text-white"
@@ -134,7 +134,7 @@ export default function TrainCard({
 
 					{/* Warning triangle for cancelled trains */}
 					{train.cancelled && (
-						<div class="text-red-600" title="Juna peruttu">
+						<div class="flex-shrink-0 text-red-600" title="Juna peruttu">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
@@ -153,7 +153,7 @@ export default function TrainCard({
 					)}
 
 					{/* Main train info */}
-					<div class="space-y-1">
+					<div class="space-y-1 min-w-0 flex-1">
 						<div class="flex flex-col gap-1">
 							<div class="flex flex-col gap-2">
 								<TimeDisplay
@@ -175,7 +175,7 @@ export default function TrainCard({
 				</div>
 
 				{/* Track info and departure countdown */}
-				<div class="flex items-end flex-col text-sm text-gray-600 dark:text-gray-400 min-w-[90px]">
+				<div class="flex items-end flex-col text-sm text-gray-600 dark:text-gray-400 ml-4 flex-shrink-0">
 					{train.cancelled ? (
 						<span class="px-2 py-0.5 bg-[#d4004d] text-white rounded text-sm">
 							{t('cancelled')}
