@@ -319,6 +319,51 @@ export default function StationManager({ stations, initialFromStation, initialTo
 		}
 	};
 
+	// Update URL when stations change
+	useEffect(() => {
+		if (typeof window === 'undefined') return;
+
+		const newPath = selectedOrigin && selectedDestination
+			? `/${selectedOrigin}/${selectedDestination}`
+			: selectedOrigin
+				? `/${selectedOrigin}`
+				: '/';
+
+		// Only update if the URL is different
+		if (window.location.pathname !== newPath) {
+			window.history.pushState({}, '', newPath);
+		}
+	}, [selectedOrigin, selectedDestination]);
+
+	// Handle browser back/forward buttons
+	useEffect(() => {
+		if (typeof window === 'undefined') return;
+
+		const handlePopState = () => {
+			const pathParts = window.location.pathname.split('/').filter(Boolean);
+			const [fromStation, toStation] = pathParts;
+
+			if (fromStation && stations.some(s => s.shortCode === fromStation)) {
+				setSelectedOrigin(fromStation);
+				setStoredValue("selectedOrigin", fromStation);
+			} else {
+				setSelectedOrigin(null);
+				localStorage.removeItem("selectedOrigin");
+			}
+
+			if (toStation && stations.some(s => s.shortCode === toStation)) {
+				setSelectedDestination(toStation);
+				setStoredValue("selectedDestination", toStation);
+			} else {
+				setSelectedDestination(null);
+				localStorage.removeItem("selectedDestination");
+			}
+		};
+
+		window.addEventListener('popstate', handlePopState);
+		return () => window.removeEventListener('popstate', handlePopState);
+	}, [stations]);
+
 	return (
 		<div className="w-full max-w-4xl mx-auto p-2 sm:p-6">
 			<h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center dark:text-white">
