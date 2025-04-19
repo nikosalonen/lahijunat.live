@@ -248,7 +248,7 @@ export async function fetchTrainsLeavingFromStation(
 	);
 	return filteredStations.map(
 		(station: RESTStation): Station => ({
-			name: station.stationName,
+			name: station.stationName.replace(" asema", ""),
 			shortCode: station.stationShortCode,
 			location: {
 				latitude: station.latitude,
