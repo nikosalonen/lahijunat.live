@@ -187,6 +187,7 @@ export async function fetchStations(): Promise<Station[]> {
 		const { data } = await response.json();
 		const stations = data.stations.map((station: GraphQLStation) => ({
 			...station,
+			name: station.name.replace(" asema", ""),
 			location: {
 				longitude: station.location[0],
 				latitude: station.location[1],
