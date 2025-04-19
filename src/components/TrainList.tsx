@@ -1,7 +1,7 @@
 import { memo } from "preact/compat";
 import { useCallback, useEffect, useState } from "preact/hooks";
 import { useLanguageChange } from '../hooks/useLanguageChange';
-import type { Train } from "../types";
+import type { Station, Train } from "../types";
 import { fetchTrains } from "../utils/api";
 import { t } from "../utils/translations";
 import ProgressCircle from "./ProgressCircle";
@@ -10,11 +10,12 @@ import TrainCard from "./TrainCard";
 interface Props {
 	stationCode: string;
 	destinationCode: string;
+	stations: Station[];
 }
 
 const MemoizedTrainCard = memo(TrainCard);
 
-export default function TrainList({ stationCode, destinationCode }: Props) {
+export default function TrainList({ stationCode, destinationCode, stations }: Props) {
 	useLanguageChange();
 	const [state, setState] = useState({
 		trains: [] as Train[],
@@ -89,12 +90,16 @@ export default function TrainList({ stationCode, destinationCode }: Props) {
 		);
 	}
 
+	const fromStation = stations.find(s => s.shortCode === stationCode);
+	const toStation = stations.find(s => s.shortCode === destinationCode);
+
 	return (
 		<div>
 			<div class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4">
 				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-2">
 					<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 order-2 sm:order-1">
-						{t('departingTrains')} {stationCode} → {destinationCode}
+						{t('departingTrains')} <span class="sm:hidden">{stationCode} → {destinationCode}</span>
+						<span class="hidden sm:inline">{fromStation?.name} → {toStation?.name}</span>
 					</h2>
 					<div class="self-end sm:self-auto order-1 sm:order-2">
 						<ProgressCircle progress={state.progress} />

@@ -554,6 +554,7 @@ export default function StationManager({ stations, initialFromStation, initialTo
 						<TrainList
 							stationCode={selectedOrigin}
 							destinationCode={selectedDestination}
+							stations={stations}
 							key={`${selectedOrigin}-${selectedDestination}`}
 						/>
 					</div>
