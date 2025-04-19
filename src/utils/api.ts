@@ -12,180 +12,211 @@ const DEFAULT_HEADERS = {
 	"Accept-Encoding": "gzip",
 } as const;
 
+// Cache configuration
+const CACHE_CONFIG = {
+	STATION_DURATION: 60 * 60 * 1000, // 1 hour
+	STATION_KEY: "stations",
+} as const;
+
 interface GraphQLStation {
 	name: string;
 	shortCode: string;
 	location: [number, number];
 }
 
-// Add caching utilities only for stations
-const STATION_CACHE_DURATION = 60 * 60 * 1000; // 1 hour since stations rarely change
+interface RESTStation {
+	stationShortCode: string;
+	name: string;
+	passengerTraffic: boolean;
+	type: string;
+	stationName: string;
+	stationUICCode: number;
+	countryCode: string;
+	longitude: number;
+	latitude: number;
+}
+
+// Improved cache implementation with type safety
 const stationCache = new Map<string, { data: Station[]; timestamp: number }>();
 
 function getCachedStations(): Station[] | null {
-	const cached = stationCache.get("stations");
+	const cached = stationCache.get(CACHE_CONFIG.STATION_KEY);
 	if (!cached) return null;
 
-	if (Date.now() - cached.timestamp > STATION_CACHE_DURATION) {
-		stationCache.delete("stations");
+	if (Date.now() - cached.timestamp > CACHE_CONFIG.STATION_DURATION) {
+		stationCache.delete(CACHE_CONFIG.STATION_KEY);
 		return null;
 	}
 
 	return cached.data;
 }
 
-// Improved fetchStations with caching
+// Optimized GraphQL query with better filtering
+const STATION_QUERY = `query GetStations {
+	stations(where:{
+		and:[
+			{passengerTraffic:{equals:true}},
+			{shortCode:{unequals:"ENO"}},
+			{shortCode:{unequals:"EPZ"}},
+			{shortCode:{unequals:"PAU"}},
+			{shortCode:{unequals:"ALV"}},
+			{shortCode:{unequals:"HPJ"}},
+			{shortCode:{unequals:"HPK"}},
+			{shortCode:{unequals:"HPA"}},
+			{shortCode:{unequals:"HSI"}},
+			{shortCode:{unequals:"HKS"}},
+			{shortCode:{unequals:"HVA"}},
+			{shortCode:{unequals:"HNV"}},
+			{shortCode:{unequals:"HLS"}},
+			{shortCode:{unequals:"HH"}},
+			{shortCode:{unequals:"HP"}},
+			{shortCode:{unequals:"HM"}},
+			{shortCode:{unequals:"HÖL"}},
+			{shortCode:{unequals:"ILM"}},
+			{shortCode:{unequals:"IMR"}},
+			{shortCode:{unequals:"IKO"}},
+			{shortCode:{unequals:"IKY"}},
+			{shortCode:{unequals:"JNS"}},
+			{shortCode:{unequals:"JTS"}},
+			{shortCode:{unequals:"JJ"}},
+			{shortCode:{unequals:"JY"}},
+			{shortCode:{unequals:"JÄS"}},
+			{shortCode:{unequals:"KAJ"}},
+			{shortCode:{unequals:"KNS"}},
+			{shortCode:{unequals:"KRU"}},
+			{shortCode:{unequals:"KEM"}},
+			{shortCode:{unequals:"KJÄ"}},
+			{shortCode:{unequals:"KIÄ"}},
+			{shortCode:{unequals:"KTI"}},
+			{shortCode:{unequals:"KEU"}},
+			{shortCode:{unequals:"KIA"}},
+			{shortCode:{unequals:"KIT"}},
+			{shortCode:{unequals:"KRV"}},
+			{shortCode:{unequals:"KOK"}},
+			{shortCode:{unequals:"LUS"}},
+			{shortCode:{unequals:"MR"}},
+			{shortCode:{unequals:"NLÄ"}},
+			{shortCode:{unequals:"NVL"}},
+			{shortCode:{unequals:"NRM"}},
+			{shortCode:{unequals:"OV"}},
+			{shortCode:{unequals:"OVK"}},
+			{shortCode:{unequals:"OU"}},
+			{shortCode:{unequals:"OL"}},
+			{shortCode:{unequals:"PTO"}},
+			{shortCode:{unequals:"PAR"}},
+			{shortCode:{unequals:"PKO"}},
+			{shortCode:{unequals:"PEL"}},
+			{shortCode:{unequals:"PVI"}},
+			{shortCode:{unequals:"PM"}},
+			{shortCode:{unequals:"PTR"}},
+			{shortCode:{unequals:"PTL"}},
+			{shortCode:{unequals:"PH"}},
+			{shortCode:{unequals:"PRI"}},
+			{shortCode:{unequals:"PRV"}},
+			{shortCode:{unequals:"PUN"}},
+			{shortCode:{unequals:"PUR"}},
+			{shortCode:{unequals:"PHÄ"}},
+			{shortCode:{unequals:"PNÄ"}},
+			{shortCode:{unequals:"PKY"}},
+			{shortCode:{unequals:"REE"}},
+			{shortCode:{unequals:"ROI"}},
+			{shortCode:{unequals:"RNN"}},
+			{shortCode:{unequals:"RKI"}},
+			{shortCode:{unequals:"SLO"}},
+			{shortCode:{unequals:"SL"}},
+			{shortCode:{unequals:"SK"}},
+			{shortCode:{unequals:"SIJ"}},
+			{shortCode:{unequals:"SPL"}},
+			{shortCode:{unequals:"ÄHT"}},
+			{shortCode:{unequals:"YV"}},
+			{shortCode:{unequals:"YTR"}},
+			{shortCode:{unequals:"YST"}},
+			{shortCode:{unequals:"VSL"}},
+			{shortCode:{unequals:"VLP"}},
+			{shortCode:{unequals:"VYB"}},
+			{shortCode:{unequals:"VNJ"}},
+			{shortCode:{unequals:"VIH"}},
+			{shortCode:{unequals:"VTI"}},
+			{shortCode:{unequals:"VAR"}},
+			{shortCode:{unequals:"VMA"}},
+			{shortCode:{unequals:"VNA"}},
+			{shortCode:{unequals:"VS"}},
+			{shortCode:{unequals:"VAA"}},
+			{shortCode:{unequals:"UTJ"}},
+			{shortCode:{unequals:"UIM"}},
+			{shortCode:{unequals:"TVE"}},
+			{shortCode:{unequals:"TUU"}},
+			{shortCode:{unequals:"TUS"}},
+			{shortCode:{unequals:"TKU"}},
+			{shortCode:{unequals:"TRI"}},
+			{shortCode:{unequals:"TOR"}},
+			{shortCode:{unequals:"TRV"}},
+			{shortCode:{unequals:"TK"}},
+			{shortCode:{unequals:"SNJ"}},
+			{shortCode:{unequals:"SKV"}},
+			{shortCode:{unequals:"MY"}},
+			{shortCode:{unequals:"MUL"}},
+			{shortCode:{unequals:"MH"}},
+			{shortCode:{unequals:"MVA"}},
+			{shortCode:{unequals:"MIS"}},
+			{shortCode:{unequals:"MI"}},
+			{shortCode:{unequals:"LM"}},
+			{shortCode:{unequals:"LVT"}},
+			{shortCode:{unequals:"LIS"}},
+			{shortCode:{unequals:"LPA"}},
+			{shortCode:{unequals:"LR"}},
+			{shortCode:{unequals:"LNA"}},
+			{shortCode:{unequals:"LAI"}},
+			{shortCode:{unequals:"KYN"}},
+			{shortCode:{unequals:"KUT"}},
+			{shortCode:{unequals:"KUO"}},
+			{shortCode:{unequals:"KON"}},
+			{shortCode:{unequals:"KLO"}},
+			{shortCode:{unequals:"KLI"}},
+			{shortCode:{unequals:"KKI"}},
+			{shortCode:{unequals:"KOH"}},
+			{shortCode:{unequals:"KML"}},
+			{shortCode:{unequals:"KHA"}}
+		]
+	}){
+		name
+		shortCode
+		location
+	}
+}`;
+
+// Improved fetchStations with better error handling and caching
 export async function fetchStations(): Promise<Station[]> {
 	const cached = getCachedStations();
 	if (cached) return cached;
 
 	try {
-		const query = `{
-			stations(where:{
-    and:[
-      {passengerTraffic:{equals:true}},
-      {shortCode:{unequals: "ENO"}},
-      {shortCode:{unequals: "EPZ"}},
-      {shortCode:{unequals: "PAU"}},
-      {shortCode:{unequals: "ALV"}},
-      {shortCode:{unequals: "HPJ"}},
-      {shortCode:{unequals: "HPK"}},
-      {shortCode:{unequals: "HPA"}},
-      {shortCode:{unequals: "HSI"}},
-      {shortCode:{unequals: "HKS"}},
-      {shortCode:{unequals: "HVA"}},
-      {shortCode:{unequals: "HNV"}},
-      {shortCode:{unequals: "HLS"}},
-      {shortCode:{unequals: "HH"}},
-      {shortCode:{unequals: "HP"}},
-      {shortCode:{unequals: "HM"}},
-      {shortCode:{unequals: "HÖL"}},
-      {shortCode:{unequals: "ILM"}},
-      {shortCode:{unequals: "IMR"}},
-      {shortCode:{unequals: "IKO"}},
-      {shortCode:{unequals: "IKY"}},
-      {shortCode:{unequals: "JNS"}},
-      {shortCode:{unequals: "JTS"}},
-      {shortCode:{unequals: "JJ"}},
-      {shortCode:{unequals: "JY"}},
-      {shortCode:{unequals: "JÄS"}},
-      {shortCode:{unequals: "KAJ"}},
-      {shortCode:{unequals: "KNS"}},
-      {shortCode:{unequals: "KRU"}},
-      {shortCode:{unequals: "KEM"}},
-      {shortCode:{unequals: "KJÄ"}},
-      {shortCode:{unequals: "KIÄ"}},
-      {shortCode:{unequals: "KTI"}},
-      {shortCode:{unequals: "KEU"}},
-      {shortCode:{unequals: "KIA"}},
-      {shortCode:{unequals: "KIT"}},
-      {shortCode:{unequals: "KRV"}},
-      {shortCode:{unequals: "KOK"}},
-      {shortCode:{unequals: "LUS"}},
-      {shortCode:{unequals: "MR"}},
-      {shortCode:{unequals: "NLÄ"}},
-      {shortCode:{unequals: "NVL"}},
-      {shortCode:{unequals: "NRM"}},
-      {shortCode:{unequals: "OV"}},
-      {shortCode:{unequals: "OVK"}},
-      {shortCode:{unequals: "OU"}},
-      {shortCode:{unequals: "OL"}},
-      {shortCode:{unequals: "PTO"}},
-      {shortCode:{unequals: "PAR"}},
-      {shortCode:{unequals: "PKO"}},
-      {shortCode:{unequals: "PEL"}},
-      {shortCode:{unequals: "PVI"}},
-      {shortCode:{unequals: "PM"}},
-      {shortCode:{unequals: "PTR"}},
-      {shortCode:{unequals: "PTL"}},
-      {shortCode:{unequals: "PH"}},
-      {shortCode:{unequals: "PRI"}},
-      {shortCode:{unequals: "PRV"}},
-      {shortCode:{unequals: "PUN"}},
-      {shortCode:{unequals: "PUR"}},
-      {shortCode:{unequals: "PHÄ"}},
-      {shortCode:{unequals: "PNÄ"}},
-      {shortCode:{unequals: "PKY"}},
-      {shortCode:{unequals: "REE"}},
-      {shortCode:{unequals: "ROI"}},
-      {shortCode:{unequals: "RNN"}},
-      {shortCode:{unequals: "RKI"}},
-      {shortCode:{unequals: "SLO"}},
-      {shortCode:{unequals: "SL"}},
-      {shortCode:{unequals: "SK"}},
-      {shortCode:{unequals: "SIJ"}},
-      {shortCode:{unequals: "SPL"}},
-      {shortCode:{unequals: "ÄHT"}},
-      {shortCode:{unequals: "YV"}},
-      {shortCode:{unequals: "YTR"}},
-      {shortCode:{unequals: "YST"}},
-      {shortCode:{unequals: "VSL"}},
-      {shortCode:{unequals: "VLP"}},
-      {shortCode:{unequals: "VYB"}},
-      {shortCode:{unequals: "VNJ"}},
-      {shortCode:{unequals: "VIH"}},
-      {shortCode:{unequals: "VTI"}},
-      {shortCode:{unequals: "VAR"}},
-      {shortCode:{unequals: "VMA"}},
-      {shortCode:{unequals: "VNA"}},
-      {shortCode:{unequals: "VS"}},
-      {shortCode:{unequals: "VAA"}},
-      {shortCode:{unequals: "UTJ"}},
-      {shortCode:{unequals: "UIM"}},
-      {shortCode:{unequals: "TVE"}},
-      {shortCode:{unequals: "TUU"}},
-      {shortCode:{unequals: "TUS"}},
-      {shortCode:{unequals: "TKU"}},
-      {shortCode:{unequals: "TRI"}},
-      {shortCode:{unequals: "TOR"}},
-      {shortCode:{unequals: "TRV"}},
-      {shortCode:{unequals: "TK"}},
-      {shortCode:{unequals: "SNJ"}},
-      {shortCode:{unequals: "SKV"}},
-      {shortCode:{unequals: "MY"}},
-      {shortCode:{unequals: "MUL"}},
-      {shortCode:{unequals: "MH"}},
-      {shortCode:{unequals: "MVA"}},
-      {shortCode:{unequals: "MIS"}},
-      {shortCode:{unequals: "MI"}},
-      {shortCode:{unequals: "LM"}},
-      {shortCode:{unequals: "LVT"}},
-      {shortCode:{unequals: "LIS"}},
-      {shortCode:{unequals: "LPA"}},
-      {shortCode:{unequals: "LR"}},
-      {shortCode:{unequals: "LNA"}},
-      {shortCode:{unequals: "LAI"}},
-      {shortCode:{unequals: "KYN"}},
-      {shortCode:{unequals: "KUT"}},
-      {shortCode:{unequals: "KUO"}},
-      {shortCode:{unequals: "KON"}},
-      {shortCode:{unequals: "KLO"}},
-      {shortCode:{unequals: "KLI"}},
-      {shortCode:{unequals: "KKI"}},
-      {shortCode:{unequals: "KOH"}},
-      {shortCode:{unequals: "KML"}},
-      {shortCode:{unequals: "KHA"}},
-    ]
-    }){
-				name
-				shortCode
-				location
-
-			}
-		}`;
-
 		const response = await fetch(ENDPOINTS.GRAPHQL, {
 			method: "POST",
 			headers: DEFAULT_HEADERS,
-			body: JSON.stringify({ query }),
+			body: JSON.stringify({ query: STATION_QUERY }),
 		});
 
 		if (!response.ok) {
 			throw new Error(`Failed to fetch stations: ${response.statusText}`);
 		}
 
-		const { data } = await response.json();
-		const stations = data.stations.map((station: GraphQLStation) => ({
+		const result = await response.json();
+		
+		// Debug the response
+		console.log('GraphQL Response:', JSON.stringify(result, null, 2));
+		
+		// Check for GraphQL errors
+		if (result.errors) {
+			throw new Error(`GraphQL Error: ${JSON.stringify(result.errors)}`);
+		}
+
+		// Check if the response has the expected structure
+		if (!result?.data?.stations) {
+			throw new Error(`Invalid response format from GraphQL API. Response: ${JSON.stringify(result)}`);
+		}
+
+		const stations = result.data.stations.map((station: GraphQLStation) => ({
 			...station,
 			name: station.name.replace(" asema", ""),
 			location: {
@@ -194,7 +225,7 @@ export async function fetchStations(): Promise<Station[]> {
 			},
 		}));
 
-		stationCache.set("stations", { data: stations, timestamp: Date.now() });
+		stationCache.set(CACHE_CONFIG.STATION_KEY, { data: stations, timestamp: Date.now() });
 		return stations;
 	} catch (error) {
 		console.error("Error fetching stations:", error);
@@ -202,63 +233,63 @@ export async function fetchStations(): Promise<Station[]> {
 	}
 }
 
+// Optimized fetchTrainsLeavingFromStation with better error handling and data processing
 export async function fetchTrainsLeavingFromStation(
 	stationCode: string,
 ): Promise<Station[]> {
-	const response = await fetch(
-		`${ENDPOINTS.LIVE_TRAINS}/${stationCode}?arrived_trains=100&arriving_trains=100&departed_trains=100&departing_trains=100&include_nonstopping=false&train_categories=Commuter`,
-		{ headers: DEFAULT_HEADERS },
-	);
-	if (!response.ok) {
-		throw new Error("Failed to fetch station");
-	}
-	const data = await response.json();
-	// Filter trains that have the destination station in their timetable
-	const shortCodes = [
-		...new Set(
-			data.flatMap((train: Train) =>
-				train.timeTableRows
-					.filter(
-						(row: TimeTableRow) => row.commercialStop && row.trainStopping,
-					)
-					.map((row: TimeTableRow) => row.stationShortCode),
-			),
-		),
-	];
+	try {
+		const response = await fetch(
+			`${ENDPOINTS.LIVE_TRAINS}/${stationCode}?arrived_trains=100&arriving_trains=100&departed_trains=100&departing_trains=100&include_nonstopping=false&train_categories=Commuter`,
+			{ headers: DEFAULT_HEADERS },
+		);
 
-	interface RESTStation {
-		stationShortCode: string;
-		name: string;
-		passengerTraffic: boolean;
-		type: string;
-		stationName: string;
-		stationUICCode: number;
-		countryCode: string;
-		longitude: number;
-		latitude: number;
-	}
-	const stations = await fetch(ENDPOINTS.STATIONS);
-	const stationsData = await stations.json();
+		if (!response.ok) {
+			throw new Error(`Failed to fetch station data: ${response.statusText}`);
+		}
 
-	const filteredStations = stationsData.filter(
-		(station: RESTStation) =>
-			shortCodes.includes(station.stationShortCode) &&
-			station.passengerTraffic &&
-			station.stationShortCode !== stationCode,
-	);
-	return filteredStations.map(
-		(station: RESTStation): Station => ({
-			name: station.stationName.replace(" asema", ""),
-			shortCode: station.stationShortCode,
-			location: {
-				latitude: station.latitude,
-				longitude: station.longitude,
-			},
-		}),
-	);
+		const data = await response.json();
+		
+		// Extract unique station codes more efficiently
+		const shortCodes = new Set<string>();
+		for (const train of data) {
+			for (const row of train.timeTableRows) {
+				if (row.commercialStop && row.trainStopping) {
+					shortCodes.add(row.stationShortCode);
+				}
+			}
+		}
+
+		// Fetch station details in parallel
+		const stationsResponse = await fetch(ENDPOINTS.STATIONS);
+		if (!stationsResponse.ok) {
+			throw new Error(`Failed to fetch station details: ${stationsResponse.statusText}`);
+		}
+
+		const stationsData = await stationsResponse.json();
+		const filteredStations = stationsData.filter(
+			(station: RESTStation) =>
+				shortCodes.has(station.stationShortCode) &&
+				station.passengerTraffic &&
+				station.stationShortCode !== stationCode,
+		);
+
+		return filteredStations.map(
+			(station: RESTStation): Station => ({
+				name: station.stationName.replace(" asema", ""),
+				shortCode: station.stationShortCode,
+				location: {
+					latitude: station.latitude,
+					longitude: station.longitude,
+				},
+			}),
+		);
+	} catch (error) {
+		console.error(`Error fetching trains from station ${stationCode}:`, error);
+		throw error;
+	}
 }
 
-// Fetch trains without caching for real-time data
+// Optimized fetchTrains with better error handling and data processing
 export async function fetchTrains(
 	stationCode = "HKI",
 	destinationCode = "TKL",
