@@ -25,6 +25,24 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 		progress: 100,
 	});
 	const [currentTime, setCurrentTime] = useState(new Date());
+	const [animationPhase, setAnimationPhase] = useState(0);
+
+	useEffect(() => {
+		let startTime: number;
+		let animationFrame: number;
+
+		const animate = (timestamp: number) => {
+			if (!startTime) startTime = timestamp;
+			const elapsed = timestamp - startTime;
+			const progress = (elapsed % 2500) / 2500; // 2.5s animation duration
+			setAnimationPhase(progress);
+			animationFrame = requestAnimationFrame(animate);
+		};
+
+		animationFrame = requestAnimationFrame(animate);
+
+		return () => cancelAnimationFrame(animationFrame);
+	}, []);
 
 	const loadTrains = useCallback(async () => {
 		try {
@@ -121,7 +139,7 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 						<ProgressCircle progress={state.progress} />
 					</div>
 				</div>
-				<div class="grid gap-4 px-2">
+				<div class="grid gap-4 px-2" style={`--animation-phase: ${animationPhase}`}>
 					{state.trains.map((train) => (
 						<MemoizedTrainCard
 							key={`${train.trainNumber}`}

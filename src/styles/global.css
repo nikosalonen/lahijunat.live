@@ -11,31 +11,48 @@
 }
 
 @keyframes soft-blink {
-	0%,
-	100% {
+	0% {
 		background-color: rgb(255, 255, 255);
 	}
 	50% {
 		background-color: #bee4f8;
 	}
+	100% {
+		background-color: rgb(255, 255, 255);
+	}
 }
 
 @keyframes soft-blink-dark {
-	0%,
-	100% {
-		background-color: rgb(31, 41, 55); /* dark gray for dark mode */
+	0% {
+		background-color: rgb(31, 41, 55);
 	}
 	50% {
-		background-color: #1e40af; /* darker blue for dark mode */
+		background-color: #1e40af;
+	}
+	100% {
+		background-color: rgb(31, 41, 55);
 	}
 }
 
 .animate-soft-blink {
 	animation: soft-blink 2.5s ease-in-out infinite;
+	animation-play-state: running;
+	animation-delay: calc(var(--animation-phase, 0) * -2.5s);
 }
 
 .dark .animate-soft-blink {
 	animation: soft-blink-dark 2.5s ease-in-out infinite;
+	animation-play-state: running;
+	animation-delay: calc(var(--animation-phase, 0) * -2.5s);
+}
+
+/* Synchronize animation with parent state */
+[style*="--animation-phase: 0"] .animate-soft-blink {
+	animation-play-state: paused;
+}
+
+[style*="--animation-phase: 1"] .animate-soft-blink {
+	animation-play-state: running;
 }
 
 @keyframes pulse {
