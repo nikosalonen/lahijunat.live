@@ -73,8 +73,22 @@ export default function TrainCard({
 	useEffect(() => {
 		// Load highlighted state from localStorage
 		const highlightedTrains = JSON.parse(localStorage.getItem('highlightedTrains') || '{}');
-		setIsHighlighted(highlightedTrains[train.trainNumber] || false);
-	}, [train.trainNumber]);
+		const trainData = highlightedTrains[train.trainNumber];
+		
+		if (trainData) {
+			// Check if the highlight has expired
+			if (trainData.removeAfter && new Date(trainData.removeAfter) < currentTime) {
+				// Remove expired highlight
+				delete highlightedTrains[train.trainNumber];
+				localStorage.setItem('highlightedTrains', JSON.stringify(highlightedTrains));
+				setIsHighlighted(false);
+			} else {
+				setIsHighlighted(true);
+			}
+		} else {
+			setIsHighlighted(false);
+		}
+	}, [train.trainNumber, currentTime]);
 
 	useEffect(() => {
 		const handleLanguageChange = () => {
@@ -93,7 +107,26 @@ export default function TrainCard({
 			
 			// Update localStorage
 			const highlightedTrains = JSON.parse(localStorage.getItem('highlightedTrains') || '{}');
-			highlightedTrains[train.trainNumber] = newHighlighted;
+			
+			if (newHighlighted) {
+				// When highlighting, set removal time to 10 minutes after departure
+				const departureRow = train.timeTableRows.find(
+					(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE"
+				);
+				
+				if (departureRow) {
+					const departureTime = new Date(departureRow.liveEstimateTime ?? departureRow.scheduledTime);
+					const removeAfter = new Date(departureTime.getTime() + 10 * 60 * 1000); // 10 minutes after departure
+					
+					highlightedTrains[train.trainNumber] = {
+						highlighted: true,
+						removeAfter: removeAfter.toISOString()
+					};
+				}
+			} else {
+				delete highlightedTrains[train.trainNumber];
+			}
+			
 			localStorage.setItem('highlightedTrains', JSON.stringify(highlightedTrains));
 		}
 		setLastTapTime(now);
