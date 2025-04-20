@@ -1,0 +1,61 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+interface ChangelogSchema {
+  version: string;
+  date: string;
+}
+
+const entries = await getCollection('changelog');
+const sortedEntries = entries.sort((a: CollectionEntry<'changelog'>, b: CollectionEntry<'changelog'>) => {
+  return -a.data.version.localeCompare(b.data.version, undefined, { numeric: true });
+});
+---
+
+<Layout title="Lähijunat Live | Muutosloki">
+  <main class="min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">Muutosloki</h1>
+      
+      <div class="space-y-8">
+        {sortedEntries.map((entry, index) => (
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-[#8c4799] dark:text-[#b388ff] mb-4">
+              v{entry.data.version}
+              {index === 0 && <span class="text-sm font-normal ml-2">(Nykyinen)</span>}
+            </h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              {new Date(entry.data.date).toLocaleDateString('fi-FI')}
+            </div>
+            <div class="space-y-2">
+              {(entry.body || '').split('\n')
+                .filter(line => line.trim().startsWith('-'))
+                .map(line => (
+                  <div class="text-gray-600 dark:text-gray-300">
+                    {line.trim().substring(2)}
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .prose ul {
+    list-style-type: disc;
+    padding-left: 1.5em;
+  }
+  .prose li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+  .dark .prose li {
+    color: rgb(209 213 219);
+  }
+</style> 
