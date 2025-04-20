@@ -39,6 +39,7 @@ const getCardStyle = (
 	isCancelled: boolean,
 	minutesToDeparture: number | null,
 	isDepartingSoon: boolean,
+	isHighlighted: boolean,
 ) => {
 	const baseStyles =
 		"border rounded-lg shadow-sm transition-all hover:shadow-md relative";
@@ -47,10 +48,14 @@ const getCardStyle = (
 		return `${baseStyles} bg-red-50 dark:bg-red-950 border-red-300 dark:border-red-800`;
 	if (minutesToDeparture !== null && minutesToDeparture < -1)
 		return `${baseStyles} bg-gray-200 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-50`;
-	if (isDepartingSoon && !isCancelled)
-		return `${baseStyles} border-gray-300 dark:border-gray-600 dark:bg-gray-950 ${
-			isDepartingSoon ? "animate-soft-blink dark:animate-soft-blink-dark" : ""
-		}`;
+	if (isDepartingSoon && !isCancelled) {
+		if (isHighlighted) {
+			return `${baseStyles} animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark`;
+		}
+		return `${baseStyles} border-gray-300 dark:border-gray-600 dark:bg-gray-950 animate-soft-blink dark:animate-soft-blink-dark`;
+	}
+	if (isHighlighted)
+		return `${baseStyles} bg-[#f3e5f5] dark:bg-[#2d1a33] border-[#8c4799] dark:border-[#b388ff] ring-2 ring-[#8c4799] dark:ring-[#b388ff]`;
 	return `${baseStyles} bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600`;
 };
 
@@ -62,6 +67,14 @@ export default function TrainCard({
 }: Props) {
 	// Add state to force re-render on language change
 	const [, setLanguageChange] = useState(0);
+	const [isHighlighted, setIsHighlighted] = useState(false);
+	const [lastTapTime, setLastTapTime] = useState(0);
+
+	useEffect(() => {
+		// Load highlighted state from localStorage
+		const highlightedTrains = JSON.parse(localStorage.getItem('highlightedTrains') || '{}');
+		setIsHighlighted(highlightedTrains[train.trainNumber] || false);
+	}, [train.trainNumber]);
 
 	useEffect(() => {
 		const handleLanguageChange = () => {
@@ -71,6 +84,20 @@ export default function TrainCard({
 		window.addEventListener('languagechange', handleLanguageChange);
 		return () => window.removeEventListener('languagechange', handleLanguageChange);
 	}, []);
+
+	const handleDoubleTap = () => {
+		const now = Date.now();
+		if (now - lastTapTime < 300) { // 300ms threshold for double tap
+			const newHighlighted = !isHighlighted;
+			setIsHighlighted(newHighlighted);
+			
+			// Update localStorage
+			const highlightedTrains = JSON.parse(localStorage.getItem('highlightedTrains') || '{}');
+			highlightedTrains[train.trainNumber] = newHighlighted;
+			localStorage.setItem('highlightedTrains', JSON.stringify(highlightedTrains));
+		}
+		setLastTapTime(now);
+	};
 
 	// Memoize row lookups since they're used multiple times
 	const departureRow = useMemo(
@@ -114,8 +141,9 @@ export default function TrainCard({
 
 	return (
 		<article
-			class={`p-2 sm:p-4 ${getCardStyle(train.cancelled, minutesToDeparture, departingSoon)}`}
-			aria-label={`${t('train')} ${train.commuterLineID || ""} ${train.cancelled ? t('cancelled') : ""}`}
+			class={`p-2 sm:p-4 ${getCardStyle(train.cancelled, minutesToDeparture, departingSoon, isHighlighted)}`}
+			aria-label={`${t('train')} ${train.commuterLineID || ""} ${train.cancelled ? t('cancelled') : ""} ${isHighlighted ? t('highlighted') : ""}`}
+			onClick={handleDoubleTap}
 		>
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4 flex-1 min-w-0">
@@ -199,6 +227,13 @@ export default function TrainCard({
 						? t('departingSoon')
 						: ""}
 			</div>
+			{isHighlighted && (
+				<div class="absolute top-2 right-2">
+					<svg class="w-4 h-4 text-[#8c4799] dark:text-[#b388ff]" fill="currentColor" viewBox="0 0 24 24">
+						<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+					</svg>
+				</div>
+			)}
 		</article>
 	);
 }

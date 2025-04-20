@@ -34,6 +34,48 @@
 	}
 }
 
+@keyframes soft-blink-highlight {
+	0% {
+		background-color: rgb(255, 255, 255);
+		border-color: #8c4799;
+		--tw-ring-color: #8c4799;
+		box-shadow: 0 0 0 1px #8c4799, 0 0 8px rgba(140, 71, 153, 0.3);
+	}
+	50% {
+		background-color: #bee4f8;
+		border-color: #6a1b9a;
+		--tw-ring-color: #6a1b9a;
+		box-shadow: 0 0 0 1px #6a1b9a, 0 0 12px rgba(106, 27, 154, 0.4);
+	}
+	100% {
+		background-color: rgb(255, 255, 255);
+		border-color: #8c4799;
+		--tw-ring-color: #8c4799;
+		box-shadow: 0 0 0 1px #8c4799, 0 0 8px rgba(140, 71, 153, 0.3);
+	}
+}
+
+@keyframes soft-blink-highlight-dark {
+	0% {
+		background-color: rgb(31, 41, 55);
+		border-color: #b388ff;
+		--tw-ring-color: #b388ff;
+		box-shadow: 0 0 0 1px #b388ff, 0 0 12px rgba(179, 136, 255, 0.4);
+	}
+	50% {
+		background-color: #1e40af;
+		border-color: #7c4dff;
+		--tw-ring-color: #7c4dff;
+		box-shadow: 0 0 0 1px #7c4dff, 0 0 16px rgba(124, 77, 255, 0.5);
+	}
+	100% {
+		background-color: rgb(31, 41, 55);
+		border-color: #b388ff;
+		--tw-ring-color: #b388ff;
+		box-shadow: 0 0 0 1px #b388ff, 0 0 12px rgba(179, 136, 255, 0.4);
+	}
+}
+
 .animate-soft-blink {
 	animation: soft-blink 2.5s ease-in-out infinite;
 	animation-play-state: running;
@@ -46,12 +88,26 @@
 	animation-delay: calc(var(--animation-phase, 0) * -2.5s);
 }
 
+.animate-soft-blink-highlight {
+	animation: soft-blink-highlight 2.5s ease-in-out infinite;
+	animation-play-state: running;
+	animation-delay: calc(var(--animation-phase, 0) * -2.5s);
+}
+
+.dark .animate-soft-blink-highlight {
+	animation: soft-blink-highlight-dark 2.5s ease-in-out infinite;
+	animation-play-state: running;
+	animation-delay: calc(var(--animation-phase, 0) * -2.5s);
+}
+
 /* Synchronize animation with parent state */
-[style*="--animation-phase: 0"] .animate-soft-blink {
+[style*="--animation-phase: 0"] .animate-soft-blink,
+[style*="--animation-phase: 0"] .animate-soft-blink-highlight {
 	animation-play-state: paused;
 }
 
-[style*="--animation-phase: 1"] .animate-soft-blink {
+[style*="--animation-phase: 1"] .animate-soft-blink,
+[style*="--animation-phase: 1"] .animate-soft-blink-highlight {
 	animation-play-state: running;
 }
 
@@ -68,3 +124,7 @@
 .animate-pulse {
 	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -29,6 +29,7 @@ export const translations: Translations = {
     track: "Raide",
     error: "Virhe ladattaessa junatiedot",
     departingTrains: "Lähtevät junat",
+    highlighted: "Korostettu",
   },
   en: {
     title: "Local Trains Live | Real-time schedules for local trains",
@@ -52,6 +53,7 @@ export const translations: Translations = {
     track: "Track",
     error: "Error loading train data",
     departingTrains: "Departing trains",
+    highlighted: "Highlighted",
   }
 };
 
