@@ -203,9 +203,6 @@ export async function fetchStations(): Promise<Station[]> {
 
 		const result = await response.json();
 		
-		// Debug the response
-		console.log('GraphQL Response:', JSON.stringify(result, null, 2));
-		
 		// Check for GraphQL errors
 		if (result.errors) {
 			throw new Error(`GraphQL Error: ${JSON.stringify(result.errors)}`);
