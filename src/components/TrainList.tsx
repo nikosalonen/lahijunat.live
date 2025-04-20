@@ -27,23 +27,6 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const [animationPhase, setAnimationPhase] = useState(0);
 
-	useEffect(() => {
-		let startTime: number;
-		let animationFrame: number;
-
-		const animate = (timestamp: number) => {
-			if (!startTime) startTime = timestamp;
-			const elapsed = timestamp - startTime;
-			const progress = (elapsed % 2500) / 2500; // 2.5s animation duration
-			setAnimationPhase(progress);
-			animationFrame = requestAnimationFrame(animate);
-		};
-
-		animationFrame = requestAnimationFrame(animate);
-
-		return () => cancelAnimationFrame(animationFrame);
-	}, []);
-
 	const loadTrains = useCallback(async () => {
 		try {
 			if (state.initialLoad) {
@@ -72,10 +55,20 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 	}, [stationCode, destinationCode, state.initialLoad]);
 
 	useEffect(() => {
-		loadTrains();
+		let startTime: number;
+		let animationFrame: number;
+		let updateTimeout: NodeJS.Timeout;
+		let updateInterval: NodeJS.Timeout;
 
-		const updateInterval = 30000; // 30 seconds
-		const progressSteps = 30;
+		const animate = (timestamp: number) => {
+			if (!startTime) startTime = timestamp;
+			const elapsed = timestamp - startTime;
+			const progress = (elapsed % 2500) / 2500; // 2.5s animation duration
+			setAnimationPhase(progress);
+			animationFrame = requestAnimationFrame(animate);
+		};
+
+		animationFrame = requestAnimationFrame(animate);
 
 		// Function to calculate time until next even second (:00 or :30)
 		const getTimeUntilNextUpdate = () => {
@@ -86,26 +79,30 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 			return timeUntilNextHalfMinute;
 		};
 
-		// Initial timeout to align with next even second
-		const initialTimeout = setTimeout(() => {
+		// Initial data load
+		loadTrains();
+
+		// Schedule next update at the next even second
+		updateTimeout = setTimeout(() => {
 			loadTrains();
 			// Then set up regular interval
-			const intervalId = setInterval(() => {
+			updateInterval = setInterval(() => {
 				loadTrains();
-			}, updateInterval);
-
-			return () => clearInterval(intervalId);
+			}, 30000); // 30 seconds
 		}, getTimeUntilNextUpdate());
 
+		// Progress bar update interval
 		const progressInterval = setInterval(() => {
 			setState((prev) => ({
 				...prev,
-				progress: Math.max(0, prev.progress - 100 / progressSteps),
+				progress: Math.max(0, prev.progress - 100 / 30),
 			}));
-		}, updateInterval / progressSteps);
+		}, 1000); // Update progress every second
 
 		return () => {
-			clearTimeout(initialTimeout);
+			cancelAnimationFrame(animationFrame);
+			clearTimeout(updateTimeout);
+			clearInterval(updateInterval);
 			clearInterval(progressInterval);
 		};
 	}, [loadTrains]);
