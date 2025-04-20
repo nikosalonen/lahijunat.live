@@ -59,9 +59,25 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 		const updateInterval = 30000; // 30 seconds
 		const progressSteps = 30;
 
-		const intervalId = setInterval(() => {
+		// Function to calculate time until next even second (:00 or :30)
+		const getTimeUntilNextUpdate = () => {
+			const now = new Date();
+			const seconds = now.getSeconds();
+			const milliseconds = now.getMilliseconds();
+			const timeUntilNextHalfMinute = (30 - (seconds % 30)) * 1000 - milliseconds;
+			return timeUntilNextHalfMinute;
+		};
+
+		// Initial timeout to align with next even second
+		const initialTimeout = setTimeout(() => {
 			loadTrains();
-		}, updateInterval);
+			// Then set up regular interval
+			const intervalId = setInterval(() => {
+				loadTrains();
+			}, updateInterval);
+
+			return () => clearInterval(intervalId);
+		}, getTimeUntilNextUpdate());
 
 		const progressInterval = setInterval(() => {
 			setState((prev) => ({
@@ -71,7 +87,7 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 		}, updateInterval / progressSteps);
 
 		return () => {
-			clearInterval(intervalId);
+			clearTimeout(initialTimeout);
 			clearInterval(progressInterval);
 		};
 	}, [loadTrains]);
