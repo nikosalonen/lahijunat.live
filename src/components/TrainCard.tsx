@@ -46,7 +46,7 @@ const getCardStyle = (
 
 	if (isCancelled)
 		return `${baseStyles} bg-red-50 dark:bg-red-950 border-red-300 dark:border-red-800`;
-	if (minutesToDeparture !== null && minutesToDeparture < -1)
+	if (minutesToDeparture !== null && minutesToDeparture < 0)
 		return `${baseStyles} bg-gray-200 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-50`;
 	if (isDepartingSoon && !isCancelled) {
 		if (isHighlighted) {
@@ -213,7 +213,7 @@ export default function TrainCard({
 											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l2 2" />
 											<circle cx="12" cy="12" r="9" stroke-width="2" fill="none" />
 										</svg>
-										{minutesToDeparture} min
+										{minutesToDeparture === 0 ? "0 min" : `${minutesToDeparture} min`}
 									</span>
 								)}
 						</>
