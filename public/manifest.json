@@ -39,6 +39,12 @@
       "purpose": "maskable"
     },
     {
+      "src": "/icons/icon-144-maskable.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "/icons/icon-192-maskable.png",
       "sizes": "192x192",
       "type": "image/png",
@@ -52,6 +58,24 @@
     }
   ],
   "orientation": "portrait",
+  "screenshots": [
+    {
+      "src": "/screenshots/localhost_4321_HKI_PSL(Pixel 7)_light.png",
+      "sizes": "1081x2400",
+      "type": "image/png"
+    },
+    {
+      "src": "/screenshots/localhost_4321_HKI_PSL(Pixel 7).png",
+      "sizes": "1081x2400",
+      "type": "image/png"
+    },
+    {
+      "src": "/screenshots/image.png",
+      "sizes": "1749x1293",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
   "categories": [
     "travel",
     "transportation",
