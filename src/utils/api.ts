@@ -294,7 +294,7 @@ export async function fetchTrains(
 	try {
 		const params = new URLSearchParams({
 			limit: "100",
-			startDate: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
+			startDate: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
 			endDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
 		});
 
