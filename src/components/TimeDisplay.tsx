@@ -18,17 +18,17 @@ const TimeDisplay = ({
 	useLanguageChange();
 	return useMemo(
 		() => (
-			<span class={`text-lg font-medium ${isCancelled ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200'} break-words min-w-0`}>
+			<span class={`text-lg font-medium ${isCancelled ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200'} break-words min-w-0 relative pt-6`}>
 				{departureRow.liveEstimateTime && timeDifferenceMinutes > 0 ? (
-					<span class="flex flex-col">
+					<>
 						<output
 							aria-label={`${t('late')} ${timeDifferenceMinutes} ${t('minutes')}`}
-							class="mb-1 px-2 py-0.5 bg-[#fed100] text-black rounded text-sm self-start"
+							class="absolute top-0 left-0 px-2 py-0.5 bg-[#fed100] text-black rounded text-sm"
 						>
 							{`+${timeDifferenceMinutes} min`}
 						</output>
 						<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} />
-					</span>
+					</>
 				) : (
 					<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} />
 				)}
