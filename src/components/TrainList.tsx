@@ -14,6 +14,7 @@ interface Props {
 }
 
 const MemoizedTrainCard = memo(TrainCard);
+const INITIAL_TRAIN_COUNT = 15;
 
 export default function TrainList({ stationCode, destinationCode, stations }: Props) {
 	useLanguageChange();
@@ -26,6 +27,7 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 	});
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const [animationPhase, setAnimationPhase] = useState(0);
+	const [displayedTrainCount, setDisplayedTrainCount] = useState(INITIAL_TRAIN_COUNT);
 
 	const loadTrains = useCallback(async () => {
 		try {
@@ -53,6 +55,11 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 			console.error(err);
 		}
 	}, [stationCode, destinationCode, state.initialLoad]);
+
+	// Reset displayed count when stations change
+	useEffect(() => {
+		setDisplayedTrainCount(INITIAL_TRAIN_COUNT);
+	}, [stationCode, destinationCode]);
 
 	useEffect(() => {
 		let startTime: number;
@@ -124,6 +131,9 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 	const fromStation = stations.find(s => s.shortCode === stationCode);
 	const toStation = stations.find(s => s.shortCode === destinationCode);
 
+	const displayedTrains = state.trains.slice(0, displayedTrainCount);
+	const hasMoreTrains = state.trains.length > displayedTrainCount;
+
 	return (
 		<div>
 			<div class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4">
@@ -137,7 +147,7 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 					</div>
 				</div>
 				<div class="grid gap-4 px-2" style={`--animation-phase: ${animationPhase}`}>
-					{state.trains.map((train) => (
+					{displayedTrains.map((train) => (
 						<MemoizedTrainCard
 							key={`${train.trainNumber}`}
 							train={train}
@@ -147,6 +157,16 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 						/>
 					))}
 				</div>
+				{hasMoreTrains && (
+					<div class="flex justify-center mt-4">
+						<button
+							onClick={() => setDisplayedTrainCount(prev => prev + INITIAL_TRAIN_COUNT)}
+							class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
+						>
+							{t('showMore')}
+						</button>
+					</div>
+				)}
 			</div>
 		</div>
 	);

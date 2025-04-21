@@ -34,6 +34,7 @@ export const translations: Translations = {
     dataSource: "Datalähde",
     trainIcon: "Juna-ikoni lainattu",
     changelog: "Muutosloki",
+    showMore: "Näytä lisää",
   },
   en: {
     title: "Local Trains Live | Real-time schedules for local trains",
@@ -62,6 +63,7 @@ export const translations: Translations = {
     dataSource: "Data source",
     trainIcon: "Train icon from",
     changelog: "Changelog",
+    showMore: "Show more",
   }
 };
 
