@@ -1,11 +1,15 @@
 import pkg from "../../package.json";
+import { t } from "../utils/translations";
+import { useLanguageChange } from "../hooks/useLanguageChange";
 
 export default function Footer() {
+  useLanguageChange();
+  
   return (
     <footer class="py-4 text-center text-white bg-[#8c4799] w-full mt-auto">
       <div class="space-y-2">
         <p>
-          Made by{" "}
+          {t('madeBy')}{" "}
           <a
             href="https://bsky.app/profile/niko.torttu.fi"
             class="hover:text-blue-100 transition-colors"
@@ -17,7 +21,7 @@ export default function Footer() {
         </p>
         <p class="text-sm">v{pkg.version}</p>
         <p class="text-sm">
-          Datalähde: {" "}
+          {t('dataSource')}: {" "}
           <a
             href="https://www.digitraffic.fi/"
             class="hover:text-blue-100 transition-colors"
@@ -26,7 +30,7 @@ export default function Footer() {
           >
             Fintraffic
           </a>
-          - Juna-ikoni lainattu{" "}
+          - {t('trainIcon')}{" "}
           <a
             href="https://tyyliopas.hsl.fi/"
             class="hover:text-blue-100 transition-colors"
@@ -41,7 +45,7 @@ export default function Footer() {
             href="/changelog"
             class="text-white hover:text-blue-100 transition-colors"
           >
-            Muutosloki
+            {t('changelog')}
           </a>
           <a
             href="https://github.com/nikosalonen/lahijunat.live"

@@ -30,6 +30,10 @@ export const translations: Translations = {
     error: "Virhe ladattaessa junatiedot",
     departingTrains: "Lähtevät junat",
     highlighted: "Korostettu",
+    madeBy: "Tekijä",
+    dataSource: "Datalähde",
+    trainIcon: "Juna-ikoni lainattu",
+    changelog: "Muutosloki",
   },
   en: {
     title: "Local Trains Live | Real-time schedules for local trains",
@@ -54,6 +58,10 @@ export const translations: Translations = {
     error: "Error loading train data",
     departingTrains: "Departing trains",
     highlighted: "Highlighted",
+    madeBy: "Made by",
+    dataSource: "Data source",
+    trainIcon: "Train icon from",
+    changelog: "Changelog",
   }
 };
 
