@@ -35,23 +35,30 @@ const mySwPlugin = () => {
 
 				// Recursively find all HTML files
 				async function processDirectory(dirPath) {
-					const entries = await fs.readdir(dirPath, { withFileTypes: true });
-					for (const entry of entries) {
-						const fullPath = path.join(dirPath, entry.name);
-						if (entry.isDirectory()) {
-							await processDirectory(fullPath);
-						} else if (entry.name.endsWith(".html")) {
-							const html = await fs.readFile(fullPath, "utf8");
-							const updatedHtml = html.replace(
-								"</head>",
-								`${injection}</head>`,
-							);
-							await fs.writeFile(fullPath, updatedHtml);
+					try {
+						const normalizedPath = path.resolve(dirPath);
+						const entries = await fs.readdir(normalizedPath, { withFileTypes: true });
+						for (const entry of entries) {
+							const fullPath = path.join(normalizedPath, entry.name);
+							if (entry.isDirectory()) {
+								await processDirectory(fullPath);
+							} else if (entry.name.endsWith(".html")) {
+								const html = await fs.readFile(fullPath, "utf8");
+								const updatedHtml = html.replace(
+									"</head>",
+									`${injection}</head>`,
+								);
+								await fs.writeFile(fullPath, updatedHtml);
+							}
 						}
+					} catch (error) {
+						console.error(`Error processing directory ${dirPath}:`, error);
+						throw error;
 					}
 				}
 
-				await processDirectory(config.outDir.pathname);
+				const distPath = path.resolve(process.cwd(), 'dist');
+				await processDirectory(distPath);
 			},
 		},
 	};
