@@ -20,7 +20,7 @@ const sortedEntries = entries.sort((a: CollectionEntry<'changelog'>, b: Collecti
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">Muutosloki</h1>
       
       <div class="space-y-8">
-        {sortedEntries.map((entry, index) => (
+        {sortedEntries.map((entry: CollectionEntry<'changelog'>, index: number) => (
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <h2 class="text-xl font-semibold text-[#8c4799] dark:text-[#b388ff] mb-4">
               v{entry.data.version}
@@ -31,8 +31,8 @@ const sortedEntries = entries.sort((a: CollectionEntry<'changelog'>, b: Collecti
             </div>
             <div class="space-y-2">
               {(entry.body || '').split('\n')
-                .filter(line => line.trim().startsWith('-'))
-                .map(line => (
+                .filter((line: string) => line.trim().startsWith('-'))
+                .map((line: string) => (
                   <div class="text-gray-600 dark:text-gray-300">
                     {line.trim().substring(2)}
                   </div>
