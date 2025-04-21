@@ -9,9 +9,16 @@ interface ChangelogSchema {
 }
 
 const entries = await getCollection('changelog');
-const sortedEntries = entries.sort((a: CollectionEntry<'changelog'>, b: CollectionEntry<'changelog'>) => {
-  return -a.data.version.localeCompare(b.data.version, undefined, { numeric: true });
-});
+const sortedEntries = await Promise.all(
+  entries
+    .sort((a: CollectionEntry<'changelog'>, b: CollectionEntry<'changelog'>) => {
+      return -a.data.version.localeCompare(b.data.version, undefined, { numeric: true });
+    })
+    .map(async (entry: CollectionEntry<'changelog'>) => {
+      const { Content } = await entry.render();
+      return { ...entry, Content };
+    })
+);
 ---
 
 <Layout title="Lähijunat Live | Muutosloki">
@@ -29,15 +36,8 @@ const sortedEntries = entries.sort((a: CollectionEntry<'changelog'>, b: Collecti
             <div class="text-sm text-gray-500 dark:text-gray-400 mb-4">
               {new Date(entry.data.date).toLocaleDateString('fi-FI')}
             </div>
-            <div class="space-y-2">
-              {(entry.body || '').split('\n')
-                .filter((line: string) => line.trim().startsWith('-'))
-                .map((line: string) => (
-                  <div class="text-gray-600 dark:text-gray-300">
-                    {line.trim().substring(2)}
-                  </div>
-                ))
-              }
+            <div class="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300">
+              <entry.Content />
             </div>
           </div>
         ))}
@@ -46,16 +46,23 @@ const sortedEntries = entries.sort((a: CollectionEntry<'changelog'>, b: Collecti
   </main>
 </Layout>
 
-<style>
+<style is:global>
   .prose ul {
-    list-style-type: disc;
-    padding-left: 1.5em;
+    list-style-type: none;
+    padding-left: 0;
   }
   .prose li {
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
   }
-  .dark .prose li {
-    color: rgb(209 213 219);
+  .prose li::before {
+    content: "-";
+    color: rgb(156 163 175); /* text-gray-400 */
+  }
+  .dark .prose li::before {
+    color: rgb(107 114 128); /* text-gray-500 */
   }
 </style> 
