@@ -8,6 +8,7 @@ interface Props {
 	stationCode: string;
 	destinationCode: string;
 	currentTime: Date;
+	onDepart?: () => void;
 }
 
 const calculateDuration = (start: string, end: string) => {
@@ -42,12 +43,12 @@ const getCardStyle = (
 	isHighlighted: boolean,
 ) => {
 	const baseStyles =
-		"border rounded-lg shadow-sm transition-all hover:shadow-md relative";
+		"border rounded-lg shadow-sm hover:shadow-md relative duration-[3000ms]";
 
 	if (isCancelled)
 		return `${baseStyles} bg-red-50 dark:bg-red-950 border-red-300 dark:border-red-800`;
 	if (minutesToDeparture !== null && minutesToDeparture < 0)
-		return `${baseStyles} bg-gray-200 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-50`;
+		return `${baseStyles} bg-gray-200 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-0 transition-opacity`;
 	if (isDepartingSoon && !isCancelled && minutesToDeparture !== null && minutesToDeparture >= 0) {
 		if (isHighlighted) {
 			return `${baseStyles} animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark`;
@@ -64,10 +65,13 @@ export default function TrainCard({
 	stationCode,
 	destinationCode,
 	currentTime,
+	onDepart,
 }: Props) {
 	const [, setLanguageChange] = useState(0);
 	const [isHighlighted, setIsHighlighted] = useState(false);
 	const [lastTapTime, setLastTapTime] = useState(0);
+	const [hasDeparted, setHasDeparted] = useState(false);
+	const [opacity, setOpacity] = useState(1);
 
 	// Memoize all time-dependent calculations
 	const {
@@ -121,6 +125,20 @@ export default function TrainCard({
 			cardStyle
 		};
 	}, [train, stationCode, destinationCode, currentTime, isHighlighted]);
+
+	// Call onDepart when the train transitions from not departed to departed
+	useEffect(() => {
+		if (!minutesToDeparture) return;
+		if (minutesToDeparture < 0 && !hasDeparted) {
+			setHasDeparted(true);
+			setOpacity(1);
+			// Start fade out
+			requestAnimationFrame(() => {
+				setOpacity(0);
+			});
+			onDepart?.();
+		}
+	}, [minutesToDeparture, hasDeparted, onDepart]);
 
 	useEffect(() => {
 		// Load highlighted state from localStorage
@@ -189,6 +207,7 @@ export default function TrainCard({
 	return (
 		<article
 			class={`p-2 sm:p-4 ${cardStyle}`}
+			style={{ opacity: hasDeparted ? opacity : 1 }}
 			aria-label={`${t('train')} ${train.commuterLineID || ""} ${train.cancelled ? t('cancelled') : ""} ${isHighlighted ? t('highlighted') : ""}`}
 			onClick={handleDoubleTap}
 		>

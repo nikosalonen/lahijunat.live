@@ -15,6 +15,7 @@ interface Props {
 
 const MemoizedTrainCard = memo(TrainCard);
 const INITIAL_TRAIN_COUNT = 15;
+const FADE_DURATION = 3000; // 3 seconds to match the animation duration
 
 export default function TrainList({ stationCode, destinationCode, stations }: Props) {
 	useLanguageChange();
@@ -28,6 +29,7 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const [animationPhase, setAnimationPhase] = useState(0);
 	const [displayedTrainCount, setDisplayedTrainCount] = useState(INITIAL_TRAIN_COUNT);
+	const [departedTrains, setDepartedTrains] = useState<Set<string>>(new Set());
 
 	const loadTrains = useCallback(async () => {
 		try {
@@ -56,10 +58,17 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 		}
 	}, [stationCode, destinationCode, state.initialLoad]);
 
-	// Reset displayed count when stations change
+	// Reset displayed count and departed trains when stations change
 	useEffect(() => {
 		setDisplayedTrainCount(INITIAL_TRAIN_COUNT);
+		setDepartedTrains(new Set());
 	}, [stationCode, destinationCode]);
+
+	const handleTrainDeparted = useCallback((trainNumber: string) => {
+		setTimeout(() => {
+			setDepartedTrains(prev => new Set([...prev, trainNumber]));
+		}, FADE_DURATION);
+	}, []);
 
 	useEffect(() => {
 		let startTime: number;
@@ -138,7 +147,9 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 	const fromStation = stations.find(s => s.shortCode === stationCode);
 	const toStation = stations.find(s => s.shortCode === destinationCode);
 
-	const displayedTrains = state.trains.slice(0, displayedTrainCount);
+	const displayedTrains = state.trains
+		.filter(train => !departedTrains.has(train.trainNumber))
+		.slice(0, displayedTrainCount);
 	const hasMoreTrains = state.trains.length > displayedTrainCount;
 
 	return (
@@ -153,15 +164,29 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 						<ProgressCircle progress={state.progress} />
 					</div>
 				</div>
-				<div class="grid gap-4 px-2" style={`--animation-phase: ${animationPhase}`}>
-					{displayedTrains.map((train) => (
-						<MemoizedTrainCard
-							key={`${train.trainNumber}`}
-							train={train}
-							stationCode={stationCode}
-							destinationCode={destinationCode}
-							currentTime={currentTime}
-						/>
+				<div 
+					class="grid auto-rows-fr gap-4 px-2 transition-[grid-row,transform] duration-700 ease-in-out"
+					style={{
+						'--animation-phase': animationPhase,
+						'grid-template-rows': `repeat(${displayedTrains.length}, minmax(0, 1fr))`
+					}}
+				>
+					{displayedTrains.map((train, index) => (
+						<div 
+							key={train.trainNumber}
+							class="transition-[transform,opacity] duration-700 ease-in-out"
+							style={{
+								'grid-row': `${index + 1}`
+							}}
+						>
+							<MemoizedTrainCard
+								train={train}
+								stationCode={stationCode}
+								destinationCode={destinationCode}
+								currentTime={currentTime}
+								onDepart={() => handleTrainDeparted(train.trainNumber)}
+							/>
+						</div>
 					))}
 				</div>
 				{hasMoreTrains && (
