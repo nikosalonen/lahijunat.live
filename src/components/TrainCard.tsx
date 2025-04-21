@@ -22,16 +22,16 @@ const calculateDuration = (start: string, end: string) => {
 
 const formatMinutesToDeparture = (scheduledTime: string, currentTime: Date) => {
 	const departure = new Date(scheduledTime);
-	const diffMinutes = Math.round(
-		(departure.getTime() - currentTime.getTime()) / (1000 * 60),
-	);
-	return diffMinutes;
+	const diffMs = departure.getTime() - currentTime.getTime();
+	const diffMinutes = diffMs / (1000 * 60);
+	// For negative times (past departure), use floor to show how many minutes ago
+	// For positive times (future departure), use floor to show complete minutes until departure
+	return Math.floor(diffMinutes);
 };
 
-const isDepartingSoon = (scheduledTime: string) => {
+const isDepartingSoon = (scheduledTime: string, currentTime: Date) => {
 	const departure = new Date(scheduledTime);
-	const now = new Date();
-	const diffMinutes = (departure.getTime() - now.getTime()) / (1000 * 60);
+	const diffMinutes = (departure.getTime() - currentTime.getTime()) / (1000 * 60);
 	return diffMinutes >= 0 && diffMinutes <= 5;
 };
 
@@ -48,7 +48,7 @@ const getCardStyle = (
 		return `${baseStyles} bg-red-50 dark:bg-red-950 border-red-300 dark:border-red-800`;
 	if (minutesToDeparture !== null && minutesToDeparture < 0)
 		return `${baseStyles} bg-gray-200 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-50`;
-	if (isDepartingSoon && !isCancelled) {
+	if (isDepartingSoon && !isCancelled && minutesToDeparture !== null && minutesToDeparture >= 0) {
 		if (isHighlighted) {
 			return `${baseStyles} animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark`;
 		}
@@ -65,10 +65,62 @@ export default function TrainCard({
 	destinationCode,
 	currentTime,
 }: Props) {
-	// Add state to force re-render on language change
 	const [, setLanguageChange] = useState(0);
 	const [isHighlighted, setIsHighlighted] = useState(false);
 	const [lastTapTime, setLastTapTime] = useState(0);
+
+	// Memoize all time-dependent calculations
+	const {
+		departureRow,
+		arrivalRow,
+		minutesToDeparture,
+		departingSoon,
+		timeDifferenceMinutes,
+		duration,
+		cardStyle
+	} = useMemo(() => {
+		const departureRow = train.timeTableRows.find(
+			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
+		);
+		
+		const arrivalRow = train.timeTableRows.find(
+			(row) => row.stationShortCode === destinationCode && row.type === "ARRIVAL",
+		);
+
+		if (!departureRow) return {};
+
+		const minutesToDeparture = formatMinutesToDeparture(
+			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+			currentTime,
+		);
+
+		const departingSoon = isDepartingSoon(
+			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+			currentTime
+		);
+
+		const timeDifferenceMinutes = departureRow.differenceInMinutes ?? 0;
+
+		const arrivalTime = arrivalRow?.liveEstimateTime ?? arrivalRow?.scheduledTime;
+		const duration = arrivalTime
+			? calculateDuration(
+					departureRow.actualTime ?? departureRow.scheduledTime,
+					arrivalTime,
+				)
+			: null;
+
+		const cardStyle = getCardStyle(train.cancelled, minutesToDeparture, departingSoon, isHighlighted);
+
+		return {
+			departureRow,
+			arrivalRow,
+			minutesToDeparture,
+			departingSoon,
+			timeDifferenceMinutes,
+			duration,
+			cardStyle
+		};
+	}, [train, stationCode, destinationCode, currentTime, isHighlighted]);
 
 	useEffect(() => {
 		// Load highlighted state from localStorage
@@ -132,49 +184,11 @@ export default function TrainCard({
 		setLastTapTime(now);
 	};
 
-	// Memoize row lookups since they're used multiple times
-	const departureRow = useMemo(
-		() =>
-			train.timeTableRows.find(
-				(row) =>
-					row.stationShortCode === stationCode && row.type === "DEPARTURE",
-			),
-		[train.timeTableRows, stationCode],
-	);
-
-	const arrivalRow = useMemo(
-		() =>
-			train.timeTableRows.find(
-				(row) =>
-					row.stationShortCode === destinationCode && row.type === "ARRIVAL",
-			),
-		[train.timeTableRows, destinationCode],
-	);
-
 	if (!departureRow) return null;
-
-	const minutesToDeparture = formatMinutesToDeparture(
-		departureRow.liveEstimateTime ?? departureRow.scheduledTime,
-		currentTime,
-	);
-
-	const departingSoon = isDepartingSoon(
-		departureRow.liveEstimateTime ?? departureRow.scheduledTime,
-	);
-
-	const timeDifferenceMinutes = departureRow.differenceInMinutes ?? 0;
-
-	const arrivalTime = arrivalRow?.liveEstimateTime ?? arrivalRow?.scheduledTime;
-	const duration = arrivalTime
-		? calculateDuration(
-				departureRow.actualTime ?? departureRow.scheduledTime,
-				arrivalTime,
-			)
-		: null;
 
 	return (
 		<article
-			class={`p-2 sm:p-4 ${getCardStyle(train.cancelled, minutesToDeparture, departingSoon, isHighlighted)}`}
+			class={`p-2 sm:p-4 ${cardStyle}`}
 			aria-label={`${t('train')} ${train.commuterLineID || ""} ${train.cancelled ? t('cancelled') : ""} ${isHighlighted ? t('highlighted') : ""}`}
 			onClick={handleDoubleTap}
 		>
@@ -265,6 +279,18 @@ export default function TrainCard({
 					<svg class="w-4 h-4 text-[#8c4799] dark:text-[#b388ff]" fill="currentColor" viewBox="0 0 24 24">
 						<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
 					</svg>
+				</div>
+			)}
+			{process.env.NODE_ENV === 'development' && (
+				<div class="mt-4 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-xs font-mono space-y-1">
+					<div class="font-bold text-blue-600 dark:text-blue-400">Debug Info:</div>
+					<div class="text-gray-800 dark:text-gray-200">Train: <span class="text-blue-600 dark:text-blue-400">{train.commuterLineID} ({train.trainNumber})</span></div>
+					<div class="text-gray-800 dark:text-gray-200">Current time: <span class="text-blue-600 dark:text-blue-400">{currentTime.toLocaleTimeString()}</span></div>
+					<div class="text-gray-800 dark:text-gray-200">Scheduled: <span class="text-blue-600 dark:text-blue-400">{new Date(departureRow?.scheduledTime || '').toLocaleTimeString()}</span></div>
+					<div class="text-gray-800 dark:text-gray-200">Live estimate: <span class="text-blue-600 dark:text-blue-400">{departureRow?.liveEstimateTime ? new Date(departureRow.liveEstimateTime).toLocaleTimeString() : 'none'}</span></div>
+					<div class="text-gray-800 dark:text-gray-200">Minutes to departure: <span class="text-blue-600 dark:text-blue-400">{minutesToDeparture}</span></div>
+					<div class="text-gray-800 dark:text-gray-200">Departing soon: <span class={`${departingSoon ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{departingSoon ? 'yes' : 'no'}</span></div>
+					<div class="text-gray-800 dark:text-gray-200">Card style: <span class="text-purple-600 dark:text-purple-400">{cardStyle.split(' ').filter(c => c.startsWith('bg-') || c.includes('blink')).join(' ')}</span></div>
 				</div>
 			)}
 		</article>

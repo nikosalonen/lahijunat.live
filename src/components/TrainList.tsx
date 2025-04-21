@@ -66,6 +66,7 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 		let animationFrame: number;
 		let updateTimeout: NodeJS.Timeout;
 		let updateInterval: NodeJS.Timeout;
+		let timeUpdateInterval: NodeJS.Timeout;
 
 		const animate = (timestamp: number) => {
 			if (!startTime) startTime = timestamp;
@@ -89,6 +90,11 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 		// Initial data load
 		loadTrains();
 
+		// Update current time every second
+		timeUpdateInterval = setInterval(() => {
+			setCurrentTime(new Date());
+		}, 1000);
+
 		// Schedule next update at the next even second
 		updateTimeout = setTimeout(() => {
 			loadTrains();
@@ -111,6 +117,7 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 			clearTimeout(updateTimeout);
 			clearInterval(updateInterval);
 			clearInterval(progressInterval);
+			clearInterval(timeUpdateInterval);
 		};
 	}, [loadTrains]);
 
