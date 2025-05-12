@@ -1,7 +1,7 @@
 {
   "name": "lahijunat-live",
   "type": "module",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && workbox generateSW workbox-config.cjs",
@@ -13,17 +13,16 @@
   },
   "dependencies": {
     "@astrojs/markdown-component": "^1.0.5",
-    "@astrojs/preact": "^4.0.9",
-    "@tailwindcss/vite": "^4.1.4",
-    "astro": "^5.7.4",
-    "marked": "^15.0.8",
-    "preact": "^10.26.5",
-    "tailwindcss": "^4.1.4"
+    "@astrojs/preact": "^4.0.11",
+    "@tailwindcss/vite": "^4.1.6",
+    "astro": "^5.7.12",
+    "marked": "^15.0.11",
+    "preact": "^10.26.6",
+    "tailwindcss": "^4.1.6"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@types/marked": "^5.0.2",
-    "@types/node": "^22.14.1",
+    "@types/node": "^22.15.17",
     "workbox-cli": "^7.3.0"
   }
 }
