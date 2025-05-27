@@ -19,7 +19,7 @@ const TimeDisplay = ({
 	return useMemo(
 		() => (
 			<span class={`text-lg font-medium ${isCancelled ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200'} break-words min-w-0 relative pt-6`}>
-				{departureRow.liveEstimateTime && timeDifferenceMinutes > 0 ? (
+				{departureRow.liveEstimateTime && timeDifferenceMinutes > 0 && !isCancelled ? (
 					<>
 						<output
 							aria-label={`${t('late')} ${timeDifferenceMinutes} ${t('minutes')}`}

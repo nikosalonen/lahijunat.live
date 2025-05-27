@@ -1,75 +1,101 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/preact'
+import { render } from '@testing-library/preact'
+import { describe, it, expect, vi } from 'vitest'
 import TimeDisplay from '../TimeDisplay'
-import type { TimeTableRow } from '../../types'
+import type { Train } from '../../types'
+
+// Mock translations
+vi.mock('../utils/translations', () => ({
+  t: (key: string) => {
+    const translations: Record<string, string> = {
+      'late': 'Myöhässä',
+      'minutes': 'minuuttia',
+      'departure': 'Lähtöaika',
+      'cancelled': 'Peruttu',
+    };
+    return translations[key] || key;
+  },
+}));
+
+// Mock useLanguageChange hook
+vi.mock('../hooks/useLanguageChange', () => ({
+  useLanguageChange: vi.fn(),
+}));
 
 describe('TimeDisplay', () => {
-  const mockStation = {
-    name: 'Helsinki',
-    shortCode: 'HKI',
-    location: {
-      latitude: 60.1699,
-      longitude: 24.9384
-    }
-  }
-
-  const mockDepartureRow: TimeTableRow = {
+  const mockDepartureRow: Train['timeTableRows'][0] = {
     stationShortCode: 'HKI',
-    scheduledTime: '2024-03-20T10:00:00Z',
-    liveEstimateTime: '2024-03-20T10:05:00Z',
-    actualTime: undefined,
-    cancelled: false,
+    type: 'DEPARTURE',
+    scheduledTime: '2024-03-20T10:00:00.000Z',
+    liveEstimateTime: '2024-03-20T10:00:00.000Z',
+    actualTime: '2024-03-20T10:00:00.000Z',
+    differenceInMinutes: 0,
     trainStopping: true,
     commercialStop: true,
-    type: 'DEPARTURE',
     commercialTrack: '1',
-    station: mockStation
+    cancelled: false,
+    station: {
+      name: 'Helsinki',
+      shortCode: 'HKI',
+      location: {
+        latitude: 60.1699,
+        longitude: 24.9384,
+      },
+    },
   }
 
-  const mockArrivalRow: TimeTableRow = {
+  const mockArrivalRow: Train['timeTableRows'][0] = {
     stationShortCode: 'TPE',
-    scheduledTime: '2024-03-20T10:30:00Z',
-    liveEstimateTime: '2024-03-20T10:35:00Z',
-    actualTime: undefined,
-    cancelled: false,
+    type: 'ARRIVAL',
+    scheduledTime: '2024-03-20T11:00:00.000Z',
+    liveEstimateTime: '2024-03-20T11:00:00.000Z',
+    actualTime: '2024-03-20T11:00:00.000Z',
+    differenceInMinutes: 0,
     trainStopping: true,
     commercialStop: true,
-    type: 'ARRIVAL',
     commercialTrack: '2',
+    cancelled: false,
     station: {
       name: 'Tampere',
       shortCode: 'TPE',
       location: {
         latitude: 61.4978,
-        longitude: 23.7610
-      }
-    }
+        longitude: 23.7609,
+      },
+    },
   }
 
-  it('renders without delay when no live estimate', () => {
-    render(
+  it('renders on-time train correctly', () => {
+    const { container } = render(
       <TimeDisplay
         departureRow={mockDepartureRow}
         arrivalRow={mockArrivalRow}
         timeDifferenceMinutes={0}
       />
     )
-    expect(screen.queryByText('+5 min')).not.toBeInTheDocument()
+
+    expect(container).toMatchSnapshot()
   })
 
-  it('renders with delay indicator when train is late', () => {
-    render(
+  it('renders delayed train correctly', () => {
+    const delayedDepartureRow = {
+      ...mockDepartureRow,
+      liveEstimateTime: '2024-03-20T10:15:00.000Z',
+      differenceInMinutes: 15,
+    }
+
+    const { getByText } = render(
       <TimeDisplay
-        departureRow={mockDepartureRow}
+        departureRow={delayedDepartureRow}
         arrivalRow={mockArrivalRow}
-        timeDifferenceMinutes={5}
+        timeDifferenceMinutes={15}
       />
     )
-    expect(screen.getByText('+5 min')).toBeInTheDocument()
+
+    expect(getByText('+15 min')).toBeInTheDocument()
   })
 
-  it('renders with cancelled styling when train is cancelled', () => {
-    render(
+  it('renders cancelled train correctly', () => {
+    const { container } = render(
       <TimeDisplay
         departureRow={mockDepartureRow}
         arrivalRow={mockArrivalRow}
@@ -77,7 +103,52 @@ describe('TimeDisplay', () => {
         isCancelled={true}
       />
     )
-    const container = screen.getByText('12.00').closest('span.text-lg')
-    expect(container).toHaveClass('line-through')
+
+    expect(container.firstChild).toHaveClass('line-through')
+    expect(container.firstChild).toHaveClass('text-gray-500')
+  })
+
+  it('renders without arrival row', () => {
+    const { container } = render(
+      <TimeDisplay
+        departureRow={mockDepartureRow}
+        timeDifferenceMinutes={0}
+      />
+    )
+
+    expect(container).toMatchSnapshot()
+  })
+
+  it('does not show delay indicator when train is on time', () => {
+    const { queryByText } = render(
+      <TimeDisplay
+        departureRow={mockDepartureRow}
+        arrivalRow={mockArrivalRow}
+        timeDifferenceMinutes={0}
+      />
+    )
+
+    expect(queryByText('+0 min')).not.toBeInTheDocument()
+  })
+
+  it('does not show delay indicator when train is cancelled', () => {
+    const delayedDepartureRow = {
+      ...mockDepartureRow,
+      liveEstimateTime: '2024-03-20T10:15:00.000Z',
+      differenceInMinutes: 15,
+    }
+
+    const { queryByText } = render(
+      <TimeDisplay
+        departureRow={delayedDepartureRow}
+        arrivalRow={mockArrivalRow}
+        timeDifferenceMinutes={15}
+        isCancelled={true}
+      />
+    )
+
+    // The delay indicator should not be visible for cancelled trains
+    const delayIndicator = queryByText('+15 min');
+    expect(delayIndicator).not.toBeInTheDocument();
   })
 }) 
