@@ -9,7 +9,9 @@
     "astro": "astro",
     "lint": "biome check --write src",
     "format": "biome format --write src",
-    "check-stations": "npx tsx scripts/findStationsWithoutDestinations.ts"
+    "check-stations": "npx tsx scripts/findStationsWithoutDestinations.ts",
+    "test": "vitest",
+    "test:watch": "vitest watch"
   },
   "dependencies": {
     "@astrojs/markdown-component": "^1.0.5",
@@ -22,7 +24,12 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/preact": "^3.2.4",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^22.15.21",
+    "jsdom": "^26.1.0",
+    "vitest": "^3.1.4",
     "workbox-cli": "^7.3.0"
   }
 }
