@@ -13,16 +13,16 @@
   },
   "dependencies": {
     "@astrojs/markdown-component": "^1.0.5",
-    "@astrojs/preact": "^4.0.11",
+    "@astrojs/preact": "^4.1.0",
     "@tailwindcss/vite": "^4.1.7",
-    "astro": "^5.7.13",
-    "marked": "^15.0.11",
-    "preact": "^10.26.6",
-    "tailwindcss": "^4.1.6"
+    "astro": "^5.8.0",
+    "marked": "^15.0.12",
+    "preact": "^10.26.7",
+    "tailwindcss": "^4.1.7"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@types/node": "^22.15.19",
+    "@types/node": "^22.15.21",
     "workbox-cli": "^7.3.0"
   }
 }
