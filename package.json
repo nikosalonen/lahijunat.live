@@ -17,18 +17,18 @@
     "@astrojs/markdown-component": "^1.0.5",
     "@astrojs/preact": "^4.1.0",
     "@tailwindcss/vite": "^4.1.8",
-    "astro": "^5.8.1",
+    "astro": "^5.9.0",
     "marked": "^15.0.12",
     "preact": "^10.26.8",
-    "tailwindcss": "^4.1.7"
+    "tailwindcss": "^4.1.8"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/preact": "^3.2.4",
-    "@types/node": "^22.15.29",
+    "@types/node": "^22.15.30",
     "jsdom": "^26.1.0",
-    "vitest": "^3.2.0",
+    "vitest": "^3.2.2",
     "workbox-cli": "^7.3.0"
   }
 }
