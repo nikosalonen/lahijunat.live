@@ -287,17 +287,33 @@ export default function StationManager({ stations, initialFromStation, initialTo
 						await fetchTrainsLeavingFromStation(selectedOrigin);
 					setAvailableDestinations(destinations);
 
-					// Clear destination if it's not in the available destinations
+					// Only clear and focus if the current destination is not available in the new list
 					if (
 						selectedDestination &&
 						!destinations.some((s) => s.shortCode === selectedDestination)
 					) {
 						setSelectedDestination(null);
 						localStorage.removeItem("selectedDestination");
+						setOpenList("to");
+						setTimeout(() => {
+							toInputRef.current?.focus();
+						}, 0);
 					}
 				} catch (error) {
 					console.error("Error fetching destinations:", error);
 					setAvailableDestinations(stations);
+					// Also check availability against all stations if fetch fails
+					if (
+						selectedDestination &&
+						!stations.some((s) => s.shortCode === selectedDestination)
+					) {
+						setSelectedDestination(null);
+						localStorage.removeItem("selectedDestination");
+						setOpenList("to");
+						setTimeout(() => {
+							toInputRef.current?.focus();
+						}, 0);
+					}
 				} finally {
 					setIsLoadingDestinations(false);
 				}
@@ -444,8 +460,6 @@ export default function StationManager({ stations, initialFromStation, initialTo
 		(station: Station) => {
 			setSelectedOrigin(station.shortCode);
 			setStoredValue("selectedOrigin", station.shortCode);
-			setSelectedDestination(null);
-			setStoredValue("selectedDestination", "");
 			setOpenList("to");
 			setIsLoadingDestinations(true);
 			fetchDestinations(station.shortCode);
