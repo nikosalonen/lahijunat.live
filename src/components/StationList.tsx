@@ -19,6 +19,7 @@ interface Props {
 	onOpenChange: (isOpen: boolean) => void;
 	inputRef?: MutableRef<HTMLInputElement | null>;
 	isLoading?: boolean;
+	onFocus?: () => void;
 }
 
 const CONTAINER_CLASS = "station-list-container";
@@ -31,6 +32,7 @@ export default function StationList({
 	onOpenChange,
 	inputRef,
 	isLoading = false,
+	onFocus,
 }: Props) {
 	const [searchTerm, setSearchTerm] = useState("");
 	const localInputRef = useRef<HTMLInputElement>(null);
@@ -96,6 +98,7 @@ export default function StationList({
 				onFocus={() => {
 					onOpenChange(true);
 					setSearchTerm("");
+					onFocus?.();
 				}}
 				onInput={(e) => setSearchTerm(e.currentTarget.value)}
 				onKeyDown={handleKeyDown}

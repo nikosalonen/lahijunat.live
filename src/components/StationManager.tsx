@@ -12,7 +12,12 @@ interface Props {
 	stations: Station[];
 	initialFromStation?: string | null;
 	initialToStation?: string | null;
+	// For testing only:
+	openList?: 'from' | 'to' | null;
+	setOpenList?: (v: 'from' | 'to' | null) => void;
 }
+
+export type { Props };
 
 const getStoredValue = (key: string): string | null => {
 	if (typeof window !== "undefined") {
@@ -43,8 +48,10 @@ function useHasMounted() {
 	return hasMounted;
 }
 
-export default function StationManager({ stations, initialFromStation, initialToStation }: Props) {
-	const [openList, setOpenList] = useState<"from" | "to" | null>(null);
+export default function StationManager({ stations, initialFromStation, initialToStation, openList: openListProp, setOpenList: setOpenListProp }: Props) {
+	const [internalOpenList, internalSetOpenList] = useState<"from" | "to" | null>(null);
+	const openList = openListProp !== undefined ? openListProp : internalOpenList;
+	const setOpenList = setOpenListProp !== undefined ? setOpenListProp : internalSetOpenList;
 	const [selectedOrigin, setSelectedOrigin] = useState<string | null>(initialFromStation || null);
 	const [selectedDestination, setSelectedDestination] = useState<string | null>(
 		initialToStation || null,
@@ -78,6 +85,11 @@ export default function StationManager({ stations, initialFromStation, initialTo
 			}, 0);
 		}
 	}, [selectedOrigin, selectedDestination]);
+
+	// Ensure dropdown opens when input is focused
+	const handleInputFocus = useCallback((type: 'from' | 'to') => {
+		setOpenList(type);
+	}, [setOpenList]);
 
 	useEffect(() => {
 		setIsLocating(false);
@@ -415,6 +427,32 @@ export default function StationManager({ stations, initialFromStation, initialTo
 		return () => window.removeEventListener('popstate', handlePopState);
 	}, [stations]);
 
+	const fetchDestinations = async (originCode: string) => {
+		try {
+			setIsLoadingDestinations(true);
+			const destinations = await fetchTrainsLeavingFromStation(originCode);
+			setAvailableDestinations(destinations);
+		} catch (error) {
+			console.error("Error fetching destinations:", error);
+			setAvailableDestinations(stations);
+		} finally {
+			setIsLoadingDestinations(false);
+		}
+	};
+
+	const handleOriginSelect = useCallback(
+		(station: Station) => {
+			setSelectedOrigin(station.shortCode);
+			setStoredValue("selectedOrigin", station.shortCode);
+			setSelectedDestination(null);
+			setStoredValue("selectedDestination", "");
+			setOpenList("to");
+			setIsLoadingDestinations(true);
+			fetchDestinations(station.shortCode);
+		},
+		[fetchDestinations],
+	);
+
 	return (
 		<div className="w-full max-w-4xl mx-auto p-2 sm:p-6">
 			<h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center dark:text-white">
@@ -463,12 +501,14 @@ export default function StationManager({ stations, initialFromStation, initialTo
 							<div className="h-full">
 								<StationList
 									stations={stations}
-									onStationSelect={(station) =>
-										handleNearestStation({ station })
-									}
+									onStationSelect={handleOriginSelect}
 									selectedValue={selectedOrigin}
 									isOpen={openList === "from"}
-									onOpenChange={(isOpen) => setOpenList(isOpen ? "from" : null)}
+									onOpenChange={(isOpen) => {
+										console.log('DEBUG: onOpenChange from', isOpen);
+										setOpenList(isOpen ? "from" : null);
+									}}
+									onFocus={() => handleInputFocus('from')}
 								/>
 							</div>
 						</div>
@@ -526,8 +566,12 @@ export default function StationManager({ stations, initialFromStation, initialTo
 									onStationSelect={handleDestinationSelect}
 									selectedValue={selectedDestination}
 									isOpen={openList === "to"}
-									onOpenChange={(isOpen) => setOpenList(isOpen ? "to" : null)}
+									onOpenChange={(isOpen) => {
+										console.log('DEBUG: onOpenChange to', isOpen);
+										setOpenList(isOpen ? "to" : null);
+									}}
 									inputRef={toInputRef}
+									onFocus={() => handleInputFocus('to')}
 									isLoading={isLoadingDestinations}
 								/>
 							</div>
