@@ -10,7 +10,7 @@
     "lint": "biome check --write src",
     "format": "biome format --write src",
     "check-stations": "npx tsx scripts/findStationsWithoutDestinations.ts",
-    "test": "vitest",
+    "test": "vitest run",
     "test:watch": "vitest watch"
   },
   "dependencies": {
