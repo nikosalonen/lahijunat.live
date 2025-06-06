@@ -5,6 +5,7 @@ import {
 	useRef,
 	useState,
 } from "preact/hooks";
+import type { MutableRef } from "preact/hooks";
 import { useLanguageChange } from '../hooks/useLanguageChange';
 import type { Station } from "../types";
 import { t } from "../utils/translations";
@@ -16,6 +17,8 @@ interface Props {
 	selectedValue?: string | null;
 	isOpen: boolean;
 	onOpenChange: (isOpen: boolean) => void;
+	inputRef?: MutableRef<HTMLInputElement | null>;
+	isLoading?: boolean;
 }
 
 const CONTAINER_CLASS = "station-list-container";
@@ -26,9 +29,12 @@ export default function StationList({
 	selectedValue,
 	isOpen,
 	onOpenChange,
+	inputRef,
+	isLoading = false,
 }: Props) {
 	const [searchTerm, setSearchTerm] = useState("");
-	const inputRef = useRef<HTMLInputElement>(null);
+	const localInputRef = useRef<HTMLInputElement>(null);
+	const finalInputRef = inputRef || localInputRef;
 
 	useLanguageChange();
 
@@ -37,9 +43,9 @@ export default function StationList({
 			onStationSelect(station);
 			onOpenChange(false);
 			setSearchTerm("");
-			inputRef.current?.blur();
+			finalInputRef.current?.blur();
 		},
-		[onStationSelect, onOpenChange],
+		[onStationSelect, onOpenChange, finalInputRef],
 	);
 
 	useEffect(() => {
@@ -78,7 +84,7 @@ export default function StationList({
 	return (
 		<div className="relative station-list-container">
 			<input
-				ref={inputRef}
+				ref={finalInputRef}
 				type="text"
 				value={
 					isOpen
@@ -98,14 +104,21 @@ export default function StationList({
 			/>
 			{isOpen && (
 				<div class="absolute w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
-					{filteredStations.map((station) => (
-						<StationOption
-							key={station.shortCode}
-							station={station}
-							isSelected={selectedStation?.shortCode === station.shortCode}
-							onSelect={handleStationSelect}
-						/>
-					))}
+					{isLoading ? (
+						<div class="p-4 text-center text-gray-500 dark:text-gray-400">
+							<div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 dark:border-t-blue-400"></div>
+							<p class="mt-2">{t('loading')}</p>
+						</div>
+					) : (
+						filteredStations.map((station) => (
+							<StationOption
+								key={station.shortCode}
+								station={station}
+								isSelected={selectedStation?.shortCode === station.shortCode}
+								onSelect={handleStationSelect}
+							/>
+						))
+					)}
 				</div>
 			)}
 		</div>

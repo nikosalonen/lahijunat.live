@@ -55,6 +55,7 @@ export default function StationManager({ stations, initialFromStation, initialTo
 	);
 	const [availableDestinations, setAvailableDestinations] =
 		useState<Station[]>(stations);
+	const [isLoadingDestinations, setIsLoadingDestinations] = useState(false);
 	const [isLocating, setIsLocating] = useState<boolean | null>(null);
 
 	const [hasGeolocationPermission, setHasGeolocationPermission] = useState<
@@ -63,8 +64,20 @@ export default function StationManager({ stations, initialFromStation, initialTo
 
 	const hasMounted = useHasMounted();
 	const [, forceUpdate] = useState({});
+	const toInputRef = useRef<HTMLInputElement>(null);
 
 	useLanguageChange();
+
+	// Auto-focus "to" input when "from" is selected and "to" is empty
+	useEffect(() => {
+		if (selectedOrigin && !selectedDestination) {
+			setOpenList("to");
+			// Use setTimeout to ensure the input is rendered before focusing
+			setTimeout(() => {
+				toInputRef.current?.focus();
+			}, 0);
+		}
+	}, [selectedOrigin, selectedDestination]);
 
 	useEffect(() => {
 		setIsLocating(false);
@@ -256,17 +269,25 @@ export default function StationManager({ stations, initialFromStation, initialTo
 	useEffect(() => {
 		const fetchDestinations = async () => {
 			if (selectedOrigin) {
-				const destinations =
-					await fetchTrainsLeavingFromStation(selectedOrigin);
-				setAvailableDestinations(destinations);
+				setIsLoadingDestinations(true);
+				try {
+					const destinations =
+						await fetchTrainsLeavingFromStation(selectedOrigin);
+					setAvailableDestinations(destinations);
 
-				// Clear destination if it's not in the available destinations
-				if (
-					selectedDestination &&
-					!destinations.some((s) => s.shortCode === selectedDestination)
-				) {
-					setSelectedDestination(null);
-					localStorage.removeItem("selectedDestination");
+					// Clear destination if it's not in the available destinations
+					if (
+						selectedDestination &&
+						!destinations.some((s) => s.shortCode === selectedDestination)
+					) {
+						setSelectedDestination(null);
+						localStorage.removeItem("selectedDestination");
+					}
+				} catch (error) {
+					console.error("Error fetching destinations:", error);
+					setAvailableDestinations(stations);
+				} finally {
+					setIsLoadingDestinations(false);
 				}
 			} else {
 				setAvailableDestinations(stations);
@@ -506,6 +527,8 @@ export default function StationManager({ stations, initialFromStation, initialTo
 									selectedValue={selectedDestination}
 									isOpen={openList === "to"}
 									onOpenChange={(isOpen) => setOpenList(isOpen ? "to" : null)}
+									inputRef={toInputRef}
+									isLoading={isLoadingDestinations}
 								/>
 							</div>
 						</div>
