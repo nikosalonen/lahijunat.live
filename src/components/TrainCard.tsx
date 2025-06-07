@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
+import { getRelevantTrackInfo } from "../utils/api";
 
 interface Props {
 	train: Train;
@@ -227,13 +228,11 @@ export default function TrainCard({
 	// Store and check original track for all trains (not just highlighted)
 	useEffect(() => {
 		const trackMemory = JSON.parse(localStorage.getItem("trackMemory") || "{}");
-		const departureRow = train.timeTableRows.find(
-			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
-		);
-		if (!departureRow) return;
+		const trackInfo = getRelevantTrackInfo(train, stationCode, destinationCode);
+		if (!trackInfo) return;
 
-		const currentTrack = departureRow.commercialTrack;
-		const storedTrack = trackMemory[train.trainNumber];
+		const currentTrack = trackInfo.track;
+		const storedTrack = trackMemory[trackInfo.journeyKey];
 
 		// Cleanup old entries
 		const now = Date.now();
@@ -241,10 +240,10 @@ export default function TrainCard({
 		const MAX_ENTRIES = 1000;
 
 		// Remove entries older than 1 hours
-		for (const trainNumber of Object.keys(trackMemory)) {
-			const entry = trackMemory[trainNumber];
+		for (const journeyKey of Object.keys(trackMemory)) {
+			const entry = trackMemory[journeyKey];
 			if (now - entry.timestamp > MAX_AGE_MS) {
-				delete trackMemory[trainNumber];
+				delete trackMemory[journeyKey];
 			}
 		}
 
@@ -258,32 +257,30 @@ export default function TrainCard({
 						(b as { timestamp: number }).timestamp,
 				)
 				.slice(0, entries.length - MAX_ENTRIES + 1)
-				.forEach(([trainNumber]) => {
-					delete trackMemory[trainNumber];
+				.forEach(([journeyKey]) => {
+					delete trackMemory[journeyKey];
 				});
 		}
 
 		if (!storedTrack) {
 			// Store the first seen track with timestamp
-			trackMemory[train.trainNumber] = {
+			trackMemory[trackInfo.journeyKey] = {
 				track: currentTrack,
 				timestamp: now,
 			};
 			localStorage.setItem("trackMemory", JSON.stringify(trackMemory));
 		}
-	}, [train.trainNumber, train.timeTableRows, stationCode]);
+	}, [train.trainNumber, train.timeTableRows, stationCode, destinationCode]);
 
 	// Memoized track change check
 	const isTrackChanged = useMemo(() => {
 		const trackMemory = JSON.parse(localStorage.getItem("trackMemory") || "{}");
-		const departureRow = train.timeTableRows.find(
-			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
-		);
-		if (!departureRow) return false;
-		const currentTrack = departureRow.commercialTrack;
-		const storedTrack = trackMemory[train.trainNumber]?.track;
+		const trackInfo = getRelevantTrackInfo(train, stationCode, destinationCode);
+		if (!trackInfo) return false;
+		const currentTrack = trackInfo.track;
+		const storedTrack = trackMemory[trackInfo.journeyKey]?.track;
 		return storedTrack && currentTrack && storedTrack !== currentTrack;
-	}, [train.trainNumber, train.timeTableRows, stationCode]);
+	}, [train.trainNumber, train.timeTableRows, stationCode, destinationCode]);
 
 	useEffect(() => {
 		const handleLanguageChange = () => {
