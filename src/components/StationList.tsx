@@ -53,7 +53,11 @@ export default function StationList({
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			const target = event.target as HTMLElement;
-			if (!target.closest(`.${CONTAINER_CLASS}`)) {
+			const container = target.closest(`.${CONTAINER_CLASS}`);
+			const isInput = target.tagName === 'INPUT';
+			
+			// Only close if clicking outside and not on the input
+			if (!container && !isInput) {
 				onOpenChange(false);
 				setSearchTerm("");
 			}
@@ -62,6 +66,14 @@ export default function StationList({
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, [onOpenChange]);
+
+	const handleInputClick = (e: MouseEvent) => {
+		// Prevent the click outside handler from immediately closing
+		e.stopPropagation();
+		onOpenChange(true);
+		setSearchTerm("");
+		onFocus?.();
+	};
 
 	const filteredStations = useMemo(() => {
 		const search = searchTerm.toLowerCase();
@@ -95,6 +107,7 @@ export default function StationList({
 							? `${selectedStation.name} (${selectedStation.shortCode})`
 							: ""
 				}
+				onClick={handleInputClick}
 				onFocus={() => {
 					onOpenChange(true);
 					setSearchTerm("");

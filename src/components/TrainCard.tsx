@@ -91,7 +91,17 @@ export default function TrainCard({
 			(row) => row.stationShortCode === destinationCode && row.type === "ARRIVAL",
 		);
 
-		if (!departureRow) return {};
+		if (!departureRow) {
+			return {
+				departureRow: null,
+				arrivalRow: null,
+				minutesToDeparture: null,
+				departingSoon: false,
+				timeDifferenceMinutes: 0,
+				duration: null,
+				cardStyle: getCardStyle(train.cancelled, null, false, isHighlighted)
+			};
+		}
 
 		const minutesToDeparture = formatMinutesToDeparture(
 			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
@@ -154,11 +164,63 @@ export default function TrainCard({
 				setIsHighlighted(false);
 			} else {
 				setIsHighlighted(true);
+				
+				// Check for track changes
+				const departureRow = train.timeTableRows.find(
+					(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE"
+				);
+				
+				if (departureRow && trainData.track && departureRow.commercialTrack !== trainData.track) {
+					// Track has changed, update the stored track
+					highlightedTrains[train.trainNumber] = {
+						...trainData,
+						track: departureRow.commercialTrack,
+						trackChanged: true
+					};
+					localStorage.setItem('highlightedTrains', JSON.stringify(highlightedTrains));
+				} else if (departureRow && !trainData.track) {
+					// First time storing track
+					highlightedTrains[train.trainNumber] = {
+						...trainData,
+						track: departureRow.commercialTrack
+					};
+					localStorage.setItem('highlightedTrains', JSON.stringify(highlightedTrains));
+				}
 			}
 		} else {
 			setIsHighlighted(false);
 		}
-	}, [train.trainNumber, currentTime]);
+	}, [train.trainNumber, currentTime, train.timeTableRows, stationCode]);
+
+	// Store and check original track for all trains (not just highlighted)
+	useEffect(() => {
+		const trackMemory = JSON.parse(localStorage.getItem('trackMemory') || '{}');
+		const departureRow = train.timeTableRows.find(
+			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE"
+		);
+		if (!departureRow) return;
+
+		const currentTrack = departureRow.commercialTrack;
+		const storedTrack = trackMemory[train.trainNumber];
+
+		if (!storedTrack) {
+			// Store the first seen track
+			trackMemory[train.trainNumber] = currentTrack;
+			localStorage.setItem('trackMemory', JSON.stringify(trackMemory));
+		}
+	}, [train.trainNumber, train.timeTableRows, stationCode]);
+
+	// Helper to check if track has changed
+	const isTrackChanged = (() => {
+		const trackMemory = JSON.parse(localStorage.getItem('trackMemory') || '{}');
+		const departureRow = train.timeTableRows.find(
+			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE"
+		);
+		if (!departureRow) return false;
+		const currentTrack = departureRow.commercialTrack;
+		const storedTrack = trackMemory[train.trainNumber];
+		return storedTrack && currentTrack && storedTrack !== currentTrack;
+	})();
 
 	useEffect(() => {
 		const handleLanguageChange = () => {
@@ -190,7 +252,8 @@ export default function TrainCard({
 					
 					highlightedTrains[train.trainNumber] = {
 						highlighted: true,
-						removeAfter: removeAfter.toISOString()
+						removeAfter: removeAfter.toISOString(),
+						track: departureRow.commercialTrack
 					};
 				}
 			} else {
@@ -200,6 +263,25 @@ export default function TrainCard({
 			localStorage.setItem('highlightedTrains', JSON.stringify(highlightedTrains));
 		}
 		setLastTapTime(now);
+	};
+
+	// Debug function to simulate track changes
+	const simulateTrackChange = () => {
+		const highlightedTrains = JSON.parse(localStorage.getItem('highlightedTrains') || '{}');
+		const trainData = highlightedTrains[train.trainNumber];
+		
+		if (trainData) {
+			// Simulate track change by storing a different track
+			highlightedTrains[train.trainNumber] = {
+				...trainData,
+				track: trainData.track === "1" ? "2" : "1",
+				trackChanged: true
+			};
+			localStorage.setItem('highlightedTrains', JSON.stringify(highlightedTrains));
+			// Force re-render
+			setIsHighlighted(prev => !prev);
+			setIsHighlighted(prev => !prev);
+		}
 	};
 
 	if (!departureRow) return null;
@@ -252,7 +334,7 @@ export default function TrainCard({
 				</div>
 
 				{/* Track info and departure countdown */}
-				<div class="flex items-end flex-col text-sm text-gray-600 dark:text-gray-400 ml-4 flex-shrink-0">
+				<div class="flex flex-col items-end gap-2">
 					{train.cancelled ? (
 						<span class="px-3 py-1 bg-[#d4004d] text-white rounded-md text-sm font-medium shadow-sm">
 							{t('cancelled')}
@@ -261,7 +343,11 @@ export default function TrainCard({
 						<>
 							<output
 								aria-label={`${t('track')} ${departureRow.commercialTrack}`}
-								class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md text-sm font-medium shadow-sm"
+								class={`px-3 py-1 ${
+									isTrackChanged
+										? "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300"
+										: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+								} rounded-md text-sm font-medium shadow-sm`}
 							>
 								{t('track')} {departureRow.commercialTrack}
 							</output>
@@ -283,6 +369,18 @@ export default function TrainCard({
 									</span>
 								)}
 						</>
+					)}
+					{/* Debug button - only visible in development */}
+					{process.env.NODE_ENV === 'development' && (
+						<button
+							onClick={(e) => {
+								e.stopPropagation();
+								simulateTrackChange();
+							}}
+							class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+						>
+							Debug: Simulate Track Change
+						</button>
 					)}
 				</div>
 			</div>
