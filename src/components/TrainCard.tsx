@@ -382,12 +382,12 @@ export default function TrainCard({
 								</button>
 							)}
 							{isHighlighted ? (
-								<span class="absolute inset-0 flex items-center justify-center">
+								<span class={`h-12 w-12 rounded-full flex items-center justify-center relative border-2 ${train.cancelled ? 'border-[#d4004d]' : 'border-[#8c4799]'} bg-transparent`}>
 									<svg
 										viewBox="0 0 48 48"
-										class="w-12 h-12"
-										fill={train.cancelled ? '#d4004d' : '#6b2c75'}
-										stroke={train.cancelled ? '#d4004d' : '#6b2c75'}
+										class="w-11 h-11"
+										fill={train.cancelled ? '#d4004d' : '#8c4799'}
+										stroke={train.cancelled ? '#d4004d' : '#8c4799'}
 									>
 										<title>{isHighlighted ? t("favorite") : t("unfavorite")}</title>
 										<polygon points="24,3 30.9,17.8 47,18.6 34,29.7 38.2,45 24,36.6 9.8,45 14,29.7 1,18.6 17.1,17.8" />
