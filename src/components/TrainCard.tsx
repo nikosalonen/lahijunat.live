@@ -570,6 +570,18 @@ export default function TrainCard({
 								.join(" ")}
 						</span>
 					</div>
+					<div class="text-gray-800 dark:text-gray-200">
+						Track:{" "}
+						<span class="text-blue-600 dark:text-blue-400">
+							{departureRow?.commercialTrack || "N/A"}
+						</span>
+					</div>
+					<div class="text-gray-800 dark:text-gray-200">
+						Track changed:{" "}
+						<span class={`${isTrackChanged ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}`}>
+							{isTrackChanged ? "yes" : "no"}
+						</span>
+					</div>
 				</div>
 			)}
 		</button>
