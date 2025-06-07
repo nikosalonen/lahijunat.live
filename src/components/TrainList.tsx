@@ -1,6 +1,6 @@
 import { memo } from "preact/compat";
 import { useCallback, useEffect, useState } from "preact/hooks";
-import { useLanguageChange } from '../hooks/useLanguageChange';
+import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import { fetchTrains } from "../utils/api";
 import { t } from "../utils/translations";
@@ -17,7 +17,11 @@ const MemoizedTrainCard = memo(TrainCard);
 const INITIAL_TRAIN_COUNT = 15;
 const FADE_DURATION = 3000; // 3 seconds to match the animation duration
 
-export default function TrainList({ stationCode, destinationCode, stations }: Props) {
+export default function TrainList({
+	stationCode,
+	destinationCode,
+	stations,
+}: Props) {
 	useLanguageChange();
 	const [state, setState] = useState({
 		trains: [] as Train[],
@@ -28,7 +32,8 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 	});
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const [animationPhase, setAnimationPhase] = useState(0);
-	const [displayedTrainCount, setDisplayedTrainCount] = useState(INITIAL_TRAIN_COUNT);
+	const [displayedTrainCount, setDisplayedTrainCount] =
+		useState(INITIAL_TRAIN_COUNT);
 	const [departedTrains, setDepartedTrains] = useState<Set<string>>(new Set());
 
 	const loadTrains = useCallback(async () => {
@@ -50,7 +55,7 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 		} catch (err) {
 			setState((prev) => ({
 				...prev,
-				error: t('error'),
+				error: t("error"),
 				loading: false,
 				initialLoad: false,
 			}));
@@ -66,7 +71,7 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 
 	const handleTrainDeparted = useCallback((trainNumber: string) => {
 		setTimeout(() => {
-			setDepartedTrains(prev => new Set([...prev, trainNumber]));
+			setDepartedTrains((prev) => new Set([...prev, trainNumber]));
 		}, FADE_DURATION);
 	}, []);
 
@@ -92,7 +97,8 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 			const now = new Date();
 			const seconds = now.getSeconds();
 			const milliseconds = now.getMilliseconds();
-			const timeUntilNextHalfMinute = (30 - (seconds % 30)) * 1000 - milliseconds;
+			const timeUntilNextHalfMinute =
+				(30 - (seconds % 30)) * 1000 - milliseconds;
 			return timeUntilNextHalfMinute;
 		};
 
@@ -144,11 +150,11 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 		);
 	}
 
-	const fromStation = stations.find(s => s.shortCode === stationCode);
-	const toStation = stations.find(s => s.shortCode === destinationCode);
+	const fromStation = stations.find((s) => s.shortCode === stationCode);
+	const toStation = stations.find((s) => s.shortCode === destinationCode);
 
 	const displayedTrains = state.trains
-		.filter(train => !departedTrains.has(train.trainNumber))
+		.filter((train) => !departedTrains.has(train.trainNumber))
 		.slice(0, displayedTrainCount);
 	const hasMoreTrains = state.trains.length > displayedTrainCount;
 
@@ -157,26 +163,31 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 			<div class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4">
 				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-2">
 					<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 order-2 sm:order-1">
-						{t('departingTrains')} <span class="sm:hidden">{stationCode} → {destinationCode}</span>
-						<span class="hidden sm:inline">{fromStation?.name} → {toStation?.name}</span>
+						{t("departingTrains")}{" "}
+						<span class="sm:hidden">
+							{stationCode} → {destinationCode}
+						</span>
+						<span class="hidden sm:inline">
+							{fromStation?.name} → {toStation?.name}
+						</span>
 					</h2>
 					<div class="self-end sm:self-auto order-1 sm:order-2">
 						<ProgressCircle progress={state.progress} />
 					</div>
 				</div>
-				<div 
+				<div
 					class="grid auto-rows-fr gap-4 px-2 transition-[grid-row,transform] duration-700 ease-in-out"
 					style={{
-						'--animation-phase': animationPhase,
-						'grid-template-rows': `repeat(${displayedTrains.length}, minmax(0, 1fr))`
+						"--animation-phase": animationPhase,
+						"grid-template-rows": `repeat(${displayedTrains.length}, minmax(0, 1fr))`,
 					}}
 				>
 					{displayedTrains.map((train, index) => (
-						<div 
+						<div
 							key={train.trainNumber}
 							class="transition-[transform,opacity] duration-700 ease-in-out"
 							style={{
-								'grid-row': `${index + 1}`
+								"grid-row": `${index + 1}`,
 							}}
 						>
 							<MemoizedTrainCard
@@ -192,10 +203,12 @@ export default function TrainList({ stationCode, destinationCode, stations }: Pr
 				{hasMoreTrains && (
 					<div class="flex justify-center mt-4">
 						<button
-							onClick={() => setDisplayedTrainCount(prev => prev + INITIAL_TRAIN_COUNT)}
+							onClick={() =>
+								setDisplayedTrainCount((prev) => prev + INITIAL_TRAIN_COUNT)
+							}
 							class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition-colors"
 						>
-							{t('showMore')}
+							{t("showMore")}
 						</button>
 					</div>
 				)}

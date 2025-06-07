@@ -4,39 +4,41 @@ import Layout from "../layouts/Layout.astro";
 import { fetchStations } from "../utils/api";
 
 export async function getStaticPaths() {
-  const stations = await fetchStations();
-  const paths = [];
+	const stations = await fetchStations();
+	const paths = [];
 
-  // Add the default path (no stations selected)
-  paths.push({ params: { stations: undefined } });
+	// Add the default path (no stations selected)
+	paths.push({ params: { stations: undefined } });
 
-  // Generate all possible station combinations
-  for (const fromStation of stations) {
-    // Add single station paths
-    paths.push({ params: { stations: fromStation.shortCode } });
+	// Generate all possible station combinations
+	for (const fromStation of stations) {
+		// Add single station paths
+		paths.push({ params: { stations: fromStation.shortCode } });
 
-    // Add station pairs
-    for (const toStation of stations) {
-      if (fromStation.shortCode !== toStation.shortCode) {
-        paths.push({
-          params: { stations: `${fromStation.shortCode}/${toStation.shortCode}` }
-        });
-      }
-    }
-  }
+		// Add station pairs
+		for (const toStation of stations) {
+			if (fromStation.shortCode !== toStation.shortCode) {
+				paths.push({
+					params: {
+						stations: `${fromStation.shortCode}/${toStation.shortCode}`,
+					},
+				});
+			}
+		}
+	}
 
-  return paths;
+	return paths;
 }
 
 const stations = await fetchStations();
 const { stations: params } = Astro.params;
 
 // Split the URL path into from and to station codes
-const [fromStation, toStation] = params?.split('/') || [null, null];
+const [fromStation, toStation] = params?.split("/") || [null, null];
 
 // Validate that the stations exist in our station list
 const isValidStation = (code: string | null) =>
-  code && stations.some(station => station.shortCode === code);
+	code && stations.some((station) => station.shortCode === code);
 
 const validFromStation = isValidStation(fromStation) ? fromStation : null;
 const validToStation = isValidStation(toStation) ? toStation : null;
