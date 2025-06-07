@@ -205,10 +205,10 @@ export default function TrainCard({
 
 		// Cleanup old entries
 		const now = Date.now();
-		const MAX_AGE_MS = 60 * 60 * 1000; // 1 hour
+		const MAX_AGE_MS = 1 * 60 * 60 * 1000; // 1 hours
 		const MAX_ENTRIES = 1000;
 
-		// Remove entries older than 24 hours
+		// Remove entries older than 1 hours
 		Object.keys(trackMemory).forEach(trainNumber => {
 			const entry = trackMemory[trainNumber];
 			if (now - entry.timestamp > MAX_AGE_MS) {
