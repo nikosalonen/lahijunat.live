@@ -291,99 +291,85 @@ export default function TrainCard({
 			window.removeEventListener("languagechange", handleLanguageChange);
 	}, []);
 
-	const handleDoubleTap = () => {
-		const now = Date.now();
-		if (now - lastTapTime < 300) {
-			// 300ms threshold for double tap
-			const newHighlighted = !isHighlighted;
-			setIsHighlighted(newHighlighted);
+	const handleFavorite = () => {
+		const newHighlighted = !isHighlighted;
+		setIsHighlighted(newHighlighted);
 
-			// Update localStorage
-			const highlightedTrains = JSON.parse(
-				localStorage.getItem("highlightedTrains") || "{}",
-			);
-
-			if (newHighlighted) {
-				// When highlighting, set removal time to 10 minutes after departure
-				const departureRow = train.timeTableRows.find(
-					(row) =>
-						row.stationShortCode === stationCode && row.type === "DEPARTURE",
-				);
-
-				if (departureRow) {
-					const departureTime = new Date(
-						departureRow.liveEstimateTime ?? departureRow.scheduledTime,
-					);
-					const removeAfter = new Date(
-						departureTime.getTime() + 10 * 60 * 1000,
-					); // 10 minutes after departure
-
-					highlightedTrains[train.trainNumber] = {
-						highlighted: true,
-						removeAfter: removeAfter.toISOString(),
-						track: departureRow.commercialTrack,
-					};
-				}
-			} else {
-				delete highlightedTrains[train.trainNumber];
-			}
-
-			localStorage.setItem(
-				"highlightedTrains",
-				JSON.stringify(highlightedTrains),
-			);
-		}
-		setLastTapTime(now);
-	};
-
-	// Debug function to simulate track changes
-	const simulateTrackChange = () => {
+		// Update localStorage
 		const highlightedTrains = JSON.parse(
 			localStorage.getItem("highlightedTrains") || "{}",
 		);
-		const trainData = highlightedTrains[train.trainNumber];
 
-		if (trainData) {
-			// Simulate track change by storing a different track
-			highlightedTrains[train.trainNumber] = {
-				...trainData,
-				track: trainData.track === "1" ? "2" : "1",
-				trackChanged: true,
-			};
-			localStorage.setItem(
-				"highlightedTrains",
-				JSON.stringify(highlightedTrains),
+		if (newHighlighted) {
+			// When highlighting, set removal time to 10 minutes after departure
+			const departureRow = train.timeTableRows.find(
+				(row) =>
+					row.stationShortCode === stationCode && row.type === "DEPARTURE",
 			);
-			// Force re-render
-			setIsHighlighted((prev) => !prev);
-			setIsHighlighted((prev) => !prev);
+
+			if (departureRow) {
+				const departureTime = new Date(
+					departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+				);
+				const removeAfter = new Date(
+					departureTime.getTime() + 10 * 60 * 1000,
+				); // 10 minutes after departure
+
+				highlightedTrains[train.trainNumber] = {
+					highlighted: true,
+					removeAfter: removeAfter.toISOString(),
+					track: departureRow.commercialTrack,
+				};
+			}
+		} else {
+			delete highlightedTrains[train.trainNumber];
 		}
+
+		localStorage.setItem(
+			"highlightedTrains",
+			JSON.stringify(highlightedTrains),
+		);
 	};
 
 	if (!departureRow) return null;
 
 	return (
-		<button
-			class={`p-2 sm:p-4 ${cardStyle} w-full text-left`}
+		<div
+			class={`p-2 sm:p-4 ${cardStyle} w-full text-left relative`}
 			style={{ opacity: hasDeparted ? opacity : 1 }}
-			aria-label={`${t("train")} ${train.commuterLineID || ""} ${train.cancelled ? t("cancelled") : ""} ${isHighlighted ? t("highlighted") : ""}`}
-			onClick={handleDoubleTap}
-			onKeyDown={(e) => e.key === "Enter" && handleDoubleTap()}
-			type="button"
 		>
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4 flex-1 min-w-0">
 					{/* Train identifier */}
 					{train.commuterLineID && (
-						<div
-							class={`flex-shrink-0 h-12 w-12 ${
-								train.cancelled
-									? "bg-[#d4004d] text-white"
-									: "bg-[#6b2c75] text-white"
-							} rounded-full flex items-center justify-center text-xl font-bold`}
+						<button
+							onClick={handleFavorite}
+							aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
+							type="button"
+							class="flex-shrink-0 h-12 w-12 flex items-center justify-center text-xl font-bold focus:outline-none transition-transform duration-150 hover:scale-110 relative group border-none outline-none ring-0"
+							style={{ outline: 'none', border: 'none', boxShadow: 'none' }}
 						>
-							{train.commuterLineID}
-						</div>
+							{isHighlighted ? (
+								<span class="absolute inset-0 flex items-center justify-center">
+									<svg
+										viewBox="0 0 48 48"
+										class="w-12 h-12"
+										fill={train.cancelled ? '#d4004d' : '#6b2c75'}
+										stroke={train.cancelled ? '#d4004d' : '#6b2c75'}
+									>
+										<title>{isHighlighted ? t("favorite") : t("unfavorite")}</title>
+										<polygon points="24,3 30.9,17.8 47,18.6 34,29.7 38.2,45 24,36.6 9.8,45 14,29.7 1,18.6 17.1,17.8" />
+									</svg>
+									<span class="absolute inset-0 flex items-center justify-center text-white text-xl font-bold pointer-events-none">
+										{train.commuterLineID}
+									</span>
+								</span>
+							) : (
+								<span class={`h-12 w-12 rounded-full flex items-center justify-center ${train.cancelled ? 'bg-[#d4004d] text-white' : 'bg-[#6b2c75] text-white'}`}>
+									{train.commuterLineID}
+								</span>
+							)}
+						</button>
 					)}
 
 					{/* Main train info */}
@@ -478,19 +464,6 @@ export default function TrainCard({
 								)}
 						</>
 					)}
-					{/* Debug button - only visible in development */}
-					{process.env.NODE_ENV === "development" && (
-						<button
-							type="button"
-							onClick={(e) => {
-								e.stopPropagation();
-								simulateTrackChange();
-							}}
-							class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-						>
-							Debug: Simulate Track Change
-						</button>
-					)}
 				</div>
 			</div>
 			<div aria-live="polite" class="sr-only">
@@ -500,86 +473,6 @@ export default function TrainCard({
 						? t("departingSoon")
 						: ""}
 			</div>
-			{isHighlighted && (
-				<div class="absolute top-2 right-2">
-					<svg
-						class="w-4 h-4 text-[#8c4799] dark:text-[#b388ff]"
-						fill="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<title>Star icon</title>
-						<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-					</svg>
-				</div>
-			)}
-			{process.env.NODE_ENV === "development" && (
-				<div class="mt-4 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md text-xs font-mono space-y-1">
-					<div class="font-bold text-blue-600 dark:text-blue-400">
-						Debug Info:
-					</div>
-					<div class="text-gray-800 dark:text-gray-200">
-						Train:{" "}
-						<span class="text-blue-600 dark:text-blue-400">
-							{train.commuterLineID} ({train.trainNumber})
-						</span>
-					</div>
-					<div class="text-gray-800 dark:text-gray-200">
-						Current time:{" "}
-						<span class="text-blue-600 dark:text-blue-400">
-							{currentTime.toLocaleTimeString()}
-						</span>
-					</div>
-					<div class="text-gray-800 dark:text-gray-200">
-						Scheduled:{" "}
-						<span class="text-blue-600 dark:text-blue-400">
-							{new Date(departureRow?.scheduledTime || "").toLocaleTimeString()}
-						</span>
-					</div>
-					<div class="text-gray-800 dark:text-gray-200">
-						Live estimate:{" "}
-						<span class="text-blue-600 dark:text-blue-400">
-							{departureRow?.liveEstimateTime
-								? new Date(departureRow.liveEstimateTime).toLocaleTimeString()
-								: "none"}
-						</span>
-					</div>
-					<div class="text-gray-800 dark:text-gray-200">
-						Minutes to departure:{" "}
-						<span class="text-blue-600 dark:text-blue-400">
-							{minutesToDeparture}
-						</span>
-					</div>
-					<div class="text-gray-800 dark:text-gray-200">
-						Departing soon:{" "}
-						<span
-							class={`${departingSoon ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}
-						>
-							{departingSoon ? "yes" : "no"}
-						</span>
-					</div>
-					<div class="text-gray-800 dark:text-gray-200">
-						Card style:{" "}
-						<span class="text-purple-600 dark:text-purple-400">
-							{cardStyle
-								.split(" ")
-								.filter((c) => c.startsWith("bg-") || c.includes("blink"))
-								.join(" ")}
-						</span>
-					</div>
-					<div class="text-gray-800 dark:text-gray-200">
-						Track:{" "}
-						<span class="text-blue-600 dark:text-blue-400">
-							{departureRow?.commercialTrack || "N/A"}
-						</span>
-					</div>
-					<div class="text-gray-800 dark:text-gray-200">
-						Track changed:{" "}
-						<span class={`${isTrackChanged ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}`}>
-							{isTrackChanged ? "yes" : "no"}
-						</span>
-					</div>
-				</div>
-			)}
-		</button>
+		</div>
 	);
 }
