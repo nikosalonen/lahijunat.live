@@ -1,7 +1,7 @@
 {
   "name": "lahijunat-live",
   "type": "module",
-  "version": "1.4.4",
+  "version": "1.5.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && workbox generateSW workbox-config.cjs",
@@ -17,7 +17,7 @@
     "@astrojs/markdown-component": "^1.0.5",
     "@astrojs/preact": "^4.1.0",
     "@tailwindcss/vite": "^4.1.8",
-    "astro": "^5.9.0",
+    "astro": "^5.9.1",
     "marked": "^15.0.12",
     "preact": "^10.26.8",
     "tailwindcss": "^4.1.8"
