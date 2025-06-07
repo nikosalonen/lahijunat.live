@@ -360,10 +360,26 @@ export default function TrainCard({
 							style={{ outline: 'none', border: 'none', boxShadow: 'none' }}
 						>
 							{showTooltip && (
-								<div class="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-50">
-									{t("clickToFavorite")}
-									<div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900" />
-								</div>
+								<button
+									type="button"
+									class="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full bg-[#6b2c75] text-white text-sm px-3 py-2 rounded-lg shadow-lg border-2 border-white whitespace-normal break-words max-w-xs max-w-[90vw] text-center z-50 cursor-pointer"
+									onClick={e => { e.stopPropagation(); setShowTooltip(false); }}
+									onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setShowTooltip(false); } }}
+									tabIndex={0}
+									aria-label={t("closeTooltip")}
+								>
+									<div class="flex items-center gap-2">
+									
+										<span>{t("favoriteTooltip")}</span>
+									</div>
+									{/* Arrow */}
+									<div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-3 h-3 z-10">
+										<svg width="100%" height="100%" viewBox="0 0 12 12">
+											<title>Tooltip arrow</title>
+											<rect x="2" y="2" width="8" height="8" rx="2" fill="#6b2c75" stroke="white" strokeWidth="2" transform="rotate(45 6 6)" />
+										</svg>
+									</div>
+								</button>
 							)}
 							{isHighlighted ? (
 								<span class="absolute inset-0 flex items-center justify-center">
