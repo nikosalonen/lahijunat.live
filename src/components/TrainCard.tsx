@@ -80,6 +80,7 @@ export default function TrainCard({
 	const [hasDeparted, setHasDeparted] = useState(false);
 	const [opacity, setOpacity] = useState(1);
 	const [trackMemory, setTrackMemory] = useState<Record<string, { track: string; timestamp: number }>>({});
+	const [showTooltip, setShowTooltip] = useState(false);
 
 	// Memoize all time-dependent calculations
 	const {
@@ -150,6 +151,15 @@ export default function TrainCard({
 			cardStyle,
 		};
 	}, [train, stationCode, destinationCode, currentTime, isHighlighted]);
+
+	// Check if user has seen the tooltip before
+	useEffect(() => {
+		const hasSeenTooltip = localStorage.getItem('hasSeenFavoriteTooltip');
+		if (!hasSeenTooltip && !train.cancelled && minutesToDeparture !== null && minutesToDeparture > 0) {
+			setShowTooltip(true);
+			localStorage.setItem('hasSeenFavoriteTooltip', 'true');
+		}
+	}, [train.cancelled, minutesToDeparture]);
 
 	// Call onDepart when the train transitions from not departed to departed
 	useEffect(() => {
@@ -349,6 +359,12 @@ export default function TrainCard({
 							class="flex-shrink-0 h-12 w-12 flex items-center justify-center text-xl font-bold focus:outline-none transition-transform duration-150 hover:scale-110 relative group border-none outline-none ring-0"
 							style={{ outline: 'none', border: 'none', boxShadow: 'none' }}
 						>
+							{showTooltip && (
+								<div class="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-50">
+									{t("clickToFavorite")}
+									<div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900" />
+								</div>
+							)}
 							{isHighlighted ? (
 								<span class="absolute inset-0 flex items-center justify-center">
 									<svg
