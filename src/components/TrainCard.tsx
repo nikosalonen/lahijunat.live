@@ -79,6 +79,7 @@ export default function TrainCard({
 	const [lastTapTime, setLastTapTime] = useState(0);
 	const [hasDeparted, setHasDeparted] = useState(false);
 	const [opacity, setOpacity] = useState(1);
+	const [trackMemory, setTrackMemory] = useState<Record<string, { track: string; timestamp: number }>>({});
 
 	// Memoize all time-dependent calculations
 	const {
@@ -225,9 +226,14 @@ export default function TrainCard({
 		}
 	}, [train.trainNumber, currentTime, train.timeTableRows, stationCode]);
 
+	// Load track memory from localStorage on mount and when dependencies change
+	useEffect(() => {
+		const storedTrackMemory = JSON.parse(localStorage.getItem("trackMemory") || "{}");
+		setTrackMemory(storedTrackMemory);
+	}, [train.trainNumber, train.timeTableRows, stationCode, destinationCode]);
+
 	// Store and check original track for all trains (not just highlighted)
 	useEffect(() => {
-		const trackMemory = JSON.parse(localStorage.getItem("trackMemory") || "{}");
 		const trackInfo = getRelevantTrackInfo(train, stationCode, destinationCode);
 		if (!trackInfo) return;
 
@@ -240,47 +246,44 @@ export default function TrainCard({
 		const MAX_ENTRIES = 1000;
 
 		// Remove entries older than 1 hours
-		for (const journeyKey of Object.keys(trackMemory)) {
-			const entry = trackMemory[journeyKey];
+		const updatedTrackMemory = { ...trackMemory };
+		for (const journeyKey of Object.keys(updatedTrackMemory)) {
+			const entry = updatedTrackMemory[journeyKey];
 			if (now - entry.timestamp > MAX_AGE_MS) {
-				delete trackMemory[journeyKey];
+				delete updatedTrackMemory[journeyKey];
 			}
 		}
 
 		// If we have too many entries, remove oldest ones
-		const entries = Object.entries(trackMemory);
+		const entries = Object.entries(updatedTrackMemory);
 		if (entries.length >= MAX_ENTRIES) {
 			entries
-				.sort(
-					([, a], [, b]) =>
-						(a as { timestamp: number }).timestamp -
-						(b as { timestamp: number }).timestamp,
-				)
+				.sort(([, a], [, b]) => a.timestamp - b.timestamp)
 				.slice(0, entries.length - MAX_ENTRIES + 1)
 				.forEach(([journeyKey]) => {
-					delete trackMemory[journeyKey];
+					delete updatedTrackMemory[journeyKey];
 				});
 		}
 
 		if (!storedTrack) {
 			// Store the first seen track with timestamp
-			trackMemory[trackInfo.journeyKey] = {
+			updatedTrackMemory[trackInfo.journeyKey] = {
 				track: currentTrack,
 				timestamp: now,
 			};
-			localStorage.setItem("trackMemory", JSON.stringify(trackMemory));
+			setTrackMemory(updatedTrackMemory);
+			localStorage.setItem("trackMemory", JSON.stringify(updatedTrackMemory));
 		}
-	}, [train.trainNumber, train.timeTableRows, stationCode, destinationCode]);
+	}, [train.trainNumber, train.timeTableRows, stationCode, destinationCode, trackMemory]);
 
 	// Memoized track change check
 	const isTrackChanged = useMemo(() => {
-		const trackMemory = JSON.parse(localStorage.getItem("trackMemory") || "{}");
 		const trackInfo = getRelevantTrackInfo(train, stationCode, destinationCode);
 		if (!trackInfo) return false;
 		const currentTrack = trackInfo.track;
 		const storedTrack = trackMemory[trackInfo.journeyKey]?.track;
 		return storedTrack && currentTrack && storedTrack !== currentTrack;
-	}, [train.trainNumber, train.timeTableRows, stationCode, destinationCode]);
+	}, [train.trainNumber, train.timeTableRows, stationCode, destinationCode, trackMemory]);
 
 	useEffect(() => {
 		const handleLanguageChange = () => {
