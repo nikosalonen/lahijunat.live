@@ -55,6 +55,21 @@ function getCachedStations(): Station[] | null {
 // Cache for train data
 const trainCache = new Map<string, { data: Train[]; timestamp: number }>();
 
+// Cleanup function to prevent cache from growing too large
+function cleanupCache(cache: Map<string, any>): void {
+	if (cache.size <= CACHE_CONFIG.MAX_SIZE) return;
+
+	// Convert entries to array and sort by timestamp
+	const entries = Array.from(cache.entries())
+		.sort((a, b) => a[1].timestamp - b[1].timestamp);
+
+	// Remove oldest entries until we're under the limit
+	const entriesToRemove = entries.slice(0, cache.size - CACHE_CONFIG.MAX_SIZE);
+	for (const [key] of entriesToRemove) {
+		cache.delete(key);
+	}
+}
+
 function getCachedTrains(stationCode: string, destinationCode: string): Train[] | null {
 	const cacheKey = `${stationCode}-${destinationCode}`;
 	const cached = trainCache.get(cacheKey);
