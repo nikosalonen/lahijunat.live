@@ -16,7 +16,7 @@ const DEFAULT_HEADERS = {
 const CACHE_CONFIG = {
 	STATION_DURATION: 60 * 60 * 1000, // 1 hour
 	STATION_KEY: "stations",
-	TRAIN_DURATION: 30 * 1000, // 30 seconds
+	TRAIN_DURATION: 10 * 1000, // 10 seconds
 } as const;
 
 interface GraphQLStation {
