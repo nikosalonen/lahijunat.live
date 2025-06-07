@@ -17,6 +17,7 @@ const CACHE_CONFIG = {
 	STATION_DURATION: 60 * 60 * 1000, // 1 hour
 	STATION_KEY: "stations",
 	TRAIN_DURATION: 10 * 1000, // 10 seconds
+	MAX_SIZE: 100, // Maximum number of entries in the cache
 } as const;
 
 interface GraphQLStation {
@@ -255,6 +256,7 @@ export async function fetchStations(): Promise<Station[]> {
 		}));
 
 		stationCache.set(CACHE_CONFIG.STATION_KEY, { data: stations, timestamp: Date.now() });
+		cleanupCache(stationCache);
 		return stations;
 	} catch (error) {
 		console.error("Error fetching stations:", error);
@@ -376,6 +378,7 @@ export async function fetchTrains(
 			data: processedData,
 			timestamp: Date.now()
 		});
+		cleanupCache(trainCache);
 		
 		return processedData;
 	} catch (error) {
