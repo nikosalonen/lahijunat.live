@@ -20,6 +20,11 @@ const CACHE_CONFIG = {
 	MAX_SIZE: 100, // Maximum number of entries in the cache
 } as const;
 
+interface CacheEntry<T> {
+	data: T;
+	timestamp: number;
+}
+
 interface GraphQLStation {
 	name: string;
 	shortCode: string;
@@ -39,7 +44,7 @@ interface RESTStation {
 }
 
 // Improved cache implementation with type safety
-const stationCache = new Map<string, { data: Station[]; timestamp: number }>();
+const stationCache = new Map<string, CacheEntry<Station[]>>();
 
 function getCachedStations(): Station[] | null {
 	const cached = stationCache.get(CACHE_CONFIG.STATION_KEY);
@@ -54,10 +59,10 @@ function getCachedStations(): Station[] | null {
 }
 
 // Cache for train data
-const trainCache = new Map<string, { data: Train[]; timestamp: number }>();
+const trainCache = new Map<string, CacheEntry<Train[]>>();
 
 // Cleanup function to prevent cache from growing too large
-function cleanupCache(cache: Map<string, any>): void {
+function cleanupCache<T>(cache: Map<string, CacheEntry<T>>): void {
 	if (cache.size <= CACHE_CONFIG.MAX_SIZE) return;
 
 	// Convert entries to array and sort by timestamp
