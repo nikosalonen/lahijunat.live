@@ -241,12 +241,12 @@ export default function TrainCard({
 		const MAX_ENTRIES = 1000;
 
 		// Remove entries older than 1 hours
-		Object.keys(trackMemory).forEach((trainNumber) => {
+		for (const trainNumber of Object.keys(trackMemory)) {
 			const entry = trackMemory[trainNumber];
 			if (now - entry.timestamp > MAX_AGE_MS) {
 				delete trackMemory[trainNumber];
 			}
-		});
+		}
 
 		// If we have too many entries, remove oldest ones
 		const entries = Object.entries(trackMemory);
