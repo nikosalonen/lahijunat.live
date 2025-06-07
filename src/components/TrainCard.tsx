@@ -237,8 +237,8 @@ export default function TrainCard({
 		}
 	}, [train.trainNumber, train.timeTableRows, stationCode]);
 
-	// Helper to check if track has changed
-	const isTrackChanged = (() => {
+	// Memoized track change check
+	const isTrackChanged = useMemo(() => {
 		const trackMemory = JSON.parse(localStorage.getItem('trackMemory') || '{}');
 		const departureRow = train.timeTableRows.find(
 			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE"
@@ -247,7 +247,7 @@ export default function TrainCard({
 		const currentTrack = departureRow.commercialTrack;
 		const storedTrack = trackMemory[train.trainNumber]?.track;
 		return storedTrack && currentTrack && storedTrack !== currentTrack;
-	})();
+	}, [train.trainNumber, train.timeTableRows, stationCode]);
 
 	useEffect(() => {
 		const handleLanguageChange = () => {
