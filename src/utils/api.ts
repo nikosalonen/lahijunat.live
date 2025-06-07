@@ -405,7 +405,10 @@ function processTrainData(
 		return [];
 	}
 
+		// Use debug level or remove for production
+		if (process.env.NODE_ENV === 'development') {
 	console.log(`Processing ${data.length} trains for route ${stationCode} -> ${destinationCode}`);
+		}
 	const isPSLHKIRoute = stationCode === "PSL" && destinationCode === "HKI";
 
 	const filteredTrains = data
