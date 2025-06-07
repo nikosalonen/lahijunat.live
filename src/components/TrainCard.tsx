@@ -203,9 +203,36 @@ export default function TrainCard({
 		const currentTrack = departureRow.commercialTrack;
 		const storedTrack = trackMemory[train.trainNumber];
 
+		// Cleanup old entries
+		const now = Date.now();
+		const MAX_AGE_MS = 60 * 60 * 1000; // 1 hour
+		const MAX_ENTRIES = 1000;
+
+		// Remove entries older than 24 hours
+		Object.keys(trackMemory).forEach(trainNumber => {
+			const entry = trackMemory[trainNumber];
+			if (now - entry.timestamp > MAX_AGE_MS) {
+				delete trackMemory[trainNumber];
+			}
+		});
+
+		// If we have too many entries, remove oldest ones
+		const entries = Object.entries(trackMemory);
+		if (entries.length >= MAX_ENTRIES) {
+			entries
+				.sort(([, a], [, b]) => (a as { timestamp: number }).timestamp - (b as { timestamp: number }).timestamp)
+				.slice(0, entries.length - MAX_ENTRIES + 1)
+				.forEach(([trainNumber]) => {
+					delete trackMemory[trainNumber];
+				});
+		}
+
 		if (!storedTrack) {
-			// Store the first seen track
-			trackMemory[train.trainNumber] = currentTrack;
+			// Store the first seen track with timestamp
+			trackMemory[train.trainNumber] = {
+				track: currentTrack,
+				timestamp: now
+			};
 			localStorage.setItem('trackMemory', JSON.stringify(trackMemory));
 		}
 	}, [train.trainNumber, train.timeTableRows, stationCode]);
@@ -218,7 +245,7 @@ export default function TrainCard({
 		);
 		if (!departureRow) return false;
 		const currentTrack = departureRow.commercialTrack;
-		const storedTrack = trackMemory[train.trainNumber];
+		const storedTrack = trackMemory[train.trainNumber]?.track;
 		return storedTrack && currentTrack && storedTrack !== currentTrack;
 	})();
 
