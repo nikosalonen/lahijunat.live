@@ -1,23 +1,27 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import { getCollection } from "astro:content";
 
 interface ChangelogSchema {
-  version: string;
-  date: string;
+	version: string;
+	date: string;
 }
 
-const entries = await getCollection('changelog');
+const entries = await getCollection("changelog");
 const sortedEntries = await Promise.all(
-  entries
-    .sort((a: CollectionEntry<'changelog'>, b: CollectionEntry<'changelog'>) => {
-      return -a.data.version.localeCompare(b.data.version, undefined, { numeric: true });
-    })
-    .map(async (entry: CollectionEntry<'changelog'>) => {
-      const { Content } = await entry.render();
-      return { ...entry, Content };
-    })
+	entries
+		.sort(
+			(a: CollectionEntry<"changelog">, b: CollectionEntry<"changelog">) => {
+				return -a.data.version.localeCompare(b.data.version, undefined, {
+					numeric: true,
+				});
+			},
+		)
+		.map(async (entry: CollectionEntry<"changelog">) => {
+			const { Content } = await entry.render();
+			return { ...entry, Content };
+		}),
 );
 ---
 

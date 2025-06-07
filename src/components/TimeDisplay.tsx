@@ -1,8 +1,9 @@
 import { useMemo } from "preact/hooks";
-import { useLanguageChange } from '../hooks/useLanguageChange';
+import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Train } from "../types";
 import { t } from "../utils/translations";
 import TimeRow from "./TimeRow";
+
 // Memoize TimeDisplay
 const TimeDisplay = ({
 	departureRow,
@@ -18,11 +19,15 @@ const TimeDisplay = ({
 	useLanguageChange();
 	return useMemo(
 		() => (
-			<span class={`text-lg font-medium ${isCancelled ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200'} break-words min-w-0 relative pt-6`}>
-				{departureRow.liveEstimateTime && timeDifferenceMinutes > 0 && !isCancelled ? (
+			<span
+				class={`text-lg font-medium ${isCancelled ? "line-through text-gray-500 dark:text-gray-400" : "text-gray-800 dark:text-gray-200"} break-words min-w-0 relative pt-6`}
+			>
+				{departureRow.liveEstimateTime &&
+				timeDifferenceMinutes > 0 &&
+				!isCancelled ? (
 					<>
 						<output
-							aria-label={`${t('late')} ${timeDifferenceMinutes} ${t('minutes')}`}
+							aria-label={`${t("late")} ${timeDifferenceMinutes} ${t("minutes")}`}
 							class="absolute top-0 left-0 px-2 py-0.5 bg-[#fed100] text-black rounded text-sm"
 						>
 							{`+${timeDifferenceMinutes} min`}

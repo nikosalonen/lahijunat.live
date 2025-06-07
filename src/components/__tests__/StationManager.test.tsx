@@ -1,251 +1,280 @@
-import { render, fireEvent, act, waitFor } from '@testing-library/preact';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import StationManager from '../StationManager';
-import { fetchTrainsLeavingFromStation } from '../../utils/api';
-import type { Station } from '../../types';
-import { useState } from 'preact/hooks';
-import type { Props } from '../StationManager';
+import { fireEvent, render, waitFor } from "@testing-library/preact";
+import { useState } from "preact/hooks";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Station } from "../../types";
+import { fetchTrainsLeavingFromStation } from "../../utils/api";
+import type { Props } from "../StationManager";
+import StationManager from "../StationManager";
 
 // Mock translations
-vi.mock('../../utils/translations', () => ({
-  t: (key: string) => {
-    const translations: Record<string, string> = {
-      'from': 'Mistä',
-      'to': 'Mihin',
-      'h1title': 'Lähijunien aikataulut reaaliaikaisesti',
-      'hint': 'Valitse ensin lähtöasema',
-      'closeHint': 'Sulje vihje',
-      'locate': 'Paikanna',
-      'swapDirection': 'Vaihda suuntaa',
-      'loading': 'Ladataan...',
-      'placeholder': 'placeholder',
-    };
-    return translations[key] || key;
-  },
+vi.mock("../../utils/translations", () => ({
+	t: (key: string) => {
+		const translations: Record<string, string> = {
+			from: "Mistä",
+			to: "Mihin",
+			h1title: "Lähijunien aikataulut reaaliaikaisesti",
+			hint: "Valitse ensin lähtöasema",
+			closeHint: "Sulje vihje",
+			locate: "Paikanna",
+			swapDirection: "Vaihda suuntaa",
+			loading: "Ladataan...",
+			placeholder: "placeholder",
+		};
+		return translations[key] || key;
+	},
 }));
 
 // Mock useLanguageChange hook
-vi.mock('../hooks/useLanguageChange', () => ({
-  useLanguageChange: vi.fn(),
+vi.mock("../hooks/useLanguageChange", () => ({
+	useLanguageChange: vi.fn(),
 }));
 
 // Mock fetchTrainsLeavingFromStation
-vi.mock('../../utils/api', () => ({
-  fetchTrainsLeavingFromStation: vi.fn(),
-  fetchTrains: vi.fn(),
+vi.mock("../../utils/api", () => ({
+	fetchTrainsLeavingFromStation: vi.fn(),
+	fetchTrains: vi.fn(),
 }));
 
 // Mock localStorage
 const localStorageMock = (() => {
-  let store: Record<string, string> = {};
-  return {
-    getItem: vi.fn((key: string) => store[key] || null),
-    setItem: vi.fn((key: string, value: string) => {
-      store[key] = value;
-    }),
-    removeItem: vi.fn((key: string) => {
-      delete store[key];
-    }),
-    clear: () => {
-      store = {};
-    },
-  };
+	let store: Record<string, string> = {};
+	return {
+		getItem: vi.fn((key: string) => store[key] || null),
+		setItem: vi.fn((key: string, value: string) => {
+			store[key] = value;
+		}),
+		removeItem: vi.fn((key: string) => {
+			delete store[key];
+		}),
+		clear: () => {
+			store = {};
+		},
+	};
 })();
 
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+Object.defineProperty(window, "localStorage", { value: localStorageMock });
 
-describe('StationManager', () => {
-  const mockStations: Station[] = [
-    {
-      name: 'Helsinki',
-      shortCode: 'HKI',
-      location: {
-        latitude: 60.1699,
-        longitude: 24.9384,
-      },
-    },
-    {
-      name: 'Tampere',
-      shortCode: 'TPE',
-      location: {
-        latitude: 61.4978,
-        longitude: 23.7609,
-      },
-    },
-    {
-      name: 'Turku',
-      shortCode: 'TKU',
-      location: {
-        latitude: 60.4518,
-        longitude: 22.2666,
-      },
-    },
-  ];
+describe("StationManager", () => {
+	const mockStations: Station[] = [
+		{
+			name: "Helsinki",
+			shortCode: "HKI",
+			location: {
+				latitude: 60.1699,
+				longitude: 24.9384,
+			},
+		},
+		{
+			name: "Tampere",
+			shortCode: "TPE",
+			location: {
+				latitude: 61.4978,
+				longitude: 23.7609,
+			},
+		},
+		{
+			name: "Turku",
+			shortCode: "TKU",
+			location: {
+				latitude: 60.4518,
+				longitude: 22.2666,
+			},
+		},
+	];
 
-  const mockDestinations: Station[] = [
-    {
-      name: 'Tampere',
-      shortCode: 'TPE',
-      location: {
-        latitude: 61.4978,
-        longitude: 23.7609,
-      },
-    },
-  ];
+	const mockDestinations: Station[] = [
+		{
+			name: "Tampere",
+			shortCode: "TPE",
+			location: {
+				latitude: 61.4978,
+				longitude: 23.7609,
+			},
+		},
+	];
 
-  beforeEach(() => {
-    localStorageMock.clear();
-    vi.clearAllMocks();
-    (fetchTrainsLeavingFromStation as any).mockResolvedValue(mockDestinations);
-  });
+	beforeEach(() => {
+		localStorageMock.clear();
+		vi.clearAllMocks();
+		(fetchTrainsLeavingFromStation as any).mockResolvedValue(mockDestinations);
+	});
 
-  it('shows loading state when fetching destinations', async () => {
-    const { getByText, findByText, container } = render(<StationManagerTestWrapper stations={mockStations} />);
+	it("shows loading state when fetching destinations", async () => {
+		const { getByText, findByText, container } = render(
+			<StationManagerTestWrapper stations={mockStations} />,
+		);
 
-    // Select a station
-    const fromInput = getByText('Mistä').nextElementSibling?.querySelector('input');
-    if (fromInput) {
-      fireEvent.focus(fromInput);
-      fireEvent.input(fromInput, { target: { value: 'Helsinki' } });
-      
-      // Wait for the dropdown to appear
-      await waitFor(() => {
-        const dropdown = container.querySelector('.station-list-container .absolute');
-        expect(dropdown).toBeInTheDocument();
-      });
+		// Select a station
+		const fromInput =
+			getByText("Mistä").nextElementSibling?.querySelector("input");
+		if (fromInput) {
+			fireEvent.focus(fromInput);
+			fireEvent.input(fromInput, { target: { value: "Helsinki" } });
 
-      // Find and click the station option
-      const stationOption = await findByText('Helsinki (HKI)');
-      fireEvent.click(stationOption);
-    }
+			// Wait for the dropdown to appear
+			await waitFor(() => {
+				const dropdown = container.querySelector(
+					".station-list-container .absolute",
+				);
+				expect(dropdown).toBeInTheDocument();
+			});
 
-    // Check if loading state is shown
-    expect(getByText((content) => content.includes('Ladataan'))).toBeInTheDocument();
+			// Find and click the station option
+			const stationOption = await findByText("Helsinki (HKI)");
+			fireEvent.click(stationOption);
+		}
 
-    // Wait for destinations to load
-    await waitFor(() => {
-      expect(() => getByText((content) => content.includes('Ladataan'))).toThrow();
-    });
-  });
+		// Check if loading state is shown
+		expect(
+			getByText((content) => content.includes("Ladataan")),
+		).toBeInTheDocument();
 
-  it('updates available destinations when origin station is selected', async () => {
-    const { getByText, findByText, container } = render(<StationManagerTestWrapper stations={mockStations} />);
+		// Wait for destinations to load
+		await waitFor(() => {
+			expect(() =>
+				getByText((content) => content.includes("Ladataan")),
+			).toThrow();
+		});
+	});
 
-    // Select origin station
-    const fromInput = getByText('Mistä').nextElementSibling?.querySelector('input');
-    if (fromInput) {
-      fireEvent.focus(fromInput);
-      fireEvent.input(fromInput, { target: { value: 'Helsinki' } });
-      
-      // Wait for the dropdown to appear
-      await waitFor(() => {
-        const dropdown = container.querySelector('.station-list-container .absolute');
-        expect(dropdown).toBeInTheDocument();
-      });
+	it("updates available destinations when origin station is selected", async () => {
+		const { getByText, findByText, container } = render(
+			<StationManagerTestWrapper stations={mockStations} />,
+		);
 
-      // Find and click the station option
-      const stationOption = await findByText('Helsinki (HKI)');
-      fireEvent.click(stationOption);
-    }
+		// Select origin station
+		const fromInput =
+			getByText("Mistä").nextElementSibling?.querySelector("input");
+		if (fromInput) {
+			fireEvent.focus(fromInput);
+			fireEvent.input(fromInput, { target: { value: "Helsinki" } });
 
-    // Wait for destinations to load
-    await waitFor(() => {
-      expect(fetchTrainsLeavingFromStation).toHaveBeenCalledWith('HKI');
-    });
+			// Wait for the dropdown to appear
+			await waitFor(() => {
+				const dropdown = container.querySelector(
+					".station-list-container .absolute",
+				);
+				expect(dropdown).toBeInTheDocument();
+			});
 
-    // Check if destination list is updated
-    const toInput = getByText('Mihin').nextElementSibling?.querySelector('input');
-    if (toInput) {
-      fireEvent.focus(toInput);
-      fireEvent.input(toInput, { target: { value: '' } });
-      
-      // Wait for the dropdown to appear
-      await waitFor(() => {
-        const dropdown = container.querySelector('.station-list-container .absolute');
-        expect(dropdown).toBeInTheDocument();
-      });
+			// Find and click the station option
+			const stationOption = await findByText("Helsinki (HKI)");
+			fireEvent.click(stationOption);
+		}
 
-      // Find and verify the destination option
-      const destinationOption = await findByText('Tampere (TPE)');
-      expect(destinationOption).toBeInTheDocument();
-    }
-  });
+		// Wait for destinations to load
+		await waitFor(() => {
+			expect(fetchTrainsLeavingFromStation).toHaveBeenCalledWith("HKI");
+		});
 
-  it('handles error when fetching destinations', async () => {
-    (fetchTrainsLeavingFromStation as any).mockRejectedValue(new Error('Failed to fetch'));
+		// Check if destination list is updated
+		const toInput =
+			getByText("Mihin").nextElementSibling?.querySelector("input");
+		if (toInput) {
+			fireEvent.focus(toInput);
+			fireEvent.input(toInput, { target: { value: "" } });
 
-    // Suppress error log for this test
-    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+			// Wait for the dropdown to appear
+			await waitFor(() => {
+				const dropdown = container.querySelector(
+					".station-list-container .absolute",
+				);
+				expect(dropdown).toBeInTheDocument();
+			});
 
-    const { getByText, findByText, container } = render(<StationManagerTestWrapper stations={mockStations} />);
+			// Find and verify the destination option
+			const destinationOption = await findByText("Tampere (TPE)");
+			expect(destinationOption).toBeInTheDocument();
+		}
+	});
 
-    // Select origin station
-    const fromInput = getByText('Mistä').nextElementSibling?.querySelector('input');
-    if (fromInput) {
-      fireEvent.focus(fromInput);
-      fireEvent.input(fromInput, { target: { value: 'Helsinki' } });
-      
-      // Wait for the dropdown to appear
-      await waitFor(() => {
-        const dropdown = container.querySelector('.station-list-container .absolute');
-        expect(dropdown).toBeInTheDocument();
-      });
+	it("handles error when fetching destinations", async () => {
+		(fetchTrainsLeavingFromStation as any).mockRejectedValue(
+			new Error("Failed to fetch"),
+		);
 
-      // Find and click the station option
-      const stationOption = await findByText('Helsinki (HKI)');
-      fireEvent.click(stationOption);
-    }
+		// Suppress error log for this test
+		const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    // Wait for error to occur and fallback to all stations
-    await waitFor(() => {
-      expect(fetchTrainsLeavingFromStation).toHaveBeenCalledWith('HKI');
-    });
+		const { getByText, findByText, container } = render(
+			<StationManagerTestWrapper stations={mockStations} />,
+		);
 
-    // Check if all stations are available in destination list
-    const toInput = getByText('Mihin').nextElementSibling?.querySelector('input');
-    if (toInput) {
-      fireEvent.focus(toInput);
-      fireEvent.input(toInput, { target: { value: '' } });
-      
-      // Wait for the dropdown to appear
-      await waitFor(() => {
-        const dropdown = container.querySelector('.station-list-container .absolute');
-        expect(dropdown).toBeInTheDocument();
-      });
+		// Select origin station
+		const fromInput =
+			getByText("Mistä").nextElementSibling?.querySelector("input");
+		if (fromInput) {
+			fireEvent.focus(fromInput);
+			fireEvent.input(fromInput, { target: { value: "Helsinki" } });
 
-      // Find and verify both stations are available
-      const tampereOption = await findByText('Tampere (TPE)');
-      const turkuOption = await findByText('Turku (TKU)');
-      expect(tampereOption).toBeInTheDocument();
-      expect(turkuOption).toBeInTheDocument();
-    }
+			// Wait for the dropdown to appear
+			await waitFor(() => {
+				const dropdown = container.querySelector(
+					".station-list-container .absolute",
+				);
+				expect(dropdown).toBeInTheDocument();
+			});
 
-    errorSpy.mockRestore();
-  });
+			// Find and click the station option
+			const stationOption = await findByText("Helsinki (HKI)");
+			fireEvent.click(stationOption);
+		}
 
-  it('clears destination if it becomes unavailable', async () => {
-    // Set initial destination
-    localStorageMock.setItem('selectedDestination', 'TKU');
+		// Wait for error to occur and fallback to all stations
+		await waitFor(() => {
+			expect(fetchTrainsLeavingFromStation).toHaveBeenCalledWith("HKI");
+		});
 
-    const { getByText } = render(
-      <StationManager 
-        stations={mockStations} 
-        initialFromStation="HKI"
-        initialToStation="TKU"
-      />
-    );
+		// Check if all stations are available in destination list
+		const toInput =
+			getByText("Mihin").nextElementSibling?.querySelector("input");
+		if (toInput) {
+			fireEvent.focus(toInput);
+			fireEvent.input(toInput, { target: { value: "" } });
 
-    // Wait for destinations to load and verify destination is cleared
-    await waitFor(() => {
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('selectedDestination');
-    });
-  });
+			// Wait for the dropdown to appear
+			await waitFor(() => {
+				const dropdown = container.querySelector(
+					".station-list-container .absolute",
+				);
+				expect(dropdown).toBeInTheDocument();
+			});
+
+			// Find and verify both stations are available
+			const tampereOption = await findByText("Tampere (TPE)");
+			const turkuOption = await findByText("Turku (TKU)");
+			expect(tampereOption).toBeInTheDocument();
+			expect(turkuOption).toBeInTheDocument();
+		}
+
+		errorSpy.mockRestore();
+	});
+
+	it("clears destination if it becomes unavailable", async () => {
+		// Set initial destination
+		localStorageMock.setItem("selectedDestination", "TKU");
+
+		const { getByText } = render(
+			<StationManager
+				stations={mockStations}
+				initialFromStation="HKI"
+				initialToStation="TKU"
+			/>,
+		);
+
+		// Wait for destinations to load and verify destination is cleared
+		await waitFor(() => {
+			expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+				"selectedDestination",
+			);
+		});
+	});
 });
 
 // Custom test wrapper to force openList to 'from'
 function StationManagerTestWrapper(props: Props) {
-  const [openList, setOpenList] = useState<'from' | 'to' | null>('from');
-  return (
-    <StationManager {...props} openList={openList} setOpenList={setOpenList} />
-  );
-} 
+	const [openList, setOpenList] = useState<"from" | "to" | null>("from");
+	return (
+		<StationManager {...props} openList={openList} setOpenList={setOpenList} />
+	);
+}
