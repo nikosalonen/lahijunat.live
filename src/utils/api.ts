@@ -520,6 +520,73 @@ function isPSLtoHKI(train: Train): boolean {
 	return true;
 }
 
+// New function to handle track changes for I and P trains
+export function getRelevantTrackInfo(
+	train: Train, 
+	stationCode: string, 
+	destinationCode: string
+): { track: string; timestamp: string; journeyKey: string } | null {
+	// Create a unique key for this journey
+	const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
+
+	// For I and P trains that make round trips
+	if (train.trainType === "I" || train.trainType === "P") {
+		const stationStops = train.timeTableRows.filter(
+			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE"
+		);
+
+		if (stationStops.length === 0) return null;
+
+		// For Helsinki and Pasila, we need to handle the round trip case
+		if (stationCode === "HKI" || stationCode === "PSL") {
+			// Find the last departure from this station that's part of the return journey
+			const returnJourneyStops = stationStops.filter((stop, index) => {
+				if (index === stationStops.length - 1) return true; // Always include the last stop
+				
+				// Check if this is part of the return journey by looking at subsequent stops
+				const nextStops = train.timeTableRows.slice(
+					train.timeTableRows.indexOf(stop) + 1
+				);
+				
+				// If we find a stop at the other station (HKI/PSL) after this one, it's part of the return journey
+				return nextStops.some(
+					(nextStop) => 
+						(nextStop.stationShortCode === "HKI" || nextStop.stationShortCode === "PSL") &&
+						nextStop.type === "ARRIVAL"
+				);
+			});
+
+			if (returnJourneyStops.length > 0) {
+				const lastReturnStop = returnJourneyStops[returnJourneyStops.length - 1];
+				return {
+					track: lastReturnStop.commercialTrack,
+					timestamp: lastReturnStop.scheduledTime,
+					journeyKey
+				};
+			}
+		}
+
+		// For other stations or if we couldn't determine the return journey
+		const lastStop = stationStops[stationStops.length - 1];
+		return {
+			track: lastStop.commercialTrack,
+			timestamp: lastStop.scheduledTime,
+			journeyKey
+		};
+	}
+
+	// For other train types, just get the first departure
+	const firstDeparture = train.timeTableRows.find(
+		(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE"
+	);
+
+	return firstDeparture ? {
+		track: firstDeparture.commercialTrack,
+		timestamp: firstDeparture.scheduledTime,
+		journeyKey
+	} : null;
+}
+
 function isValidJourney(
 	train: Train,
 	stationCode: string,
