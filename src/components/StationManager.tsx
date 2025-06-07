@@ -436,7 +436,6 @@ export default function StationManager({
 									selectedValue={selectedOrigin}
 									isOpen={openList === "from"}
 									onOpenChange={(isOpen) => {
-										console.log("DEBUG: onOpenChange from", isOpen);
 										setOpenList(isOpen ? "from" : null);
 									}}
 									onFocus={() => handleInputFocus("from")}
@@ -497,7 +496,6 @@ export default function StationManager({
 									selectedValue={selectedDestination}
 									isOpen={openList === "to"}
 									onOpenChange={(isOpen) => {
-										console.log("DEBUG: onOpenChange to", isOpen);
 										setOpenList(isOpen ? "to" : null);
 									}}
 									inputRef={toInputRef}
