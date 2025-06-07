@@ -422,7 +422,9 @@ function processTrainData(
 ): Train[] {
 	// Early return for empty data
 	if (!data.length) {
-		console.log("No train data received from API");
+		if (process.env.NODE_ENV === "development") {
+			console.log("No train data received from API");
+		}
 		return [];
 	}
 
@@ -437,7 +439,7 @@ function processTrainData(
 	const filteredTrains = data
 		.filter((train) => {
 			const isCommuter = train.trainCategory === "Commuter";
-			if (!isCommuter) {
+			if (!isCommuter && process.env.NODE_ENV === "development") {
 				console.log(`Skipping non-commuter train ${train.trainNumber}`);
 			}
 			return isCommuter;
@@ -447,18 +449,17 @@ function processTrainData(
 			const firstStationIndex = train.timeTableRows.findIndex(
 				(row) => row.stationShortCode === stationCode,
 			);
-			if (firstStationIndex === -1) {
+			if (firstStationIndex === -1 && process.env.NODE_ENV === "development") {
 				console.log(
 					`Train ${train.trainNumber} does not stop at ${stationCode}`,
 				);
-				return null;
 			}
-
-			// Create new train object to avoid mutating original
-			return {
-				...train,
-				timeTableRows: train.timeTableRows.slice(firstStationIndex),
-			};
+			return firstStationIndex === -1
+				? null
+				: {
+						...train,
+						timeTableRows: train.timeTableRows.slice(firstStationIndex),
+				  };
 		})
 		.filter((train): train is Train => {
 			if (!train) return false;
@@ -466,7 +467,7 @@ function processTrainData(
 			// Special handling for PSL to HKI route
 			if (isPSLHKIRoute) {
 				const isValid = isPSLtoHKI(train);
-				if (!isValid) {
+				if (!isValid && process.env.NODE_ENV === "development") {
 					console.log(
 						`Train ${train.trainNumber} is not a valid PSL->HKI journey`,
 					);
@@ -475,7 +476,7 @@ function processTrainData(
 			}
 
 			const isValid = isValidJourney(train, stationCode, destinationCode);
-			if (!isValid) {
+			if (!isValid && process.env.NODE_ENV === "development") {
 				console.log(
 					`Train ${train.trainNumber} is not a valid journey from ${stationCode} to ${destinationCode}`,
 				);
