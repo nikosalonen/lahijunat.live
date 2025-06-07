@@ -37,6 +37,7 @@ export const translations: Translations = {
 		showMore: "Näytä lisää",
 		favoriteTooltip: "Klikkaa suosikiksi ja korosta juna listassa",
 		starIcon: "Tähti-ikoni",
+		closeTooltip: "Sulje suosikkivihje",
 	},
 	en: {
 		title: "Local Trains Live | Real-time schedules for local trains",
@@ -68,6 +69,7 @@ export const translations: Translations = {
 		showMore: "Show more",
 		favoriteTooltip: "Click to favorite and highlight this train in the list",
 		starIcon: "Star icon",
+		closeTooltip: "Close favorite tooltip",
 	},
 };
 
