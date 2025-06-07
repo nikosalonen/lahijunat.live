@@ -1,6 +1,6 @@
 // src/components/StationManager.tsx
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
-import { useLanguageChange } from '../hooks/useLanguageChange';
+import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station } from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
 import { calculateDistance, isInFinland } from "../utils/location";
@@ -13,8 +13,8 @@ interface Props {
 	initialFromStation?: string | null;
 	initialToStation?: string | null;
 	// For testing only:
-	openList?: 'from' | 'to' | null;
-	setOpenList?: (v: 'from' | 'to' | null) => void;
+	openList?: "from" | "to" | null;
+	setOpenList?: (v: "from" | "to" | null) => void;
 }
 
 export type { Props };
@@ -35,7 +35,7 @@ const setStoredValue = (key: string, value: string): void => {
 const isLocalStorageAvailable = () => {
 	try {
 		return typeof window !== "undefined" && window.localStorage !== null;
-	} catch (e) {
+	} catch {
 		return false;
 	}
 };
@@ -48,26 +48,30 @@ function useHasMounted() {
 	return hasMounted;
 }
 
-export default function StationManager({ stations, initialFromStation, initialToStation, openList: openListProp, setOpenList: setOpenListProp }: Props) {
-	const [internalOpenList, internalSetOpenList] = useState<"from" | "to" | null>(null);
+export default function StationManager({
+	stations,
+	initialFromStation,
+	initialToStation,
+	openList: openListProp,
+	setOpenList: setOpenListProp,
+}: Props) {
+	const [internalOpenList, internalSetOpenList] = useState<
+		"from" | "to" | null
+	>(null);
 	const openList = openListProp !== undefined ? openListProp : internalOpenList;
-	const setOpenList = setOpenListProp !== undefined ? setOpenListProp : internalSetOpenList;
-	const [selectedOrigin, setSelectedOrigin] = useState<string | null>(initialFromStation || null);
+	const setOpenList =
+		setOpenListProp !== undefined ? setOpenListProp : internalSetOpenList;
+	const [selectedOrigin, setSelectedOrigin] = useState<string | null>(
+		initialFromStation || null,
+	);
 	const [selectedDestination, setSelectedDestination] = useState<string | null>(
 		initialToStation || null,
 	);
 	const [showHint, setShowHint] = useState<boolean | null>(null);
-	const [showLocationHint, setShowLocationHint] = useState<boolean | null>(
-		null,
-	);
 	const [availableDestinations, setAvailableDestinations] =
 		useState<Station[]>(stations);
 	const [isLoadingDestinations, setIsLoadingDestinations] = useState(false);
 	const [isLocating, setIsLocating] = useState<boolean | null>(null);
-
-	const [hasGeolocationPermission, setHasGeolocationPermission] = useState<
-		boolean | null
-	>(null);
 
 	const hasMounted = useHasMounted();
 	const [, forceUpdate] = useState({});
@@ -87,16 +91,21 @@ export default function StationManager({ stations, initialFromStation, initialTo
 	}, [selectedOrigin, selectedDestination]);
 
 	// Ensure dropdown opens when input is focused
-	const handleInputFocus = useCallback((type: 'from' | 'to') => {
-		setOpenList(type);
-	}, [setOpenList]);
+	const handleInputFocus = useCallback(
+		(type: "from" | "to") => {
+			setOpenList(type);
+		},
+		[setOpenList],
+	);
 
 	useEffect(() => {
 		setIsLocating(false);
 
 		// Check if launched from PWA
 		const urlParams = new URLSearchParams(window.location.search);
-		const isPwaLaunch = urlParams.get('source') === 'pwa' || urlParams.get('source') === 'shortcut';
+		const isPwaLaunch =
+			urlParams.get("source") === "pwa" ||
+			urlParams.get("source") === "shortcut";
 
 		if (isPwaLaunch) {
 			// If launched from PWA, restore last used route from localStorage
@@ -108,9 +117,13 @@ export default function StationManager({ stations, initialFromStation, initialTo
 				if (savedDestination) {
 					setSelectedDestination(savedDestination);
 					// Update URL to match the restored route
-					window.history.replaceState({}, '', `/${savedOrigin}/${savedDestination}`);
+					window.history.replaceState(
+						{},
+						"",
+						`/${savedOrigin}/${savedDestination}`,
+					);
 				} else {
-					window.history.replaceState({}, '', `/${savedOrigin}`);
+					window.history.replaceState({}, "", `/${savedOrigin}`);
 				}
 			}
 		} else {
@@ -125,33 +138,16 @@ export default function StationManager({ stations, initialFromStation, initialTo
 
 		if (isLocalStorageAvailable()) {
 			setShowHint(localStorage.getItem("hideDestinationHint") !== "true");
-			setShowLocationHint(localStorage.getItem("hideLocationHint") !== "true");
 		} else {
 			setShowHint(true);
-			setShowLocationHint(true);
 		}
 	}, [initialFromStation, initialToStation]);
 
-	// Check geolocation permission on mount
-	useEffect(() => {
-		if (navigator?.permissions) {
-			navigator.permissions
-				.query({ name: "geolocation" })
-				.then((permissionStatus) => {
-					setHasGeolocationPermission(permissionStatus.state === "granted");
-					// Listen for permission changes
-					permissionStatus.addEventListener("change", () => {
-						setHasGeolocationPermission(permissionStatus.state === "granted");
-					});
-				})
-				.catch(() => setHasGeolocationPermission(false));
-		}
-	}, []);
-
 	useEffect(() => {
 		const handleLanguageChange = () => forceUpdate({});
-		window.addEventListener('languagechange', handleLanguageChange);
-		return () => window.removeEventListener('languagechange', handleLanguageChange);
+		window.addEventListener("languagechange", handleLanguageChange);
+		return () =>
+			window.removeEventListener("languagechange", handleLanguageChange);
 	}, []);
 
 	const handleNearestStation = useCallback(
@@ -196,88 +192,6 @@ export default function StationManager({ stations, initialFromStation, initialTo
 		[stations],
 	);
 
-	// Optimize location update logic
-	const updateLocation = useCallback(
-		(position: GeolocationPosition) => {
-			const userLocation = {
-				latitude: position.coords.latitude,
-				longitude: position.coords.longitude,
-			};
-
-			if (!isInFinland(userLocation)) {
-				return;
-			}
-
-			const nearestStation = findNearestStation(userLocation);
-			if (nearestStation) {
-				handleNearestStation(nearestStation);
-			}
-		},
-		[findNearestStation, handleNearestStation],
-	);
-
-	// Optimize location watching with better cleanup
-	const startWatchingLocation = useCallback(() => {
-		if (!navigator.geolocation) {
-			console.warn("Geolocation not supported");
-			return;
-		}
-
-		let lastUpdate = 0;
-		const FIVE_MINUTES = 5 * 60 * 1000;
-
-		const watchId = navigator.geolocation.watchPosition(
-			(position) => {
-				const now = Date.now();
-				if (now - lastUpdate >= FIVE_MINUTES) {
-					lastUpdate = now;
-					updateLocation(position);
-				}
-			},
-			(error) => {
-				console.error("Position error:", error);
-				if (error.code === error.PERMISSION_DENIED) {
-					alert(
-						"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
-					);
-				}
-			},
-			{
-				enableHighAccuracy: true,
-				timeout: 5000,
-			},
-		);
-
-		// Add visibility change listener
-		document.addEventListener("visibilitychange", () => {
-			if (document.visibilityState === "visible") {
-				navigator.geolocation.getCurrentPosition(
-					updateLocation,
-					(error) => {
-						console.error("Position error:", error);
-						if (error.code === error.PERMISSION_DENIED) {
-							alert(
-								"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
-							);
-						}
-					},
-					{
-						enableHighAccuracy: true,
-						timeout: 5000,
-					},
-				);
-			}
-		});
-
-		// Return cleanup function
-		return () => {
-			if (watchId) {
-				navigator.geolocation.clearWatch(watchId);
-			}
-		};
-	}, [updateLocation]);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: not needed
 	useEffect(() => {
 		const fetchDestinations = async () => {
 			if (selectedOrigin) {
@@ -394,35 +308,38 @@ export default function StationManager({ stations, initialFromStation, initialTo
 
 	// Update URL when stations change
 	useEffect(() => {
-		if (typeof window === 'undefined') return;
+		if (typeof window === "undefined") return;
 
 		const urlParams = new URLSearchParams(window.location.search);
-		const isPwaLaunch = urlParams.get('source') === 'pwa' || urlParams.get('source') === 'shortcut';
+		const isPwaLaunch =
+			urlParams.get("source") === "pwa" ||
+			urlParams.get("source") === "shortcut";
 
 		// Only update URL if not a PWA launch or if it's not the initial load
-		if (!isPwaLaunch || document.visibilityState === 'visible') {
-			const newPath = selectedOrigin && selectedDestination
-				? `/${selectedOrigin}/${selectedDestination}`
-				: selectedOrigin
-					? `/${selectedOrigin}`
-					: '/';
+		if (!isPwaLaunch || document.visibilityState === "visible") {
+			const newPath =
+				selectedOrigin && selectedDestination
+					? `/${selectedOrigin}/${selectedDestination}`
+					: selectedOrigin
+						? `/${selectedOrigin}`
+						: "/";
 
 			// Only update if the URL is different
 			if (window.location.pathname !== newPath) {
-				window.history.pushState({}, '', newPath);
+				window.history.pushState({}, "", newPath);
 			}
 		}
 	}, [selectedOrigin, selectedDestination]);
 
 	// Handle browser back/forward buttons
 	useEffect(() => {
-		if (typeof window === 'undefined') return;
+		if (typeof window === "undefined") return;
 
 		const handlePopState = () => {
-			const pathParts = window.location.pathname.split('/').filter(Boolean);
+			const pathParts = window.location.pathname.split("/").filter(Boolean);
 			const [fromStation, toStation] = pathParts;
 
-			if (fromStation && stations.some(s => s.shortCode === fromStation)) {
+			if (fromStation && stations.some((s) => s.shortCode === fromStation)) {
 				setSelectedOrigin(fromStation);
 				setStoredValue("selectedOrigin", fromStation);
 			} else {
@@ -430,7 +347,7 @@ export default function StationManager({ stations, initialFromStation, initialTo
 				localStorage.removeItem("selectedOrigin");
 			}
 
-			if (toStation && stations.some(s => s.shortCode === toStation)) {
+			if (toStation && stations.some((s) => s.shortCode === toStation)) {
 				setSelectedDestination(toStation);
 				setStoredValue("selectedDestination", toStation);
 			} else {
@@ -439,8 +356,8 @@ export default function StationManager({ stations, initialFromStation, initialTo
 			}
 		};
 
-		window.addEventListener('popstate', handlePopState);
-		return () => window.removeEventListener('popstate', handlePopState);
+		window.addEventListener("popstate", handlePopState);
+		return () => window.removeEventListener("popstate", handlePopState);
 	}, [stations]);
 
 	const fetchDestinations = async (originCode: string) => {
@@ -470,12 +387,12 @@ export default function StationManager({ stations, initialFromStation, initialTo
 	return (
 		<div className="w-full max-w-4xl mx-auto p-2 sm:p-6">
 			<h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center dark:text-white">
-				{t('h1title')}
+				{t("h1title")}
 			</h1>
 			<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
 				<div className="space-y-2">
 					<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
-						{t('from')}
+						{t("from")}
 					</h3>
 					<div className="flex flex-row-reverse items-center gap-2">
 						<button
@@ -497,7 +414,7 @@ export default function StationManager({ stations, initialFromStation, initialTo
 								stroke="currentColor"
 								strokeWidth="4"
 							>
-								<title>{t('locate')}</title>
+								<title>{t("locate")}</title>
 								{/* Outer Circle */}
 								<circle cx="50" cy="50" r="40" />
 								{/* Inner Circle with smaller radius */}
@@ -519,20 +436,19 @@ export default function StationManager({ stations, initialFromStation, initialTo
 									selectedValue={selectedOrigin}
 									isOpen={openList === "from"}
 									onOpenChange={(isOpen) => {
-										console.log('DEBUG: onOpenChange from', isOpen);
+										console.log("DEBUG: onOpenChange from", isOpen);
 										setOpenList(isOpen ? "from" : null);
 									}}
-									onFocus={() => handleInputFocus('from')}
+									onFocus={() => handleInputFocus("from")}
 								/>
 							</div>
 						</div>
 					</div>
-
 				</div>
 
 				<div className="space-y-2">
 					<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
-						{t('to')}
+						{t("to")}
 					</h3>
 					<div className="flex flex-row-reverse items-center gap-2">
 						<button
@@ -566,7 +482,7 @@ export default function StationManager({ stations, initialFromStation, initialTo
 								className="rotate-90"
 								aria-labelledby="swapDirectionIcon"
 							>
-								<title id="swapDirectionIcon">{t('swapDirection')}</title>
+								<title id="swapDirectionIcon">{t("swapDirection")}</title>
 								<polyline points="17 1 21 5 17 9" />
 								<path d="M3 11V9a4 4 0 0 1 4-4h14" />
 								<polyline points="7 23 3 19 7 15" />
@@ -581,11 +497,11 @@ export default function StationManager({ stations, initialFromStation, initialTo
 									selectedValue={selectedDestination}
 									isOpen={openList === "to"}
 									onOpenChange={(isOpen) => {
-										console.log('DEBUG: onOpenChange to', isOpen);
+										console.log("DEBUG: onOpenChange to", isOpen);
 										setOpenList(isOpen ? "to" : null);
 									}}
 									inputRef={toInputRef}
-									onFocus={() => handleInputFocus('to')}
+									onFocus={() => handleInputFocus("to")}
 									isLoading={isLoadingDestinations}
 								/>
 							</div>
@@ -596,9 +512,7 @@ export default function StationManager({ stations, initialFromStation, initialTo
 						showHint &&
 						isLocalStorageAvailable() && (
 							<div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
-								<p>
-									{t('hint')}
-								</p>
+								<p>{t("hint")}</p>
 								<button
 									type="button"
 									onClick={() => {
@@ -621,7 +535,7 @@ export default function StationManager({ stations, initialFromStation, initialTo
 										strokeLinecap="round"
 										strokeLinejoin="round"
 									>
-										<title>{t('closeHint')}</title>
+										<title>{t("closeHint")}</title>
 										<line x1="18" y1="6" x2="6" y2="18" />
 										<line x1="6" y1="6" x2="18" y2="18" />
 									</svg>

@@ -1,4 +1,4 @@
-import type { Station, TimeTableRow, Train } from "../types";
+import type { Station, Train } from "../types";
 
 const BASE_URL = "https://rata.digitraffic.fi/api";
 const ENDPOINTS = {
@@ -66,8 +66,9 @@ function cleanupCache<T>(cache: Map<string, CacheEntry<T>>): void {
 	if (cache.size <= CACHE_CONFIG.MAX_SIZE) return;
 
 	// Convert entries to array and sort by timestamp
-	const entries = Array.from(cache.entries())
-		.sort((a, b) => a[1].timestamp - b[1].timestamp);
+	const entries = Array.from(cache.entries()).sort(
+		(a, b) => a[1].timestamp - b[1].timestamp,
+	);
 
 	// Remove oldest entries until we're under the limit
 	const entriesToRemove = entries.slice(0, cache.size - CACHE_CONFIG.MAX_SIZE);
@@ -76,7 +77,10 @@ function cleanupCache<T>(cache: Map<string, CacheEntry<T>>): void {
 	}
 }
 
-function getCachedTrains(stationCode: string, destinationCode: string): Train[] | null {
+function getCachedTrains(
+	stationCode: string,
+	destinationCode: string,
+): Train[] | null {
 	const cacheKey = `${stationCode}-${destinationCode}`;
 	const cached = trainCache.get(cacheKey);
 	if (!cached) return null;
@@ -240,7 +244,7 @@ export async function fetchStations(): Promise<Station[]> {
 		}
 
 		const result = await response.json();
-		
+
 		// Check for GraphQL errors
 		if (result.errors) {
 			throw new Error(`GraphQL Error: ${JSON.stringify(result.errors)}`);
@@ -248,7 +252,9 @@ export async function fetchStations(): Promise<Station[]> {
 
 		// Check if the response has the expected structure
 		if (!result?.data?.stations) {
-			throw new Error(`Invalid response format from GraphQL API. Response: ${JSON.stringify(result)}`);
+			throw new Error(
+				`Invalid response format from GraphQL API. Response: ${JSON.stringify(result)}`,
+			);
 		}
 
 		const stations = result.data.stations.map((station: GraphQLStation) => ({
@@ -260,7 +266,10 @@ export async function fetchStations(): Promise<Station[]> {
 			},
 		}));
 
-		stationCache.set(CACHE_CONFIG.STATION_KEY, { data: stations, timestamp: Date.now() });
+		stationCache.set(CACHE_CONFIG.STATION_KEY, {
+			data: stations,
+			timestamp: Date.now(),
+		});
 		cleanupCache(stationCache);
 		return stations;
 	} catch (error) {
@@ -284,7 +293,7 @@ export async function fetchTrainsLeavingFromStation(
 		}
 
 		const data = await response.json();
-		
+
 		// Extract unique station codes more efficiently
 		const shortCodes = new Set<string>();
 		for (const train of data) {
@@ -298,7 +307,9 @@ export async function fetchTrainsLeavingFromStation(
 		// Fetch station details in parallel
 		const stationsResponse = await fetch(ENDPOINTS.STATIONS);
 		if (!stationsResponse.ok) {
-			throw new Error(`Failed to fetch station details: ${stationsResponse.statusText}`);
+			throw new Error(
+				`Failed to fetch station details: ${stationsResponse.statusText}`,
+			);
 		}
 
 		const stationsData = await stationsResponse.json();
@@ -334,7 +345,7 @@ export async function fetchTrains(
 		// Check cache first
 		const cached = getCachedTrains(stationCode, destinationCode);
 		if (cached) {
-			console.log('Using cached train data');
+			console.log("Using cached train data");
 			return cached;
 		}
 
@@ -345,53 +356,58 @@ export async function fetchTrains(
 		});
 
 		const url = `${ENDPOINTS.LIVE_TRAINS}/${stationCode}/${destinationCode}?${params}`;
-		console.log('Fetching trains from URL:', url);
-		
+		console.log("Fetching trains from URL:", url);
+
 		const response = await fetch(url, {
 			headers: DEFAULT_HEADERS,
 		});
 
 		if (!response.ok) {
-			if (response.status === 429) { // Too Many Requests
-				console.log('Rate limit hit, using cached data if available');
+			if (response.status === 429) {
+				// Too Many Requests
+				console.log("Rate limit hit, using cached data if available");
 				const cached = getCachedTrains(stationCode, destinationCode);
 				if (cached) return cached;
-				throw new Error('Rate limit exceeded. Please try again in a few seconds.');
+				throw new Error(
+					"Rate limit exceeded. Please try again in a few seconds.",
+				);
 			}
 			const errorText = await response.text();
-			console.error('API Error Response:', {
+			console.error("API Error Response:", {
 				status: response.status,
 				statusText: response.statusText,
-				body: errorText
+				body: errorText,
 			});
-			throw new Error(`Failed to fetch trains: ${response.status} ${response.statusText}`);
+			throw new Error(
+				`Failed to fetch trains: ${response.status} ${response.statusText}`,
+			);
 		}
 
 		const data = await response.json();
-		
+
 		if (!Array.isArray(data)) {
-			console.error('Invalid API response format:', data);
-			throw new Error('Invalid API response format: expected an array');
+			console.error("Invalid API response format:", data);
+			throw new Error("Invalid API response format: expected an array");
 		}
 
 		console.log(`Received ${data.length} trains from API`);
 		const processedData = processTrainData(data, stationCode, destinationCode);
 		console.log(`Processed ${processedData.length} valid trains`);
-		
+
 		// Cache the processed data
 		trainCache.set(`${stationCode}-${destinationCode}`, {
 			data: processedData,
-			timestamp: Date.now()
+			timestamp: Date.now(),
 		});
 		cleanupCache(trainCache);
-		
+
 		return processedData;
 	} catch (error) {
 		console.error("Error fetching trains:", error);
 		// If we have cached data, return it even if it's expired
 		const cached = getCachedTrains(stationCode, destinationCode);
 		if (cached) {
-			console.log('Using expired cached data due to error');
+			console.log("Using expired cached data due to error");
 			return cached;
 		}
 		throw error;
@@ -406,14 +422,16 @@ function processTrainData(
 ): Train[] {
 	// Early return for empty data
 	if (!data.length) {
-		console.log('No train data received from API');
+		console.log("No train data received from API");
 		return [];
 	}
 
-		// Use debug level or remove for production
-		if (process.env.NODE_ENV === 'development') {
-	console.log(`Processing ${data.length} trains for route ${stationCode} -> ${destinationCode}`);
-		}
+	// Use debug level or remove for production
+	if (process.env.NODE_ENV === "development") {
+		console.log(
+			`Processing ${data.length} trains for route ${stationCode} -> ${destinationCode}`,
+		);
+	}
 	const isPSLHKIRoute = stationCode === "PSL" && destinationCode === "HKI";
 
 	const filteredTrains = data
@@ -430,7 +448,9 @@ function processTrainData(
 				(row) => row.stationShortCode === stationCode,
 			);
 			if (firstStationIndex === -1) {
-				console.log(`Train ${train.trainNumber} does not stop at ${stationCode}`);
+				console.log(
+					`Train ${train.trainNumber} does not stop at ${stationCode}`,
+				);
 				return null;
 			}
 
@@ -447,14 +467,18 @@ function processTrainData(
 			if (isPSLHKIRoute) {
 				const isValid = isPSLtoHKI(train);
 				if (!isValid) {
-					console.log(`Train ${train.trainNumber} is not a valid PSL->HKI journey`);
+					console.log(
+						`Train ${train.trainNumber} is not a valid PSL->HKI journey`,
+					);
 				}
 				return isValid;
 			}
 
 			const isValid = isValidJourney(train, stationCode, destinationCode);
 			if (!isValid) {
-				console.log(`Train ${train.trainNumber} is not a valid journey from ${stationCode} to ${destinationCode}`);
+				console.log(
+					`Train ${train.trainNumber} is not a valid journey from ${stationCode} to ${destinationCode}`,
+				);
 			}
 			return isValid;
 		})
@@ -554,7 +578,7 @@ export async function findStationsWithoutDestinations(): Promise<void> {
 				console.log(
 					`Checking station ${station.name} (${station.shortCode})...`,
 				);
-				await delay(2000); // 2 second delay between requests
+				await delay(5000); // 10 second delay between requests
 				const destinations = await fetchTrainsLeavingFromStation(
 					station.shortCode,
 				);
