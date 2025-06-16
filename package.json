@@ -16,10 +16,10 @@
   "dependencies": {
     "@astrojs/markdown-component": "^1.0.5",
     "@astrojs/preact": "^4.1.0",
-    "@tailwindcss/vite": "^4.1.8",
+    "@tailwindcss/vite": "^4.1.10",
     "astro": "^5.9.1",
     "marked": "^15.0.12",
-    "preact": "^10.26.8",
+    "preact": "^10.26.9",
     "tailwindcss": "^4.1.8"
   },
   "devDependencies": {
