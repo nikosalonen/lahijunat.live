@@ -26,7 +26,7 @@
     "@biomejs/biome": "2.0.0-beta.6",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/preact": "^3.2.4",
-    "@types/node": "^22.15.30",
+    "@types/node": "^24.0.3",
     "jsdom": "^26.1.0",
     "vitest": "^3.2.3",
     "workbox-cli": "^7.3.0"
