@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 import type { Train } from "../types";
+import { getRelevantTrackInfo } from "../utils/api";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
-import { getRelevantTrackInfo } from "../utils/api";
 
 interface Props {
 	train: Train;
@@ -76,10 +76,11 @@ export default function TrainCard({
 }: Props) {
 	const [, setLanguageChange] = useState(0);
 	const [isHighlighted, setIsHighlighted] = useState(false);
-	const [lastTapTime, setLastTapTime] = useState(0);
 	const [hasDeparted, setHasDeparted] = useState(false);
 	const [opacity, setOpacity] = useState(1);
-	const [trackMemory, setTrackMemory] = useState<Record<string, { track: string; timestamp: number }>>({});
+	const [trackMemory, setTrackMemory] = useState<
+		Record<string, { track: string; timestamp: number }>
+	>({});
 	const [showTooltip, setShowTooltip] = useState(false);
 
 	// Memoize all time-dependent calculations
@@ -154,10 +155,15 @@ export default function TrainCard({
 
 	// Check if user has seen the tooltip before
 	useEffect(() => {
-		const hasSeenTooltip = localStorage.getItem('hasSeenFavoriteTooltip');
-		if (!hasSeenTooltip && !train.cancelled && minutesToDeparture !== null && minutesToDeparture > 0) {
+		const hasSeenTooltip = localStorage.getItem("hasSeenFavoriteTooltip");
+		if (
+			!hasSeenTooltip &&
+			!train.cancelled &&
+			minutesToDeparture !== null &&
+			minutesToDeparture > 0
+		) {
 			setShowTooltip(true);
-			localStorage.setItem('hasSeenFavoriteTooltip', 'true');
+			localStorage.setItem("hasSeenFavoriteTooltip", "true");
 		}
 	}, [train.cancelled, minutesToDeparture]);
 
@@ -247,7 +253,9 @@ export default function TrainCard({
 		const MAX_ENTRIES = 1000;
 
 		// Always read the latest from localStorage
-		const latestTrackMemory = JSON.parse(localStorage.getItem("trackMemory") || "{}");
+		const latestTrackMemory = JSON.parse(
+			localStorage.getItem("trackMemory") || "{}",
+		);
 
 		// Cleanup old entries
 		for (const journeyKey of Object.keys(latestTrackMemory)) {
@@ -261,7 +269,11 @@ export default function TrainCard({
 		const entries = Object.entries(latestTrackMemory);
 		if (entries.length >= MAX_ENTRIES) {
 			entries
-				.sort(([, a,], [, b,]) => (a as { timestamp: number }).timestamp - (b as { timestamp: number }).timestamp)
+				.sort(
+					([, a], [, b]) =>
+						(a as { timestamp: number }).timestamp -
+						(b as { timestamp: number }).timestamp,
+				)
 				.slice(0, entries.length - MAX_ENTRIES + 1)
 				.forEach(([journeyKey]) => {
 					delete latestTrackMemory[journeyKey];
@@ -289,7 +301,13 @@ export default function TrainCard({
 		const currentTrack = trackInfo.track;
 		const storedTrack = trackMemory[trackInfo.journeyKey]?.track;
 		return storedTrack && currentTrack && storedTrack !== currentTrack;
-	}, [train.trainNumber, train.timeTableRows, stationCode, destinationCode, trackMemory]);
+	}, [
+		train.trainNumber,
+		train.timeTableRows,
+		stationCode,
+		destinationCode,
+		trackMemory,
+	]);
 
 	useEffect(() => {
 		const handleLanguageChange = () => {
@@ -321,9 +339,7 @@ export default function TrainCard({
 				const departureTime = new Date(
 					departureRow.liveEstimateTime ?? departureRow.scheduledTime,
 				);
-				const removeAfter = new Date(
-					departureTime.getTime() + 10 * 60 * 1000,
-				); // 10 minutes after departure
+				const removeAfter = new Date(departureTime.getTime() + 10 * 60 * 1000); // 10 minutes after departure
 
 				highlightedTrains[train.trainNumber] = {
 					highlighted: true,
@@ -357,39 +373,60 @@ export default function TrainCard({
 							aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
 							type="button"
 							class="flex-shrink-0 h-12 w-12 flex items-center justify-center text-xl font-bold focus:outline-none transition-transform duration-150 hover:scale-110 relative group border-none outline-none ring-0"
-							style={{ outline: 'none', border: 'none', boxShadow: 'none' }}
+							style={{ outline: "none", border: "none", boxShadow: "none" }}
 						>
 							{showTooltip && (
 								<button
 									type="button"
 									class="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full bg-[#6b2c75] text-white text-sm px-3 py-2 rounded-lg shadow-lg border-2 border-white whitespace-normal break-words max-w-xs max-w-[90vw] text-center z-50 cursor-pointer"
-									onClick={e => { e.stopPropagation(); setShowTooltip(false); }}
-									onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setShowTooltip(false); } }}
+									onClick={(e) => {
+										e.stopPropagation();
+										setShowTooltip(false);
+									}}
+									onKeyDown={(e) => {
+										if (e.key === "Enter" || e.key === " ") {
+											e.stopPropagation();
+											setShowTooltip(false);
+										}
+									}}
 									tabIndex={0}
 									aria-label={t("closeTooltip")}
 								>
 									<div class="flex items-center gap-2">
-									
 										<span>{t("favoriteTooltip")}</span>
 									</div>
 									{/* Arrow */}
 									<div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-3 h-3 z-10">
 										<svg width="100%" height="100%" viewBox="0 0 12 12">
 											<title>Tooltip arrow</title>
-											<rect x="2" y="2" width="8" height="8" rx="2" fill="#6b2c75" stroke="white" strokeWidth="2" transform="rotate(45 6 6)" />
+											<rect
+												x="2"
+												y="2"
+												width="8"
+												height="8"
+												rx="2"
+												fill="#6b2c75"
+												stroke="white"
+												strokeWidth="2"
+												transform="rotate(45 6 6)"
+											/>
 										</svg>
 									</div>
 								</button>
 							)}
 							{isHighlighted ? (
-								<span class={`h-12 w-12 rounded-full flex items-center justify-center relative border-2 ${train.cancelled ? 'border-[#d4004d]' : 'border-[#8c4799]'} bg-transparent`}>
+								<span
+									class={`h-12 w-12 rounded-full flex items-center justify-center relative border-2 ${train.cancelled ? "border-[#d4004d]" : "border-[#8c4799]"} bg-transparent`}
+								>
 									<svg
 										viewBox="0 0 48 48"
 										class="w-11 h-11"
-										fill={train.cancelled ? '#d4004d' : '#8c4799'}
-										stroke={train.cancelled ? '#d4004d' : '#8c4799'}
+										fill={train.cancelled ? "#d4004d" : "#8c4799"}
+										stroke={train.cancelled ? "#d4004d" : "#8c4799"}
 									>
-										<title>{isHighlighted ? t("favorite") : t("unfavorite")}</title>
+										<title>
+											{isHighlighted ? t("favorite") : t("unfavorite")}
+										</title>
 										<polygon points="24,3 30.9,17.8 47,18.6 34,29.7 38.2,45 24,36.6 9.8,45 14,29.7 1,18.6 17.1,17.8" />
 									</svg>
 									<span class="absolute inset-0 flex items-center justify-center text-white text-xl font-bold pointer-events-none">
@@ -397,7 +434,9 @@ export default function TrainCard({
 									</span>
 								</span>
 							) : (
-								<span class={`h-12 w-12 rounded-full flex items-center justify-center ${train.cancelled ? 'bg-[#d4004d] text-white' : 'bg-[#6b2c75] text-white'}`}>
+								<span
+									class={`h-12 w-12 rounded-full flex items-center justify-center ${train.cancelled ? "bg-[#d4004d] text-white" : "bg-[#6b2c75] text-white"}`}
+								>
 									{train.commuterLineID}
 								</span>
 							)}

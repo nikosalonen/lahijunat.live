@@ -35,8 +35,10 @@ export default function StationList({
 	onFocus,
 }: Props) {
 	const [searchTerm, setSearchTerm] = useState("");
+	const [highlightedIndex, setHighlightedIndex] = useState(-1);
 	const localInputRef = useRef<HTMLInputElement>(null);
 	const finalInputRef = inputRef || localInputRef;
+	const listboxRef = useRef<HTMLDivElement>(null);
 
 	useLanguageChange();
 
@@ -45,6 +47,7 @@ export default function StationList({
 			onStationSelect(station);
 			onOpenChange(false);
 			setSearchTerm("");
+			setHighlightedIndex(-1);
 			finalInputRef.current?.blur();
 		},
 		[onStationSelect, onOpenChange, finalInputRef],
@@ -60,6 +63,7 @@ export default function StationList({
 			if (!container && !isInput) {
 				onOpenChange(false);
 				setSearchTerm("");
+				setHighlightedIndex(-1);
 			}
 		};
 
@@ -72,6 +76,7 @@ export default function StationList({
 		e.stopPropagation();
 		onOpenChange(true);
 		setSearchTerm("");
+		setHighlightedIndex(-1);
 		onFocus?.();
 	};
 
@@ -89,17 +94,75 @@ export default function StationList({
 		[stations, selectedValue],
 	);
 
+	// Reset highlighted index when filtering changes
+	useEffect(() => {
+		setHighlightedIndex(-1);
+	}, [filteredStations]);
+
 	const handleKeyDown = (e: KeyboardEvent) => {
-		if (e.key === "Enter" && filteredStations.length === 1) {
-			handleStationSelect(filteredStations[0]);
+		if (!isOpen) {
+			if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") {
+				e.preventDefault();
+				onOpenChange(true);
+				setSearchTerm("");
+				setHighlightedIndex(-1);
+				onFocus?.();
+			}
+			return;
+		}
+
+		switch (e.key) {
+			case "ArrowDown":
+				e.preventDefault();
+				setHighlightedIndex((prev) =>
+					prev < filteredStations.length - 1 ? prev + 1 : 0,
+				);
+				break;
+			case "ArrowUp":
+				e.preventDefault();
+				setHighlightedIndex((prev) =>
+					prev > 0 ? prev - 1 : filteredStations.length - 1,
+				);
+				break;
+			case "Enter":
+				e.preventDefault();
+				if (highlightedIndex >= 0 && filteredStations[highlightedIndex]) {
+					handleStationSelect(filteredStations[highlightedIndex]);
+				} else if (filteredStations.length === 1 && highlightedIndex === -1) {
+					handleStationSelect(filteredStations[0]);
+				}
+				break;
+			case "Escape":
+				e.preventDefault();
+				onOpenChange(false);
+				setSearchTerm("");
+				setHighlightedIndex(-1);
+				break;
+			case "Tab":
+				onOpenChange(false);
+				setSearchTerm("");
+				setHighlightedIndex(-1);
+				break;
 		}
 	};
+
+	const highlightedStation =
+		highlightedIndex >= 0 && filteredStations[highlightedIndex]
+			? filteredStations[highlightedIndex]
+			: null;
 
 	return (
 		<div className="relative station-list-container">
 			<input
 				ref={finalInputRef}
 				type="text"
+				role="combobox"
+				aria-expanded={isOpen}
+				aria-autocomplete="list"
+				aria-activedescendant={
+					highlightedStation ? `option-${highlightedIndex}` : undefined
+				}
+				aria-controls={isOpen ? "station-listbox" : undefined}
 				value={
 					isOpen
 						? searchTerm
@@ -111,26 +174,40 @@ export default function StationList({
 				onFocus={() => {
 					onOpenChange(true);
 					setSearchTerm("");
+					setHighlightedIndex(-1);
 					onFocus?.();
 				}}
-				onInput={(e) => setSearchTerm(e.currentTarget.value)}
+				onInput={(e) => {
+					setSearchTerm(e.currentTarget.value);
+					if (!isOpen) {
+						onOpenChange(true);
+					}
+				}}
 				onKeyDown={handleKeyDown}
 				placeholder={t("placeholder")}
 				className="w-full p-3 border border-gray-700 dark:text-white dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
 			/>
-			{isOpen && (
-				<div class="absolute w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
+			{(isOpen || isLoading) && (
+				/* biome-ignore lint/a11y/useSemanticElements: Custom combobox with search requires div with role="listbox" for proper keyboard navigation and filtering */
+				<div
+					ref={listboxRef}
+					id="station-listbox"
+					role="listbox"
+					class="absolute w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
+				>
 					{isLoading ? (
 						<div class="p-4 text-center text-gray-500 dark:text-gray-400">
 							<div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 dark:border-t-blue-400" />
 							<p class="mt-2">{t("loading")}</p>
 						</div>
 					) : (
-						filteredStations.map((station) => (
+						filteredStations.map((station, index) => (
 							<StationOption
 								key={station.shortCode}
 								station={station}
+								index={index}
 								isSelected={selectedStation?.shortCode === station.shortCode}
+								isHighlighted={index === highlightedIndex}
 								onSelect={handleStationSelect}
 							/>
 						))

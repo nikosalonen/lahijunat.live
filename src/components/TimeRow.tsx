@@ -1,6 +1,5 @@
 import type { Train } from "../types";
 import { formatTime } from "../utils/trainUtils";
-import { t } from "../utils/translations";
 
 const TimeRow = ({
 	departureRow,
@@ -15,10 +14,7 @@ const TimeRow = ({
 		departureRow.differenceInMinutes > 0
 			? "~"
 			: " "}
-		<time
-			datetime={departureRow.scheduledTime}
-			aria-label={`${t("departure")} ${formatTime(departureRow.scheduledTime)}`}
-		>
+		<time datetime={departureRow.scheduledTime}>
 			{formatTime(departureRow.scheduledTime)}
 		</time>
 		<span class="mx-2">→</span>

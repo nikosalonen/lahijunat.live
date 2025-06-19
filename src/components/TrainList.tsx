@@ -78,9 +78,7 @@ export default function TrainList({
 	useEffect(() => {
 		let startTime: number;
 		let animationFrame: number;
-		let updateTimeout: NodeJS.Timeout;
-		let updateInterval: NodeJS.Timeout;
-		let timeUpdateInterval: NodeJS.Timeout;
+		let updateInterval: NodeJS.Timeout | undefined;
 
 		const animate = (timestamp: number) => {
 			if (!startTime) startTime = timestamp;
@@ -106,12 +104,12 @@ export default function TrainList({
 		loadTrains();
 
 		// Update current time every second
-		timeUpdateInterval = setInterval(() => {
+		const timeUpdateInterval = setInterval(() => {
 			setCurrentTime(new Date());
 		}, 1000);
 
 		// Schedule next update at the next even second
-		updateTimeout = setTimeout(() => {
+		const updateTimeout = setTimeout(() => {
 			loadTrains();
 			// Then set up regular interval
 			updateInterval = setInterval(() => {
@@ -130,7 +128,7 @@ export default function TrainList({
 		return () => {
 			cancelAnimationFrame(animationFrame);
 			clearTimeout(updateTimeout);
-			clearInterval(updateInterval);
+			if (updateInterval) clearInterval(updateInterval);
 			clearInterval(progressInterval);
 			clearInterval(timeUpdateInterval);
 		};
@@ -153,10 +151,10 @@ export default function TrainList({
 	const fromStation = stations.find((s) => s.shortCode === stationCode);
 	const toStation = stations.find((s) => s.shortCode === destinationCode);
 
-	const displayedTrains = state.trains
+	const displayedTrains = (state.trains || [])
 		.filter((train) => !departedTrains.has(train.trainNumber))
 		.slice(0, displayedTrainCount);
-	const hasMoreTrains = state.trains.length > displayedTrainCount;
+	const hasMoreTrains = (state.trains || []).length > displayedTrainCount;
 
 	return (
 		<div>
@@ -203,6 +201,7 @@ export default function TrainList({
 				{hasMoreTrains && (
 					<div class="flex justify-center mt-4">
 						<button
+							type="button"
 							onClick={() =>
 								setDisplayedTrainCount((prev) => prev + INITIAL_TRAIN_COUNT)
 							}

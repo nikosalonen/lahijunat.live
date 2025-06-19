@@ -288,18 +288,24 @@ export default function StationManager({
 			console.error("Location error:", error);
 			// Improve the error message to guide users
 			if (
-				error instanceof Error &&
-				error.message.includes("PERMISSION_DENIED")
+				error &&
+				typeof error === "object" &&
+				"code" in error &&
+				error.code === 1 // PERMISSION_DENIED
 			) {
 				alert(
 					"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
 				);
+			} else if (
+				error &&
+				typeof error === "object" &&
+				"message" in error &&
+				typeof error.message === "string"
+			) {
+				// Use the error message if available
+				alert(error.message);
 			} else {
-				alert(
-					error instanceof Error
-						? error.message
-						: "Paikannusta ei voitu suorittaa",
-				);
+				alert("Paikannusta ei voitu suorittaa");
 			}
 		} finally {
 			setIsLocating(false);
