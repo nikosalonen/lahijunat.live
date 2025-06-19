@@ -2,14 +2,15 @@
 interface Props {
 	title: string;
 }
+
 import { Image } from "astro:assets";
 import "../styles/global.css";
-import LanguageSwitcher from "../components/LanguageSwitcher";
 import Footer from "../components/Footer";
-const { title } = Astro.props;
+import LanguageSwitcher from "../components/LanguageSwitcher";
+
+const { title } = Astro.props as Props;
 
 import "../styles/global.css";
-
 ---
 
 <!doctype html>
