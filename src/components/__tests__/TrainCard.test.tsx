@@ -4,7 +4,7 @@ import type { Train } from "../../types";
 import TrainCard from "../TrainCard";
 
 // Mock translations
-vi.mock("../utils/translations", () => ({
+vi.mock("../../utils/translations", () => ({
 	t: (key: string) => {
 		const translations: Record<string, string> = {
 			late: "Myöhässä",
@@ -17,14 +17,28 @@ vi.mock("../utils/translations", () => ({
 			hours_short: "h",
 			track: "Raide",
 			departingSoon: "Lähtee pian",
+			favorite: "favorite",
+			unfavorite: "unfavorite",
+			closeTooltip: "Sulje suosikkivihje",
+			favoriteTooltip: "Klikkaa suosikiksi ja korosta juna listassa",
+			cancelled: "Peruttu",
 		};
 		return translations[key] || key;
 	},
 }));
 
 // Mock useLanguageChange hook
-vi.mock("../hooks/useLanguageChange", () => ({
+vi.mock("../../hooks/useLanguageChange", () => ({
 	useLanguageChange: vi.fn(),
+}));
+
+// Mock api functions
+vi.mock("../../utils/api", () => ({
+	getRelevantTrackInfo: vi.fn(() => ({
+		track: "1",
+		timestamp: "2024-03-20T10:00:00.000Z",
+		journeyKey: "123-HKI-TPE",
+	})),
 }));
 
 // Mock localStorage
@@ -113,15 +127,13 @@ describe("TrainCard", () => {
 			<TrainCard {...defaultProps} />,
 		);
 
-		expect(getByLabelText("Juna A")).toBeInTheDocument();
+		expect(getByLabelText("favorite")).toBeInTheDocument();
 		expect(getByText("5 min")).toBeInTheDocument();
 	});
 
 	it("calls onDepart when train departs", () => {
 		const futureTime = new Date("2024-03-20T10:01:00.000Z");
-		const { rerender } = render(
-			<TrainCard {...defaultProps} currentTime={futureTime} />,
-		);
+		render(<TrainCard {...defaultProps} currentTime={futureTime} />);
 
 		expect(defaultProps.onDepart).toHaveBeenCalled();
 	});
@@ -135,15 +147,21 @@ describe("TrainCard", () => {
 		expect(container.firstChild).toHaveClass("bg-red-50");
 	});
 
-	it("handles double tap to highlight train", () => {
-		const { container } = render(<TrainCard {...defaultProps} />);
-		const card = container.firstChild as HTMLElement;
+	it("handles favorite button click to highlight train", () => {
+		const { container, getByLabelText, rerender } = render(
+			<TrainCard {...defaultProps} />,
+		);
+		const favoriteButton = getByLabelText("favorite");
 
-		// Simulate double tap
-		fireEvent.click(card);
-		fireEvent.click(card);
+		// Click the favorite button
+		fireEvent.click(favoriteButton);
 
 		expect(localStorageMock.setItem).toHaveBeenCalled();
+
+		// Re-render to apply the highlight state change
+		rerender(<TrainCard {...defaultProps} />);
+
+		// Check that it has highlighting styles (either for departing soon or general highlight)
 		expect(container.firstChild).toHaveClass("animate-soft-blink-highlight");
 	});
 
