@@ -98,10 +98,9 @@ const STATION_QUERY = `query GetStations {
 	stations(where:{
 		and:[
 			{passengerTraffic:{equals:true}},
-			{shortCode:{unequals:"ENO"}},
-			{shortCode:{unequals:"EPZ"}},
-			{shortCode:{unequals:"PAU"}},
 			{shortCode:{unequals:"ALV"}},
+			{shortCode:{unequals:"EPZ"}},
+			{shortCode:{unequals:"ENO"}},
 			{shortCode:{unequals:"HPJ"}},
 			{shortCode:{unequals:"HPK"}},
 			{shortCode:{unequals:"HPA"}},
@@ -116,7 +115,6 @@ const STATION_QUERY = `query GetStations {
 			{shortCode:{unequals:"HÖL"}},
 			{shortCode:{unequals:"ILM"}},
 			{shortCode:{unequals:"IMR"}},
-			{shortCode:{unequals:"IKO"}},
 			{shortCode:{unequals:"IKY"}},
 			{shortCode:{unequals:"JNS"}},
 			{shortCode:{unequals:"JTS"}},
@@ -126,16 +124,39 @@ const STATION_QUERY = `query GetStations {
 			{shortCode:{unequals:"KAJ"}},
 			{shortCode:{unequals:"KNS"}},
 			{shortCode:{unequals:"KRU"}},
+			{shortCode:{unequals:"KHA"}},
 			{shortCode:{unequals:"KEM"}},
 			{shortCode:{unequals:"KJÄ"}},
+			{shortCode:{unequals:"KML"}},
 			{shortCode:{unequals:"KIÄ"}},
 			{shortCode:{unequals:"KTI"}},
 			{shortCode:{unequals:"KEU"}},
 			{shortCode:{unequals:"KIA"}},
 			{shortCode:{unequals:"KIT"}},
 			{shortCode:{unequals:"KRV"}},
+			{shortCode:{unequals:"KOH"}},
+			{shortCode:{unequals:"KKI"}},
 			{shortCode:{unequals:"KOK"}},
+			{shortCode:{unequals:"KLI"}},
+			{shortCode:{unequals:"KLO"}},
+			{shortCode:{unequals:"KON"}},
+			{shortCode:{unequals:"KUO"}},
+			{shortCode:{unequals:"KUT"}},
+			{shortCode:{unequals:"KYN"}},
+			{shortCode:{unequals:"LAI"}},
+			{shortCode:{unequals:"LNA"}},
+			{shortCode:{unequals:"LR"}},
+			{shortCode:{unequals:"LPA"}},
+			{shortCode:{unequals:"LIS"}},
+			{shortCode:{unequals:"LVT"}},
+			{shortCode:{unequals:"LM"}},
 			{shortCode:{unequals:"LUS"}},
+			{shortCode:{unequals:"MI"}},
+			{shortCode:{unequals:"MIS"}},
+			{shortCode:{unequals:"MVA"}},
+			{shortCode:{unequals:"MH"}},
+			{shortCode:{unequals:"MUL"}},
+			{shortCode:{unequals:"MY"}},
 			{shortCode:{unequals:"MR"}},
 			{shortCode:{unequals:"NLÄ"}},
 			{shortCode:{unequals:"NVL"}},
@@ -147,6 +168,7 @@ const STATION_QUERY = `query GetStations {
 			{shortCode:{unequals:"PTO"}},
 			{shortCode:{unequals:"PAR"}},
 			{shortCode:{unequals:"PKO"}},
+			{shortCode:{unequals:"PAU"}},
 			{shortCode:{unequals:"PEL"}},
 			{shortCode:{unequals:"PVI"}},
 			{shortCode:{unequals:"PM"}},
@@ -169,56 +191,33 @@ const STATION_QUERY = `query GetStations {
 			{shortCode:{unequals:"SK"}},
 			{shortCode:{unequals:"SIJ"}},
 			{shortCode:{unequals:"SPL"}},
-			{shortCode:{unequals:"ÄHT"}},
-			{shortCode:{unequals:"YV"}},
-			{shortCode:{unequals:"YTR"}},
-			{shortCode:{unequals:"YST"}},
-			{shortCode:{unequals:"VSL"}},
-			{shortCode:{unequals:"VLP"}},
-			{shortCode:{unequals:"VYB"}},
-			{shortCode:{unequals:"VNJ"}},
-			{shortCode:{unequals:"VIH"}},
-			{shortCode:{unequals:"VTI"}},
-			{shortCode:{unequals:"VAR"}},
-			{shortCode:{unequals:"VMA"}},
-			{shortCode:{unequals:"VNA"}},
-			{shortCode:{unequals:"VS"}},
-			{shortCode:{unequals:"VAA"}},
-			{shortCode:{unequals:"UTJ"}},
-			{shortCode:{unequals:"UIM"}},
-			{shortCode:{unequals:"TVE"}},
-			{shortCode:{unequals:"TUU"}},
-			{shortCode:{unequals:"TUS"}},
-			{shortCode:{unequals:"TKU"}},
-			{shortCode:{unequals:"TRI"}},
-			{shortCode:{unequals:"TOR"}},
-			{shortCode:{unequals:"TRV"}},
-			{shortCode:{unequals:"TK"}},
-			{shortCode:{unequals:"SNJ"}},
 			{shortCode:{unequals:"SKV"}},
-			{shortCode:{unequals:"MY"}},
-			{shortCode:{unequals:"MUL"}},
-			{shortCode:{unequals:"MH"}},
-			{shortCode:{unequals:"MVA"}},
-			{shortCode:{unequals:"MIS"}},
-			{shortCode:{unequals:"MI"}},
-			{shortCode:{unequals:"LM"}},
-			{shortCode:{unequals:"LVT"}},
-			{shortCode:{unequals:"LIS"}},
-			{shortCode:{unequals:"LPA"}},
-			{shortCode:{unequals:"LR"}},
-			{shortCode:{unequals:"LNA"}},
-			{shortCode:{unequals:"LAI"}},
-			{shortCode:{unequals:"KYN"}},
-			{shortCode:{unequals:"KUT"}},
-			{shortCode:{unequals:"KUO"}},
-			{shortCode:{unequals:"KON"}},
-			{shortCode:{unequals:"KLO"}},
-			{shortCode:{unequals:"KLI"}},
-			{shortCode:{unequals:"KKI"}},
-			{shortCode:{unequals:"KOH"}},
-			{shortCode:{unequals:"KML"}},
-			{shortCode:{unequals:"KHA"}}
+			{shortCode:{unequals:"SNJ"}},
+			{shortCode:{unequals:"TK"}},
+			{shortCode:{unequals:"TRV"}},
+			{shortCode:{unequals:"TOR"}},
+			{shortCode:{unequals:"TRI"}},
+			{shortCode:{unequals:"TKU"}},
+			{shortCode:{unequals:"TUS"}},
+			{shortCode:{unequals:"TUU"}},
+			{shortCode:{unequals:"TVE"}},
+			{shortCode:{unequals:"UIM"}},
+			{shortCode:{unequals:"UTJ"}},
+			{shortCode:{unequals:"VAA"}},
+			{shortCode:{unequals:"VS"}},
+			{shortCode:{unequals:"VNA"}},
+			{shortCode:{unequals:"VMA"}},
+			{shortCode:{unequals:"VAR"}},
+			{shortCode:{unequals:"VTI"}},
+			{shortCode:{unequals:"VIH"}},
+			{shortCode:{unequals:"VNJ"}},
+			{shortCode:{unequals:"VYB"}},
+			{shortCode:{unequals:"VLP"}},
+			{shortCode:{unequals:"VSL"}},
+			{shortCode:{unequals:"YST"}},
+			{shortCode:{unequals:"YTR"}},
+			{shortCode:{unequals:"YV"}},
+			{shortCode:{unequals:"ÄHT"}}
 		]
 	}){
 		name
@@ -283,16 +282,33 @@ export async function fetchTrainsLeavingFromStation(
 	stationCode: string,
 ): Promise<Station[]> {
 	try {
-		const response = await fetch(
-			`${ENDPOINTS.LIVE_TRAINS}/${stationCode}?arrived_trains=100&arriving_trains=100&departed_trains=100&departing_trains=100&include_nonstopping=false&train_categories=Commuter`,
-			{ headers: DEFAULT_HEADERS },
+		console.log(`[API] Fetching trains from station: ${stationCode}`);
+		const url = `${ENDPOINTS.LIVE_TRAINS}/${stationCode}?arrived_trains=100&arriving_trains=100&departed_trains=100&departing_trains=100&include_nonstopping=false&train_categories=Commuter`;
+		console.log(`[API] Request URL: ${url}`);
+
+		const response = await fetch(url, { headers: DEFAULT_HEADERS });
+
+		console.log(
+			`[API] Response status: ${response.status} ${response.statusText}`,
+		);
+		console.log(
+			"[API] Response headers:",
+			Object.fromEntries(response.headers.entries()),
 		);
 
 		if (!response.ok) {
+			console.error(`[API] Failed to fetch station data for ${stationCode}:`, {
+				status: response.status,
+				statusText: response.statusText,
+				url: url,
+			});
 			throw new Error(`Failed to fetch station data: ${response.statusText}`);
 		}
 
 		const data = await response.json();
+		console.log(
+			`[API] Received ${data.length} trains for station ${stationCode}`,
+		);
 
 		// Extract unique station codes more efficiently
 		const shortCodes = new Set<string>();
@@ -304,20 +320,41 @@ export async function fetchTrainsLeavingFromStation(
 			}
 		}
 
+		console.log(
+			`[API] Found ${shortCodes.size} unique destination stations for ${stationCode}`,
+		);
+
 		// Fetch station details in parallel
+		console.log(`[API] Fetching station details from: ${ENDPOINTS.STATIONS}`);
 		const stationsResponse = await fetch(ENDPOINTS.STATIONS);
+
+		console.log(
+			`[API] Stations response status: ${stationsResponse.status} ${stationsResponse.statusText}`,
+		);
+
 		if (!stationsResponse.ok) {
+			console.error("[API] Failed to fetch station details:", {
+				status: stationsResponse.status,
+				statusText: stationsResponse.statusText,
+				url: ENDPOINTS.STATIONS,
+			});
 			throw new Error(
 				`Failed to fetch station details: ${stationsResponse.statusText}`,
 			);
 		}
 
 		const stationsData = await stationsResponse.json();
+		console.log(`[API] Received ${stationsData.length} total stations`);
+
 		const filteredStations = stationsData.filter(
 			(station: RESTStation) =>
 				shortCodes.has(station.stationShortCode) &&
 				station.passengerTraffic &&
 				station.stationShortCode !== stationCode,
+		);
+
+		console.log(
+			`[API] Filtered to ${filteredStations.length} valid destination stations for ${stationCode}`,
 		);
 
 		return filteredStations.map(
@@ -331,7 +368,10 @@ export async function fetchTrainsLeavingFromStation(
 			}),
 		);
 	} catch (error) {
-		console.error(`Error fetching trains from station ${stationCode}:`, error);
+		console.error(
+			`[API] Error fetching trains from station ${stationCode}:`,
+			error,
+		);
 		throw error;
 	}
 }
@@ -650,7 +690,7 @@ export async function findStationsWithoutDestinations(): Promise<void> {
 				console.log(
 					`Checking station ${station.name} (${station.shortCode})...`,
 				);
-				await delay(5000); // 10 second delay between requests
+				await delay(15000); // 10 second delay between requests
 				const destinations = await fetchTrainsLeavingFromStation(
 					station.shortCode,
 				);
