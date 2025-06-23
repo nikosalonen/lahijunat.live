@@ -192,7 +192,7 @@ export default function StationList({
 				<div
 					ref={listboxRef}
 					id="station-listbox"
-
+					data-testid="station-listbox"
 					class="absolute w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
 				>
 					{isLoading ? (

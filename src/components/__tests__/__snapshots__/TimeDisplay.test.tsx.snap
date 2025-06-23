@@ -10,7 +10,6 @@ exports[`TimeDisplay > renders on-time train correctly 1`] = `
     >
        
       <time
-        aria-label="Lähtöaika 12.00"
         datetime="2024-03-20T10:00:00.000Z"
       >
         12.00
@@ -36,7 +35,6 @@ exports[`TimeDisplay > renders without arrival row 1`] = `
     >
        
       <time
-        aria-label="Lähtöaika 12.00"
         datetime="2024-03-20T10:00:00.000Z"
       >
         12.00

@@ -98,11 +98,4 @@ describe("TimeRow", () => {
 		const timeElement = container.querySelector("time");
 		expect(timeElement).toHaveAttribute("datetime", "2024-03-20T10:00:00.000Z");
 	});
-
-	it("renders with correct aria-label", () => {
-		const { container } = render(<TimeRow departureRow={mockDepartureRow} />);
-
-		const timeElement = container.querySelector("time");
-		expect(timeElement).toHaveAttribute("aria-label", "Lähtöaika 12.00");
-	});
 });

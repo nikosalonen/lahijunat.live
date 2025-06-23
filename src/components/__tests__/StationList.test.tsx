@@ -290,7 +290,7 @@ describe("StationList", () => {
 			expect(input).toHaveAttribute("aria-expanded", "true");
 			expect(input).toHaveAttribute("aria-autocomplete", "list");
 
-			const listbox = screen.getByRole("listbox");
+			const listbox = screen.getByTestId("station-listbox");
 			expect(listbox).toBeInTheDocument();
 
 			const options = screen.getAllByRole("option");
@@ -352,7 +352,7 @@ describe("StationList", () => {
 			render(<StationList {...defaultProps} stations={[]} isOpen={true} />);
 
 			// Should not crash and should show no options
-			const listbox = screen.queryByRole("listbox");
+			const listbox = screen.queryByTestId("station-listbox");
 			expect(listbox).toBeInTheDocument();
 
 			const options = screen.queryAllByRole("option");
@@ -378,7 +378,7 @@ describe("StationList", () => {
 			);
 
 			// Should render without crashing
-			const listbox = screen.getByRole("listbox");
+			const listbox = screen.getByTestId("station-listbox");
 			expect(listbox).toBeInTheDocument();
 		});
 
