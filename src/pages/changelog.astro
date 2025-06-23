@@ -24,7 +24,7 @@ const sortedEntries = await Promise.all(
   <main class="min-h-screen">
     <div class="container mx-auto px-4 py-8">
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">Muutosloki</h1>
-      
+
       <div class="space-y-8">
         {sortedEntries.map((entry: CollectionEntry<'changelog'>, index: number) => (
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
@@ -64,4 +64,4 @@ const sortedEntries = await Promise.all(
   .dark .prose li::before {
     color: rgb(107 114 128); /* text-gray-500 */
   }
-</style> 
+</style>
