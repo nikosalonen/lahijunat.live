@@ -16,7 +16,7 @@
   "dependencies": {
     "@astrojs/markdown-component": "^1.0.5",
     "@astrojs/preact": "^4.1.0",
-    "@tailwindcss/vite": "^4.1.10",
+    "@tailwindcss/vite": "^4.1.11",
     "astro": "^5.10.0",
     "marked": "^15.0.12",
     "preact": "^10.26.9",
