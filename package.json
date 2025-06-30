@@ -18,7 +18,7 @@
     "@astrojs/preact": "^4.1.0",
     "@tailwindcss/vite": "^4.1.10",
     "astro": "^5.10.0",
-    "marked": "^15.0.12",
+    "marked": "^16.0.0",
     "preact": "^10.26.9",
     "tailwindcss": "^4.1.10"
   },
