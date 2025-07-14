@@ -23,10 +23,10 @@
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.0.6",
+    "@biomejs/biome": "2.1.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/preact": "^3.2.4",
-    "@types/node": "^24.0.10",
+    "@types/node": "^24.0.13",
     "jsdom": "^26.1.0",
     "vitest": "^3.2.4",
     "workbox-cli": "^7.3.0"
