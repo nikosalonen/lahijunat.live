@@ -17,7 +17,7 @@
     "@astrojs/markdown-component": "^1.0.5",
     "@astrojs/preact": "^4.1.0",
     "@tailwindcss/vite": "^4.1.11",
-    "astro": "^5.11.0",
+    "astro": "^5.11.1",
     "marked": "^16.0.0",
     "preact": "^10.26.9",
     "tailwindcss": "^4.1.11"
