@@ -10,6 +10,7 @@ import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station } from "../types";
 import { t } from "../utils/translations";
 import StationOption from "./StationOption";
+import StationListSkeleton from "./StationListSkeleton";
 
 interface Props {
 	stations: Station[];
@@ -196,10 +197,7 @@ export default function StationList({
 					class="absolute w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
 				>
 					{isLoading ? (
-						<div class="p-4 text-center text-gray-500 dark:text-gray-400">
-							<div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 dark:border-t-blue-400" />
-							<p class="mt-2">{t("loading")}</p>
-						</div>
+						<StationListSkeleton />
 					) : (
 						filteredStations.map((station, index) => (
 							<StationOption

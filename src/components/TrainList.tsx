@@ -6,6 +6,7 @@ import { fetchTrains } from "../utils/api";
 import { t } from "../utils/translations";
 import ProgressCircle from "./ProgressCircle";
 import TrainCard from "./TrainCard";
+import TrainListSkeleton from "./TrainListSkeleton";
 
 interface Props {
 	stationCode: string;
@@ -135,9 +136,7 @@ export default function TrainList({
 	}, [loadTrains]);
 
 	if (state.loading && state.initialLoad) {
-		return (
-			<div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 dark:border-blue-400 mx-auto" />
-		);
+		return <TrainListSkeleton />;
 	}
 
 	if (state.error) {
