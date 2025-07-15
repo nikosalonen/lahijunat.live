@@ -186,7 +186,7 @@ export default function StationList({
 				}}
 				onKeyDown={handleKeyDown}
 				placeholder={t("placeholder")}
-				className="w-full p-3 border border-gray-700 dark:text-white dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+				className="w-full p-3 border border-gray-700 dark:text-white dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg transition-all duration-150 touch-manipulation text-base"
 			/>
 			{(isOpen || isLoading) && (
 

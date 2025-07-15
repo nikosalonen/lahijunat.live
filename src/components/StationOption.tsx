@@ -29,7 +29,7 @@ function StationOption({
 			/* biome-ignore lint/a11y/useSemanticElements: This is a custom combobox implementation */
 			role="option"
 			aria-selected={isSelected}
-			class={`w-full text-left p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer dark:text-white ${
+			class={`w-full text-left p-3 hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 cursor-pointer dark:text-white transition-all duration-150 touch-manipulation select-none ${
 				isHighlighted ? "bg-blue-100 dark:bg-blue-700" : ""
 			}`}
 		>

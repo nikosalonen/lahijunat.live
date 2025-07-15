@@ -372,13 +372,13 @@ export default function TrainCard({
 							onClick={handleFavorite}
 							aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
 							type="button"
-							class="flex-shrink-0 h-12 w-12 flex items-center justify-center text-xl font-bold focus:outline-none transition-transform duration-150 hover:scale-110 relative group border-none outline-none ring-0"
+							class="flex-shrink-0 h-12 w-12 flex items-center justify-center text-xl font-bold focus:outline-none transition-all duration-150 hover:scale-110 active:scale-95 relative group border-none outline-none ring-0 touch-manipulation select-none"
 							style={{ outline: "none", border: "none", boxShadow: "none" }}
 						>
 							{showTooltip && (
 								<button
 									type="button"
-									class="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full bg-[#6b2c75] text-white text-sm px-3 py-2 rounded-lg shadow-lg border-2 border-white whitespace-normal break-words max-w-xs max-w-[90vw] text-center z-50 cursor-pointer"
+									class="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full bg-[#6b2c75] text-white text-sm px-3 py-2 rounded-lg shadow-lg border-2 border-white whitespace-normal break-words max-w-xs max-w-[90vw] text-center z-50 cursor-pointer transition-all duration-150 active:scale-95 touch-manipulation select-none"
 									onClick={(e) => {
 										e.stopPropagation();
 										setShowTooltip(false);
