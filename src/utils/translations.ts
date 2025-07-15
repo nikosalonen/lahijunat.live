@@ -10,6 +10,11 @@ export const translations: Translations = {
 	fi: {
 		title: "Lähijunat Live | Lähijunien aikataulut reaaliaikaisesti",
 		description: "Reaaliaikaiset lähtöajat Suomen lähijunille",
+		appName: "Lähijunat Live",
+		appShortName: "Lähijunat",
+		keywords:
+			"lähijunat, suomen lähijunat, reaaliaikaiset lähtöajat, lähijunien ajat, lähijunien ajoneuvot",
+		author: "Lähijunat Live",
 		from: "Mistä",
 		to: "Minne",
 		locate: "Paikanna",
@@ -42,6 +47,11 @@ export const translations: Translations = {
 	en: {
 		title: "Local Trains Live | Real-time schedules for local trains",
 		description: "Real-time departure times for Finnish local trains",
+		appName: "Commuter Trains Live",
+		appShortName: "Commuter Trains",
+		keywords:
+			"commuter trains, local trains, finnish trains, helsinki trains, train schedules, real-time trains",
+		author: "Commuter Trains Live",
 		from: "From",
 		to: "To",
 		locate: "Locate",
