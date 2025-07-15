@@ -79,6 +79,9 @@ export default function StationManager({
     useState<Station[]>(stations);
   const [isLoadingDestinations, setIsLoadingDestinations] = useState(false);
   const [isLocating, setIsLocating] = useState<boolean | null>(null);
+  const [isSwapping, setIsSwapping] = useState(false);
+  const isSwappingRef = useRef(false);
+  const lastSwapTimeRef = useRef(0);
 
   const hasMounted = useHasMounted();
   const [, forceUpdate] = useState({});
@@ -197,6 +200,12 @@ export default function StationManager({
   );
 
   useEffect(() => {
+    // Skip if we're currently swapping stations or if we just swapped recently
+    const timeSinceLastSwap = Date.now() - lastSwapTimeRef.current;
+    if (isSwappingRef.current || timeSinceLastSwap < 600) {
+      return;
+    }
+
     const fetchDestinations = async () => {
       if (selectedOrigin) {
         setIsLoadingDestinations(true);
@@ -467,16 +476,49 @@ export default function StationManager({
           <div className="flex flex-row-reverse items-center gap-2">
             <button
               type="button"
-              onClick={() => {
+              onClick={async () => {
                 hapticMedium();
+                // Set swapping flags and timestamp to prevent dropdown from showing
+                setIsSwapping(true);
+                isSwappingRef.current = true;
+                lastSwapTimeRef.current = Date.now();
+                setOpenList(null);
+                setIsLoadingDestinations(false);
+
                 const tempOrigin = selectedOrigin;
-                setSelectedOrigin(selectedDestination);
+                const tempDestination = selectedDestination;
+
+                // Swap the stations
+                setSelectedOrigin(tempDestination);
                 setSelectedDestination(tempOrigin);
-                if (selectedOrigin && selectedDestination) {
-                  setSelectedDestination(tempOrigin);
-                  setStoredValue("selectedDestination", selectedOrigin);
-                  setStoredValue("selectedOrigin", selectedDestination);
+                if (tempOrigin) {
+                  setStoredValue("selectedDestination", tempOrigin);
                 }
+                if (tempDestination) {
+                  setStoredValue("selectedOrigin", tempDestination);
+                }
+
+                // Immediately fetch destinations for the new origin (old destination)
+                if (tempDestination) {
+                  try {
+                    const destinations = await fetchTrainsLeavingFromStation(
+                      tempDestination
+                    );
+                    setAvailableDestinations(destinations);
+                  } catch (error) {
+                    console.error(
+                      "Error fetching destinations during swap:",
+                      error
+                    );
+                    setAvailableDestinations(stations);
+                  }
+                }
+
+                // Reset swapping flags after everything is complete
+                setTimeout(() => {
+                  setIsSwapping(false);
+                  isSwappingRef.current = false;
+                }, 100);
               }}
               disabled={!selectedOrigin || !selectedDestination}
               className="flex-shrink-0 w-16 sm:w-12 h-12 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 dark:active:bg-blue-700
@@ -511,13 +553,13 @@ export default function StationManager({
                   stations={availableDestinations}
                   onStationSelect={handleDestinationSelect}
                   selectedValue={selectedDestination}
-                  isOpen={openList === "to"}
+                  isOpen={openList === "to" && !isSwapping}
                   onOpenChange={(isOpen) => {
                     setOpenList(isOpen ? "to" : null);
                   }}
                   inputRef={toInputRef}
                   onFocus={() => handleInputFocus("to")}
-                  isLoading={isLoadingDestinations}
+                  isLoading={isLoadingDestinations && !isSwapping}
                 />
               </div>
             </div>
