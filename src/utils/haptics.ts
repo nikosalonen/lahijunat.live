@@ -1,75 +1,116 @@
 /**
  * Haptic feedback utility for mobile devices
  * Provides tactile feedback for user interactions
+ *
+ * @format
  */
 
-export type HapticType = "light" | "medium" | "heavy" | "selection" | "impact" | "notification";
+export type HapticType =
+  | "light"
+  | "medium"
+  | "heavy"
+  | "selection"
+  | "impact"
+  | "notification";
+
+/**
+ * Extended Window interface for iOS DeviceMotionEvent
+ */
+interface WindowWithDeviceMotion extends Window {
+  DeviceMotionEvent: {
+    requestPermission?: () => Promise<"granted" | "denied">;
+  };
+}
+
+/**
+ * Type guard to check if navigator has vibrate support
+ */
+const hasVibrateSupport = (navigator: Navigator): boolean => {
+  return (
+    "vibrate" in navigator && typeof (navigator as any).vibrate === "function"
+  );
+};
+
+/**
+ * Type guard to check if window has DeviceMotionEvent support
+ */
+const hasDeviceMotionSupport = (
+  window: Window
+): window is WindowWithDeviceMotion => {
+  return (
+    "DeviceMotionEvent" in window && window.DeviceMotionEvent !== undefined
+  );
+};
 
 /**
  * Check if haptic feedback is supported
  */
 export const isHapticSupported = (): boolean => {
-	return (
-		typeof window !== "undefined" &&
-		"navigator" in window &&
-		"vibrate" in navigator
-	);
+  return (
+    typeof window !== "undefined" &&
+    typeof navigator !== "undefined" &&
+    hasVibrateSupport(navigator)
+  );
 };
 
 /**
  * Check if advanced haptics (iOS) are supported
  */
 export const isAdvancedHapticSupported = (): boolean => {
-	return (
-		typeof window !== "undefined" &&
-		"navigator" in window &&
-		// @ts-ignore - iOS specific API
-		navigator.vibrate &&
-		// @ts-ignore - iOS specific API
-		window.DeviceMotionEvent &&
-		// @ts-ignore - iOS specific API
-		typeof DeviceMotionEvent.requestPermission === "function"
-	);
+  return (
+    typeof window !== "undefined" &&
+    typeof navigator !== "undefined" &&
+    hasVibrateSupport(navigator) &&
+    hasDeviceMotionSupport(window) &&
+    typeof window.DeviceMotionEvent.requestPermission === "function"
+  );
 };
 
 /**
  * Trigger haptic feedback
  */
 export const triggerHaptic = (type: HapticType = "light"): void => {
-	if (!isHapticSupported()) return;
+  if (!isHapticSupported()) return;
 
-	try {
-		// iOS Haptic Feedback API (if available)
-		// @ts-ignore - iOS specific API
-		if (window.navigator.vibrate && window.navigator.vibrate.length) {
-			const patterns: Record<HapticType, number | number[]> = {
-				light: 10,
-				medium: 20,
-				heavy: 50,
-				selection: [10, 10, 10],
-				impact: 30,
-				notification: [50, 50, 100],
-			};
+  try {
+    // Check if we have proper vibrate support
+    if (!hasVibrateSupport(navigator)) return;
 
-			navigator.vibrate(patterns[type]);
-			return;
-		}
+    // Cast navigator to access vibrate method safely
+    const navigatorWithVibrate = navigator as Navigator & {
+      vibrate: (pattern: number | number[]) => boolean;
+    };
 
-		// Fallback to standard vibration API
-		const vibrationPatterns: Record<HapticType, number | number[]> = {
-			light: 15,
-			medium: 25,
-			heavy: 40,
-			selection: [10, 10, 10],
-			impact: 30,
-			notification: [100, 50, 100],
-		};
+    // iOS enhanced patterns (if available)
+    if (isAdvancedHapticSupported()) {
+      const patterns: Record<HapticType, number | number[]> = {
+        light: 10,
+        medium: 20,
+        heavy: 50,
+        selection: [10, 10, 10],
+        impact: 30,
+        notification: [50, 50, 100],
+      };
 
-		navigator.vibrate(vibrationPatterns[type]);
-	} catch (error) {
-		// Silently fail if haptics are not supported or blocked
-		console.debug("Haptic feedback not available:", error);
-	}
+      navigatorWithVibrate.vibrate(patterns[type]);
+      return;
+    }
+
+    // Fallback to standard vibration API
+    const vibrationPatterns: Record<HapticType, number | number[]> = {
+      light: 15,
+      medium: 25,
+      heavy: 40,
+      selection: [10, 10, 10],
+      impact: 30,
+      notification: [100, 50, 100],
+    };
+
+    navigatorWithVibrate.vibrate(vibrationPatterns[type]);
+  } catch (error) {
+    // Silently fail if haptics are not supported or blocked
+    console.debug("Haptic feedback not available:", error);
+  }
 };
 
 /**
