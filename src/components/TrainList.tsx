@@ -10,6 +10,7 @@ import { hapticLight } from "../utils/haptics";
 import ProgressCircle from "./ProgressCircle";
 import TrainCard from "./TrainCard";
 import TrainListSkeleton from "./TrainListSkeleton";
+import ErrorState from "./ErrorState";
 
 interface Props {
   stationCode: string;
@@ -31,7 +32,10 @@ export default function TrainList({
     trains: [] as Train[],
     loading: true,
     initialLoad: true,
-    error: null as string | null,
+    error: null as {
+      type: "network" | "api" | "notFound" | "rateLimit" | "generic";
+      message?: string;
+    } | null,
     progress: 100,
   });
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -57,13 +61,36 @@ export default function TrainList({
         initialLoad: false,
       }));
     } catch (err) {
+      console.error("Error loading trains:", err);
+
+      // Determine error type based on error message or properties
+      let errorType: "network" | "api" | "notFound" | "rateLimit" | "generic" =
+        "generic";
+      let errorMessage: string | undefined;
+
+      if (err instanceof Error) {
+        const message = err.message.toLowerCase();
+        if (message.includes("network") || message.includes("fetch")) {
+          errorType = "network";
+        } else if (
+          message.includes("rate limit") ||
+          message.includes("too many")
+        ) {
+          errorType = "rateLimit";
+        } else if (message.includes("not found") || message.includes("404")) {
+          errorType = "notFound";
+        } else if (message.includes("api") || message.includes("server")) {
+          errorType = "api";
+        }
+        errorMessage = err.message;
+      }
+
       setState((prev) => ({
         ...prev,
-        error: t("error"),
+        error: { type: errorType, message: errorMessage },
         loading: false,
         initialLoad: false,
       }));
-      console.error(err);
     }
   }, [stationCode, destinationCode, state.initialLoad]);
 
@@ -144,8 +171,13 @@ export default function TrainList({
 
   if (state.error) {
     return (
-      <div class="text-red-500 dark:text-red-400 text-center p-4">
-        {state.error}
+      <div className="max-w-4xl mx-auto">
+        <ErrorState
+          type={state.error.type}
+          message={state.error.message}
+          onRetry={loadTrains}
+          className="min-h-[300px] flex items-center justify-center"
+        />
       </div>
     );
   }

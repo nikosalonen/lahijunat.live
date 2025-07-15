@@ -14,6 +14,7 @@ import {
 } from "../utils/haptics";
 import StationList from "./StationList";
 import TrainList from "./TrainList";
+import ErrorState from "./ErrorState";
 
 interface Props {
   stations: Station[];
@@ -79,6 +80,10 @@ export default function StationManager({
     useState<Station[]>(stations);
   const [isLoadingDestinations, setIsLoadingDestinations] = useState(false);
   const [isLocating, setIsLocating] = useState<boolean | null>(null);
+  const [locationError, setLocationError] = useState<{
+    type: "location" | "generic";
+    message?: string;
+  } | null>(null);
   const [isSwapping, setIsSwapping] = useState(false);
   const isSwappingRef = useRef(false);
   const lastSwapTimeRef = useRef(0);
@@ -263,11 +268,15 @@ export default function StationManager({
     if (isLocating) return;
 
     hapticLight();
+    setLocationError(null); // Clear any previous errors
 
     if (!navigator.geolocation) {
       console.log("Geolocation not supported");
       hapticNotification();
-      alert("Paikannus ei ole tuettu selaimessasi");
+      setLocationError({
+        type: "location",
+        message: "Paikannus ei ole tuettu selaimessasi",
+      });
       return;
     }
 
@@ -289,7 +298,10 @@ export default function StationManager({
       };
 
       if (!isInFinland(userLocation)) {
-        alert("Paikannus toimii vain Suomessa");
+        setLocationError({
+          type: "location",
+          message: "Paikannus toimii vain Suomessa",
+        });
         return;
       }
 
@@ -300,30 +312,35 @@ export default function StationManager({
 
       if (nearestStation) {
         handleNearestStation(nearestStation);
+        setLocationError(null); // Clear error on success
       }
     } catch (error) {
       console.error("Location error:", error);
-      // Improve the error message to guide users
+      hapticNotification();
+
+      let errorMessage = "Paikannusta ei voitu suorittaa";
+
       if (
         error &&
         typeof error === "object" &&
         "code" in error &&
         error.code === 1 // PERMISSION_DENIED
       ) {
-        alert(
-          "Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista."
-        );
+        errorMessage =
+          "Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.";
       } else if (
         error &&
         typeof error === "object" &&
         "message" in error &&
         typeof error.message === "string"
       ) {
-        // Use the error message if available
-        alert(error.message);
-      } else {
-        alert("Paikannusta ei voitu suorittaa");
+        errorMessage = error.message;
       }
+
+      setLocationError({
+        type: "location",
+        message: errorMessage,
+      });
     } finally {
       setIsLocating(false);
     }
@@ -601,6 +618,20 @@ export default function StationManager({
               </div>
             )}
         </div>
+
+        {locationError && (
+          <div className="sm:col-span-2 mt-4">
+            <ErrorState
+              type={locationError.type}
+              message={locationError.message}
+              onRetry={() => {
+                setLocationError(null);
+                handleLocationRequest();
+              }}
+              className="bg-red-50 dark:bg-red-900/20 rounded-lg"
+            />
+          </div>
+        )}
 
         {selectedOrigin && selectedDestination && (
           <div className="sm:col-span-2 mt-6">
