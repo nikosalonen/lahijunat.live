@@ -6,6 +6,7 @@ import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import { fetchTrains } from "../utils/api";
 import { t } from "../utils/translations";
+import { hapticLight } from "../utils/haptics";
 import ProgressCircle from "./ProgressCircle";
 import TrainCard from "./TrainCard";
 import TrainListSkeleton from "./TrainListSkeleton";
@@ -203,9 +204,10 @@ export default function TrainList({
           <div class="flex justify-center mt-4">
             <button
               type="button"
-              onClick={() =>
-                setDisplayedTrainCount((prev) => prev + INITIAL_TRAIN_COUNT)
-              }
+              onClick={() => {
+                hapticLight();
+                setDisplayedTrainCount((prev) => prev + INITIAL_TRAIN_COUNT);
+              }}
               class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 active:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:active:bg-blue-800 transition-all duration-150 shadow-sm hover:shadow-md active:shadow-lg active:scale-95 touch-manipulation select-none font-medium"
             >
               {t("showMore")}
