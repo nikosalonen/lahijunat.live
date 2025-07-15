@@ -1,3 +1,5 @@
+/** @format */
+
 import { fireEvent, render, screen } from "@testing-library/preact";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Station } from "../../types";
@@ -319,7 +321,9 @@ describe("StationList", () => {
 			const activedescendant = input.getAttribute("aria-activedescendant");
 			expect(activedescendant).toBeTruthy();
 
-			const highlightedOption = document.getElementById(activedescendant!);
+			const highlightedOption = activedescendant
+				? document.getElementById(activedescendant)
+				: null;
 			expect(highlightedOption).toHaveTextContent("Helsinki (HKI)");
 		});
 

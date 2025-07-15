@@ -1,5 +1,7 @@
+/** @format */
+
 import { describe, expect, it } from "vitest";
-import type { Station, TimeTableRow, Train } from "../types";
+import type { Train } from "../types";
 import { getRelevantTrackInfo } from "./api";
 
 describe("getRelevantTrackInfo", () => {

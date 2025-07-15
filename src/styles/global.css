@@ -138,6 +138,72 @@
 	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Enhanced shimmer effect for loading states */
+.shimmer-bg {
+	background: linear-gradient(
+		90deg,
+		rgba(255, 255, 255, 0) 0%,
+		rgba(255, 255, 255, 0.4) 50%,
+		rgba(255, 255, 255, 0) 100%
+	);
+	background-size: 200% 100%;
+}
+
+.dark .shimmer-bg {
+	background: linear-gradient(
+		90deg,
+		rgba(255, 255, 255, 0) 0%,
+		rgba(255, 255, 255, 0.1) 50%,
+		rgba(255, 255, 255, 0) 100%
+	);
+	background-size: 200% 100%;
+}
+
+/* Staggered animation delays for lists */
+.stagger-1 {
+	animation-delay: 0.1s;
+}
+.stagger-2 {
+	animation-delay: 0.2s;
+}
+.stagger-3 {
+	animation-delay: 0.3s;
+}
+.stagger-4 {
+	animation-delay: 0.4s;
+}
+.stagger-5 {
+	animation-delay: 0.5s;
+}
+
+/* Smooth height transitions */
+.height-transition {
+	transition:
+		height 0.3s ease-in-out,
+		max-height 0.3s ease-in-out;
+}
+
+/* Enhanced focus states */
+.focus-ring {
+	@apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
+}
+
+/* Micro-interactions */
+.hover-lift {
+	transition:
+		transform 0.2s ease-out,
+		box-shadow 0.2s ease-out;
+}
+
+.hover-lift:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dark .hover-lift:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -6,83 +6,85 @@
  */
 
 export type HapticType =
-  | "light"
-  | "medium"
-  | "heavy"
-  | "selection"
-  | "impact"
-  | "notification";
+	| "light"
+	| "medium"
+	| "heavy"
+	| "selection"
+	| "impact"
+	| "notification";
 
 /**
  * Extended Window interface for iOS DeviceMotionEvent
  */
 interface WindowWithDeviceMotion extends Window {
-  DeviceMotionEvent: {
-    requestPermission?: () => Promise<"granted" | "denied">;
-  };
+	DeviceMotionEvent: {
+		requestPermission?: () => Promise<"granted" | "denied">;
+	};
 }
 
 /**
  * Type guard to check if navigator has vibrate support
  */
 const hasVibrateSupport = (navigator: Navigator): boolean => {
-  return (
-    "vibrate" in navigator && typeof (navigator as any).vibrate === "function"
-  );
+	return (
+		"vibrate" in navigator &&
+		typeof (navigator as Navigator & { vibrate?: unknown }).vibrate ===
+			"function"
+	);
 };
 
 /**
  * Type guard to check if window has DeviceMotionEvent support
  */
-const hasDeviceMotionSupport = (
-  window: Window
+const _hasDeviceMotionSupport = (
+	window: Window,
 ): window is WindowWithDeviceMotion => {
-  return (
-    "DeviceMotionEvent" in window && window.DeviceMotionEvent !== undefined
-  );
+	return (
+		"DeviceMotionEvent" in window && window.DeviceMotionEvent !== undefined
+	);
 };
 
 /**
  * Check if haptic feedback is supported
  */
 export const isHapticSupported = (): boolean => {
-  return (
-    typeof window !== "undefined" &&
-    typeof navigator !== "undefined" &&
-    hasVibrateSupport(navigator)
-  );
+	return (
+		typeof window !== "undefined" &&
+		typeof navigator !== "undefined" &&
+		hasVibrateSupport(navigator)
+	);
 };
 
 /**
  * Trigger haptic feedback
  */
 export const triggerHaptic = (type: HapticType = "light"): void => {
-  if (!isHapticSupported()) return;
+	if (!isHapticSupported()) return;
 
-  try {
-    // Check if we have proper vibrate support
-    if (!hasVibrateSupport(navigator)) return;
+	try {
+		// Check if we have proper vibrate support
+		if (!hasVibrateSupport(navigator)) return;
 
-    // Cast navigator to access vibrate method safely
-    const navigatorWithVibrate = navigator as Navigator & {
-      vibrate: (pattern: number | number[]) => boolean;
-    };
+		// Cast navigator to access vibrate method safely
+		const navigatorWithVibrate = navigator as Navigator & {
+			vibrate: (pattern: number | number[]) => boolean;
+		};
 
-    // Optimized vibration patterns for all platforms
-    const vibrationPatterns: Record<HapticType, number | number[]> = {
-      light: 15,
-      medium: 25,
-      heavy: 40,
-      selection: [10, 10, 10],
-      impact: 30,
-      notification: [100, 50, 100],
-    };
+		// Optimized vibration patterns for all platforms
+		const vibrationPatterns: Record<HapticType, number | number[]> = {
+			light: 15,
+			medium: 25,
+			heavy: 40,
+			selection: [10, 10, 10],
+			impact: 30,
+			notification: [100, 50, 100],
+		};
 
-    navigatorWithVibrate.vibrate(vibrationPatterns[type]);
-  } catch (error) {
-    // Silently fail if haptics are not supported or blocked
-    console.debug("Haptic feedback not available:", error);
-  }
+		navigatorWithVibrate.vibrate(vibrationPatterns[type]);
+	} catch (error) {
+		// Silently fail if haptics are not supported or blocked
+		console.debug("Haptic feedback not available:", error);
+	}
 };
 
 /**

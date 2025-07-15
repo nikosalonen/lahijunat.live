@@ -1,3 +1,5 @@
+/** @format */
+
 import { fireEvent, render, screen, waitFor } from "@testing-library/preact";
 import { useState } from "preact/hooks";
 import {
@@ -357,7 +359,7 @@ describe("StationManager", () => {
 			};
 
 			mockGeolocation.getCurrentPosition.mockImplementation(
-				(success, error) => {
+				(_success, error) => {
 					error(mockError);
 				},
 			);
@@ -441,8 +443,9 @@ describe("StationManager", () => {
 		});
 
 		it("shows loading state while getting location", async () => {
-			let resolveGeolocation: (position: any) => void;
-			const geolocationPromise = new Promise((resolve) => {
+			let resolveGeolocation: (position: GeolocationPosition) => void =
+				() => {};
+			const geolocationPromise = new Promise<GeolocationPosition>((resolve) => {
 				resolveGeolocation = resolve;
 			});
 
@@ -459,9 +462,18 @@ describe("StationManager", () => {
 			expect(locationButton.className).toContain("animate-pulse");
 
 			// Resolve geolocation
-			resolveGeolocation!({
-				coords: { latitude: 60.1699, longitude: 24.9384 },
-			});
+			resolveGeolocation?.({
+				coords: {
+					latitude: 60.1699,
+					longitude: 24.9384,
+					accuracy: 10,
+					altitude: null,
+					altitudeAccuracy: null,
+					heading: null,
+					speed: null,
+				},
+				timestamp: Date.now(),
+			} as GeolocationPosition);
 
 			await waitFor(() => {
 				expect(locationButton.className).not.toContain("animate-pulse");
@@ -495,7 +507,7 @@ describe("StationManager", () => {
 			};
 
 			mockGeolocation.getCurrentPosition.mockImplementation(
-				(success, error) => {
+				(_success, error) => {
 					error(mockError);
 				},
 			);
@@ -546,7 +558,7 @@ describe("StationManager", () => {
 			originalVisibilityState = document.visibilityState;
 
 			// Mock window.location
-			delete (window as any).location;
+			delete (window as unknown as { location: unknown }).location;
 			window.location = {
 				...originalLocation,
 				search: "",
