@@ -160,15 +160,27 @@
 }
 
 /* Staggered animation delays for lists */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
-.stagger-5 { animation-delay: 0.5s; }
+.stagger-1 {
+	animation-delay: 0.1s;
+}
+.stagger-2 {
+	animation-delay: 0.2s;
+}
+.stagger-3 {
+	animation-delay: 0.3s;
+}
+.stagger-4 {
+	animation-delay: 0.4s;
+}
+.stagger-5 {
+	animation-delay: 0.5s;
+}
 
 /* Smooth height transitions */
 .height-transition {
-	transition: height 0.3s ease-in-out, max-height 0.3s ease-in-out;
+	transition:
+		height 0.3s ease-in-out,
+		max-height 0.3s ease-in-out;
 }
 
 /* Enhanced focus states */
@@ -178,7 +190,9 @@
 
 /* Micro-interactions */
 .hover-lift {
-	transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+	transition:
+		transform 0.2s ease-out,
+		box-shadow 0.2s ease-out;
 }
 
 .hover-lift:hover {
