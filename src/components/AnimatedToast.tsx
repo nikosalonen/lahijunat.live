@@ -9,6 +9,9 @@ interface ToastProps {
   onClose?: () => void;
 }
 
+// Animation timing constants to ensure JS and CSS stay in sync
+const ANIMATION_DURATION = 300; // matches CSS transition duration-300
+
 export default function AnimatedToast({
   message,
   type = "info",
@@ -25,7 +28,7 @@ export default function AnimatedToast({
     // Auto-dismiss after duration
     const exitTimer = setTimeout(() => {
       setIsExiting(true);
-      setTimeout(() => onClose?.(), 300);
+      setTimeout(() => onClose?.(), ANIMATION_DURATION);
     }, duration);
 
     return () => {
@@ -82,7 +85,7 @@ export default function AnimatedToast({
             type="button"
             onClick={() => {
               setIsExiting(true);
-              setTimeout(() => onClose?.(), 300);
+              setTimeout(() => onClose?.(), ANIMATION_DURATION);
             }}
             class="flex-shrink-0 ml-3 text-lg opacity-70 hover:opacity-100 transition-opacity duration-150 focus-ring rounded"
           >
