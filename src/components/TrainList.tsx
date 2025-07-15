@@ -217,9 +217,14 @@ export default function TrainList({
           {displayedTrains.map((train, index) => (
             <div
               key={train.trainNumber}
-              class="transition-[transform,opacity] duration-700 ease-in-out"
+              class={`transition-[transform,opacity] duration-700 ease-in-out hover-lift ${
+                departedTrains.has(train.trainNumber.toString())
+                  ? "animate-train-depart"
+                  : "animate-scale-in"
+              }`}
               style={{
                 "grid-row": `${index + 1}`,
+                animationDelay: `${index * 0.05}s`,
               }}
             >
               <MemoizedTrainCard

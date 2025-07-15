@@ -439,11 +439,11 @@ export default function StationManager({
               type="button"
               onClick={handleLocationRequest}
               className={`flex-shrink-0 w-16 sm:w-12 h-12 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 dark:active:bg-blue-700
-								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-lg
+								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-lg hover-lift focus-ring
 								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
 								border border-blue-200 dark:border-blue-700 shadow-sm hover:shadow-md active:shadow-lg active:scale-95
 								touch-manipulation select-none
-								${isLocating ? "animate-pulse" : ""}`}
+								${isLocating ? "animate-bounce-subtle" : ""}`}
               aria-label="Paikanna"
             >
               <svg

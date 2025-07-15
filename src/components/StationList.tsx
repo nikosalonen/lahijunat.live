@@ -190,14 +190,14 @@ export default function StationList({
         }}
         onKeyDown={handleKeyDown}
         placeholder={t("placeholder")}
-        className="w-full p-3 border border-gray-700 dark:text-white dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg transition-all duration-150 touch-manipulation text-base"
+        className="w-full p-3 border border-gray-700 dark:text-white dark:border-gray-700 focus-ring rounded-lg transition-all duration-150 touch-manipulation text-base hover-lift"
       />
       {(isOpen || isLoading) && (
         <div
           ref={listboxRef}
           id="station-listbox"
           data-testid="station-listbox"
-          class="absolute w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
+          class="absolute w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50 animate-slide-down"
           style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
         >
           {isLoading ? (
