@@ -54,19 +54,6 @@ export const isHapticSupported = (): boolean => {
 };
 
 /**
- * Check if advanced haptics (iOS) are supported
- */
-export const isAdvancedHapticSupported = (): boolean => {
-  return (
-    typeof window !== "undefined" &&
-    typeof navigator !== "undefined" &&
-    hasVibrateSupport(navigator) &&
-    hasDeviceMotionSupport(window) &&
-    typeof window.DeviceMotionEvent.requestPermission === "function"
-  );
-};
-
-/**
  * Trigger haptic feedback
  */
 export const triggerHaptic = (type: HapticType = "light"): void => {
@@ -81,22 +68,7 @@ export const triggerHaptic = (type: HapticType = "light"): void => {
       vibrate: (pattern: number | number[]) => boolean;
     };
 
-    // iOS enhanced patterns (if available)
-    if (isAdvancedHapticSupported()) {
-      const patterns: Record<HapticType, number | number[]> = {
-        light: 10,
-        medium: 20,
-        heavy: 50,
-        selection: [10, 10, 10],
-        impact: 30,
-        notification: [50, 50, 100],
-      };
-
-      navigatorWithVibrate.vibrate(patterns[type]);
-      return;
-    }
-
-    // Fallback to standard vibration API
+    // Optimized vibration patterns for all platforms
     const vibrationPatterns: Record<HapticType, number | number[]> = {
       light: 15,
       medium: 25,
