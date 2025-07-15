@@ -139,10 +139,11 @@ describe("ErrorState", () => {
   });
 
   it("has proper accessibility attributes", () => {
-    render(<ErrorState type="network" />);
+    const { container } = render(<ErrorState type="network" />);
 
-    // Check for SVG icons with proper aria-hidden
-    const svgIcon = screen.getByRole("img", { hidden: true });
+    // Check for SVG icons with proper aria-hidden attribute
+    const svgIcon = container.querySelector("svg");
     expect(svgIcon).toBeInTheDocument();
+    expect(svgIcon).toHaveAttribute("aria-hidden", "true");
   });
 });
