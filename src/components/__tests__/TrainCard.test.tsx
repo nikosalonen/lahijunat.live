@@ -144,7 +144,7 @@ describe("TrainCard", () => {
 			<TrainCard {...defaultProps} train={cancelledTrain} />,
 		);
 
-		expect(container.firstChild).toHaveClass("bg-red-50");
+		expect(container.firstChild).toHaveClass("from-red-50");
 	});
 
 	it("handles favorite button click to highlight train", () => {

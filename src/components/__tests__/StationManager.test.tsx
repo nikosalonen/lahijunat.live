@@ -347,9 +347,9 @@ describe("StationManager", () => {
 			const locationButton = screen.getByRole("button", { name: "Paikanna" });
 			fireEvent.click(locationButton);
 
-			expect(window.alert).toHaveBeenCalledWith(
-				"Paikannus ei ole tuettu selaimessasi",
-			);
+			expect(
+				screen.getByText("Paikannus ei ole tuettu selaimessasi"),
+			).toBeInTheDocument();
 		});
 
 		it("shows error when geolocation permission is denied", async () => {
@@ -370,9 +370,11 @@ describe("StationManager", () => {
 			fireEvent.click(locationButton);
 
 			await waitFor(() => {
-				expect(window.alert).toHaveBeenCalledWith(
-					"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
-				);
+				expect(
+					screen.getByText(
+						"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
+					),
+				).toBeInTheDocument();
 			});
 		});
 
@@ -395,9 +397,9 @@ describe("StationManager", () => {
 			fireEvent.click(locationButton);
 
 			await waitFor(() => {
-				expect(window.alert).toHaveBeenCalledWith(
-					"Paikannus toimii vain Suomessa",
-				);
+				expect(
+					screen.getByText("Paikannus toimii vain Suomessa"),
+				).toBeInTheDocument();
 			});
 		});
 
@@ -459,7 +461,7 @@ describe("StationManager", () => {
 			fireEvent.click(locationButton);
 
 			// Button should show loading state
-			expect(locationButton.className).toContain("animate-pulse");
+			expect(locationButton.className).toContain("animate-bounce-subtle");
 
 			// Resolve geolocation
 			resolveGeolocation?.({
@@ -518,7 +520,7 @@ describe("StationManager", () => {
 			fireEvent.click(locationButton);
 
 			await waitFor(() => {
-				expect(window.alert).toHaveBeenCalledWith("Timeout expired");
+				expect(screen.getByText("Timeout expired")).toBeInTheDocument();
 			});
 		});
 
