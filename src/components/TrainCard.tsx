@@ -386,8 +386,8 @@ export default function TrainCard({
 			class={`p-3 sm:p-4 ${cardStyle} w-full text-left relative`}
 			style={{ opacity: hasDeparted ? opacity : 1 }}
 		>
-			<div class="flex items-center justify-between">
-				<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+			<div class="flex items-start justify-between gap-3 sm:gap-4">
+				<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 max-w-[calc(100%-140px)] sm:max-w-[calc(100%-160px)]">
 					{/* Train identifier */}
 					{train.commuterLineID && (
 						<button
@@ -471,7 +471,7 @@ export default function TrainCard({
 					)}
 
 					{/* Main train info */}
-					<div class="space-y-2 sm:space-y-1 min-w-0 flex-1">
+					<div class="space-y-2 sm:space-y-1 min-w-0 flex-1 overflow-hidden">
 						<div class="flex flex-col gap-1">
 							<div class="flex flex-col gap-2 sm:gap-1">
 								<TimeDisplay
@@ -481,7 +481,7 @@ export default function TrainCard({
 								/>
 								{duration && (
 									<output
-										class={`text-sm sm:text-base font-medium flex items-center ${
+										class={`text-sm sm:text-base font-medium flex items-center truncate ${
 											durationSpeedType === "fast"
 												? "text-green-600 dark:text-green-400"
 												: durationSpeedType === "slow"
@@ -515,7 +515,7 @@ export default function TrainCard({
 				</div>
 
 				{/* Track info and departure countdown */}
-				<div class="flex flex-col items-end gap-2 sm:gap-3">
+				<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0 min-w-[120px] sm:min-w-[140px]">
 					{train.cancelled ? (
 						<span class="px-4 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm sm:text-base font-semibold shadow-lg">
 							{t("cancelled")}

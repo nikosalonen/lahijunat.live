@@ -8,7 +8,7 @@ const TimeRow = ({
 	departureRow: Train["timeTableRows"][0];
 	arrivalRow?: Train["timeTableRows"][0];
 }) => (
-	<span class="whitespace-nowrap text-gray-600 dark:text-gray-300 text-lg sm:text-lg">
+	<span class="text-gray-600 dark:text-gray-300 text-lg sm:text-lg break-words sm:whitespace-nowrap">
 		{departureRow.liveEstimateTime &&
 		departureRow.differenceInMinutes &&
 		departureRow.differenceInMinutes > 0
