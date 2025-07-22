@@ -30,6 +30,13 @@ const REFRESH_INTERVALS = {
 	LOW: 90000, // 90 seconds - no immediate trains
 } as const;
 
+// Urgency thresholds (in minutes)
+const URGENCY_THRESHOLDS = {
+	URGENT: 5, // Trains departing within 5 minutes
+	IMMINENT: 15, // Trains departing within 15 minutes
+	NEARBY: 30, // Trains departing within 30 minutes
+} as const;
+
 // Calculate appropriate refresh interval based on train data
 function getAdaptiveRefreshInterval(
 	trains: Train[],
@@ -57,13 +64,23 @@ function getAdaptiveRefreshInterval(
 		// Check if train is late
 		const isLate = (departureRow.differenceInMinutes ?? 0) > 2;
 
-		if (minutesToDeparture > 0 && minutesToDeparture <= 5) {
+		if (
+			minutesToDeparture > 0 &&
+			minutesToDeparture <= URGENCY_THRESHOLDS.URGENT
+		) {
 			hasUrgentTrains = true;
-		} else if (minutesToDeparture > 0 && minutesToDeparture <= 15) {
+		} else if (
+			minutesToDeparture > 0 &&
+			minutesToDeparture <= URGENCY_THRESHOLDS.IMMINENT
+		) {
 			hasImminentTrains = true;
 		}
 
-		if (isLate && minutesToDeparture > 0 && minutesToDeparture <= 30) {
+		if (
+			isLate &&
+			minutesToDeparture > 0 &&
+			minutesToDeparture <= URGENCY_THRESHOLDS.NEARBY
+		) {
 			hasLateTrains = true;
 		}
 	}
@@ -81,7 +98,9 @@ function getAdaptiveRefreshInterval(
 			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
 		).getTime();
 		const minutesToDeparture = Math.round((departureTime - now) / (1000 * 60));
-		return minutesToDeparture > 0 && minutesToDeparture <= 30;
+		return (
+			minutesToDeparture > 0 && minutesToDeparture <= URGENCY_THRESHOLDS.NEARBY
+		);
 	});
 
 	return hasNearbyTrains ? REFRESH_INTERVALS.MEDIUM : REFRESH_INTERVALS.LOW;
