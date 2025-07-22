@@ -379,7 +379,7 @@ export default function TrainCard({
 							onClick={handleFavorite}
 							aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
 							type="button"
-							class="flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold focus:outline-none transition-all duration-200 hover:scale-105 active:scale-95 relative group border-none outline-none ring-0 touch-manipulation select-none min-h-[44px] min-w-[44px]"
+							class="flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold focus:outline-none transition-transform duration-300 hover:scale-105 relative group border-none outline-none ring-0 touch-manipulation select-none min-h-[44px] min-w-[44px]"
 							style={{ outline: "none", border: "none", boxShadow: "none" }}
 						>
 							<div class="relative">
