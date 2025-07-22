@@ -1,7 +1,13 @@
 /** @format */
 
 import { memo } from "preact/compat";
-import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "preact/hooks";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import { fetchTrains } from "../utils/api";
@@ -130,6 +136,7 @@ export default function TrainList({
 	const [currentRefreshInterval, setCurrentRefreshInterval] = useState<number>(
 		REFRESH_INTERVALS.MEDIUM,
 	);
+	const currentRefreshIntervalRef = useRef<number>(REFRESH_INTERVALS.MEDIUM);
 
 	const loadTrains = useCallback(async () => {
 		try {
@@ -151,6 +158,9 @@ export default function TrainList({
 					}s)`,
 				);
 				setCurrentRefreshInterval(newRefreshInterval);
+				currentRefreshIntervalRef.current = newRefreshInterval;
+				// Reset progress to 100% when interval changes so it counts down over the new duration
+				setState((prev) => ({ ...prev, progress: 100 }));
 			}
 
 			setState((prev) => ({
@@ -163,34 +173,49 @@ export default function TrainList({
 		} catch (err) {
 			console.error("Error loading trains:", err);
 
-			// Determine error type based on error message or properties
-			let errorType: "network" | "api" | "notFound" | "rateLimit" | "generic" =
-				"generic";
-			let errorMessage: string | undefined;
+			// Only show errors during initial load or user-triggered refreshes
+			// For background updates, silently continue with existing data
+			if (state.initialLoad) {
+				// Determine error type based on error message or properties
+				let errorType:
+					| "network"
+					| "api"
+					| "notFound"
+					| "rateLimit"
+					| "generic" = "generic";
+				let errorMessage: string | undefined;
 
-			if (err instanceof Error) {
-				const message = err.message.toLowerCase();
-				if (message.includes("network") || message.includes("fetch")) {
-					errorType = "network";
-				} else if (
-					message.includes("rate limit") ||
-					message.includes("too many")
-				) {
-					errorType = "rateLimit";
-				} else if (message.includes("not found") || message.includes("404")) {
-					errorType = "notFound";
-				} else if (message.includes("api") || message.includes("server")) {
-					errorType = "api";
+				if (err instanceof Error) {
+					const message = err.message.toLowerCase();
+					if (message.includes("network") || message.includes("fetch")) {
+						errorType = "network";
+					} else if (
+						message.includes("rate limit") ||
+						message.includes("too many")
+					) {
+						errorType = "rateLimit";
+					} else if (message.includes("not found") || message.includes("404")) {
+						errorType = "notFound";
+					} else if (message.includes("api") || message.includes("server")) {
+						errorType = "api";
+					}
+					errorMessage = err.message;
 				}
-				errorMessage = err.message;
-			}
 
-			setState((prev) => ({
-				...prev,
-				error: { type: errorType, message: errorMessage },
-				loading: false,
-				initialLoad: false,
-			}));
+				setState((prev) => ({
+					...prev,
+					error: { type: errorType, message: errorMessage },
+					loading: false,
+					initialLoad: false,
+				}));
+			} else {
+				// Background update failed - just clear loading state and continue with existing data
+				console.log("Background update failed, continuing with existing data");
+				setState((prev) => ({
+					...prev,
+					loading: false,
+				}));
+			}
 		}
 	}, [stationCode, destinationCode, state.initialLoad]);
 
@@ -199,6 +224,11 @@ export default function TrainList({
 		setDisplayedTrainCount(INITIAL_TRAIN_COUNT);
 		setDepartedTrains(new Set());
 	}, [stationCode, destinationCode]);
+
+	// Keep ref in sync with state
+	useEffect(() => {
+		currentRefreshIntervalRef.current = currentRefreshInterval;
+	}, [currentRefreshInterval]);
 
 	const handleTrainDeparted = useCallback((trainNumber: string) => {
 		setTimeout(() => {
@@ -254,7 +284,7 @@ export default function TrainList({
 				...prev,
 				progress: Math.max(
 					0,
-					prev.progress - 100 / (currentRefreshInterval / 1000),
+					prev.progress - 100 / (currentRefreshIntervalRef.current / 1000),
 				),
 			}));
 		}, 1000); // Update progress every second
