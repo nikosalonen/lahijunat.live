@@ -383,11 +383,11 @@ export default function TrainCard({
 
 	return (
 		<div
-			class={`p-3 sm:p-4 ${cardStyle} w-full text-left relative`}
+			class={`p-3 sm:p-4 ${cardStyle} w-full max-w-full text-left relative overflow-hidden`}
 			style={{ opacity: hasDeparted ? opacity : 1 }}
 		>
-			<div class="flex items-start justify-between gap-3 sm:gap-4">
-				<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 max-w-[calc(100%-140px)] sm:max-w-[calc(100%-160px)]">
+			<div class="flex items-start justify-between gap-2 sm:gap-4">
+				<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
 					{/* Train identifier */}
 					{train.commuterLineID && (
 						<button
@@ -515,7 +515,7 @@ export default function TrainCard({
 				</div>
 
 				{/* Track info and departure countdown */}
-				<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0 min-w-[120px] sm:min-w-[140px]">
+				<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0">
 					{train.cancelled ? (
 						<span class="px-4 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm sm:text-base font-semibold shadow-lg">
 							{t("cancelled")}
