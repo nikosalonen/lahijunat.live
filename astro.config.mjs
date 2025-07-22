@@ -1,20 +1,19 @@
 // @ts-check
-import { defineConfig } from "astro/config";
 
 import fs from "node:fs/promises";
 import path, { join } from "node:path";
 import preact from "@astrojs/preact";
 import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "astro/config";
 
 const mySwPlugin = () => {
-	let config;
 	return {
 		name: "customSw",
 		hooks: {
-			"astro:config:done": async ({ config: cfg }) => {
-				config = cfg;
+			"astro:config:done": async ({ config: _cfg }) => {
+				// Config received but not used in this plugin
 			},
-			"astro:build:done": async (args) => {
+			"astro:build:done": async (_args) => {
 				const swUrl = join("/", "sw.js");
 				const injection = `
                     <script>
@@ -37,7 +36,9 @@ const mySwPlugin = () => {
 				async function processDirectory(dirPath) {
 					try {
 						const normalizedPath = path.resolve(dirPath);
-						const entries = await fs.readdir(normalizedPath, { withFileTypes: true });
+						const entries = await fs.readdir(normalizedPath, {
+							withFileTypes: true,
+						});
 						for (const entry of entries) {
 							const fullPath = path.join(normalizedPath, entry.name);
 							if (entry.isDirectory()) {
@@ -57,7 +58,7 @@ const mySwPlugin = () => {
 					}
 				}
 
-				const distPath = path.resolve(process.cwd(), 'dist');
+				const distPath = path.resolve(process.cwd(), "dist");
 				await processDirectory(distPath);
 			},
 		},

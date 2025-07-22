@@ -31,6 +31,7 @@ const getErrorConfig = (type: ErrorType) => {
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
+						aria-hidden="true"
 					>
 						<title>Network Error</title>
 						<path
@@ -74,6 +75,7 @@ const getErrorConfig = (type: ErrorType) => {
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
+						aria-hidden="true"
 					>
 						<title>Location Error</title>
 						<path
@@ -101,6 +103,7 @@ const getErrorConfig = (type: ErrorType) => {
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
+						aria-hidden="true"
 					>
 						<title>Not Found</title>
 						<path
@@ -122,6 +125,7 @@ const getErrorConfig = (type: ErrorType) => {
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
+						aria-hidden="true"
 					>
 						<title>Rate Limit</title>
 						<path
@@ -143,6 +147,7 @@ const getErrorConfig = (type: ErrorType) => {
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
+						aria-hidden="true"
 					>
 						<title>Error</title>
 						<path

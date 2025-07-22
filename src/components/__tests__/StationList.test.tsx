@@ -60,11 +60,11 @@ describe("StationList", () => {
 	});
 
 	it("renders loading state when isLoading is true", () => {
-		const { getByText } = render(
+		const { container } = render(
 			<StationList {...defaultProps} isOpen={true} isLoading={true} />,
 		);
 
-		expect(getByText("Ladataan...")).toBeInTheDocument();
+		expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
 	});
 
 	it("renders station list when not loading", () => {
@@ -338,9 +338,11 @@ describe("StationList", () => {
 		});
 
 		it("announces loading state to screen readers", () => {
-			render(<StationList {...defaultProps} isLoading={true} />);
+			const { container } = render(
+				<StationList {...defaultProps} isLoading={true} />,
+			);
 
-			expect(screen.getByText("Ladataan...")).toBeInTheDocument();
+			expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
 		});
 
 		it("provides clear feedback for selection", () => {

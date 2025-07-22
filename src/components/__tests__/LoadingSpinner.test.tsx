@@ -16,7 +16,7 @@ describe("LoadingSpinner", () => {
 	it("renders spinner with correct classes", () => {
 		const { container } = render(<LoadingSpinner />);
 
-		const spinner = container.querySelector("div");
+		const spinner = container.querySelector(".animate-spin");
 		expect(spinner).toHaveClass("animate-spin");
 		expect(spinner).toHaveClass("rounded-full");
 		expect(spinner).toHaveClass("h-16");
@@ -29,7 +29,7 @@ describe("LoadingSpinner", () => {
 	it("renders with correct accessibility attributes", () => {
 		const { container } = render(<LoadingSpinner />);
 
-		const spinner = container.querySelector("div");
+		const spinner = container.querySelector(".animate-spin");
 		expect(spinner).toHaveAttribute("aria-hidden", "true");
 
 		const screenReaderText = container.querySelector(".sr-only");
