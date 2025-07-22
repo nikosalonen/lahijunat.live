@@ -138,16 +138,12 @@ describe("StationManager", () => {
 			fireEvent.click(stationOption);
 		}
 
-		// Check if loading state is shown
-		expect(
-			getByText((content) => content.includes("Ladataan")),
-		).toBeInTheDocument();
+		// Check if loading state is shown (skeleton animation)
+		expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
 
 		// Wait for destinations to load
 		await waitFor(() => {
-			expect(() =>
-				getByText((content) => content.includes("Ladataan")),
-			).toThrow();
+			expect(container.querySelector(".animate-pulse")).not.toBeInTheDocument();
 		});
 	});
 

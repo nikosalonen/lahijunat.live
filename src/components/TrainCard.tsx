@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
-import { hapticImpact, hapticLight } from "../utils/haptics";
+import { hapticImpact } from "../utils/haptics";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
 
@@ -88,7 +88,6 @@ export default function TrainCard({
 	const [trackMemory, setTrackMemory] = useState<
 		Record<string, { track: string; timestamp: number }>
 	>({});
-	const [showTooltip, setShowTooltip] = useState(false);
 
 	// Memoize all time-dependent calculations
 	const {
@@ -173,20 +172,6 @@ export default function TrainCard({
 		isHighlighted,
 		getDurationSpeedType,
 	]);
-
-	// Check if user has seen the tooltip before
-	useEffect(() => {
-		const hasSeenTooltip = localStorage.getItem("hasSeenFavoriteTooltip");
-		if (
-			!hasSeenTooltip &&
-			!train.cancelled &&
-			minutesToDeparture !== null &&
-			minutesToDeparture > 0
-		) {
-			setShowTooltip(true);
-			localStorage.setItem("hasSeenFavoriteTooltip", "true");
-		}
-	}, [train.cancelled, minutesToDeparture]);
 
 	// Call onDepart when the train transitions from not departed to departed
 	useEffect(() => {
@@ -397,46 +382,6 @@ export default function TrainCard({
 							class="flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold focus:outline-none transition-all duration-200 hover:scale-105 active:scale-95 relative group border-none outline-none ring-0 touch-manipulation select-none min-h-[44px] min-w-[44px]"
 							style={{ outline: "none", border: "none", boxShadow: "none" }}
 						>
-							{showTooltip && (
-								<button
-									type="button"
-									class="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full bg-[#6b2c75] text-white text-sm px-3 py-2 rounded-lg shadow-lg border-2 border-white whitespace-normal break-words max-w-xs max-w-[90vw] text-center z-50 cursor-pointer transition-all duration-150 active:scale-95 touch-manipulation select-none"
-									onClick={(e) => {
-										e.stopPropagation();
-										hapticLight();
-										setShowTooltip(false);
-									}}
-									onKeyDown={(e) => {
-										if (e.key === "Enter" || e.key === " ") {
-											e.stopPropagation();
-											setShowTooltip(false);
-										}
-									}}
-									tabIndex={0}
-									aria-label={t("closeTooltip")}
-								>
-									<div class="flex items-center gap-2">
-										<span>{t("favoriteTooltip")}</span>
-									</div>
-									{/* Arrow */}
-									<div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-3 h-3 z-10">
-										<svg width="100%" height="100%" viewBox="0 0 12 12">
-											<title>Tooltip arrow</title>
-											<rect
-												x="2"
-												y="2"
-												width="8"
-												height="8"
-												rx="2"
-												fill="#6b2c75"
-												stroke="white"
-												strokeWidth="2"
-												transform="rotate(45 6 6)"
-											/>
-										</svg>
-									</div>
-								</button>
-							)}
 							<div class="relative">
 								<span
 									class={`h-14 w-14 sm:h-16 sm:w-16 rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 ${

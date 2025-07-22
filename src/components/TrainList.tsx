@@ -35,7 +35,7 @@ function getAdaptiveRefreshInterval(
 	trains: Train[],
 	currentTime: Date,
 ): number {
-	if (!trains.length) return REFRESH_INTERVALS.LOW;
+	if (!trains || !trains.length) return REFRESH_INTERVALS.LOW;
 
 	const now = currentTime.getTime();
 	let hasUrgentTrains = false;

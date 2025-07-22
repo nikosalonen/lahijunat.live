@@ -19,8 +19,6 @@ vi.mock("../../utils/translations", () => ({
 			departingSoon: "Lähtee pian",
 			favorite: "favorite",
 			unfavorite: "unfavorite",
-			closeTooltip: "Sulje suosikkivihje",
-			favoriteTooltip: "Klikkaa suosikiksi ja korosta juna listassa",
 			cancelled: "Peruttu",
 		};
 		return translations[key] || key;

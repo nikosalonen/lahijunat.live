@@ -41,9 +41,7 @@ export const translations: Translations = {
 		dataSource: "Datalähde",
 		trainIcon: "Juna-ikoni lainattu",
 		showMore: "Näytä lisää",
-		favoriteTooltip: "Klikkaa suosikiksi ja korosta juna listassa",
 		starIcon: "Tähti-ikoni",
-		closeTooltip: "Sulje suosikkivihje",
 		// Error states
 		errorTitle: "Jotain meni pieleen",
 		errorMessage: "Tapahtui odottamaton virhe. Yritä päivittää sivu.",
@@ -94,9 +92,7 @@ export const translations: Translations = {
 		dataSource: "Data source",
 		trainIcon: "Train icon from",
 		showMore: "Show more",
-		favoriteTooltip: "Click to favorite and highlight this train in the list",
 		starIcon: "Star icon",
-		closeTooltip: "Close favorite tooltip",
 		// Error states
 		errorTitle: "Something went wrong",
 		errorMessage: "An unexpected error occurred. Try refreshing the page.",
