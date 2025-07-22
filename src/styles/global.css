@@ -278,13 +278,79 @@
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.hover-lift:hover {
-	transform: translateY(-4px) scale(1.02);
-	box-shadow: var(--shadow-strong);
-}
+/* Only apply hover effects on devices that support proper hover */
+@media (hover: hover) {
+	.hover-lift:hover {
+		transform: translateY(-4px) scale(1.02);
+		box-shadow: var(--shadow-strong);
+	}
 
-.dark .hover-lift:hover {
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+	.dark .hover-lift:hover {
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+	}
+
+	.train-button-hover:hover {
+		transform: scale(1.05);
+	}
+
+	.train-span-hover:hover {
+		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+	}
+
+	.station-option:hover {
+		background-color: rgb(243 244 246); /* gray-100 */
+		transform: translateY(-1px);
+	}
+
+	.dark .station-option:hover {
+		background-color: rgb(55 65 81); /* gray-700 */
+	}
+
+	.station-option:active {
+		background-color: rgb(229 231 235); /* gray-200 */
+		transform: translateY(0);
+	}
+
+	.dark .station-option:active {
+		background-color: rgb(75 85 99); /* gray-600 */
+	}
+
+	.location-button {
+		background-color: rgb(239 246 255); /* blue-50 */
+	}
+
+	.dark .location-button {
+		background-color: rgb(30 58 138); /* blue-900 */
+	}
+
+	.location-button:hover:not(:disabled) {
+		background-color: rgb(219 234 254); /* blue-100 */
+		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+		transform: translateY(-1px);
+	}
+
+	.dark .location-button:hover:not(:disabled) {
+		background-color: rgb(30 64 175); /* blue-800 */
+	}
+
+	.location-button:active:not(:disabled) {
+		background-color: rgb(191 219 254); /* blue-200 */
+		transform: scale(0.98);
+		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+	}
+
+	.dark .location-button:active:not(:disabled) {
+		background-color: rgb(29 78 216); /* blue-700 */
+	}
+
+	.toast-container {
+		animation: bounce-subtle 0.6s ease-in-out;
+	}
+
+	.toast-container:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+	}
 }
 
 /* Button Enhancement */
@@ -295,9 +361,12 @@
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.btn-primary:hover {
-	transform: translateY(-2px);
-	box-shadow: var(--shadow-strong);
+/* Only apply hover effects on devices that support proper hover */
+@media (hover: hover) {
+	.btn-primary:hover {
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-strong);
+	}
 }
 
 .btn-primary:active {
@@ -309,12 +378,21 @@
 	background: var(--gradient-surface);
 	border: 1px solid rgba(140, 71, 153, 0.08);
 	box-shadow: var(--shadow-soft);
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition:
+		background 0.3s ease,
+		box-shadow 0.3s ease,
+		transform 0.3s ease,
+		opacity 0.3s ease,
+		border 0.3s ease,
+		border-color 0.3s ease;
 }
 
-.card-modern:hover {
-	box-shadow: var(--shadow-medium);
-	transform: translateY(-2px);
+/* Only apply hover effects on devices that support proper hover */
+@media (hover: hover) {
+	.card-modern:hover {
+		box-shadow: var(--shadow-medium);
+		transform: translateY(-2px);
+	}
 }
 
 .dark .card-modern {

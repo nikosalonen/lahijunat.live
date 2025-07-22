@@ -51,25 +51,40 @@ const getCardStyle = (
 	isHighlighted: boolean,
 ) => {
 	const baseStyles =
-		"card-modern rounded-xl relative duration-[3000ms] hover-lift";
+		"card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300";
 
+	// Priority 1: Cancelled trains
 	if (isCancelled)
 		return `${baseStyles} bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-300 dark:border-red-800 shadow-lg`;
+
+	// Priority 2: Departed trains
 	if (minutesToDeparture !== null && minutesToDeparture < 0)
-		return `${baseStyles} bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 border-gray-300 dark:border-gray-600 opacity-0 transition-opacity`;
+		return `${baseStyles} bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 border-gray-300 dark:border-gray-600 opacity-0`;
+
+	// Priority 3: Highlighted + Departing soon (< 5 min) - Purple highlight with blinking
 	if (
+		isHighlighted &&
 		isDepartingSoon &&
-		!isCancelled &&
 		minutesToDeparture !== null &&
 		minutesToDeparture >= 0
 	) {
-		if (isHighlighted) {
-			return "card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity] duration-[3000ms] animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark";
-		}
+		return "card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300 !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring-4 ring-[#8c4799]/30 dark:ring-[#b388ff]/30 animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark";
+	}
+
+	// Priority 4: Highlighted (not departing soon) - Static purple highlight
+	if (isHighlighted)
+		return "card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300 bg-gradient-to-br from-[#f3e5f5] to-[#e8d5f0] dark:from-[#2d1a33] dark:to-[#1f0f26] !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring-4 ring-[#8c4799]/30 dark:ring-[#b388ff]/30 shadow-xl";
+
+	// Priority 5: Departing soon (not highlighted) - Regular blinking
+	if (
+		isDepartingSoon &&
+		minutesToDeparture !== null &&
+		minutesToDeparture >= 0
+	) {
 		return `${baseStyles} border-gray-300 dark:border-gray-600 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 animate-soft-blink dark:animate-soft-blink-dark`;
 	}
-	if (isHighlighted)
-		return "card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity] duration-[3000ms] bg-gradient-to-br from-[#f3e5f5] to-[#e8d5f0] dark:from-[#2d1a33] dark:to-[#1f0f26] !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring-4 ring-[#8c4799]/30 dark:ring-[#b388ff]/30 shadow-xl";
+
+	// Default case
 	return `${baseStyles} surface-elevated`;
 };
 
@@ -379,12 +394,12 @@ export default function TrainCard({
 							onClick={handleFavorite}
 							aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
 							type="button"
-							class="flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold focus:outline-none transition-transform duration-300 hover:scale-105 relative group border-none outline-none ring-0 touch-manipulation select-none min-h-[44px] min-w-[44px]"
+							class="flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold focus:outline-none transition-transform duration-300 train-button-hover relative group border-none outline-none ring-0 touch-manipulation select-none min-h-[44px] min-w-[44px]"
 							style={{ outline: "none", border: "none", boxShadow: "none" }}
 						>
 							<div class="relative">
 								<span
-									class={`h-14 w-14 sm:h-16 sm:w-16 rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 ${
+									class={`h-14 w-14 sm:h-16 sm:w-16 rounded-2xl flex items-center justify-center shadow-lg train-span-hover transition-all duration-300 ${
 										train.cancelled
 											? "bg-gradient-to-br from-red-500 to-red-600 text-white"
 											: "bg-[#8c4799] text-white"

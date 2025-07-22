@@ -440,10 +440,10 @@ export default function StationManager({
 						<button
 							type="button"
 							onClick={handleLocationRequest}
-							className={`flex-shrink-0 w-12 h-12 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 dark:active:bg-blue-700
-								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-xl hover-lift focus-ring
+							className={`flex-shrink-0 w-12 h-12 location-button
+								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-xl focus-ring
 								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
-								border border-blue-200 dark:border-blue-700 shadow-lg hover:shadow-xl active:shadow-lg active:scale-95
+								border border-blue-200 dark:border-blue-700 shadow-lg
 								touch-manipulation select-none
 								${isLocating ? "animate-bounce-subtle" : ""}`}
 							aria-label="Paikanna"
@@ -539,10 +539,10 @@ export default function StationManager({
 								}, 100);
 							}}
 							disabled={!selectedOrigin || !selectedDestination}
-							className="flex-shrink-0 w-12 h-12 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 dark:active:bg-blue-700
+							className="flex-shrink-0 w-12 h-12 location-button
 								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-xl
 								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
-								border border-blue-200 dark:border-blue-700 shadow-lg hover:shadow-xl active:shadow-lg active:scale-95
+								border border-blue-200 dark:border-blue-700 shadow-lg
 								touch-manipulation select-none"
 						>
 							<svg
