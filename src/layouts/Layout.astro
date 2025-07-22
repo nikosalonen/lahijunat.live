@@ -1,6 +1,6 @@
 ---
 interface Props {
-	title: string;
+  title: string;
 }
 
 import { Image } from "astro:assets";
@@ -161,13 +161,13 @@ import "../styles/global.css";
       registerSWUpdateHandler();
     </script>
   </head>
-  <body
-    class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
-  >
+  <body class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <div class="min-h-screen flex flex-col">
-      <nav class="py-4 bg-[#8c4799] w-full">
-        <div class="container mx-auto px-4">
-          <div class="flex flex-row items-center justify-between gap-4">
+      <nav class="py-5 sm:py-4 bg-[#8c4799] w-full shadow-lg">
+        <div class="container mx-auto px-4 sm:px-4">
+          <div
+            class="flex flex-row items-center justify-between gap-4 sm:gap-4"
+          >
             <a
               href="/"
               class="text-2xl font-bold text-white hover:text-blue-100 transition-colors"
@@ -190,7 +190,7 @@ import "../styles/global.css";
               <button
                 id="theme-toggle"
                 type="button"
-                class="text-white hover:text-blue-100 transition-colors"
+                class="text-white hover:text-blue-100 transition-colors p-3 sm:p-2 rounded-lg hover:bg-white/10 active:bg-white/20 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
                 aria-label="Toggle theme"
               >
                 <svg
@@ -230,10 +230,10 @@ import "../styles/global.css";
 
     <script>
       const themeToggleDarkIcon = document.getElementById(
-        "theme-toggle-dark-icon"
+        "theme-toggle-dark-icon",
       );
       const themeToggleLightIcon = document.getElementById(
-        "theme-toggle-light-icon"
+        "theme-toggle-light-icon",
       );
       const themeToggleBtn = document.getElementById("theme-toggle");
 

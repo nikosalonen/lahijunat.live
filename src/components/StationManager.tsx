@@ -440,10 +440,10 @@ export default function StationManager({
 						<button
 							type="button"
 							onClick={handleLocationRequest}
-							className={`flex-shrink-0 w-16 sm:w-12 h-12 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 dark:active:bg-blue-700
-								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-lg hover-lift focus-ring
+							className={`flex-shrink-0 w-12 h-12 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 dark:active:bg-blue-700
+								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-xl hover-lift focus-ring
 								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
-								border border-blue-200 dark:border-blue-700 shadow-sm hover:shadow-md active:shadow-lg active:scale-95
+								border border-blue-200 dark:border-blue-700 shadow-lg hover:shadow-xl active:shadow-lg active:scale-95
 								touch-manipulation select-none
 								${isLocating ? "animate-bounce-subtle" : ""}`}
 							aria-label="Paikanna"
@@ -539,10 +539,10 @@ export default function StationManager({
 								}, 100);
 							}}
 							disabled={!selectedOrigin || !selectedDestination}
-							className="flex-shrink-0 w-16 sm:w-12 h-12 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 dark:active:bg-blue-700
-								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-lg
+							className="flex-shrink-0 w-12 h-12 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 dark:active:bg-blue-700
+								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-xl
 								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
-								border border-blue-200 dark:border-blue-700 shadow-sm hover:shadow-md active:shadow-lg active:scale-95
+								border border-blue-200 dark:border-blue-700 shadow-lg hover:shadow-xl active:shadow-lg active:scale-95
 								touch-manipulation select-none"
 						>
 							<svg
@@ -586,7 +586,7 @@ export default function StationManager({
 						showHint !== null &&
 						showHint &&
 						isLocalStorageAvailable() && (
-							<div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
+							<div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-300 mt-1">
 								<p>{t("hint")}</p>
 								<button
 									type="button"
@@ -629,6 +629,10 @@ export default function StationManager({
 								setLocationError(null);
 								handleLocationRequest();
 							}}
+							onDismiss={() => {
+								setLocationError(null);
+							}}
+							showDismiss={true}
 							className="bg-red-50 dark:bg-red-900/20 rounded-lg"
 						/>
 					</div>

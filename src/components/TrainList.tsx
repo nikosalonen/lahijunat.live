@@ -1,7 +1,7 @@
 /** @format */
 
 import { memo } from "preact/compat";
-import { useCallback, useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import { fetchTrains } from "../utils/api";
@@ -185,6 +185,52 @@ export default function TrainList({
 	const fromStation = stations.find((s) => s.shortCode === stationCode);
 	const toStation = stations.find((s) => s.shortCode === destinationCode);
 
+	// Calculate duration comparison for color coding
+	const allTrainDurations = useMemo(() => {
+		return (state.trains || [])
+			.map((train) => {
+				const departureRow = train.timeTableRows.find(
+					(row) =>
+						row.stationShortCode === stationCode && row.type === "DEPARTURE",
+				);
+				const arrivalRow = train.timeTableRows.find(
+					(row) =>
+						row.stationShortCode === destinationCode && row.type === "ARRIVAL",
+				);
+
+				if (!departureRow || !arrivalRow) return null;
+
+				const arrivalTime =
+					arrivalRow.liveEstimateTime ?? arrivalRow.scheduledTime;
+				const departureTime =
+					departureRow.actualTime ?? departureRow.scheduledTime;
+
+				return Math.round(
+					(new Date(arrivalTime).getTime() -
+						new Date(departureTime).getTime()) /
+						(1000 * 60),
+				);
+			})
+			.filter((duration): duration is number => duration !== null)
+			.sort((a, b) => a - b);
+	}, [state.trains, stationCode, destinationCode]);
+
+	const getDurationSpeedType = useCallback(
+		(durationMinutes: number) => {
+			if (allTrainDurations.length < 2) return "normal";
+
+			const median =
+				allTrainDurations[Math.floor(allTrainDurations.length / 2)];
+			const fastThreshold = median * 0.85; // 15% faster than median
+			const slowThreshold = median * 1.15; // 15% slower than median
+
+			if (durationMinutes <= fastThreshold) return "fast";
+			if (durationMinutes >= slowThreshold) return "slow";
+			return "normal";
+		},
+		[allTrainDurations],
+	);
+
 	const displayedTrains = (state.trains || [])
 		.filter((train) => !departedTrains.has(train.trainNumber))
 		.slice(0, displayedTrainCount);
@@ -233,6 +279,7 @@ export default function TrainList({
 								destinationCode={destinationCode}
 								currentTime={currentTime}
 								onDepart={() => handleTrainDeparted(train.trainNumber)}
+								getDurationSpeedType={getDurationSpeedType}
 							/>
 						</div>
 					))}
