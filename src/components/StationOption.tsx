@@ -23,6 +23,7 @@ function StationOption({
 	};
 
 	return (
+		// biome-ignore lint/a11y/useSemanticElements: Custom dropdown uses button for interactivity, not a select option
 		<button
 			type="button"
 			id={`option-${index}`}
