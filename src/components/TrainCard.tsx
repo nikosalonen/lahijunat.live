@@ -394,7 +394,7 @@ export default function TrainCard({
 							onClick={handleFavorite}
 							aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
 							type="button"
-							class="flex-shrink-0 h-14 w-14 sm:h-12 sm:w-12 flex items-center justify-center text-xl font-bold focus:outline-none transition-all duration-200 hover:scale-105 active:scale-95 relative group border-none outline-none ring-0 touch-manipulation select-none min-h-[44px] min-w-[44px]"
+							class="flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold focus:outline-none transition-all duration-200 hover:scale-105 active:scale-95 relative group border-none outline-none ring-0 touch-manipulation select-none min-h-[44px] min-w-[44px]"
 							style={{ outline: "none", border: "none", boxShadow: "none" }}
 						>
 							{showTooltip && (
@@ -439,13 +439,13 @@ export default function TrainCard({
 							)}
 							<div class="relative">
 								<span
-									class={`h-14 w-14 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 ${
+									class={`h-14 w-14 sm:h-16 sm:w-16 rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 ${
 										train.cancelled
 											? "bg-gradient-to-br from-red-500 to-red-600 text-white"
 											: "bg-[#8c4799] text-white"
 									}`}
 								>
-									<span class="text-lg font-bold drop-shadow-lg">
+									<span class="text-lg sm:text-xl font-bold drop-shadow-lg">
 										{train.commuterLineID}
 									</span>
 								</span>
@@ -481,7 +481,7 @@ export default function TrainCard({
 								/>
 								{duration && (
 									<output
-										class={`text-sm font-medium flex items-center ${
+										class={`text-sm sm:text-base font-medium flex items-center ${
 											durationSpeedType === "fast"
 												? "text-green-600 dark:text-green-400"
 												: durationSpeedType === "slow"
@@ -517,14 +517,14 @@ export default function TrainCard({
 				{/* Track info and departure countdown */}
 				<div class="flex flex-col items-end gap-2 sm:gap-3">
 					{train.cancelled ? (
-						<span class="px-4 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm font-semibold shadow-lg">
+						<span class="px-4 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm sm:text-base font-semibold shadow-lg">
 							{t("cancelled")}
 						</span>
 					) : (
 						<>
 							<output
 								aria-label={`${t("track")} ${departureRow.commercialTrack}`}
-								class={`px-4 py-2 sm:px-4 sm:py-2 rounded-xl text-sm font-semibold shadow-lg transition-all duration-300 ${
+								class={`px-4 py-2 sm:px-4 sm:py-2 rounded-xl text-sm sm:text-base font-semibold shadow-lg transition-all duration-300 ${
 									isTrackChanged
 										? "bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 text-red-700 dark:text-red-300 ring-2 ring-red-500 dark:ring-red-400"
 										: "bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300"
@@ -536,7 +536,7 @@ export default function TrainCard({
 								minutesToDeparture <= 30 &&
 								minutesToDeparture >= 0 && (
 									<div
-										class={`flex items-center gap-2 px-3 py-2 rounded-xl font-semibold text-lg sm:text-lg shadow-lg transition-all duration-300 ${
+										class={`flex items-center gap-2 px-3 py-2 rounded-xl font-semibold text-lg sm:text-xl shadow-lg transition-all duration-300 ${
 											minutesToDeparture >= 0
 												? "bg-gradient-to-r from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 text-emerald-700 dark:text-emerald-300"
 												: "bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-600 dark:text-gray-300"
