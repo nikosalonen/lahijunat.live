@@ -22,6 +22,71 @@ const MemoizedTrainCard = memo(TrainCard);
 const INITIAL_TRAIN_COUNT = 15;
 const FADE_DURATION = 3000; // 3 seconds to match the animation duration
 
+// Adaptive refresh intervals
+const REFRESH_INTERVALS = {
+	URGENT: 15000, // 15 seconds - trains departing within 5 minutes
+	HIGH: 30000, // 30 seconds - trains departing within 15 minutes or late trains
+	MEDIUM: 45000, // 45 seconds - normal operations
+	LOW: 90000, // 90 seconds - no immediate trains
+} as const;
+
+// Calculate appropriate refresh interval based on train data
+function getAdaptiveRefreshInterval(
+	trains: Train[],
+	currentTime: Date,
+): number {
+	if (!trains.length) return REFRESH_INTERVALS.LOW;
+
+	const now = currentTime.getTime();
+	let hasUrgentTrains = false;
+	let hasImminentTrains = false;
+	let hasLateTrains = false;
+
+	for (const train of trains) {
+		const departureRow = train.timeTableRows.find(
+			(row) => row.type === "DEPARTURE",
+		);
+
+		if (!departureRow) continue;
+
+		const departureTime = new Date(
+			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+		).getTime();
+		const minutesToDeparture = Math.round((departureTime - now) / (1000 * 60));
+
+		// Check if train is late
+		const isLate = (departureRow.differenceInMinutes ?? 0) > 2;
+
+		if (minutesToDeparture > 0 && minutesToDeparture <= 5) {
+			hasUrgentTrains = true;
+		} else if (minutesToDeparture > 0 && minutesToDeparture <= 15) {
+			hasImminentTrains = true;
+		}
+
+		if (isLate && minutesToDeparture > 0 && minutesToDeparture <= 30) {
+			hasLateTrains = true;
+		}
+	}
+
+	if (hasUrgentTrains) return REFRESH_INTERVALS.URGENT;
+	if (hasImminentTrains || hasLateTrains) return REFRESH_INTERVALS.HIGH;
+
+	// Check if we have any trains in the next 30 minutes
+	const hasNearbyTrains = trains.some((train) => {
+		const departureRow = train.timeTableRows.find(
+			(row) => row.type === "DEPARTURE",
+		);
+		if (!departureRow) return false;
+		const departureTime = new Date(
+			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+		).getTime();
+		const minutesToDeparture = Math.round((departureTime - now) / (1000 * 60));
+		return minutesToDeparture > 0 && minutesToDeparture <= 30;
+	});
+
+	return hasNearbyTrains ? REFRESH_INTERVALS.MEDIUM : REFRESH_INTERVALS.LOW;
+}
+
 export default function TrainList({
 	stationCode,
 	destinationCode,
@@ -43,6 +108,9 @@ export default function TrainList({
 	const [displayedTrainCount, setDisplayedTrainCount] =
 		useState(INITIAL_TRAIN_COUNT);
 	const [departedTrains, setDepartedTrains] = useState<Set<string>>(new Set());
+	const [currentRefreshInterval, setCurrentRefreshInterval] = useState<number>(
+		REFRESH_INTERVALS.MEDIUM,
+	);
 
 	const loadTrains = useCallback(async () => {
 		try {
@@ -52,7 +120,18 @@ export default function TrainList({
 			setState((prev) => ({ ...prev, progress: 100 }));
 
 			const trainData = await fetchTrains(stationCode, destinationCode);
-			setCurrentTime(new Date());
+			const now = new Date();
+			setCurrentTime(now);
+
+			// Update refresh interval based on train data
+			const newRefreshInterval = getAdaptiveRefreshInterval(trainData, now);
+			if (newRefreshInterval !== currentRefreshInterval) {
+				console.log(
+					`[TrainList] Adaptive refresh: ${newRefreshInterval}ms (${newRefreshInterval / 1000}s)`,
+				);
+				setCurrentRefreshInterval(newRefreshInterval);
+			}
+
 			setState((prev) => ({
 				...prev,
 				trains: trainData,
@@ -142,17 +221,20 @@ export default function TrainList({
 		// Schedule next update at the next even second
 		const updateTimeout = setTimeout(() => {
 			loadTrains();
-			// Then set up regular interval
+			// Then set up adaptive interval based on train urgency
 			updateInterval = setInterval(() => {
 				loadTrains();
-			}, 30000); // 30 seconds
+			}, currentRefreshInterval);
 		}, getTimeUntilNextUpdate());
 
 		// Progress bar update interval
 		const progressInterval = setInterval(() => {
 			setState((prev) => ({
 				...prev,
-				progress: Math.max(0, prev.progress - 100 / 30),
+				progress: Math.max(
+					0,
+					prev.progress - 100 / (currentRefreshInterval / 1000),
+				),
 			}));
 		}, 1000); // Update progress every second
 
@@ -163,7 +245,7 @@ export default function TrainList({
 			clearInterval(progressInterval);
 			clearInterval(timeUpdateInterval);
 		};
-	}, [loadTrains]);
+	}, [loadTrains, currentRefreshInterval]);
 
 	if (state.loading && state.initialLoad) {
 		return <TrainListSkeleton />;
