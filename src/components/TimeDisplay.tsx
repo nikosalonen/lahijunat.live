@@ -20,7 +20,7 @@ const TimeDisplay = ({
 	return useMemo(
 		() => (
 			<span
-				class={`text-xl sm:text-2xl font-medium ${isCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} break-words min-w-0 relative pt-8 sm:pt-6 max-w-full overflow-hidden`}
+				class={`text-xl sm:text-2xl font-medium ${isCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} min-w-0 relative pt-8 sm:pt-6`}
 			>
 				{departureRow.liveEstimateTime &&
 				timeDifferenceMinutes > 0 &&
