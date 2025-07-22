@@ -83,15 +83,15 @@ async function makeRequestWithBackoff(
 				throw new Error("Rate limit exceeded. Please try again later.");
 			}
 
-			const delay = Math.min(
+			const delayMs = Math.min(
 				RATE_LIMIT_CONFIG.BASE_DELAY * 2 ** retryCount,
 				RATE_LIMIT_CONFIG.MAX_DELAY,
 			);
 
 			console.log(
-				`[API] Rate limited, retrying in ${delay}ms (attempt ${retryCount + 1})`,
+				`[API] Rate limited, retrying in ${delayMs}ms (attempt ${retryCount + 1})`,
 			);
-			await new Promise((resolve) => setTimeout(resolve, delay));
+			await delay(delayMs);
 
 			return makeRequestWithBackoff(requestFn, retryCount + 1);
 		}
@@ -99,14 +99,14 @@ async function makeRequestWithBackoff(
 		return response;
 	} catch (error) {
 		if (retryCount < RATE_LIMIT_CONFIG.RETRY_COUNT) {
-			const delay = Math.min(
+			const delayMs = Math.min(
 				RATE_LIMIT_CONFIG.BASE_DELAY * 2 ** retryCount,
 				RATE_LIMIT_CONFIG.MAX_DELAY,
 			);
 			console.log(
-				`[API] Request failed, retrying in ${delay}ms (attempt ${retryCount + 1})`,
+				`[API] Request failed, retrying in ${delayMs}ms (attempt ${retryCount + 1})`,
 			);
-			await new Promise((resolve) => setTimeout(resolve, delay));
+			await delay(delayMs);
 			return makeRequestWithBackoff(requestFn, retryCount + 1);
 		}
 		throw error;
@@ -811,7 +811,7 @@ export async function findStationsWithoutDestinations(): Promise<void> {
 				console.log(
 					`Checking station ${station.name} (${station.shortCode})...`,
 				);
-				await delay(15000); // 10 second delay between requests
+				await delay(15000); // 15 second delay between requests
 				const destinations = await fetchTrainsLeavingFromStation(
 					station.shortCode,
 				);
