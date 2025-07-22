@@ -3,10 +3,10 @@
 exports[`TimeDisplay > renders on-time train correctly 1`] = `
 <div>
   <span
-    class="text-lg font-medium text-gray-800 dark:text-gray-200 break-words min-w-0 relative pt-6"
+    class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-100 min-w-0 relative pt-8 sm:pt-6"
   >
     <span
-      class="whitespace-nowrap text-gray-600 dark:text-gray-500"
+      class="text-gray-600 dark:text-gray-300 text-lg sm:text-lg whitespace-nowrap overflow-hidden text-ellipsis"
     >
        
       <time
@@ -28,10 +28,10 @@ exports[`TimeDisplay > renders on-time train correctly 1`] = `
 exports[`TimeDisplay > renders without arrival row 1`] = `
 <div>
   <span
-    class="text-lg font-medium text-gray-800 dark:text-gray-200 break-words min-w-0 relative pt-6"
+    class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-100 min-w-0 relative pt-8 sm:pt-6"
   >
     <span
-      class="whitespace-nowrap text-gray-600 dark:text-gray-500"
+      class="text-gray-600 dark:text-gray-300 text-lg sm:text-lg whitespace-nowrap overflow-hidden text-ellipsis"
     >
        
       <time

@@ -19,7 +19,8 @@ export default function TrainListSkeleton({ count = 5 }: Props) {
 			<div class="grid auto-rows-fr gap-4 px-2">
 				{Array.from({ length: count }, (_, index) => (
 					<div
-						key={`train-skeleton-${index}`}
+						// biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton items that don't reorder
+						key={`train-skeleton-item-${index}`}
 						class={`stagger-${Math.min(index + 1, 5)}`}
 					>
 						<TrainCardSkeleton />

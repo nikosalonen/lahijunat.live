@@ -16,7 +16,7 @@ export default function LoadingSpinner() {
 					aria-hidden="true"
 				/>
 			</div>
-			<div className="mt-4 text-gray-600 dark:text-gray-300 animate-bounce-subtle text-center">
+			<div className="mt-4 text-gray-600 dark:text-gray-200 animate-bounce-subtle text-center">
 				{t("loading")}
 			</div>
 			<span className="sr-only">{t("loading")}</span>

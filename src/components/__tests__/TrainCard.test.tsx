@@ -19,8 +19,6 @@ vi.mock("../../utils/translations", () => ({
 			departingSoon: "Lähtee pian",
 			favorite: "favorite",
 			unfavorite: "unfavorite",
-			closeTooltip: "Sulje suosikkivihje",
-			favoriteTooltip: "Klikkaa suosikiksi ja korosta juna listassa",
 			cancelled: "Peruttu",
 		};
 		return translations[key] || key;
@@ -144,7 +142,7 @@ describe("TrainCard", () => {
 			<TrainCard {...defaultProps} train={cancelledTrain} />,
 		);
 
-		expect(container.firstChild).toHaveClass("bg-red-50");
+		expect(container.firstChild).toHaveClass("from-red-50");
 	});
 
 	it("handles favorite button click to highlight train", () => {

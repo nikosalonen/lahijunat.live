@@ -57,7 +57,9 @@ describe("ErrorState", () => {
 	it("renders location error correctly", () => {
 		render(<ErrorState type="location" />);
 
-		expect(screen.getByText("Location Error")).toBeInTheDocument();
+		expect(
+			screen.getByRole("heading", { name: "Location Error" }),
+		).toBeInTheDocument();
 		expect(
 			screen.getByText(
 				"Could not determine location. Check location settings.",

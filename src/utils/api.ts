@@ -16,9 +16,102 @@ const DEFAULT_HEADERS = {
 const CACHE_CONFIG = {
 	STATION_DURATION: 60 * 60 * 1000, // 1 hour
 	STATION_KEY: "stations",
-	TRAIN_DURATION: 10 * 1000, // 10 seconds
+	TRAIN_DURATION: 2 * 60 * 1000, // 2 minutes (shorter for real-time updates)
+	TRAIN_DURATION_URGENT: 30 * 1000, // 30 seconds for imminent trains
+	DESTINATION_DURATION: 5 * 60 * 1000, // 5 minutes for destination cache
 	MAX_SIZE: 100, // Maximum number of entries in the cache
 } as const;
+
+// Rate limiting configuration
+const RATE_LIMIT_CONFIG = {
+	MAX_CONCURRENT_REQUESTS: 3,
+	BASE_DELAY: 1000, // 1 second base delay
+	MAX_DELAY: 30000, // 30 seconds max delay
+	RETRY_COUNT: 3,
+} as const;
+
+// Global request tracking
+let activeRequests = 0;
+let lastRequestTime = 0;
+const pendingRequests = new Map<string, Promise<unknown>>();
+
+// Request deduplication and rate limiting
+async function makeRateLimitedRequest<T>(
+	key: string,
+	requestFn: () => Promise<T>,
+): Promise<T> {
+	// Check if this exact request is already in progress
+	if (pendingRequests.has(key)) {
+		console.log(`[API] Deduplicating request: ${key}`);
+		return pendingRequests.get(key) as Promise<T>;
+	}
+
+	// Wait if we have too many concurrent requests
+	while (activeRequests >= RATE_LIMIT_CONFIG.MAX_CONCURRENT_REQUESTS) {
+		await delay(100);
+	}
+
+	// Ensure minimum delay between requests
+	const timeSinceLastRequest = Date.now() - lastRequestTime;
+	const minInterval = 500; // 500ms minimum between requests
+	if (timeSinceLastRequest < minInterval) {
+		await delay(minInterval - timeSinceLastRequest);
+	}
+
+	activeRequests++;
+	lastRequestTime = Date.now();
+
+	const requestPromise = requestFn().finally(() => {
+		activeRequests--;
+		pendingRequests.delete(key);
+	});
+
+	pendingRequests.set(key, requestPromise);
+	return requestPromise;
+}
+
+// Exponential backoff for 429 errors
+async function makeRequestWithBackoff(
+	requestFn: () => Promise<Response>,
+	retryCount = 0,
+): Promise<Response> {
+	try {
+		const response = await requestFn();
+
+		if (response.status === 429) {
+			if (retryCount >= RATE_LIMIT_CONFIG.RETRY_COUNT) {
+				throw new Error("Rate limit exceeded. Please try again later.");
+			}
+
+			const delayMs = Math.min(
+				RATE_LIMIT_CONFIG.BASE_DELAY * 2 ** retryCount,
+				RATE_LIMIT_CONFIG.MAX_DELAY,
+			);
+
+			console.log(
+				`[API] Rate limited, retrying in ${delayMs}ms (attempt ${retryCount + 1})`,
+			);
+			await delay(delayMs);
+
+			return makeRequestWithBackoff(requestFn, retryCount + 1);
+		}
+
+		return response;
+	} catch (error) {
+		if (retryCount < RATE_LIMIT_CONFIG.RETRY_COUNT) {
+			const delayMs = Math.min(
+				RATE_LIMIT_CONFIG.BASE_DELAY * 2 ** retryCount,
+				RATE_LIMIT_CONFIG.MAX_DELAY,
+			);
+			console.log(
+				`[API] Request failed, retrying in ${delayMs}ms (attempt ${retryCount + 1})`,
+			);
+			await delay(delayMs);
+			return makeRequestWithBackoff(requestFn, retryCount + 1);
+		}
+		throw error;
+	}
+}
 
 interface CacheEntry<T> {
 	data: T;
@@ -60,6 +153,21 @@ function getCachedStations(): Station[] | null {
 
 // Cache for train data
 const trainCache = new Map<string, CacheEntry<Train[]>>();
+
+// Cache for destination data
+const destinationCache = new Map<string, CacheEntry<Station[]>>();
+
+function getCachedDestinations(stationCode: string): Station[] | null {
+	const cached = destinationCache.get(stationCode);
+	if (!cached) return null;
+
+	if (Date.now() - cached.timestamp > CACHE_CONFIG.DESTINATION_DURATION) {
+		destinationCache.delete(stationCode);
+		return null;
+	}
+
+	return cached.data;
+}
 
 // Cleanup function to prevent cache from growing too large
 function cleanupCache<T>(cache: Map<string, CacheEntry<T>>): void {
@@ -231,12 +339,14 @@ export async function fetchStations(): Promise<Station[]> {
 	const cached = getCachedStations();
 	if (cached) return cached;
 
-	try {
-		const response = await fetch(ENDPOINTS.GRAPHQL, {
-			method: "POST",
-			headers: DEFAULT_HEADERS,
-			body: JSON.stringify({ query: STATION_QUERY }),
-		});
+	return makeRateLimitedRequest("stations", async () => {
+		const response = await makeRequestWithBackoff(() =>
+			fetch(ENDPOINTS.GRAPHQL, {
+				method: "POST",
+				headers: DEFAULT_HEADERS,
+				body: JSON.stringify({ query: STATION_QUERY }),
+			}),
+		);
 
 		if (!response.ok) {
 			throw new Error(`Failed to fetch stations: ${response.statusText}`);
@@ -271,22 +381,28 @@ export async function fetchStations(): Promise<Station[]> {
 		});
 		cleanupCache(stationCache);
 		return stations;
-	} catch (error) {
-		console.error("Error fetching stations:", error);
-		throw error;
-	}
+	});
 }
 
 // Optimized fetchTrainsLeavingFromStation with better error handling and data processing
 export async function fetchTrainsLeavingFromStation(
 	stationCode: string,
 ): Promise<Station[]> {
-	try {
+	// Check cache first
+	const cached = getCachedDestinations(stationCode);
+	if (cached) {
+		console.log(`[API] Using cached destinations for ${stationCode}`);
+		return cached;
+	}
+
+	return makeRateLimitedRequest(`destinations-${stationCode}`, async () => {
 		console.log(`[API] Fetching trains from station: ${stationCode}`);
 		const url = `${ENDPOINTS.LIVE_TRAINS}/${stationCode}?arrived_trains=100&arriving_trains=100&departed_trains=100&departing_trains=100&include_nonstopping=false&train_categories=Commuter`;
 		console.log(`[API] Request URL: ${url}`);
 
-		const response = await fetch(url, { headers: DEFAULT_HEADERS });
+		const response = await makeRequestWithBackoff(() =>
+			fetch(url, { headers: DEFAULT_HEADERS }),
+		);
 
 		console.log(
 			`[API] Response status: ${response.status} ${response.statusText}`,
@@ -324,9 +440,11 @@ export async function fetchTrainsLeavingFromStation(
 			`[API] Found ${shortCodes.size} unique destination stations for ${stationCode}`,
 		);
 
-		// Fetch station details in parallel
+		// Fetch station details with rate limiting
 		console.log(`[API] Fetching station details from: ${ENDPOINTS.STATIONS}`);
-		const stationsResponse = await fetch(ENDPOINTS.STATIONS);
+		const stationsResponse = await makeRequestWithBackoff(() =>
+			fetch(ENDPOINTS.STATIONS),
+		);
 
 		console.log(
 			`[API] Stations response status: ${stationsResponse.status} ${stationsResponse.statusText}`,
@@ -357,7 +475,7 @@ export async function fetchTrainsLeavingFromStation(
 			`[API] Filtered to ${filteredStations.length} valid destination stations for ${stationCode}`,
 		);
 
-		return filteredStations.map(
+		const result = filteredStations.map(
 			(station: RESTStation): Station => ({
 				name: station.stationName.replace(" asema", ""),
 				shortCode: station.stationShortCode,
@@ -367,13 +485,16 @@ export async function fetchTrainsLeavingFromStation(
 				},
 			}),
 		);
-	} catch (error) {
-		console.error(
-			`[API] Error fetching trains from station ${stationCode}:`,
-			error,
-		);
-		throw error;
-	}
+
+		// Cache the result
+		destinationCache.set(stationCode, {
+			data: result,
+			timestamp: Date.now(),
+		});
+		cleanupCache(destinationCache);
+
+		return result;
+	});
 }
 
 // Optimized fetchTrains with better error handling and data processing
@@ -381,77 +502,77 @@ export async function fetchTrains(
 	stationCode = "HKI",
 	destinationCode = "TKL",
 ): Promise<Train[]> {
-	try {
-		// Check cache first
-		const cached = getCachedTrains(stationCode, destinationCode);
-		if (cached) {
-			console.log("Using cached train data");
-			return cached;
-		}
+	// Check cache first
+	const cached = getCachedTrains(stationCode, destinationCode);
+	if (cached) {
+		console.log("Using cached train data");
+		return cached;
+	}
 
-		const params = new URLSearchParams({
-			limit: "100",
-			startDate: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
-			endDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-		});
+	return makeRateLimitedRequest(
+		`trains-${stationCode}-${destinationCode}`,
+		async () => {
+			const params = new URLSearchParams({
+				limit: "100",
+				startDate: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
+				endDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+			});
 
-		const url = `${ENDPOINTS.LIVE_TRAINS}/${stationCode}/${destinationCode}?${params}`;
-		console.log("Fetching trains from URL:", url);
+			const url = `${ENDPOINTS.LIVE_TRAINS}/${stationCode}/${destinationCode}?${params}`;
+			console.log("Fetching trains from URL:", url);
 
-		const response = await fetch(url, {
-			headers: DEFAULT_HEADERS,
-		});
+			const response = await makeRequestWithBackoff(() =>
+				fetch(url, {
+					headers: DEFAULT_HEADERS,
+				}),
+			);
 
-		if (!response.ok) {
-			if (response.status === 429) {
-				// Too Many Requests
-				console.log("Rate limit hit, using cached data if available");
-				const cached = getCachedTrains(stationCode, destinationCode);
-				if (cached) return cached;
+			if (!response.ok) {
+				const errorText = await response.text();
+				console.error("API Error Response:", {
+					status: response.status,
+					statusText: response.statusText,
+					body: errorText,
+				});
 				throw new Error(
-					"Rate limit exceeded. Please try again in a few seconds.",
+					`Failed to fetch trains: ${response.status} ${response.statusText}`,
 				);
 			}
-			const errorText = await response.text();
-			console.error("API Error Response:", {
-				status: response.status,
-				statusText: response.statusText,
-				body: errorText,
-			});
-			throw new Error(
-				`Failed to fetch trains: ${response.status} ${response.statusText}`,
+
+			const data = await response.json();
+
+			if (!Array.isArray(data)) {
+				console.error("Invalid API response format:", data);
+				throw new Error("Invalid API response format: expected an array");
+			}
+
+			console.log(`Received ${data.length} trains from API`);
+			const processedData = processTrainData(
+				data,
+				stationCode,
+				destinationCode,
 			);
-		}
+			console.log(`Processed ${processedData.length} valid trains`);
 
-		const data = await response.json();
+			// Cache the processed data
+			trainCache.set(`${stationCode}-${destinationCode}`, {
+				data: processedData,
+				timestamp: Date.now(),
+			});
+			cleanupCache(trainCache);
 
-		if (!Array.isArray(data)) {
-			console.error("Invalid API response format:", data);
-			throw new Error("Invalid API response format: expected an array");
-		}
-
-		console.log(`Received ${data.length} trains from API`);
-		const processedData = processTrainData(data, stationCode, destinationCode);
-		console.log(`Processed ${processedData.length} valid trains`);
-
-		// Cache the processed data
-		trainCache.set(`${stationCode}-${destinationCode}`, {
-			data: processedData,
-			timestamp: Date.now(),
-		});
-		cleanupCache(trainCache);
-
-		return processedData;
-	} catch (error) {
+			return processedData;
+		},
+	).catch(async (error) => {
 		console.error("Error fetching trains:", error);
 		// If we have cached data, return it even if it's expired
-		const cached = getCachedTrains(stationCode, destinationCode);
-		if (cached) {
+		const cachedFallback = getCachedTrains(stationCode, destinationCode);
+		if (cachedFallback) {
 			console.log("Using expired cached data due to error");
-			return cached;
+			return cachedFallback;
 		}
 		throw error;
-	}
+	});
 }
 
 // Separate data processing logic for better maintainability
@@ -690,7 +811,7 @@ export async function findStationsWithoutDestinations(): Promise<void> {
 				console.log(
 					`Checking station ${station.name} (${station.shortCode})...`,
 				);
-				await delay(15000); // 10 second delay between requests
+				await delay(15000); // 15 second delay between requests
 				const destinations = await fetchTrainsLeavingFromStation(
 					station.shortCode,
 				);

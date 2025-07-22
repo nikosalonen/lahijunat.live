@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
-import { hapticImpact, hapticLight } from "../utils/haptics";
+import { hapticImpact } from "../utils/haptics";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
 
@@ -13,6 +13,9 @@ interface Props {
 	destinationCode: string;
 	currentTime: Date;
 	onDepart?: () => void;
+	getDurationSpeedType?: (
+		durationMinutes: number,
+	) => "fast" | "slow" | "normal";
 }
 
 const calculateDuration = (start: string, end: string) => {
@@ -48,12 +51,12 @@ const getCardStyle = (
 	isHighlighted: boolean,
 ) => {
 	const baseStyles =
-		"border rounded-lg shadow-sm hover:shadow-md relative duration-[3000ms]";
+		"card-modern rounded-xl relative duration-[3000ms] hover-lift";
 
 	if (isCancelled)
-		return `${baseStyles} bg-red-50 dark:bg-red-950 border-red-300 dark:border-red-800`;
+		return `${baseStyles} bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-300 dark:border-red-800 shadow-lg`;
 	if (minutesToDeparture !== null && minutesToDeparture < 0)
-		return `${baseStyles} bg-gray-200 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-0 transition-opacity`;
+		return `${baseStyles} bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 border-gray-300 dark:border-gray-600 opacity-0 transition-opacity`;
 	if (
 		isDepartingSoon &&
 		!isCancelled &&
@@ -61,13 +64,13 @@ const getCardStyle = (
 		minutesToDeparture >= 0
 	) {
 		if (isHighlighted) {
-			return `${baseStyles} animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark`;
+			return "card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity] duration-[3000ms] animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark";
 		}
-		return `${baseStyles} border-gray-300 dark:border-gray-600 dark:bg-gray-950 animate-soft-blink dark:animate-soft-blink-dark`;
+		return `${baseStyles} border-gray-300 dark:border-gray-600 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 animate-soft-blink dark:animate-soft-blink-dark`;
 	}
 	if (isHighlighted)
-		return `${baseStyles} bg-[#f3e5f5] dark:bg-[#2d1a33] border-[#8c4799] dark:border-[#b388ff] ring-2 ring-[#8c4799] dark:ring-[#b388ff]`;
-	return `${baseStyles} bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600`;
+		return "card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity] duration-[3000ms] bg-gradient-to-br from-[#f3e5f5] to-[#e8d5f0] dark:from-[#2d1a33] dark:to-[#1f0f26] !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring-4 ring-[#8c4799]/30 dark:ring-[#b388ff]/30 shadow-xl";
+	return `${baseStyles} surface-elevated`;
 };
 
 export default function TrainCard({
@@ -76,6 +79,7 @@ export default function TrainCard({
 	destinationCode,
 	currentTime,
 	onDepart,
+	getDurationSpeedType,
 }: Props) {
 	const [, setLanguageChange] = useState(0);
 	const [isHighlighted, setIsHighlighted] = useState(false);
@@ -84,7 +88,6 @@ export default function TrainCard({
 	const [trackMemory, setTrackMemory] = useState<
 		Record<string, { track: string; timestamp: number }>
 	>({});
-	const [showTooltip, setShowTooltip] = useState(false);
 
 	// Memoize all time-dependent calculations
 	const {
@@ -94,6 +97,7 @@ export default function TrainCard({
 		departingSoon,
 		timeDifferenceMinutes,
 		duration,
+		durationSpeedType,
 		cardStyle,
 	} = useMemo(() => {
 		const departureRow = train.timeTableRows.find(
@@ -138,6 +142,11 @@ export default function TrainCard({
 				)
 			: null;
 
+		const durationSpeedType =
+			duration && getDurationSpeedType
+				? getDurationSpeedType(duration.hours * 60 + duration.minutes)
+				: "normal";
+
 		const cardStyle = getCardStyle(
 			train.cancelled,
 			minutesToDeparture,
@@ -152,23 +161,17 @@ export default function TrainCard({
 			departingSoon,
 			timeDifferenceMinutes,
 			duration,
+			durationSpeedType,
 			cardStyle,
 		};
-	}, [train, stationCode, destinationCode, currentTime, isHighlighted]);
-
-	// Check if user has seen the tooltip before
-	useEffect(() => {
-		const hasSeenTooltip = localStorage.getItem("hasSeenFavoriteTooltip");
-		if (
-			!hasSeenTooltip &&
-			!train.cancelled &&
-			minutesToDeparture !== null &&
-			minutesToDeparture > 0
-		) {
-			setShowTooltip(true);
-			localStorage.setItem("hasSeenFavoriteTooltip", "true");
-		}
-	}, [train.cancelled, minutesToDeparture]);
+	}, [
+		train,
+		stationCode,
+		destinationCode,
+		currentTime,
+		isHighlighted,
+		getDurationSpeedType,
+	]);
 
 	// Call onDepart when the train transitions from not departed to departed
 	useEffect(() => {
@@ -365,99 +368,57 @@ export default function TrainCard({
 
 	return (
 		<div
-			class={`p-2 sm:p-4 ${cardStyle} w-full text-left relative`}
+			class={`p-3 sm:p-4 ${cardStyle} w-full max-w-full text-left relative overflow-hidden`}
 			style={{ opacity: hasDeparted ? opacity : 1 }}
 		>
-			<div class="flex items-center justify-between">
-				<div class="flex items-center gap-4 flex-1 min-w-0">
+			<div class="flex items-start justify-between gap-2 sm:gap-4">
+				<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
 					{/* Train identifier */}
 					{train.commuterLineID && (
 						<button
 							onClick={handleFavorite}
 							aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
 							type="button"
-							class="flex-shrink-0 h-12 w-12 flex items-center justify-center text-xl font-bold focus:outline-none transition-all duration-150 hover:scale-110 active:scale-95 relative group border-none outline-none ring-0 touch-manipulation select-none"
+							class="flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold focus:outline-none transition-all duration-200 hover:scale-105 active:scale-95 relative group border-none outline-none ring-0 touch-manipulation select-none min-h-[44px] min-w-[44px]"
 							style={{ outline: "none", border: "none", boxShadow: "none" }}
 						>
-							{showTooltip && (
-								<button
-									type="button"
-									class="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full bg-[#6b2c75] text-white text-sm px-3 py-2 rounded-lg shadow-lg border-2 border-white whitespace-normal break-words max-w-xs max-w-[90vw] text-center z-50 cursor-pointer transition-all duration-150 active:scale-95 touch-manipulation select-none"
-									onClick={(e) => {
-										e.stopPropagation();
-										hapticLight();
-										setShowTooltip(false);
-									}}
-									onKeyDown={(e) => {
-										if (e.key === "Enter" || e.key === " ") {
-											e.stopPropagation();
-											setShowTooltip(false);
-										}
-									}}
-									tabIndex={0}
-									aria-label={t("closeTooltip")}
-								>
-									<div class="flex items-center gap-2">
-										<span>{t("favoriteTooltip")}</span>
-									</div>
-									{/* Arrow */}
-									<div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-3 h-3 z-10">
-										<svg width="100%" height="100%" viewBox="0 0 12 12">
-											<title>Tooltip arrow</title>
-											<rect
-												x="2"
-												y="2"
-												width="8"
-												height="8"
-												rx="2"
-												fill="#6b2c75"
-												stroke="white"
-												strokeWidth="2"
-												transform="rotate(45 6 6)"
-											/>
-										</svg>
-									</div>
-								</button>
-							)}
-							{isHighlighted ? (
+							<div class="relative">
 								<span
-									class={`h-12 w-12 rounded-full flex items-center justify-center relative border-2 ${
-										train.cancelled ? "border-[#d4004d]" : "border-[#8c4799]"
-									} bg-transparent`}
+									class={`h-14 w-14 sm:h-16 sm:w-16 rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 ${
+										train.cancelled
+											? "bg-gradient-to-br from-red-500 to-red-600 text-white"
+											: "bg-[#8c4799] text-white"
+									}`}
 								>
-									<svg
-										viewBox="0 0 48 48"
-										class="w-11 h-11"
-										fill={train.cancelled ? "#d4004d" : "#8c4799"}
-										stroke={train.cancelled ? "#d4004d" : "#8c4799"}
-									>
-										<title>
-											{isHighlighted ? t("favorite") : t("unfavorite")}
-										</title>
-										<polygon points="24,3 30.9,17.8 47,18.6 34,29.7 38.2,45 24,36.6 9.8,45 14,29.7 1,18.6 17.1,17.8" />
-									</svg>
-									<span class="absolute inset-0 flex items-center justify-center text-white text-xl font-bold pointer-events-none">
+									<span class="text-lg sm:text-xl font-bold drop-shadow-lg">
 										{train.commuterLineID}
 									</span>
 								</span>
-							) : (
-								<span
-									class={`h-12 w-12 rounded-full flex items-center justify-center ${
-										train.cancelled
-											? "bg-[#d4004d] text-white"
-											: "bg-[#6b2c75] text-white"
-									}`}
-								>
-									{train.commuterLineID}
-								</span>
-							)}
+								{isHighlighted && (
+									<div class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
+										<svg
+											class="w-3 h-3 text-white"
+											fill="currentColor"
+											viewBox="0 0 20 20"
+											aria-hidden="true"
+										>
+											<title>Favorite</title>
+											<path
+												fill-rule="evenodd"
+												d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+												clip-rule="evenodd"
+											/>
+										</svg>
+									</div>
+								)}
+							</div>
 						</button>
 					)}
 
 					{/* Main train info */}
-					<div class="space-y-2 min-w-0 flex-1">
+					<div class="space-y-2 sm:space-y-1 min-w-0 flex-1 overflow-hidden">
 						<div class="flex flex-col gap-1">
-							<div class="flex flex-col gap-2">
+							<div class="flex flex-col gap-2 sm:gap-1">
 								<TimeDisplay
 									departureRow={departureRow}
 									arrivalRow={arrivalRow}
@@ -465,7 +426,13 @@ export default function TrainCard({
 								/>
 								{duration && (
 									<output
-										class="text-sm text-gray-500 dark:text-gray-400"
+										class={`text-sm sm:text-base font-medium flex items-center truncate ${
+											durationSpeedType === "fast"
+												? "text-green-600 dark:text-green-400"
+												: durationSpeedType === "slow"
+													? "text-orange-600 dark:text-orange-400"
+													: "text-gray-500 dark:text-gray-300"
+										}`}
 										aria-label={`${t("duration")} ${duration.hours} ${t(
 											"hours",
 										)} ${duration.minutes} ${t("minutes")}`}
@@ -493,35 +460,35 @@ export default function TrainCard({
 				</div>
 
 				{/* Track info and departure countdown */}
-				<div class="flex flex-col items-end gap-2">
+				<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0">
 					{train.cancelled ? (
-						<span class="px-3 py-1 bg-[#d4004d] text-white rounded-md text-sm font-medium shadow-sm">
+						<span class="px-4 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm sm:text-base font-semibold shadow-lg">
 							{t("cancelled")}
 						</span>
 					) : (
 						<>
 							<output
 								aria-label={`${t("track")} ${departureRow.commercialTrack}`}
-								class={`px-3 py-1 ${
+								class={`px-4 py-2 sm:px-4 sm:py-2 rounded-xl text-sm sm:text-base font-semibold shadow-lg transition-all duration-300 ${
 									isTrackChanged
-										? "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300"
-										: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-								} rounded-md text-sm font-medium shadow-sm`}
+										? "bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 text-red-700 dark:text-red-300 ring-2 ring-red-500 dark:ring-red-400"
+										: "bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300"
+								}`}
 							>
 								{t("track")} {departureRow.commercialTrack}
 							</output>
 							{minutesToDeparture !== null &&
 								minutesToDeparture <= 30 &&
 								minutesToDeparture >= 0 && (
-									<span
-										class={`font-medium text-lg mt-2 ${
+									<div
+										class={`flex items-center gap-2 px-3 py-2 rounded-xl font-semibold text-lg sm:text-xl shadow-lg transition-all duration-300 ${
 											minutesToDeparture >= 0
-												? "text-[#007549] dark:text-[#00e38f]"
-												: "text-gray-600 dark:text-gray-400"
+												? "bg-gradient-to-r from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 text-emerald-700 dark:text-emerald-300"
+												: "bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-600 dark:text-gray-300"
 										}`}
 									>
 										<svg
-											class="w-5 h-5 inline-block mr-1 -mt-1"
+											class="w-5 h-5"
 											fill="none"
 											stroke="currentColor"
 											viewBox="0 0 24 24"
@@ -541,10 +508,12 @@ export default function TrainCard({
 												fill="none"
 											/>
 										</svg>
-										{minutesToDeparture === 0
-											? "0 min"
-											: `${minutesToDeparture} min`}
-									</span>
+										<span>
+											{minutesToDeparture === 0
+												? "0 min"
+												: `${minutesToDeparture} min`}
+										</span>
+									</div>
 								)}
 						</>
 					)}

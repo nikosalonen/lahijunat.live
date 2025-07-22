@@ -42,12 +42,6 @@ export default function Footer() {
 				</p>
 				<div class="flex items-center justify-center gap-4">
 					<a
-						href="/changelog"
-						class="text-white hover:text-blue-100 transition-colors"
-					>
-						{t("changelog")}
-					</a>
-					<a
 						href="https://github.com/nikosalonen/lahijunat.live"
 						class="text-white hover:text-blue-100 transition-colors flex items-center gap-2"
 						target="_blank"

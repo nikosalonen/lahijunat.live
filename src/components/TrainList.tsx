@@ -1,7 +1,7 @@
 /** @format */
 
 import { memo } from "preact/compat";
-import { useCallback, useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import { fetchTrains } from "../utils/api";
@@ -21,6 +21,90 @@ interface Props {
 const MemoizedTrainCard = memo(TrainCard);
 const INITIAL_TRAIN_COUNT = 15;
 const FADE_DURATION = 3000; // 3 seconds to match the animation duration
+
+// Adaptive refresh intervals
+const REFRESH_INTERVALS = {
+	URGENT: 15000, // 15 seconds - trains departing within 5 minutes
+	HIGH: 30000, // 30 seconds - trains departing within 15 minutes or late trains
+	MEDIUM: 45000, // 45 seconds - normal operations
+	LOW: 90000, // 90 seconds - no immediate trains
+} as const;
+
+// Urgency thresholds (in minutes)
+const URGENCY_THRESHOLDS = {
+	URGENT: 5, // Trains departing within 5 minutes
+	IMMINENT: 15, // Trains departing within 15 minutes
+	NEARBY: 30, // Trains departing within 30 minutes
+} as const;
+
+// Calculate appropriate refresh interval based on train data
+function getAdaptiveRefreshInterval(
+	trains: Train[],
+	currentTime: Date,
+): number {
+	if (!trains || !trains.length) return REFRESH_INTERVALS.LOW;
+
+	const now = currentTime.getTime();
+	let hasUrgentTrains = false;
+	let hasImminentTrains = false;
+	let hasLateTrains = false;
+
+	for (const train of trains) {
+		const departureRow = train.timeTableRows.find(
+			(row) => row.type === "DEPARTURE",
+		);
+
+		if (!departureRow) continue;
+
+		const departureTime = new Date(
+			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+		).getTime();
+		const minutesToDeparture = Math.round((departureTime - now) / (1000 * 60));
+
+		// Check if train is late
+		const isLate = (departureRow.differenceInMinutes ?? 0) > 2;
+
+		if (
+			minutesToDeparture > 0 &&
+			minutesToDeparture <= URGENCY_THRESHOLDS.URGENT
+		) {
+			hasUrgentTrains = true;
+		} else if (
+			minutesToDeparture > 0 &&
+			minutesToDeparture <= URGENCY_THRESHOLDS.IMMINENT
+		) {
+			hasImminentTrains = true;
+		}
+
+		if (
+			isLate &&
+			minutesToDeparture > 0 &&
+			minutesToDeparture <= URGENCY_THRESHOLDS.NEARBY
+		) {
+			hasLateTrains = true;
+		}
+	}
+
+	if (hasUrgentTrains) return REFRESH_INTERVALS.URGENT;
+	if (hasImminentTrains || hasLateTrains) return REFRESH_INTERVALS.HIGH;
+
+	// Check if we have any trains in the next 30 minutes
+	const hasNearbyTrains = trains.some((train) => {
+		const departureRow = train.timeTableRows.find(
+			(row) => row.type === "DEPARTURE",
+		);
+		if (!departureRow) return false;
+		const departureTime = new Date(
+			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+		).getTime();
+		const minutesToDeparture = Math.round((departureTime - now) / (1000 * 60));
+		return (
+			minutesToDeparture > 0 && minutesToDeparture <= URGENCY_THRESHOLDS.NEARBY
+		);
+	});
+
+	return hasNearbyTrains ? REFRESH_INTERVALS.MEDIUM : REFRESH_INTERVALS.LOW;
+}
 
 export default function TrainList({
 	stationCode,
@@ -43,6 +127,9 @@ export default function TrainList({
 	const [displayedTrainCount, setDisplayedTrainCount] =
 		useState(INITIAL_TRAIN_COUNT);
 	const [departedTrains, setDepartedTrains] = useState<Set<string>>(new Set());
+	const [currentRefreshInterval, setCurrentRefreshInterval] = useState<number>(
+		REFRESH_INTERVALS.MEDIUM,
+	);
 
 	const loadTrains = useCallback(async () => {
 		try {
@@ -52,7 +139,18 @@ export default function TrainList({
 			setState((prev) => ({ ...prev, progress: 100 }));
 
 			const trainData = await fetchTrains(stationCode, destinationCode);
-			setCurrentTime(new Date());
+			const now = new Date();
+			setCurrentTime(now);
+
+			// Update refresh interval based on train data
+			const newRefreshInterval = getAdaptiveRefreshInterval(trainData, now);
+			if (newRefreshInterval !== currentRefreshInterval) {
+				console.log(
+					`[TrainList] Adaptive refresh: ${newRefreshInterval}ms (${newRefreshInterval / 1000}s)`,
+				);
+				setCurrentRefreshInterval(newRefreshInterval);
+			}
+
 			setState((prev) => ({
 				...prev,
 				trains: trainData,
@@ -142,17 +240,20 @@ export default function TrainList({
 		// Schedule next update at the next even second
 		const updateTimeout = setTimeout(() => {
 			loadTrains();
-			// Then set up regular interval
+			// Then set up adaptive interval based on train urgency
 			updateInterval = setInterval(() => {
 				loadTrains();
-			}, 30000); // 30 seconds
+			}, currentRefreshInterval);
 		}, getTimeUntilNextUpdate());
 
 		// Progress bar update interval
 		const progressInterval = setInterval(() => {
 			setState((prev) => ({
 				...prev,
-				progress: Math.max(0, prev.progress - 100 / 30),
+				progress: Math.max(
+					0,
+					prev.progress - 100 / (currentRefreshInterval / 1000),
+				),
 			}));
 		}, 1000); // Update progress every second
 
@@ -163,7 +264,7 @@ export default function TrainList({
 			clearInterval(progressInterval);
 			clearInterval(timeUpdateInterval);
 		};
-	}, [loadTrains]);
+	}, [loadTrains, currentRefreshInterval]);
 
 	if (state.loading && state.initialLoad) {
 		return <TrainListSkeleton />;
@@ -185,6 +286,52 @@ export default function TrainList({
 	const fromStation = stations.find((s) => s.shortCode === stationCode);
 	const toStation = stations.find((s) => s.shortCode === destinationCode);
 
+	// Calculate duration comparison for color coding
+	const allTrainDurations = useMemo(() => {
+		return (state.trains || [])
+			.map((train) => {
+				const departureRow = train.timeTableRows.find(
+					(row) =>
+						row.stationShortCode === stationCode && row.type === "DEPARTURE",
+				);
+				const arrivalRow = train.timeTableRows.find(
+					(row) =>
+						row.stationShortCode === destinationCode && row.type === "ARRIVAL",
+				);
+
+				if (!departureRow || !arrivalRow) return null;
+
+				const arrivalTime =
+					arrivalRow.liveEstimateTime ?? arrivalRow.scheduledTime;
+				const departureTime =
+					departureRow.actualTime ?? departureRow.scheduledTime;
+
+				return Math.round(
+					(new Date(arrivalTime).getTime() -
+						new Date(departureTime).getTime()) /
+						(1000 * 60),
+				);
+			})
+			.filter((duration): duration is number => duration !== null)
+			.sort((a, b) => a - b);
+	}, [state.trains, stationCode, destinationCode]);
+
+	const getDurationSpeedType = useCallback(
+		(durationMinutes: number) => {
+			if (allTrainDurations.length < 2) return "normal";
+
+			const median =
+				allTrainDurations[Math.floor(allTrainDurations.length / 2)];
+			const fastThreshold = median * 0.85; // 15% faster than median
+			const slowThreshold = median * 1.15; // 15% slower than median
+
+			if (durationMinutes <= fastThreshold) return "fast";
+			if (durationMinutes >= slowThreshold) return "slow";
+			return "normal";
+		},
+		[allTrainDurations],
+	);
+
 	const displayedTrains = (state.trains || [])
 		.filter((train) => !departedTrains.has(train.trainNumber))
 		.slice(0, displayedTrainCount);
@@ -192,8 +339,8 @@ export default function TrainList({
 
 	return (
 		<div>
-			<div class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4">
-				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-2">
+			<div class="max-w-4xl mx-auto space-y-6 px-4 sm:px-4">
+				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 					<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 order-2 sm:order-1">
 						{t("departingTrains")}{" "}
 						<span class="sm:hidden">
@@ -208,7 +355,7 @@ export default function TrainList({
 					</div>
 				</div>
 				<div
-					class="grid auto-rows-fr gap-4 px-2 transition-[grid-row,transform] duration-700 ease-in-out"
+					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"
 					style={{
 						"--animation-phase": animationPhase,
 						"grid-template-rows": `repeat(${displayedTrains.length}, minmax(0, 1fr))`,
@@ -233,6 +380,7 @@ export default function TrainList({
 								destinationCode={destinationCode}
 								currentTime={currentTime}
 								onDepart={() => handleTrainDeparted(train.trainNumber)}
+								getDurationSpeedType={getDurationSpeedType}
 							/>
 						</div>
 					))}

@@ -1,34 +1,34 @@
 {
-  "name": "lahijunat-live",
-  "type": "module",
-  "version": "1.6.0",
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build && workbox generateSW workbox-config.cjs",
-    "preview": "astro preview",
-    "astro": "astro",
-    "lint": "biome check --write src",
-    "format": "biome format --write src",
-    "check-stations": "npx tsx scripts/findStationsWithoutDestinations.ts",
-    "test": "vitest run",
-    "test:watch": "vitest watch"
-  },
-  "dependencies": {
-    "@astrojs/markdown-component": "^1.0.5",
-    "@astrojs/preact": "^4.1.0",
-    "@tailwindcss/vite": "^4.1.11",
-    "astro": "^5.11.1",
-    "marked": "^16.0.0",
-    "preact": "^10.26.9",
-    "tailwindcss": "^4.1.11"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.1.1",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/preact": "^3.2.4",
-    "@types/node": "^24.0.13",
-    "jsdom": "^26.1.0",
-    "vitest": "^3.2.4",
-    "workbox-cli": "^7.3.0"
-  }
+	"name": "lahijunat-live",
+	"type": "module",
+	"version": "1.6.0",
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build && workbox generateSW workbox-config.cjs",
+		"preview": "astro preview",
+		"astro": "astro",
+		"lint": "biome check --write src",
+		"format": "biome format --write src",
+		"check-stations": "npx tsx scripts/findStationsWithoutDestinations.ts",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
+	},
+	"dependencies": {
+		"@astrojs/markdown-component": "^1.0.5",
+		"@astrojs/preact": "^4.1.0",
+		"@tailwindcss/vite": "^4.1.11",
+		"astro": "^5.12.1",
+		"marked": "^16.1.1",
+		"preact": "^10.26.9",
+		"tailwindcss": "^4.1.11"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.1.2",
+		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/preact": "^3.2.4",
+		"@types/node": "^24.0.15",
+		"jsdom": "^26.1.0",
+		"vitest": "^3.2.4",
+		"workbox-cli": "^7.3.0"
+	}
 }
