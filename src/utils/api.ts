@@ -1,3 +1,4 @@
+import packageJson from "../../package.json" with { type: "json" };
 import type { Station, Train } from "../types";
 
 const BASE_URL = "https://rata.digitraffic.fi/api";
@@ -10,6 +11,7 @@ const ENDPOINTS = {
 const DEFAULT_HEADERS = {
 	"Content-Type": "application/json",
 	"Accept-Encoding": "gzip",
+	"User-Agent": `lahijunat.live/${packageJson.version}`,
 } as const;
 
 // Cache configuration
@@ -397,7 +399,6 @@ export async function fetchTrainsLeavingFromStation(
 			`[API] Response status: ${response.status} ${response.statusText}`,
 		);
 
-
 		if (!response.ok) {
 			console.error(`[API] Failed to fetch station data for ${stationCode}:`, {
 				status: response.status,
@@ -414,7 +415,9 @@ export async function fetchTrainsLeavingFromStation(
 
 		// Early return if no trains - no destinations to process
 		if (data.length === 0) {
-			console.log(`[API] No trains found for ${stationCode}, returning empty destinations`);
+			console.log(
+				`[API] No trains found for ${stationCode}, returning empty destinations`,
+			);
 			const result: Station[] = [];
 			// Cache the empty result
 			destinationCache.set(stationCode, {
@@ -428,7 +431,11 @@ export async function fetchTrainsLeavingFromStation(
 		const shortCodes = new Set<string>();
 		for (const train of data) {
 			for (const row of train.timeTableRows) {
-				if (row.commercialStop && row.trainStopping && row.stationShortCode !== stationCode) {
+				if (
+					row.commercialStop &&
+					row.trainStopping &&
+					row.stationShortCode !== stationCode
+				) {
 					shortCodes.add(row.stationShortCode);
 				}
 			}
@@ -440,7 +447,9 @@ export async function fetchTrainsLeavingFromStation(
 
 		// Early return if no destination codes found
 		if (shortCodes.size === 0) {
-			console.log(`[API] No destination codes found for ${stationCode}, returning empty destinations`);
+			console.log(
+				`[API] No destination codes found for ${stationCode}, returning empty destinations`,
+			);
 			const result: Station[] = [];
 			destinationCache.set(stationCode, {
 				data: result,
@@ -452,10 +461,12 @@ export async function fetchTrainsLeavingFromStation(
 		// Reuse cached station data instead of fetching all stations again
 		console.log("[API] Fetching station details using cached data");
 		const allStations = await fetchStations();
-		console.log(`[API] Received ${allStations.length} stations from cache/GraphQL`);
+		console.log(
+			`[API] Received ${allStations.length} stations from cache/GraphQL`,
+		);
 
-		const filteredStations = allStations.filter(
-			(station: Station) => shortCodes.has(station.shortCode),
+		const filteredStations = allStations.filter((station: Station) =>
+			shortCodes.has(station.shortCode),
 		);
 
 		console.log(
