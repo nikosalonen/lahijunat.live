@@ -1,4 +1,6 @@
 name: Update Station Query
+permissions:
+  contents: write
 
 on:
   schedule:
