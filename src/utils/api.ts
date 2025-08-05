@@ -124,18 +124,6 @@ interface GraphQLStation {
 	location: [number, number];
 }
 
-interface RESTStation {
-	stationShortCode: string;
-	name: string;
-	passengerTraffic: boolean;
-	type: string;
-	stationName: string;
-	stationUICCode: number;
-	countryCode: string;
-	longitude: number;
-	latitude: number;
-}
-
 // Improved cache implementation with type safety
 const stationCache = new Map<string, CacheEntry<Station[]>>();
 
@@ -435,11 +423,11 @@ export async function fetchTrainsLeavingFromStation(
 			return result;
 		}
 
-		// Extract unique station codes more efficiently
+		// Extract unique station codes more efficiently, excluding current station
 		const shortCodes = new Set<string>();
 		for (const train of data) {
 			for (const row of train.timeTableRows) {
-				if (row.commercialStop && row.trainStopping) {
+				if (row.commercialStop && row.trainStopping && row.stationShortCode !== stationCode) {
 					shortCodes.add(row.stationShortCode);
 				}
 			}
@@ -449,51 +437,32 @@ export async function fetchTrainsLeavingFromStation(
 			`[API] Found ${shortCodes.size} unique destination stations for ${stationCode}`,
 		);
 
-		// Fetch station details with rate limiting
-		console.log(`[API] Fetching station details from: ${ENDPOINTS.STATIONS}`);
-		const stationsResponse = await makeRequestWithBackoff(() =>
-			fetch(ENDPOINTS.STATIONS),
-		);
-
-		console.log(
-			`[API] Stations response status: ${stationsResponse.status} ${stationsResponse.statusText}`,
-		);
-
-		if (!stationsResponse.ok) {
-			console.error("[API] Failed to fetch station details:", {
-				status: stationsResponse.status,
-				statusText: stationsResponse.statusText,
-				url: ENDPOINTS.STATIONS,
+		// Early return if no destination codes found
+		if (shortCodes.size === 0) {
+			console.log(`[API] No destination codes found for ${stationCode}, returning empty destinations`);
+			const result: Station[] = [];
+			destinationCache.set(stationCode, {
+				data: result,
+				timestamp: Date.now(),
 			});
-			throw new Error(
-				`Failed to fetch station details: ${stationsResponse.statusText}`,
-			);
+			return result;
 		}
 
-		const stationsData = await stationsResponse.json();
-		console.log(`[API] Received ${stationsData.length} total stations`);
+		// Reuse cached station data instead of fetching all stations again
+		console.log("[API] Fetching station details using cached data");
+		const allStations = await fetchStations();
+		console.log(`[API] Received ${allStations.length} stations from cache/GraphQL`);
 
-		const filteredStations = stationsData.filter(
-			(station: RESTStation) =>
-				shortCodes.has(station.stationShortCode) &&
-				station.passengerTraffic &&
-				station.stationShortCode !== stationCode,
+		const filteredStations = allStations.filter(
+			(station: Station) => shortCodes.has(station.shortCode),
 		);
 
 		console.log(
 			`[API] Filtered to ${filteredStations.length} valid destination stations for ${stationCode}`,
 		);
 
-		const result = filteredStations.map(
-			(station: RESTStation): Station => ({
-				name: station.stationName.replace(" asema", ""),
-				shortCode: station.stationShortCode,
-				location: {
-					latitude: station.latitude,
-					longitude: station.longitude,
-				},
-			}),
-		);
+		// Stations are already in the correct format from fetchStations()
+		const result = filteredStations;
 
 		// Cache the result
 		destinationCache.set(stationCode, {
