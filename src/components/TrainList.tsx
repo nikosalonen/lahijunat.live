@@ -368,12 +368,12 @@ export default function TrainList({
 		.filter((train) => {
 			// Filter out trains that have been manually marked as departed
 			if (departedTrains.has(train.trainNumber)) return false;
-			
+
 			// Filter out trains that have actually departed (departed more than 2 minutes ago)
 			const departureRow = train.timeTableRows.find(
 				(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
 			);
-			
+
 			if (departureRow) {
 				const departureTime = new Date(
 					departureRow.liveEstimateTime ?? departureRow.scheduledTime,
@@ -381,11 +381,11 @@ export default function TrainList({
 				const minutesToDeparture = Math.floor(
 					(departureTime.getTime() - currentTime.getTime()) / (1000 * 60),
 				);
-				
+
 				// Don't show trains that departed more than 2 minutes ago
 				return minutesToDeparture > -2;
 			}
-			
+
 			return true;
 		})
 		.slice(0, displayedTrainCount);
