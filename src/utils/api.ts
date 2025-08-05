@@ -211,6 +211,7 @@ const STATION_QUERY = `query GetStations {
 			{shortCode:{unequals:"HÖL"}},
 			{shortCode:{unequals:"ILM"}},
 			{shortCode:{unequals:"IMR"}},
+			{shortCode:{unequals:"IKO"}},
 			{shortCode:{unequals:"IKY"}},
 			{shortCode:{unequals:"JNS"}},
 			{shortCode:{unequals:"JTS"}},
