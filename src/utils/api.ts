@@ -1,7 +1,27 @@
 import type { Station, Train } from "../types";
 
-// Get version from environment variable or fallback
-const APP_VERSION = import.meta.env.PUBLIC_APP_VERSION || "1.8.0";
+// Get version from environment variable or fallback - handle both browser and Node.js
+const getAppVersion = (): string => {
+	// Browser environment (Astro/Vite)
+	if (typeof import.meta !== 'undefined' && import.meta.env) {
+		return import.meta.env.PUBLIC_APP_VERSION || "1.8.0";
+	}
+
+	// Node.js environment - read from package.json
+	try {
+		// Dynamic import to avoid bundling issues
+		const fs = eval('require')('node:fs');
+		const path = eval('require')('node:path');
+		const packagePath = path.join(process.cwd(), "package.json");
+		const packageContent = fs.readFileSync(packagePath, "utf-8");
+		const packageJson = JSON.parse(packageContent);
+		return packageJson.version;
+	} catch {
+		return "1.8.0";
+	}
+};
+
+const APP_VERSION = getAppVersion();
 
 const BASE_URL = "https://rata.digitraffic.fi/api";
 const ENDPOINTS = {
