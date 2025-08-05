@@ -423,6 +423,18 @@ export async function fetchTrainsLeavingFromStation(
 			`[API] Received ${data.length} trains for station ${stationCode}`,
 		);
 
+		// Early return if no trains - no destinations to process
+		if (data.length === 0) {
+			console.log(`[API] No trains found for ${stationCode}, returning empty destinations`);
+			const result: Station[] = [];
+			// Cache the empty result
+			destinationCache.set(stationCode, {
+				data: result,
+				timestamp: Date.now(),
+			});
+			return result;
+		}
+
 		// Extract unique station codes more efficiently
 		const shortCodes = new Set<string>();
 		for (const train of data) {
