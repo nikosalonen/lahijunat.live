@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/security/noGlobalEval: we're intentionally using it to avoid bundling issues */
 import type { Station, Train } from "../types";
 
 // Get version from environment variable or fallback - handle both browser and Node.js
