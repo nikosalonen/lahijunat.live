@@ -2,6 +2,18 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fetchTrainsLeavingFromStation } from "../src/utils/api.js";
 
+// Read package.json dynamically for version
+const getVersion = (): string => {
+	try {
+		const packagePath = join(process.cwd(), "package.json");
+		const packageContent = readFileSync(packagePath, "utf-8");
+		const packageJson = JSON.parse(packageContent);
+		return packageJson.version;
+	} catch {
+		return "unknown";
+	}
+};
+
 /**
  * Automated script to find stations without commuter traffic and update STATION_QUERY
  * This replaces the manual process of running check-stations and updating the query by hand
@@ -45,14 +57,18 @@ function delay(ms: number): Promise<void> {
 async function fetchAllStations(): Promise<Station[]> {
 	console.log("🌍 Fetching ALL stations (no exclusions) from GraphQL API...");
 
-	const response = await fetch("https://rata.digitraffic.fi/api/v2/graphql/graphql", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"Accept-Encoding": "gzip",
+	const response = await fetch(
+		"https://rata.digitraffic.fi/api/v2/graphql/graphql",
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Accept-Encoding": "gzip",
+				"User-Agent": `lahijunat.live/${getVersion()}`,
+			},
+			body: JSON.stringify({ query: ALL_STATIONS_QUERY }),
 		},
-		body: JSON.stringify({ query: ALL_STATIONS_QUERY }),
-	});
+	);
 
 	if (!response.ok) {
 		throw new Error(`Failed to fetch all stations: ${response.statusText}`);
@@ -72,16 +88,20 @@ async function fetchAllStations(): Promise<Station[]> {
 		);
 	}
 
-	const stations = result.data.stations.map((station: GraphQLStation): Station => ({
-		...station,
-		name: station.name.replace(" asema", ""),
-		location: {
-			longitude: station.location[0],
-			latitude: station.location[1],
-		},
-	}));
+	const stations = result.data.stations.map(
+		(station: GraphQLStation): Station => ({
+			...station,
+			name: station.name.replace(" asema", ""),
+			location: {
+				longitude: station.location[0],
+				latitude: station.location[1],
+			},
+		}),
+	);
 
-	console.log(`✅ Fetched ${stations.length} total stations with passenger traffic`);
+	console.log(
+		`✅ Fetched ${stations.length} total stations with passenger traffic`,
+	);
 	return stations;
 }
 
@@ -92,7 +112,9 @@ async function findStationsWithoutDestinations(): Promise<string[]> {
 	const allStations = await fetchAllStations();
 	const stationsWithoutDestinations: string[] = [];
 
-	console.log(`📊 Checking ${allStations.length} stations (including currently excluded)...`);
+	console.log(
+		`📊 Checking ${allStations.length} stations (including currently excluded)...`,
+	);
 
 	for (const [index, station] of allStations.entries()) {
 		try {
@@ -203,11 +225,17 @@ async function main(): Promise<void> {
 
 		// Calculate differences
 		const toAdd = newExcluded.filter((code) => !currentExcluded.includes(code));
-		const toRemove = currentExcluded.filter((code) => !newExcluded.includes(code));
+		const toRemove = currentExcluded.filter(
+			(code) => !newExcluded.includes(code),
+		);
 
 		console.log("\n📊 Summary:");
-		console.log(`✅ Stations with commuter traffic: ${toRemove.length} (will be re-included)`);
-		console.log(`❌ Stations without commuter traffic: ${newExcluded.length} (will be excluded)`);
+		console.log(
+			`✅ Stations with commuter traffic: ${toRemove.length} (will be re-included)`,
+		);
+		console.log(
+			`❌ Stations without commuter traffic: ${newExcluded.length} (will be excluded)`,
+		);
 		console.log(`📈 New exclusions: ${toAdd.length} stations`);
 		console.log(`📉 Removed exclusions: ${toRemove.length} stations`);
 
