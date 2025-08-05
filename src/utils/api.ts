@@ -407,10 +407,7 @@ export async function fetchTrainsLeavingFromStation(
 		console.log(
 			`[API] Response status: ${response.status} ${response.statusText}`,
 		);
-		console.log(
-			"[API] Response headers:",
-			Object.fromEntries(response.headers.entries()),
-		);
+
 
 		if (!response.ok) {
 			console.error(`[API] Failed to fetch station data for ${stationCode}:`, {
