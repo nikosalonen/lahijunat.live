@@ -1,7 +1,18 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import packageJson from "../package.json" with { type: "json" };
 import { fetchTrainsLeavingFromStation } from "../src/utils/api.js";
+
+// Read package.json dynamically for version
+const getVersion = (): string => {
+	try {
+		const packagePath = join(process.cwd(), "package.json");
+		const packageContent = readFileSync(packagePath, "utf-8");
+		const packageJson = JSON.parse(packageContent);
+		return packageJson.version;
+	} catch {
+		return "unknown";
+	}
+};
 
 /**
  * Automated script to find stations without commuter traffic and update STATION_QUERY
@@ -53,7 +64,7 @@ async function fetchAllStations(): Promise<Station[]> {
 			headers: {
 				"Content-Type": "application/json",
 				"Accept-Encoding": "gzip",
-				"User-Agent": `lahijunat.live/${packageJson.version}`,
+				"User-Agent": `lahijunat.live/${getVersion()}`,
 			},
 			body: JSON.stringify({ query: ALL_STATIONS_QUERY }),
 		},

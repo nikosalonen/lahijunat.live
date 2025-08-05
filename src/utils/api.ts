@@ -1,5 +1,7 @@
-import packageJson from "../../package.json" with { type: "json" };
 import type { Station, Train } from "../types";
+
+// Get version from environment variable or fallback
+const APP_VERSION = import.meta.env.PUBLIC_APP_VERSION || "1.8.0";
 
 const BASE_URL = "https://rata.digitraffic.fi/api";
 const ENDPOINTS = {
@@ -11,7 +13,7 @@ const ENDPOINTS = {
 const DEFAULT_HEADERS = {
 	"Content-Type": "application/json",
 	"Accept-Encoding": "gzip",
-	"User-Agent": `lahijunat.live/${packageJson.version}`,
+	"User-Agent": `lahijunat.live/${APP_VERSION}`,
 } as const;
 
 // Cache configuration
