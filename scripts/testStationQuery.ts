@@ -1,9 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import {
-	fetchStations,
-	fetchTrainsLeavingFromStation,
-} from "../src/utils/api.js";
+import { fetchTrainsLeavingFromStation } from "../src/utils/api.js";
 
 /**
  * Test script to preview what the automated station query update would do
@@ -13,22 +10,94 @@ import {
 const API_FILE_PATH = join(process.cwd(), "src/utils/api.ts");
 const DELAY_BETWEEN_REQUESTS = 5000; // Faster for testing, 5 seconds
 
+// GraphQL query to fetch ALL stations with passenger traffic (no exclusions)
+const ALL_STATIONS_QUERY = `query GetAllStations {
+	stations(where:{
+		and:[
+			{passengerTraffic:{equals:true}}
+		]
+	}){
+		name
+		shortCode
+		location
+	}
+}`;
+
+interface Station {
+	name: string;
+	shortCode: string;
+	location: {
+		latitude: number;
+		longitude: number;
+	};
+}
+
+interface GraphQLStation {
+	name: string;
+	shortCode: string;
+	location: [number, number];
+}
+
 function delay(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchAllStations(): Promise<Station[]> {
+	console.log("🌍 Testing: Fetching ALL stations (no exclusions) from GraphQL API...");
+
+	const response = await fetch("https://rata.digitraffic.fi/api/v2/graphql/graphql", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			"Accept-Encoding": "gzip",
+		},
+		body: JSON.stringify({ query: ALL_STATIONS_QUERY }),
+	});
+
+	if (!response.ok) {
+		throw new Error(`Failed to fetch all stations: ${response.statusText}`);
+	}
+
+	const result = await response.json();
+
+	// Check for GraphQL errors
+	if (result.errors) {
+		throw new Error(`GraphQL Error: ${JSON.stringify(result.errors)}`);
+	}
+
+	// Check if the response has the expected structure
+	if (!result?.data?.stations) {
+		throw new Error(
+			`Invalid response format from GraphQL API. Response: ${JSON.stringify(result)}`,
+		);
+	}
+
+	const stations = result.data.stations.map((station: GraphQLStation): Station => ({
+		...station,
+		name: station.name.replace(" asema", ""),
+		location: {
+			longitude: station.location[0],
+			latitude: station.location[1],
+		},
+	}));
+
+	console.log(`✅ Fetched ${stations.length} total stations with passenger traffic`);
+	return stations;
 }
 
 async function findStationsWithoutDestinations(): Promise<string[]> {
 	console.log("🔍 Testing: Finding stations without commuter destinations...");
 
-	const stations = await fetchStations();
+	// Fetch ALL stations (not filtered by current exclusions)
+	const allStations = await fetchAllStations();
 	const stationsWithoutDestinations: string[] = [];
 
 	console.log(
-		`📊 Testing ${Math.min(10, stations.length)} stations (limited for testing)...`,
+		`📊 Testing ${Math.min(10, allStations.length)} stations (limited for testing, includes currently excluded)...`,
 	);
 
 	// Test only first 10 stations to make testing faster
-	const testStations = stations.slice(0, 10);
+	const testStations = allStations.slice(0, 10);
 
 	for (const [index, station] of testStations.entries()) {
 		try {
