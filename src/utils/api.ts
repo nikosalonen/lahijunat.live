@@ -493,7 +493,7 @@ export async function fetchTrains(
 		async () => {
 			const params = new URLSearchParams({
 				limit: "100",
-				startDate: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3 hours ago to capture delayed trains
+				startDate: new Date(Date.now() - 60 * 60 * 1000).toISOString(), // 1 hour ago to capture delayed trains
 				endDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
 			});
 
