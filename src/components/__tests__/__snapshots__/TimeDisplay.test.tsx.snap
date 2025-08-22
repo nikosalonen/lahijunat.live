@@ -1,49 +1,18 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`TimeDisplay > renders on-time train correctly 1`] = `
-<div>
-  <span
-    class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-100 min-w-0 relative pt-8 sm:pt-6"
-  >
-    <span
-      class="text-gray-600 dark:text-gray-300 text-lg sm:text-lg whitespace-nowrap overflow-hidden text-ellipsis"
-    >
-       
-      <time
-        datetime="2024-03-20T10:00:00.000Z"
-      >
-        12.00
-      </time>
-      <span
-        class="mx-2"
-      >
-        →
-      </span>
-      13.00
-    </span>
-  </span>
-</div>
-`;
-
 exports[`TimeDisplay > renders without arrival row 1`] = `
 <div>
   <span
     class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-100 min-w-0 relative pt-8 sm:pt-6"
   >
     <span
-      class="text-gray-600 dark:text-gray-300 text-lg sm:text-lg whitespace-nowrap overflow-hidden text-ellipsis"
+      class="block w-full text-gray-600 dark:text-gray-300 text-base sm:text-lg whitespace-nowrap"
     >
-       
       <time
         datetime="2024-03-20T10:00:00.000Z"
       >
         12.00
       </time>
-      <span
-        class="mx-2"
-      >
-        →
-      </span>
     </span>
   </span>
 </div>

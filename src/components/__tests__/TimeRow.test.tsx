@@ -113,4 +113,22 @@ describe("TimeRow", () => {
 
 		expect(queryByText("~")).not.toBeInTheDocument();
 	});
+
+	it("shows tilde and uses live estimate for delayed arrival >1 min", () => {
+		const delayedArrivalRow = {
+			...mockArrivalRow,
+			liveEstimateTime: "2024-03-20T11:10:00.000Z",
+			differenceInMinutes: 10,
+		};
+
+		const { getByText, container } = render(
+			<TimeRow departureRow={mockDepartureRow} arrivalRow={delayedArrivalRow} />,
+		);
+
+		// arrival formatted time should reflect 11:10 instead of 11:00
+		getByText("13.10");
+		// tilde is rendered as aria-hidden
+		const hiddenTilde = container.querySelector('span[aria-hidden="true"]');
+		expect(hiddenTilde).not.toBeNull();
+	});
 });

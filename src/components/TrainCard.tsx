@@ -1,9 +1,10 @@
 /** @format */
 
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
+import { calculateDuration, getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
 
@@ -13,23 +14,24 @@ interface Props {
 	destinationCode: string;
 	currentTime: Date;
 	onDepart?: () => void;
+	/**
+	 * Called when a train that had been considered departed becomes non-departed again
+	 * due to its estimate moving back to now or the future (minutesToDeparture >= 0).
+	 */
+	onReappear?: () => void;
 	getDurationSpeedType?: (
 		durationMinutes: number,
 	) => "fast" | "slow" | "normal";
 }
 
-const calculateDuration = (start: string, end: string) => {
-	const durationMinutes = Math.round(
-		(new Date(end).getTime() - new Date(start).getTime()) / (1000 * 60),
-	);
-	return {
-		hours: Math.floor(durationMinutes / 60),
-		minutes: durationMinutes % 60,
-	};
+type HighlightedTrainData = {
+    highlighted?: boolean;
+    removeAfter?: string;
+    track?: string;
+    trackChanged?: boolean;
 };
 
-const formatMinutesToDeparture = (scheduledTime: string, currentTime: Date) => {
-	const departure = new Date(scheduledTime);
+const formatMinutesToDeparture = (departure: Date, currentTime: Date) => {
 	const diffMs = departure.getTime() - currentTime.getTime();
 	const diffMinutes = diffMs / (1000 * 60);
 	// For negative times (past departure), use floor to show how many minutes ago
@@ -37,8 +39,7 @@ const formatMinutesToDeparture = (scheduledTime: string, currentTime: Date) => {
 	return Math.floor(diffMinutes);
 };
 
-const isDepartingSoon = (scheduledTime: string, currentTime: Date) => {
-	const departure = new Date(scheduledTime);
+const isDepartingSoon = (departure: Date, currentTime: Date) => {
 	const diffMinutes =
 		(departure.getTime() - currentTime.getTime()) / (1000 * 60);
 	return diffMinutes >= 0 && diffMinutes <= 5;
@@ -94,6 +95,7 @@ export default function TrainCard({
 	destinationCode,
 	currentTime,
 	onDepart,
+	onReappear,
 	getDurationSpeedType,
 }: Props) {
 	const [, setLanguageChange] = useState(0);
@@ -103,6 +105,7 @@ export default function TrainCard({
 	const [trackMemory, setTrackMemory] = useState<
 		Record<string, { track: string; timestamp: number }>
 	>({});
+	const fadeRafRef = useRef<number | null>(null);
 
 	// Memoize all time-dependent calculations
 	const {
@@ -137,12 +140,12 @@ export default function TrainCard({
 		}
 
 		const minutesToDeparture = formatMinutesToDeparture(
-			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+			getDepartureDate(departureRow),
 			currentTime,
 		);
 
 		const departingSoon = isDepartingSoon(
-			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+			getDepartureDate(departureRow),
 			currentTime,
 		);
 
@@ -151,10 +154,7 @@ export default function TrainCard({
 		const arrivalTime =
 			arrivalRow?.liveEstimateTime ?? arrivalRow?.scheduledTime;
 		const duration = arrivalTime
-			? calculateDuration(
-					departureRow.actualTime ?? departureRow.scheduledTime,
-					arrivalTime,
-				)
+			? calculateDuration(getDepartureDate(departureRow), arrivalTime)
 			: null;
 
 		const durationSpeedType =
@@ -188,25 +188,51 @@ export default function TrainCard({
 		getDurationSpeedType,
 	]);
 
-	// Call onDepart when the train transitions from not departed to departed
+	// Handle depart/undepart transitions when estimate jumps forward
 	useEffect(() => {
-		if (!minutesToDeparture) return;
+		if (minutesToDeparture === null) return;
 		if (minutesToDeparture < 0 && !hasDeparted) {
 			setHasDeparted(true);
 			setOpacity(1);
-			// Start fade out
-			requestAnimationFrame(() => {
+			// Cancel any previous fade RAF just before scheduling a new one
+			if (fadeRafRef.current !== null) {
+				cancelAnimationFrame(fadeRafRef.current);
+				fadeRafRef.current = null;
+			}
+			fadeRafRef.current = requestAnimationFrame(() => {
 				setOpacity(0);
 			});
 			onDepart?.();
+		} else if (minutesToDeparture >= 0 && hasDeparted) {
+			// Estimation jumped forward; bring card back
+			setHasDeparted(false);
+			setOpacity(1);
+			// Ensure no stale RAF can flip opacity back to 0
+			if (fadeRafRef.current !== null) {
+				cancelAnimationFrame(fadeRafRef.current);
+				fadeRafRef.current = null;
+			}
+			onReappear?.();
 		}
-	}, [minutesToDeparture, hasDeparted, onDepart]);
+
+		return () => {
+			if (fadeRafRef.current !== null) {
+				cancelAnimationFrame(fadeRafRef.current);
+				fadeRafRef.current = null;
+			}
+		};
+	}, [minutesToDeparture, hasDeparted, onDepart, onReappear]);
 
 	useEffect(() => {
-		// Load highlighted state from localStorage
-		const highlightedTrains = JSON.parse(
-			localStorage.getItem("highlightedTrains") || "{}",
-		);
+		// Load highlighted state from localStorage (safe parse)
+		let highlightedTrains: Record<string, HighlightedTrainData>;
+		try {
+			highlightedTrains = JSON.parse(
+				localStorage.getItem("highlightedTrains") || "{}",
+			);
+		} catch {
+			highlightedTrains = {};
+		}
 		const trainData = highlightedTrains[train.trainNumber];
 
 		if (trainData) {
@@ -230,6 +256,30 @@ export default function TrainCard({
 					(row) =>
 						row.stationShortCode === stationCode && row.type === "DEPARTURE",
 				);
+
+				// Keep removeAfter in sync if departure estimate drifts significantly (>1 min)
+				if (departureRow && trainData?.removeAfter) {
+					const latestDeparture = getDepartureDate(departureRow);
+					const desiredRemoveAfter = new Date(
+						latestDeparture.getTime() + 10 * 60 * 1000,
+					);
+					const currentRemoveAfter = new Date(trainData.removeAfter);
+					const driftMinutes =
+						Math.abs(
+							desiredRemoveAfter.getTime() - currentRemoveAfter.getTime(),
+						) /
+						(1000 * 60);
+					if (driftMinutes > 1) {
+						highlightedTrains[train.trainNumber] = {
+							...trainData,
+							removeAfter: desiredRemoveAfter.toISOString(),
+						};
+						localStorage.setItem(
+							"highlightedTrains",
+							JSON.stringify(highlightedTrains),
+						);
+					}
+				}
 
 				if (
 					departureRow &&
@@ -273,10 +323,18 @@ export default function TrainCard({
 		const MAX_AGE_MS = 1 * 60 * 60 * 1000; // 1 hour
 		const MAX_ENTRIES = 1000;
 
-		// Always read the latest from localStorage
-		const latestTrackMemory = JSON.parse(
-			localStorage.getItem("trackMemory") || "{}",
-		);
+		// Always read the latest from localStorage (safe parse)
+		let latestTrackMemory: Record<string, { track: string; timestamp: number }>;
+		try {
+			latestTrackMemory = JSON.parse(
+				localStorage.getItem("trackMemory") || "{}",
+			);
+		} catch {
+			latestTrackMemory = {} as Record<
+				string,
+				{ track: string; timestamp: number }
+			>;
+		}
 
 		// Cleanup old entries
 		for (const journeyKey of Object.keys(latestTrackMemory)) {
@@ -345,10 +403,15 @@ export default function TrainCard({
 		hapticImpact();
 		setIsHighlighted(newHighlighted);
 
-		// Update localStorage
-		const highlightedTrains = JSON.parse(
-			localStorage.getItem("highlightedTrains") || "{}",
-		);
+		// Update localStorage (safe parse)
+		let highlightedTrains: Record<string, HighlightedTrainData>;
+		try {
+			highlightedTrains = JSON.parse(
+				localStorage.getItem("highlightedTrains") || "{}",
+			);
+		} catch {
+			highlightedTrains = {};
+		}
 
 		if (newHighlighted) {
 			// When highlighting, set removal time to 10 minutes after departure
@@ -358,9 +421,7 @@ export default function TrainCard({
 			);
 
 			if (departureRow) {
-				const departureTime = new Date(
-					departureRow.liveEstimateTime ?? departureRow.scheduledTime,
-				);
+				const departureTime = getDepartureDate(departureRow);
 				const removeAfter = new Date(departureTime.getTime() + 10 * 60 * 1000); // 10 minutes after departure
 
 				highlightedTrains[train.trainNumber] = {

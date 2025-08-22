@@ -12,6 +12,7 @@ import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import { fetchTrains } from "../utils/api";
 import { hapticLight } from "../utils/haptics";
+import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
 import ProgressCircle from "./ProgressCircle";
@@ -26,7 +27,8 @@ interface Props {
 
 const MemoizedTrainCard = memo(TrainCard);
 const INITIAL_TRAIN_COUNT = 15;
-const FADE_DURATION = 3000; // 3 seconds to match the animation duration
+const FADE_DURATION = 300; // Align with card opacity transition
+const DEPARTED_GRACE_MINUTES = -2; // How long to keep showing a train after departure
 
 // Adaptive refresh intervals
 const REFRESH_INTERVALS = {
@@ -62,9 +64,7 @@ function getAdaptiveRefreshInterval(
 
 		if (!departureRow) continue;
 
-		const departureTime = new Date(
-			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
-		).getTime();
+		const departureTime = getDepartureDate(departureRow).getTime();
 		const minutesToDeparture = Math.round((departureTime - now) / (1000 * 60));
 
 		// Check if train is late
@@ -100,9 +100,7 @@ function getAdaptiveRefreshInterval(
 			(row) => row.type === "DEPARTURE",
 		);
 		if (!departureRow) return false;
-		const departureTime = new Date(
-			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
-		).getTime();
+		const departureTime = getDepartureDate(departureRow).getTime();
 		const minutesToDeparture = Math.round((departureTime - now) / (1000 * 60));
 		return (
 			minutesToDeparture > 0 && minutesToDeparture <= URGENCY_THRESHOLDS.NEARBY
@@ -236,10 +234,18 @@ export default function TrainList({
 		}, FADE_DURATION);
 	}, []);
 
+	const handleTrainReappear = useCallback((trainNumber: string) => {
+		setDepartedTrains((prev) => {
+			const next = new Set(prev);
+			next.delete(trainNumber);
+			return next;
+		});
+	}, []);
+
 	useEffect(() => {
 		let startTime: number;
 		let animationFrame: number;
-		let updateInterval: NodeJS.Timeout | undefined;
+		let updateInterval: ReturnType<typeof setInterval> | undefined;
 
 		const animate = (timestamp: number) => {
 			if (!startTime) startTime = timestamp;
@@ -366,24 +372,23 @@ export default function TrainList({
 
 	const displayedTrains = (state.trains || [])
 		.filter((train) => {
-			// Filter out trains that have been manually marked as departed
+			// Filter out trains that have been manually marked as departed (post-fade)
 			if (departedTrains.has(train.trainNumber)) return false;
 
 			// Filter out trains that have actually departed (departed more than 2 minutes ago)
 			const departureRow = train.timeTableRows.find(
-				(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
+				(row) =>
+					row.stationShortCode === stationCode && row.type === "DEPARTURE",
 			);
 
 			if (departureRow) {
-				const departureTime = new Date(
-					departureRow.liveEstimateTime ?? departureRow.scheduledTime,
-				);
-				const minutesToDeparture = Math.floor(
-					(departureTime.getTime() - currentTime.getTime()) / (1000 * 60),
-				);
+				const departureTime = getDepartureDate(departureRow);
+				const minutesToDeparture =
+					(departureTime.getTime() - currentTime.getTime()) / (1000 * 60);
 
-				// Don't show trains that departed more than 2 minutes ago
-				return minutesToDeparture > -2;
+				// Don't show trains that departed more than the grace period ago (inclusive)
+				const graceMinutes = Math.abs(DEPARTED_GRACE_MINUTES);
+				return minutesToDeparture >= -graceMinutes;
 			}
 
 			return true;
@@ -419,7 +424,7 @@ export default function TrainList({
 						<div
 							key={train.trainNumber}
 							class={`transition-[transform,opacity] duration-700 ease-in-out hover-lift ${
-								departedTrains.has(train.trainNumber.toString())
+								departedTrains.has(train.trainNumber)
 									? "animate-train-depart"
 									: "animate-scale-in"
 							}`}
@@ -434,6 +439,7 @@ export default function TrainList({
 								destinationCode={destinationCode}
 								currentTime={currentTime}
 								onDepart={() => handleTrainDeparted(train.trainNumber)}
+								onReappear={() => handleTrainReappear(train.trainNumber)}
 								getDurationSpeedType={getDurationSpeedType}
 							/>
 						</div>

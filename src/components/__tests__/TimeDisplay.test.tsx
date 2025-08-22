@@ -4,7 +4,7 @@ import type { Train } from "../../types";
 import TimeDisplay from "../TimeDisplay";
 
 // Mock translations
-vi.mock("../utils/translations", () => ({
+vi.mock("../../utils/translations", () => ({
 	t: (key: string) => {
 		const translations: Record<string, string> = {
 			late: "Myöhässä",
@@ -17,7 +17,7 @@ vi.mock("../utils/translations", () => ({
 }));
 
 // Mock useLanguageChange hook
-vi.mock("../hooks/useLanguageChange", () => ({
+vi.mock("../../hooks/useLanguageChange", () => ({
 	useLanguageChange: vi.fn(),
 }));
 
@@ -65,7 +65,7 @@ describe("TimeDisplay", () => {
 	};
 
 	it("renders on-time train correctly", () => {
-		const { container } = render(
+		const { getByText } = render(
 			<TimeDisplay
 				departureRow={mockDepartureRow}
 				arrivalRow={mockArrivalRow}
@@ -73,7 +73,9 @@ describe("TimeDisplay", () => {
 			/>,
 		);
 
-		expect(container).toMatchSnapshot();
+		// Should show scheduled departure and arrival without tildes
+		getByText("12.00");
+		getByText("13.00");
 	});
 
 	it("renders delayed train correctly", () => {

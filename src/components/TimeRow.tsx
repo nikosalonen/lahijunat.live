@@ -10,25 +10,45 @@ const TimeRow = ({
 	arrivalRow?: Train["timeTableRows"][0];
 	isCancelled?: boolean;
 }) => {
+	const rowIsCancelled = Boolean(isCancelled ?? departureRow.cancelled);
 	const useLiveEstimate = Boolean(
 		departureRow.liveEstimateTime &&
-		!isCancelled &&
+		!rowIsCancelled &&
 		departureRow.differenceInMinutes !== undefined &&
 		departureRow.differenceInMinutes > 1,
+	);
+
+	const useArrivalLiveEstimate = Boolean(
+		arrivalRow?.liveEstimateTime &&
+		!rowIsCancelled &&
+		!arrivalRow?.cancelled &&
+		arrivalRow?.differenceInMinutes !== undefined &&
+		arrivalRow.differenceInMinutes > 1,
 	);
 
 	const displayedTime = useLiveEstimate
 		? (departureRow.liveEstimateTime as string)
 		: departureRow.scheduledTime;
 
+	const arrivalDisplayedTime = useArrivalLiveEstimate
+		? (arrivalRow?.liveEstimateTime as string)
+		: arrivalRow?.scheduledTime;
+
 	return (
-			<span class="text-gray-600 dark:text-gray-300 text-lg sm:text-lg whitespace-nowrap overflow-hidden text-ellipsis">
-				{useLiveEstimate ? "~" : " "}
+			<span class="block w-full text-gray-600 dark:text-gray-300 text-base sm:text-lg whitespace-nowrap">
+				{useLiveEstimate && <span aria-hidden="true">~</span>}
 				<time datetime={displayedTime}>
 					{formatTime(displayedTime)}
 				</time>
-				<span class="mx-2">→</span>
-				{arrivalRow && formatTime(arrivalRow.scheduledTime)}
+				{arrivalRow && <span class="mx-1 sm:mx-2">→</span>}
+				{arrivalRow && arrivalDisplayedTime && (
+					<>
+						{useArrivalLiveEstimate && <span aria-hidden="true">~</span>}
+						<time datetime={arrivalDisplayedTime}>
+							{formatTime(arrivalDisplayedTime)}
+						</time>
+					</>
+				)}
 			</span>
 	);
 };
