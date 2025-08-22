@@ -4,7 +4,7 @@ import type { Train } from "../../types";
 import TimeDisplay from "../TimeDisplay";
 
 // Mock translations
-vi.mock("../utils/translations", () => ({
+vi.mock("../../utils/translations", () => ({
 	t: (key: string) => {
 		const translations: Record<string, string> = {
 			late: "Myöhässä",
@@ -17,7 +17,7 @@ vi.mock("../utils/translations", () => ({
 }));
 
 // Mock useLanguageChange hook
-vi.mock("../hooks/useLanguageChange", () => ({
+vi.mock("../../hooks/useLanguageChange", () => ({
 	useLanguageChange: vi.fn(),
 }));
 
