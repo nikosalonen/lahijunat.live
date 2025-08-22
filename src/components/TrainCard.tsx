@@ -24,6 +24,13 @@ interface Props {
 	) => "fast" | "slow" | "normal";
 }
 
+type HighlightedTrainData = {
+    highlighted?: boolean;
+    removeAfter?: string;
+    track?: string;
+    trackChanged?: boolean;
+};
+
 const formatMinutesToDeparture = (departure: Date, currentTime: Date) => {
 	const diffMs = departure.getTime() - currentTime.getTime();
 	const diffMinutes = diffMs / (1000 * 60);
@@ -218,7 +225,7 @@ export default function TrainCard({
 
 	useEffect(() => {
 		// Load highlighted state from localStorage (safe parse)
-		let highlightedTrains: Record<string, any>;
+		let highlightedTrains: Record<string, HighlightedTrainData>;
 		try {
 			highlightedTrains = JSON.parse(
 				localStorage.getItem("highlightedTrains") || "{}",
@@ -397,7 +404,7 @@ export default function TrainCard({
 		setIsHighlighted(newHighlighted);
 
 		// Update localStorage (safe parse)
-		let highlightedTrains: Record<string, any>;
+		let highlightedTrains: Record<string, HighlightedTrainData>;
 		try {
 			highlightedTrains = JSON.parse(
 				localStorage.getItem("highlightedTrains") || "{}",
