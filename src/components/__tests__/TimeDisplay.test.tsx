@@ -91,7 +91,7 @@ describe("TimeDisplay", () => {
 			/>,
 		);
 
-		expect(getByText("+15 minuuttia")).toBeInTheDocument();
+		expect(getByText("+15 min")).toBeInTheDocument();
 	});
 
 	it("renders cancelled train correctly", () => {
@@ -125,7 +125,7 @@ describe("TimeDisplay", () => {
 			/>,
 		);
 
-		expect(queryByText("+0 minuuttia")).not.toBeInTheDocument();
+		expect(queryByText("+0 min")).not.toBeInTheDocument();
 	});
 
 	it("does not show delay indicator when train is cancelled", () => {
@@ -145,7 +145,7 @@ describe("TimeDisplay", () => {
 		);
 
 		// The delay indicator should not be visible for cancelled trains
-		const delayIndicator = queryByText("+15 minuuttia");
+		const delayIndicator = queryByText("+15 min");
 		expect(delayIndicator).not.toBeInTheDocument();
 	});
 });

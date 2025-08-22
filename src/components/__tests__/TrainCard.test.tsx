@@ -226,6 +226,6 @@ describe("TrainCard", () => {
 			<TrainCard {...defaultProps} train={delayedTrain} />,
 		);
 
-		expect(getByText("+15 minuuttia")).toBeInTheDocument();
+		expect(getByText("+15 min")).toBeInTheDocument();
 	});
 });

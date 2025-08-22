@@ -28,7 +28,7 @@ const TimeDisplay = ({
 							aria-label={`${t("late")} ${timeDifferenceMinutes} ${t("minutes")}`}
 							class="absolute top-0 left-0 px-3 py-1 sm:px-2 sm:py-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-lg text-base sm:text-base font-semibold shadow-lg"
 						>
-							{`+${timeDifferenceMinutes} ${t("minutes")}`}
+							{`+${timeDifferenceMinutes} min`}
 						</output>
 						<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} isCancelled={departureRow.cancelled} />
 					</>
