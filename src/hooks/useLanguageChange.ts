@@ -1,7 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 
 export function useLanguageChange() {
-	const [, setLanguageChange] = useState(0);
+	const [languageChange, setLanguageChange] = useState(0);
 
 	useEffect(() => {
 		const handleLanguageChange = () => {
@@ -12,4 +12,6 @@ export function useLanguageChange() {
 		return () =>
 			window.removeEventListener("languagechange", handleLanguageChange);
 	}, []);
+
+	return languageChange;
 }

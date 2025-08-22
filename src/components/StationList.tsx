@@ -15,6 +15,14 @@ import { t } from "../utils/translations";
 import StationListSkeleton from "./StationListSkeleton";
 import StationOption from "./StationOption";
 
+const normalizeKey = (s: string) =>
+	s
+		.toLowerCase()
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "") // remove diacritics
+		.replace(/\p{P}/gu, "") // remove all Unicode punctuation
+		.replace(/\s+/g, ""); // remove all whitespace
+
 interface Props {
 	stations: Station[];
 	onStationSelect: (station: Station) => void;
@@ -44,7 +52,7 @@ export default function StationList({
 	const finalInputRef = inputRef || localInputRef;
 	const listboxRef = useRef<HTMLDivElement>(null);
 
-	useLanguageChange();
+	const langToken = useLanguageChange();
 
 	const handleStationSelect = useCallback(
 		(station: Station) => {
@@ -85,14 +93,35 @@ export default function StationList({
 		onFocus?.();
 	};
 
+	const stationIndex = useMemo(
+		() =>
+			stations.map((s) => {
+				const name = s.name.toLowerCase();
+				const combined = `${s.name} (${s.shortCode})`.toLowerCase();
+				return {
+					ref: s,
+					name,
+					codeNorm: normalizeKey(s.shortCode),
+					combined,
+					combinedNorm: normalizeKey(combined),
+				};
+			}),
+		[stations, langToken],
+	);
+
 	const filteredStations = useMemo(() => {
-		const search = searchTerm.toLowerCase();
-		return stations.filter(
-			(station) =>
-				station.name.toLowerCase().includes(search) ||
-				station.shortCode.toLowerCase().includes(search),
-		);
-	}, [stations, searchTerm]);
+		const search = searchTerm.trim().toLowerCase();
+		const normalizedSearch = normalizeKey(searchTerm);
+		return stationIndex
+			.filter(
+				(i) =>
+					i.name.includes(search) ||
+					i.codeNorm.includes(normalizedSearch) ||
+					i.combined.includes(search) ||
+					i.combinedNorm.includes(normalizedSearch),
+			)
+			.map((i) => i.ref);
+	}, [stationIndex, searchTerm]);
 
 	const selectedStation = useMemo(
 		() => stations.find((s) => s.shortCode === selectedValue),
@@ -197,7 +226,9 @@ export default function StationList({
 					ref={listboxRef}
 					id="station-listbox"
 					data-testid="station-listbox"
-					class="absolute w-full mt-2 glass-card border border-gray-300 dark:border-gray-700 rounded-xl shadow-xl max-h-60 overflow-y-auto z-50 animate-slide-down backdrop-blur-md"
+					// biome-ignore lint/a11y/useSemanticElements: ARIA combobox requires a listbox popup; native <select> can't be used here.
+					role="listbox"
+					className="absolute w-full mt-2 glass-card border border-gray-300 dark:border-gray-700 rounded-xl shadow-xl max-h-60 overflow-y-auto z-50 animate-slide-down backdrop-blur-md"
 					style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
 				>
 					{isLoading ? (
