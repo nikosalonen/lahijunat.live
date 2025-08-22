@@ -376,7 +376,9 @@ export default function TrainList({
 
 			if (departureRow) {
 				const departureTime = new Date(
-					departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+					departureRow.actualTime ??
+						departureRow.liveEstimateTime ??
+						departureRow.scheduledTime,
 				);
 				const minutesToDeparture = Math.floor(
 					(departureTime.getTime() - currentTime.getTime()) / (1000 * 60),

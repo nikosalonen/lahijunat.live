@@ -137,12 +137,16 @@ export default function TrainCard({
 		}
 
 		const minutesToDeparture = formatMinutesToDeparture(
-			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+			departureRow.actualTime ??
+				departureRow.liveEstimateTime ??
+				departureRow.scheduledTime,
 			currentTime,
 		);
 
 		const departingSoon = isDepartingSoon(
-			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+			departureRow.actualTime ??
+				departureRow.liveEstimateTime ??
+				departureRow.scheduledTime,
 			currentTime,
 		);
 
