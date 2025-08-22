@@ -98,4 +98,19 @@ describe("TimeRow", () => {
 		const timeElement = container.querySelector("time");
 		expect(timeElement).toHaveAttribute("datetime", "2024-03-20T10:00:00.000Z");
 	});
+
+	it("does not show tilde when train is cancelled", () => {
+		const cancelledDelayedRow: Train["timeTableRows"][0] = {
+			...mockDepartureRow,
+			cancelled: true,
+			liveEstimateTime: "2024-03-20T10:15:00.000Z",
+			differenceInMinutes: 15,
+		};
+
+		const { queryByText } = render(
+			<TimeRow departureRow={cancelledDelayedRow} isCancelled={true} />,
+		);
+
+		expect(queryByText("~")).not.toBeInTheDocument();
+	});
 });

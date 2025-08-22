@@ -68,7 +68,7 @@ function getAdaptiveRefreshInterval(
 		const minutesToDeparture = Math.round((departureTime - now) / (1000 * 60));
 
 		// Check if train is late
-		const isLate = (departureRow.differenceInMinutes ?? 0) > 2;
+		const isLate = (departureRow.differenceInMinutes ?? 0) > 1;
 
 		if (
 			minutesToDeparture > 0 &&

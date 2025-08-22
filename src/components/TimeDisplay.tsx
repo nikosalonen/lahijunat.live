@@ -1,4 +1,3 @@
-import { useMemo } from "preact/hooks";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Train } from "../types";
 import { t } from "../utils/translations";
@@ -17,8 +16,7 @@ const TimeDisplay = ({
 	isCancelled?: boolean;
 }) => {
 	useLanguageChange();
-	return useMemo(
-		() => (
+	return (
 			<span
 				class={`text-xl sm:text-2xl font-medium ${isCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} min-w-0 relative pt-8 sm:pt-6`}
 			>
@@ -32,14 +30,12 @@ const TimeDisplay = ({
 						>
 							{`+${timeDifferenceMinutes} min`}
 						</output>
-						<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} />
+						<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} isCancelled={departureRow.cancelled} />
 					</>
 				) : (
-					<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} />
+					<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} isCancelled={departureRow.cancelled} />
 				)}
 			</span>
-		),
-		[departureRow, arrivalRow, timeDifferenceMinutes, isCancelled],
 	);
 };
 
