@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
+import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
 
@@ -139,16 +140,12 @@ export default function TrainCard({
 		}
 
 		const minutesToDeparture = formatMinutesToDeparture(
-			departureRow.actualTime ??
-				departureRow.liveEstimateTime ??
-				departureRow.scheduledTime,
+			getDepartureDate(departureRow).toISOString(),
 			currentTime,
 		);
 
 		const departingSoon = isDepartingSoon(
-			departureRow.actualTime ??
-				departureRow.liveEstimateTime ??
-				departureRow.scheduledTime,
+			getDepartureDate(departureRow).toISOString(),
 			currentTime,
 		);
 
@@ -158,7 +155,9 @@ export default function TrainCard({
 			arrivalRow?.liveEstimateTime ?? arrivalRow?.scheduledTime;
 		const duration = arrivalTime
 			? calculateDuration(
-					departureRow.actualTime ?? departureRow.scheduledTime,
+					departureRow.actualTime ??
+						departureRow.liveEstimateTime ??
+						departureRow.scheduledTime,
 					arrivalTime,
 				)
 			: null;

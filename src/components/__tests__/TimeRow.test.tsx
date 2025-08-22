@@ -121,11 +121,14 @@ describe("TimeRow", () => {
 			differenceInMinutes: 10,
 		};
 
-		const { getByText } = render(
+		const { getByText, container } = render(
 			<TimeRow departureRow={mockDepartureRow} arrivalRow={delayedArrivalRow} />,
 		);
 
-		// combined arrival display contains tilde and 13.10
-		getByText((content) => /~\s*13\.10/.test(content));
+		// arrival formatted time should reflect 11:10 instead of 11:00
+		getByText("13.10");
+		// tilde is rendered as aria-hidden
+		const hiddenTilde = container.querySelector('span[aria-hidden="true"]');
+		expect(hiddenTilde).not.toBeNull();
 	});
 });

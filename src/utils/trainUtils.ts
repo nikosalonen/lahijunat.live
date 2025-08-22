@@ -1,4 +1,4 @@
-import type { Duration } from "../types";
+import type { Duration, Train } from "../types";
 
 export const formatTime = (date: string) => {
 	return new Date(date).toLocaleTimeString("fi-FI", {
@@ -15,4 +15,10 @@ export const calculateDuration = (start: string, end: string): Duration => {
 		hours: Math.floor(durationMinutes / 60),
 		minutes: durationMinutes % 60,
 	};
+};
+
+export const getDepartureDate = (row: Train["timeTableRows"][0]): Date => {
+	return new Date(
+		row.actualTime ?? row.liveEstimateTime ?? row.scheduledTime,
+	);
 };

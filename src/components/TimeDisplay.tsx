@@ -16,13 +16,14 @@ const TimeDisplay = ({
 	isCancelled?: boolean;
 }) => {
 	useLanguageChange();
+	const rowIsCancelled = Boolean(isCancelled ?? departureRow.cancelled);
 	return (
 			<span
-				class={`text-xl sm:text-2xl font-medium ${isCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} min-w-0 relative pt-8 sm:pt-6`}
+				class={`text-xl sm:text-2xl font-medium ${rowIsCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} min-w-0 relative pt-8 sm:pt-6`}
 			>
 				{departureRow.liveEstimateTime &&
 				timeDifferenceMinutes > 0 &&
-				!isCancelled ? (
+				!rowIsCancelled ? (
 					<>
 						<output
 							aria-label={`${t("late")} ${timeDifferenceMinutes} ${t("minutes")}`}
@@ -30,10 +31,10 @@ const TimeDisplay = ({
 						>
 							{`+${timeDifferenceMinutes} min`}
 						</output>
-						<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} isCancelled={departureRow.cancelled} />
+						<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} isCancelled={rowIsCancelled} />
 					</>
 				) : (
-					<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} isCancelled={departureRow.cancelled} />
+					<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} isCancelled={rowIsCancelled} />
 				)}
 			</span>
 	);

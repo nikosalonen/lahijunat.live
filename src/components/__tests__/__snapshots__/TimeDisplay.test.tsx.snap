@@ -8,17 +8,11 @@ exports[`TimeDisplay > renders without arrival row 1`] = `
     <span
       class="block w-full text-gray-600 dark:text-gray-300 text-base sm:text-lg whitespace-nowrap"
     >
-       
       <time
         datetime="2024-03-20T10:00:00.000Z"
       >
         12.00
       </time>
-      <span
-        class="mx-1 sm:mx-2"
-      >
-        →
-      </span>
     </span>
   </span>
 </div>
