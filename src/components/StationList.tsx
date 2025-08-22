@@ -20,7 +20,8 @@ const normalizeKey = (s: string) =>
 		.toLowerCase()
 		.normalize("NFD")
 		.replace(/[\u0300-\u036f]/g, "") // remove diacritics
-		.replace(/[()[\]\s\-–—'’]/g, "");
+		.replace(/\p{P}/gu, "") // remove all Unicode punctuation
+		.replace(/\s+/g, ""); // remove all whitespace
 
 interface Props {
 	stations: Station[];
