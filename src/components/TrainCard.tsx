@@ -155,9 +155,7 @@ export default function TrainCard({
 			arrivalRow?.liveEstimateTime ?? arrivalRow?.scheduledTime;
 		const duration = arrivalTime
 			? calculateDuration(
-					departureRow.actualTime ??
-						departureRow.liveEstimateTime ??
-						departureRow.scheduledTime,
+					getDepartureDate(departureRow).toISOString(),
 					arrivalTime,
 				)
 			: null;
