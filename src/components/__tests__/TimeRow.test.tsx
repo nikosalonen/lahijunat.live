@@ -113,4 +113,19 @@ describe("TimeRow", () => {
 
 		expect(queryByText("~")).not.toBeInTheDocument();
 	});
+
+	it("shows tilde and uses live estimate for delayed arrival >1 min", () => {
+		const delayedArrivalRow = {
+			...mockArrivalRow,
+			liveEstimateTime: "2024-03-20T11:10:00.000Z",
+			differenceInMinutes: 10,
+		};
+
+		const { getByText } = render(
+			<TimeRow departureRow={mockDepartureRow} arrivalRow={delayedArrivalRow} />,
+		);
+
+		// combined arrival display contains tilde and 13.10
+		getByText((content) => /~\s*13\.10/.test(content));
+	});
 });

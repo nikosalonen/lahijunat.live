@@ -17,9 +17,20 @@ const TimeRow = ({
 		departureRow.differenceInMinutes > 1,
 	);
 
+	const useArrivalLiveEstimate = Boolean(
+		arrivalRow?.liveEstimateTime &&
+		!isCancelled &&
+		arrivalRow?.differenceInMinutes !== undefined &&
+		(arrivalRow?.differenceInMinutes as number) > 1,
+	);
+
 	const displayedTime = useLiveEstimate
 		? (departureRow.liveEstimateTime as string)
 		: departureRow.scheduledTime;
+
+	const arrivalDisplayedTime = useArrivalLiveEstimate
+		? (arrivalRow?.liveEstimateTime as string)
+		: arrivalRow?.scheduledTime;
 
 	return (
 			<span class="text-gray-600 dark:text-gray-300 text-lg sm:text-lg whitespace-nowrap overflow-hidden text-ellipsis">
@@ -28,7 +39,12 @@ const TimeRow = ({
 					{formatTime(displayedTime)}
 				</time>
 				<span class="mx-2">→</span>
-				{arrivalRow && formatTime(arrivalRow.scheduledTime)}
+				{arrivalRow && (
+					<>
+						{useArrivalLiveEstimate && "~"}
+						{arrivalDisplayedTime && formatTime(arrivalDisplayedTime)}
+					</>
+				)}
 			</span>
 	);
 };

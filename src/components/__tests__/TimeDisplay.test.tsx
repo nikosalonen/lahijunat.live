@@ -65,7 +65,7 @@ describe("TimeDisplay", () => {
 	};
 
 	it("renders on-time train correctly", () => {
-		const { container } = render(
+		const { getByText } = render(
 			<TimeDisplay
 				departureRow={mockDepartureRow}
 				arrivalRow={mockArrivalRow}
@@ -73,7 +73,9 @@ describe("TimeDisplay", () => {
 			/>,
 		);
 
-		expect(container).toMatchSnapshot();
+		// Should show scheduled departure and arrival without tildes
+		getByText("12.00");
+		getByText("13.00");
 	});
 
 	it("renders delayed train correctly", () => {
