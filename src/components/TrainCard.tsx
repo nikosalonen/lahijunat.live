@@ -197,15 +197,14 @@ export default function TrainCard({
 	// Handle depart/unde-part transitions when estimate jumps forward
 	useEffect(() => {
 		if (minutesToDeparture === null) return;
-		// Always cancel any pending RAF before scheduling a new one
-		if (fadeRafRef.current !== null) {
-			cancelAnimationFrame(fadeRafRef.current);
-			fadeRafRef.current = null;
-		}
-
 		if (minutesToDeparture < 0 && !hasDeparted) {
 			setHasDeparted(true);
 			setOpacity(1);
+			// Cancel any previous fade RAF just before scheduling a new one
+			if (fadeRafRef.current !== null) {
+				cancelAnimationFrame(fadeRafRef.current);
+				fadeRafRef.current = null;
+			}
 			fadeRafRef.current = requestAnimationFrame(() => {
 				setOpacity(0);
 			});
