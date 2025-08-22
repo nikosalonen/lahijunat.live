@@ -86,12 +86,22 @@ export default function StationList({
 	};
 
 	const filteredStations = useMemo(() => {
-		const search = searchTerm.toLowerCase();
-		return stations.filter(
-			(station) =>
-				station.name.toLowerCase().includes(search) ||
-				station.shortCode.toLowerCase().includes(search),
-		);
+		const search = searchTerm.toLowerCase().trim();
+		const normalizedSearch = search.replace(/[()[\]\s]/g, "");
+
+		return stations.filter((station) => {
+			const name = station.name.toLowerCase();
+			const code = station.shortCode.toLowerCase();
+			const combined = `${station.name} (${station.shortCode})`.toLowerCase();
+			const combinedNormalized = combined.replace(/[()[\]\s]/g, "");
+
+			return (
+				name.includes(search) ||
+				code.includes(normalizedSearch) ||
+				combined.includes(search) ||
+				combinedNormalized.includes(normalizedSearch)
+			);
+		});
 	}, [stations, searchTerm]);
 
 	const selectedStation = useMemo(
