@@ -13,6 +13,7 @@ interface Props {
 	destinationCode: string;
 	currentTime: Date;
 	onDepart?: () => void;
+	onReappear?: () => void;
 	getDurationSpeedType?: (
 		durationMinutes: number,
 	) => "fast" | "slow" | "normal";
@@ -94,6 +95,7 @@ export default function TrainCard({
 	destinationCode,
 	currentTime,
 	onDepart,
+	onReappear,
 	getDurationSpeedType,
 }: Props) {
 	const [, setLanguageChange] = useState(0);
@@ -206,8 +208,9 @@ export default function TrainCard({
 			// Estimation jumped forward; bring card back
 			setHasDeparted(false);
 			setOpacity(1);
+			onReappear?.();
 		}
-	}, [minutesToDeparture, hasDeparted, onDepart]);
+	}, [minutesToDeparture, hasDeparted, onDepart, onReappear]);
 
 	useEffect(() => {
 		// Load highlighted state from localStorage

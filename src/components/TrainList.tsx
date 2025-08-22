@@ -237,6 +237,14 @@ export default function TrainList({
 		}, FADE_DURATION);
 	}, []);
 
+	const handleTrainReappear = useCallback((trainNumber: string) => {
+		setDepartedTrains((prev) => {
+			const next = new Set(prev);
+			next.delete(trainNumber);
+			return next;
+		});
+	}, []);
+
 	useEffect(() => {
 		let startTime: number;
 		let animationFrame: number;
@@ -367,6 +375,9 @@ export default function TrainList({
 
 	const displayedTrains = (state.trains || [])
 		.filter((train) => {
+			// Filter out trains that have been manually marked as departed (post-fade)
+			if (departedTrains.has(train.trainNumber)) return false;
+
 			// Filter out trains that have actually departed (departed more than 2 minutes ago)
 			const departureRow = train.timeTableRows.find(
 				(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
@@ -434,6 +445,7 @@ export default function TrainList({
 								destinationCode={destinationCode}
 								currentTime={currentTime}
 								onDepart={() => handleTrainDeparted(train.trainNumber)}
+								onReappear={() => handleTrainReappear(train.trainNumber)}
 								getDurationSpeedType={getDurationSpeedType}
 							/>
 						</div>
