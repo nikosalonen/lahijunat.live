@@ -14,6 +14,10 @@ interface Props {
 	destinationCode: string;
 	currentTime: Date;
 	onDepart?: () => void;
+	/**
+	 * Called when a train that had been considered departed becomes non-departed again
+	 * due to its estimate moving back to now or the future (minutesToDeparture >= 0).
+	 */
 	onReappear?: () => void;
 	getDurationSpeedType?: (
 		durationMinutes: number,
@@ -365,9 +369,7 @@ export default function TrainCard({
 			);
 
 			if (departureRow) {
-				const departureTime = new Date(
-					departureRow.liveEstimateTime ?? departureRow.scheduledTime,
-				);
+				const departureTime = getDepartureDate(departureRow);
 				const removeAfter = new Date(departureTime.getTime() + 10 * 60 * 1000); // 10 minutes after departure
 
 				highlightedTrains[train.trainNumber] = {
