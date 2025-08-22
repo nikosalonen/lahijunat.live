@@ -18,17 +18,17 @@
 	"dependencies": {
 		"@astrojs/markdown-component": "^1.0.5",
 		"@astrojs/preact": "^4.1.0",
-		"@tailwindcss/vite": "^4.1.11",
-		"astro": "^5.12.9",
-		"marked": "^16.1.2",
-		"preact": "^10.27.0",
-		"tailwindcss": "^4.1.11"
+		"@tailwindcss/vite": "^4.1.12",
+		"astro": "^5.13.2",
+		"marked": "^16.2.0",
+		"preact": "^10.27.1",
+		"tailwindcss": "^4.1.12"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.1.4",
-		"@testing-library/jest-dom": "^6.6.4",
+		"@biomejs/biome": "2.2.0",
+		"@testing-library/jest-dom": "^6.8.0",
 		"@testing-library/preact": "^3.2.4",
-		"@types/node": "^24.2.1",
+		"@types/node": "^24.3.0",
 		"jsdom": "^26.1.0",
 		"vitest": "^3.2.4",
 		"workbox-cli": "^7.3.0"
