@@ -26,7 +26,7 @@ const TimeDisplay = ({
 					<>
 						<output
 							aria-label={`${t("late")} ${timeDifferenceMinutes} ${t("minutes")}`}
-							class="absolute top-0 left-0 px-3 py-1 sm:px-2 sm:py-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-lg text-base sm:text-base font-semibold shadow-lg"
+							class="absolute top-0 left-0 px-2 py-0.5 sm:px-2 sm:py-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-lg text-sm sm:text-base font-semibold shadow-lg"
 						>
 							{`+${timeDifferenceMinutes} min`}
 						</output>

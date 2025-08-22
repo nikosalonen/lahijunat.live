@@ -6,7 +6,7 @@ exports[`TimeDisplay > renders without arrival row 1`] = `
     class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-100 min-w-0 relative pt-8 sm:pt-6"
   >
     <span
-      class="text-gray-600 dark:text-gray-300 text-lg sm:text-lg whitespace-nowrap overflow-hidden text-ellipsis"
+      class="block w-full text-gray-600 dark:text-gray-300 text-base sm:text-lg whitespace-nowrap"
     >
        
       <time
@@ -15,7 +15,7 @@ exports[`TimeDisplay > renders without arrival row 1`] = `
         12.00
       </time>
       <span
-        class="mx-2"
+        class="mx-1 sm:mx-2"
       >
         →
       </span>
