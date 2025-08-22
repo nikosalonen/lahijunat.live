@@ -85,24 +85,44 @@ export default function StationList({
 		onFocus?.();
 	};
 
+	const normalizeKey = (s: string) =>
+		s
+			.toLowerCase()
+			.normalize("NFD")
+			.replace(/[\u0300-\u036f]/g, "") // remove diacritics
+			.replace(/[()[\]\s\-–—'’]/g, "");
+
+	const stationIndex = useMemo(
+		() =>
+			stations.map((s) => {
+				const name = s.name.toLowerCase();
+				const code = s.shortCode.toLowerCase();
+				const combined = `${s.name} (${s.shortCode})`.toLowerCase();
+				return {
+					ref: s,
+					name,
+					code,
+					codeNorm: normalizeKey(s.shortCode),
+					combined,
+					combinedNorm: normalizeKey(combined),
+				};
+			}),
+		[stations],
+	);
+
 	const filteredStations = useMemo(() => {
-		const search = searchTerm.toLowerCase().trim();
-		const normalizedSearch = search.replace(/[()[\]\s]/g, "");
-
-		return stations.filter((station) => {
-			const name = station.name.toLowerCase();
-			const code = station.shortCode.toLowerCase();
-			const combined = `${station.name} (${station.shortCode})`.toLowerCase();
-			const combinedNormalized = combined.replace(/[()[\]\s]/g, "");
-
-			return (
-				name.includes(search) ||
-				code.includes(normalizedSearch) ||
-				combined.includes(search) ||
-				combinedNormalized.includes(normalizedSearch)
-			);
-		});
-	}, [stations, searchTerm]);
+		const search = searchTerm.trim().toLowerCase();
+		const normalizedSearch = normalizeKey(searchTerm);
+		return stationIndex
+			.filter(
+				(i) =>
+					i.name.includes(search) ||
+					i.codeNorm.includes(normalizedSearch) ||
+					i.combined.includes(search) ||
+					i.combinedNorm.includes(normalizedSearch),
+			)
+			.map((i) => i.ref);
+	}, [stationIndex, searchTerm]);
 
 	const selectedStation = useMemo(
 		() => stations.find((s) => s.shortCode === selectedValue),
