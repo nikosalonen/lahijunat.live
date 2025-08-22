@@ -23,7 +23,7 @@ const TimeRow = ({
 		!rowIsCancelled &&
 		!arrivalRow?.cancelled &&
 		arrivalRow?.differenceInMinutes !== undefined &&
-		(arrivalRow?.differenceInMinutes as number) > 1,
+		arrivalRow.differenceInMinutes > 1,
 	);
 
 	const displayedTime = useLiveEstimate
