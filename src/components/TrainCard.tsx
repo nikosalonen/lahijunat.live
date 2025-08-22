@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
-import { getDepartureDate } from "../utils/trainUtils";
+import { calculateDuration, getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
 
@@ -24,17 +24,6 @@ interface Props {
 	) => "fast" | "slow" | "normal";
 }
 
-const calculateDuration = (start: Date | string, end: Date | string) => {
-	const startMs =
-		typeof start === "string" ? new Date(start).getTime() : start.getTime();
-	const endMs = typeof end === "string" ? new Date(end).getTime() : end.getTime();
-	const durationMinutes = Math.round((endMs - startMs) / (1000 * 60));
-	return {
-		hours: Math.floor(durationMinutes / 60),
-		minutes: durationMinutes % 60,
-	};
-};
-
 const formatMinutesToDeparture = (departure: Date, currentTime: Date) => {
 	const diffMs = departure.getTime() - currentTime.getTime();
 	const diffMinutes = diffMs / (1000 * 60);
@@ -44,7 +33,8 @@ const formatMinutesToDeparture = (departure: Date, currentTime: Date) => {
 };
 
 const isDepartingSoon = (departure: Date, currentTime: Date) => {
-	const diffMinutes = (departure.getTime() - currentTime.getTime()) / (1000 * 60);
+	const diffMinutes =
+		(departure.getTime() - currentTime.getTime()) / (1000 * 60);
 	return diffMinutes >= 0 && diffMinutes <= 5;
 };
 
@@ -157,10 +147,7 @@ export default function TrainCard({
 		const arrivalTime =
 			arrivalRow?.liveEstimateTime ?? arrivalRow?.scheduledTime;
 		const duration = arrivalTime
-			? calculateDuration(
-					getDepartureDate(departureRow),
-					arrivalTime,
-				)
+			? calculateDuration(getDepartureDate(departureRow), arrivalTime)
 			: null;
 
 		const durationSpeedType =
@@ -194,7 +181,7 @@ export default function TrainCard({
 		getDurationSpeedType,
 	]);
 
-	// Handle depart/unde-part transitions when estimate jumps forward
+	// Handle depart/undepart transitions when estimate jumps forward
 	useEffect(() => {
 		if (minutesToDeparture === null) return;
 		if (minutesToDeparture < 0 && !hasDeparted) {
@@ -230,10 +217,15 @@ export default function TrainCard({
 	}, [minutesToDeparture, hasDeparted, onDepart, onReappear]);
 
 	useEffect(() => {
-		// Load highlighted state from localStorage
-		const highlightedTrains = JSON.parse(
-			localStorage.getItem("highlightedTrains") || "{}",
-		);
+		// Load highlighted state from localStorage (safe parse)
+		let highlightedTrains: Record<string, any>;
+		try {
+			highlightedTrains = JSON.parse(
+				localStorage.getItem("highlightedTrains") || "{}",
+			);
+		} catch {
+			highlightedTrains = {};
+		}
 		const trainData = highlightedTrains[train.trainNumber];
 
 		if (trainData) {
@@ -324,10 +316,18 @@ export default function TrainCard({
 		const MAX_AGE_MS = 1 * 60 * 60 * 1000; // 1 hour
 		const MAX_ENTRIES = 1000;
 
-		// Always read the latest from localStorage
-		const latestTrackMemory = JSON.parse(
-			localStorage.getItem("trackMemory") || "{}",
-		);
+		// Always read the latest from localStorage (safe parse)
+		let latestTrackMemory: Record<string, { track: string; timestamp: number }>;
+		try {
+			latestTrackMemory = JSON.parse(
+				localStorage.getItem("trackMemory") || "{}",
+			);
+		} catch {
+			latestTrackMemory = {} as Record<
+				string,
+				{ track: string; timestamp: number }
+			>;
+		}
 
 		// Cleanup old entries
 		for (const journeyKey of Object.keys(latestTrackMemory)) {
@@ -396,10 +396,15 @@ export default function TrainCard({
 		hapticImpact();
 		setIsHighlighted(newHighlighted);
 
-		// Update localStorage
-		const highlightedTrains = JSON.parse(
-			localStorage.getItem("highlightedTrains") || "{}",
-		);
+		// Update localStorage (safe parse)
+		let highlightedTrains: Record<string, any>;
+		try {
+			highlightedTrains = JSON.parse(
+				localStorage.getItem("highlightedTrains") || "{}",
+			);
+		} catch {
+			highlightedTrains = {};
+		}
 
 		if (newHighlighted) {
 			// When highlighting, set removal time to 10 minutes after departure
