@@ -15,6 +15,13 @@ import { t } from "../utils/translations";
 import StationListSkeleton from "./StationListSkeleton";
 import StationOption from "./StationOption";
 
+const normalizeKey = (s: string) =>
+	s
+		.toLowerCase()
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "") // remove diacritics
+		.replace(/[()[\]\s\-–—'’]/g, "");
+
 interface Props {
 	stations: Station[];
 	onStationSelect: (station: Station) => void;
@@ -44,7 +51,7 @@ export default function StationList({
 	const finalInputRef = inputRef || localInputRef;
 	const listboxRef = useRef<HTMLDivElement>(null);
 
-	useLanguageChange();
+	const langToken = useLanguageChange();
 
 	const handleStationSelect = useCallback(
 		(station: Station) => {
@@ -85,29 +92,20 @@ export default function StationList({
 		onFocus?.();
 	};
 
-	const normalizeKey = (s: string) =>
-		s
-			.toLowerCase()
-			.normalize("NFD")
-			.replace(/[\u0300-\u036f]/g, "") // remove diacritics
-			.replace(/[()[\]\s\-–—'’]/g, "");
-
 	const stationIndex = useMemo(
 		() =>
 			stations.map((s) => {
 				const name = s.name.toLowerCase();
-				const code = s.shortCode.toLowerCase();
 				const combined = `${s.name} (${s.shortCode})`.toLowerCase();
 				return {
 					ref: s,
 					name,
-					code,
 					codeNorm: normalizeKey(s.shortCode),
 					combined,
 					combinedNorm: normalizeKey(combined),
 				};
 			}),
-		[stations],
+		[stations, langToken],
 	);
 
 	const filteredStations = useMemo(() => {
