@@ -225,7 +225,8 @@ export default function StationList({
 					ref={listboxRef}
 					id="station-listbox"
 					data-testid="station-listbox"
-					class="absolute w-full mt-2 glass-card border border-gray-300 dark:border-gray-700 rounded-xl shadow-xl max-h-60 overflow-y-auto z-50 animate-slide-down backdrop-blur-md"
+					role="listbox"
+					className="absolute w-full mt-2 glass-card border border-gray-300 dark:border-gray-700 rounded-xl shadow-xl max-h-60 overflow-y-auto z-50 animate-slide-down backdrop-blur-md"
 					style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
 				>
 					{isLoading ? (
