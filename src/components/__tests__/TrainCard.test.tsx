@@ -228,4 +228,25 @@ describe("TrainCard", () => {
 
 		expect(getByText("+15 min")).toBeInTheDocument();
 	});
+
+	it("restores card when estimate jumps forward after being negative", () => {
+		const pastTime = new Date("2024-03-20T10:01:00.000Z");
+		const { rerender, container } = render(
+			<TrainCard {...defaultProps} currentTime={pastTime} />,
+		);
+
+		// Departure should have triggered
+		expect(defaultProps.onDepart).toHaveBeenCalled();
+
+		// Estimate jumps forward: set current time back to before departure
+		rerender(
+			<TrainCard
+				{...defaultProps}
+				currentTime={new Date("2024-03-20T09:59:00.000Z")}
+			/>,
+		);
+
+		// Card should be visible again
+		expect(container.firstChild).toHaveStyle("opacity: 1");
+	});
 });
