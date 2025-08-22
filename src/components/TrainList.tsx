@@ -367,9 +367,6 @@ export default function TrainList({
 
 	const displayedTrains = (state.trains || [])
 		.filter((train) => {
-			// Filter out trains that have been manually marked as departed
-			if (departedTrains.has(train.trainNumber)) return false;
-
 			// Filter out trains that have actually departed (departed more than 2 minutes ago)
 			const departureRow = train.timeTableRows.find(
 				(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
@@ -422,7 +419,7 @@ export default function TrainList({
 						<div
 							key={train.trainNumber}
 							class={`transition-[transform,opacity] duration-700 ease-in-out hover-lift ${
-								departedTrains.has(train.trainNumber.toString())
+								departedTrains.has(train.trainNumber)
 									? "animate-train-depart"
 									: "animate-scale-in"
 							}`}
