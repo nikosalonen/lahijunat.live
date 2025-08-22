@@ -192,17 +192,20 @@ export default function TrainCard({
 		getDurationSpeedType,
 	]);
 
-	// Call onDepart when the train transitions from not departed to departed
+	// Handle depart/unde-part transitions when estimate jumps forward
 	useEffect(() => {
-		if (!minutesToDeparture) return;
+		if (minutesToDeparture === null) return;
 		if (minutesToDeparture < 0 && !hasDeparted) {
 			setHasDeparted(true);
 			setOpacity(1);
-			// Start fade out
 			requestAnimationFrame(() => {
 				setOpacity(0);
 			});
 			onDepart?.();
+		} else if (minutesToDeparture >= 0 && hasDeparted) {
+			// Estimation jumped forward; bring card back
+			setHasDeparted(false);
+			setOpacity(1);
 		}
 	}, [minutesToDeparture, hasDeparted, onDepart]);
 
