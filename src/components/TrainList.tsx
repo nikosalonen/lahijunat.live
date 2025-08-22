@@ -27,6 +27,7 @@ interface Props {
 const MemoizedTrainCard = memo(TrainCard);
 const INITIAL_TRAIN_COUNT = 15;
 const FADE_DURATION = 3000; // 3 seconds to match the animation duration
+const DEPARTED_GRACE_MINUTES = -2; // How long to keep showing a train after departure
 
 // Adaptive refresh intervals
 const REFRESH_INTERVALS = {
@@ -384,8 +385,8 @@ export default function TrainList({
 					(departureTime.getTime() - currentTime.getTime()) / (1000 * 60),
 				);
 
-				// Don't show trains that departed more than 2 minutes ago
-				return minutesToDeparture > -2;
+				// Don't show trains that departed more than the grace period ago
+				return minutesToDeparture > DEPARTED_GRACE_MINUTES;
 			}
 
 			return true;
