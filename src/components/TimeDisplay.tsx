@@ -30,10 +30,10 @@ const TimeDisplay = ({
 						>
 							{`+${timeDifferenceMinutes} ${t("minutes")}`}
 						</output>
-						<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} />
+						<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} isCancelled={departureRow.cancelled} />
 					</>
 				) : (
-					<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} />
+					<TimeRow departureRow={departureRow} arrivalRow={arrivalRow} isCancelled={departureRow.cancelled} />
 				)}
 			</span>
 	);

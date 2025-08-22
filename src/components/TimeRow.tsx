@@ -4,12 +4,15 @@ import { formatTime } from "../utils/trainUtils";
 const TimeRow = ({
 	departureRow,
 	arrivalRow,
+	isCancelled,
 }: {
 	departureRow: Train["timeTableRows"][0];
 	arrivalRow?: Train["timeTableRows"][0];
+	isCancelled?: boolean;
 }) => (
 	<span class="text-gray-600 dark:text-gray-300 text-lg sm:text-lg whitespace-nowrap overflow-hidden text-ellipsis">
 		{departureRow.liveEstimateTime &&
+		!isCancelled &&
 		departureRow.differenceInMinutes !== undefined &&
 		departureRow.differenceInMinutes > 2
 			? "~"
