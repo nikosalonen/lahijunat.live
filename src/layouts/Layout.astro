@@ -207,21 +207,12 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
         });
       }
 
-      // PWA Back Button Handling (inline to ensure it works in production)
+            // PWA Back Button Handling (inline to ensure it works in production)
       // Check if the app is currently running in PWA standalone mode
       function isPWAMode() {
         return window.matchMedia('(display-mode: standalone)').matches ||
                navigator.standalone === true ||
                document.referrer.includes('android-app://');
-      }
-
-      // Check if we're currently on a "root" page where back button should exit
-      function isOnRootPage() {
-        const path = window.location.pathname;
-        return path === '/' ||
-               path === '/en' ||
-               path === '/fi' ||
-               (path === '/index' || path === '/en/index' || path === '/fi/index');
       }
 
       // Attempt to exit the PWA
@@ -255,35 +246,42 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
         // Only set up in PWA mode
         if (!isPWAMode()) return;
 
-        let hasSetupBackHandler = false;
-
         // Handle the popstate event (browser back button)
         const handleBackButton = (event) => {
-          // Check if we're on a root page and should exit
-          if (isOnRootPage()) {
-            // Prevent default back navigation
-            event.preventDefault();
-            event.stopPropagation();
+          // In PWA mode, ALWAYS prevent back navigation within the app
+          event.preventDefault();
+          event.stopPropagation();
 
-            // Exit the PWA
+          // Show confirmation dialog before exiting (with language support)
+          const isEnglish = window.location.pathname.startsWith('/en');
+          const confirmMessage = isEnglish ? 'Exit app?' : 'Poistu sovelluksesta?';
+          const shouldExit = confirm(confirmMessage);
+
+          if (shouldExit) {
             exitPWA();
+          } else {
+            // If user cancels, push a new state to stay on the current page
+            window.history.pushState(null, '', window.location.href);
           }
         };
 
         // Add event listener for back button
         window.addEventListener('popstate', handleBackButton, true);
 
-        // Push an initial state to enable back button detection on root pages
-        // Only do this once to avoid creating excessive history entries
-        if (!hasSetupBackHandler && isOnRootPage()) {
-          window.history.pushState({ pwaRoot: true }, '', window.location.href);
-          hasSetupBackHandler = true;
-        }
+        // Push an initial state to enable back button detection
+        // This creates a history entry that we can detect when backing out of
+        window.history.pushState({ pwaApp: true }, '', window.location.href);
 
         // Handle Android hardware back button (if available)
         document.addEventListener('backbutton', (event) => {
-          if (isOnRootPage()) {
-            event.preventDefault();
+          event.preventDefault();
+
+          // Show confirmation dialog before exiting (with language support)
+          const isEnglish = window.location.pathname.startsWith('/en');
+          const confirmMessage = isEnglish ? 'Exit app?' : 'Poistu sovelluksesta?';
+          const shouldExit = confirm(confirmMessage);
+
+          if (shouldExit) {
             exitPWA();
           }
         }, false);
