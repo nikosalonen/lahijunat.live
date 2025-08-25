@@ -210,67 +210,107 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
             // PWA Back Button Handling (inline to ensure it works in production)
       // Check if the app is currently running in PWA standalone mode
       function isPWAMode() {
-        return window.matchMedia('(display-mode: standalone)').matches ||
-               navigator.standalone === true ||
-               document.referrer.includes('android-app://');
+        // Primary reliable indicators
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+          return true;
+        }
+
+        if (navigator.standalone === true) {
+          return true;
+        }
+
+        // Android referrer as weak hint only when there's evidence of fresh launch
+        if (document.referrer.includes('android-app://')) {
+          // Only trust android-app referrer when history indicates fresh entry
+          const hasFreshHistory = window.history.length <= 1 || history.state === null;
+          return hasFreshHistory;
+        }
+
+        return false;
       }
 
       // Attempt to exit the PWA
       function exitPWA() {
         try {
-          // Method 1: Try to close the window (works in some PWA contexts)
+          // Best-effort attempt to close the window (works in some PWA contexts)
           window.close();
 
-          // Method 2: Fallback for platforms that don't support window.close()
+          // If window.close() doesn't work immediately, try fallback after a brief delay
           setTimeout(() => {
-            if (!document.hidden) {
-              // Navigate back or try system exit
-              if (window.history.length > 1) {
-                window.history.back();
-              } else {
-                // Last resort: try to navigate to a system URI
-                window.location.href = 'about:blank';
-              }
+            // Only navigate back if there's actual history to go back to
+            if (window.history.length > 1) {
+              window.history.back();
             }
+            // Otherwise do nothing - don't strand the user
           }, 100);
 
         } catch (error) {
-          console.log('PWA exit method not available:', error);
-          // Fallback: just go back in history
-          window.history.back();
+          console.log('PWA exit method failed:', error);
+          // Only attempt history.back() if there's history to go back to
+          if (window.history.length > 1) {
+            window.history.back();
+          }
         }
       }
 
-      // Set up PWA back button handling
+      // Set up PWA back button handling with root-only sentinel pattern
       function setupPWABackButton() {
         // Only set up in PWA mode
         if (!isPWAMode()) return;
 
-        // Handle the popstate event (browser back button)
+        // Check if current page is a root page where back should exit
+        function isOnRootPage() {
+          const path = window.location.pathname;
+
+          // Root pages where back should exit
+          if (path === '/' || path === '/en' || path === '/fi' ||
+              path === '/index' || path === '/en/index' || path === '/fi/index') {
+            return true;
+          }
+
+          // Station combination pages (e.g., /TKL/HKI, /en/HKI/TKL)
+          const stationPattern = /^(\/en)?\/([A-ZÄÖÜ]{2,4})(\/([A-ZÄÖÜ]{2,4}))?$/;
+          return stationPattern.test(path);
+        }
+
+        let sentinelPushed = false;
+
+        // Push sentinel state when on root page
+        function pushSentinelIfNeeded() {
+          if (isOnRootPage() && !sentinelPushed) {
+            window.history.pushState({ pwaExitSentinel: true }, '', window.location.href);
+            sentinelPushed = true;
+          }
+        }
+
+        // Handle popstate - only intercept when hitting sentinel from root page
         const handleBackButton = (event) => {
-          // In PWA mode, ALWAYS prevent back navigation within the app
-          event.preventDefault();
-          event.stopPropagation();
+          // If we're hitting the sentinel, user is trying to exit from root
+          if (event.state && event.state.pwaExitSentinel) {
+            // Show confirmation dialog (with language support)
+            const isEnglish = window.location.pathname.startsWith('/en');
+            const confirmMessage = isEnglish ? 'Exit app?' : 'Poistu sovelluksesta?';
+            const shouldExit = confirm(confirmMessage);
 
-          // Show confirmation dialog before exiting (with language support)
-          const isEnglish = window.location.pathname.startsWith('/en');
-          const confirmMessage = isEnglish ? 'Exit app?' : 'Poistu sovelluksesta?';
-          const shouldExit = confirm(confirmMessage);
-
-          if (shouldExit) {
-            exitPWA();
+            if (shouldExit) {
+              exitPWA();
+            } else {
+              // User cancelled - restore sentinel guard for continued exit detection
+              window.history.pushState({ pwaExitSentinel: true }, '', window.location.href);
+            }
           } else {
-            // If user cancels, push a new state to stay on the current page
-            window.history.pushState(null, '', window.location.href);
+            // Normal navigation - reset sentinel state and allow
+            sentinelPushed = false;
+            // Re-push sentinel if we're now on a root page
+            setTimeout(pushSentinelIfNeeded, 0);
           }
         };
 
-        // Add event listener for back button
-        window.addEventListener('popstate', handleBackButton, true);
+        // Add popstate listener (no preventDefault - let navigation happen)
+        window.addEventListener('popstate', handleBackButton);
 
-        // Push an initial state to enable back button detection
-        // This creates a history entry that we can detect when backing out of
-        window.history.pushState({ pwaApp: true }, '', window.location.href);
+        // Push initial sentinel if we start on a root page
+        pushSentinelIfNeeded();
 
         // Handle Android hardware back button (if available)
         document.addEventListener('backbutton', (event) => {
