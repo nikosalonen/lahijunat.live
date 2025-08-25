@@ -90,7 +90,7 @@ export default function StationManager({
 
 	// Mobile accordion state - expanded by default if no stations selected
 	const [isStationSelectorExpanded, setIsStationSelectorExpanded] = useState(
-		!initialFromStation || !initialToStation
+		!initialFromStation || !initialToStation,
 	);
 
 	const hasMounted = useHasMounted();
@@ -367,6 +367,23 @@ export default function StationManager({
 		}
 	};
 
+	// Persist selections to localStorage on change
+	useEffect(() => {
+		if (selectedOrigin) {
+			localStorage.setItem("selectedOrigin", selectedOrigin);
+		} else {
+			localStorage.removeItem("selectedOrigin");
+		}
+	}, [selectedOrigin]);
+
+	useEffect(() => {
+		if (selectedDestination) {
+			localStorage.setItem("selectedDestination", selectedDestination);
+		} else {
+			localStorage.removeItem("selectedDestination");
+		}
+	}, [selectedDestination]);
+
 	// Update URL when stations change
 	useEffect(() => {
 		if (typeof window === "undefined") return;
@@ -445,9 +462,82 @@ export default function StationManager({
 		[fetchDestinations],
 	);
 
+	const handleSwap = useCallback(async () => {
+		if (!selectedOrigin || !selectedDestination) return;
+
+		hapticMedium();
+		// Set swapping flags and timestamp to prevent dropdown from showing
+		setIsSwapping(true);
+		isSwappingRef.current = true;
+		lastSwapTimeRef.current = Date.now();
+		setOpenList(null);
+
+		// Use a short delay to allow UI to update before swapping
+		setTimeout(() => {
+			const temp = selectedOrigin;
+
+			setSelectedOrigin(selectedDestination);
+			setSelectedDestination(temp);
+			// Keep storage in sync for PWA restores
+			if (selectedDestination) {
+				localStorage.setItem("selectedOrigin", selectedDestination);
+			} else {
+				localStorage.removeItem("selectedOrigin");
+			}
+			if (temp) {
+				localStorage.setItem("selectedDestination", temp);
+			} else {
+				localStorage.removeItem("selectedDestination");
+			}
+
+			// Update the URL state immediately after setting local state
+			if (typeof window !== "undefined") {
+				const newPath =
+					selectedDestination && temp
+						? `/${selectedDestination}/${temp}`
+						: selectedDestination
+							? `/${selectedDestination}`
+							: "/";
+				window.history.pushState({}, "", newPath);
+			}
+
+			// If we had a selected destination, reset destinations to all stations
+			if (selectedDestination) {
+				setAvailableDestinations(stations);
+			}
+		}, 50);
+
+		// After the swap, load destinations for the new origin
+		setTimeout(async () => {
+			if (selectedDestination) {
+				setIsLoadingDestinations(true);
+				try {
+					const newDestinations =
+						await fetchTrainsLeavingFromStation(selectedDestination);
+					setAvailableDestinations(newDestinations);
+				} catch (error) {
+					console.error("Error loading destinations:", error);
+					setAvailableDestinations(stations);
+				} finally {
+					setIsLoadingDestinations(false);
+				}
+			}
+		}, 100);
+
+		// Reset swapping flags after everything is complete
+		setTimeout(() => {
+			setIsSwapping(false);
+			isSwappingRef.current = false;
+		}, 150);
+	}, [selectedOrigin, selectedDestination, stations]);
+
 	// Find selected stations for summary
-	const selectedOriginStation = stations.find(s => s.shortCode === selectedOrigin);
-	const selectedDestinationStation = stations.find(s => s.shortCode === selectedDestination);
+	const selectedOriginStation = stations.find(
+		(s) => s.shortCode === selectedOrigin,
+	);
+	const selectedDestinationStation = stations.find(
+		(s) => s.shortCode === selectedDestination,
+	);
 
 	return (
 		<div className="w-full max-w-4xl mx-auto px-2 sm:px-4 py-2 sm:p-6">
@@ -460,8 +550,12 @@ export default function StationManager({
 				<div className="flex items-center gap-2">
 					<button
 						type="button"
-						onClick={() => setIsStationSelectorExpanded(!isStationSelectorExpanded)}
+						onClick={() =>
+							setIsStationSelectorExpanded(!isStationSelectorExpanded)
+						}
 						className="flex-grow btn btn-ghost normal-case justify-between p-3 h-auto min-h-0"
+						aria-expanded={isStationSelectorExpanded}
+						aria-controls="station-selector"
 					>
 						<div className="text-left flex-grow">
 							{selectedOrigin && selectedDestination ? (
@@ -474,9 +568,19 @@ export default function StationManager({
 											{selectedOrigin}
 										</div>
 									</div>
-									<svg className="w-4 h-4 flex-shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<svg
+										className="w-4 h-4 flex-shrink-0 opacity-60"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
 										<title>Route direction</title>
-										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth="2"
+											d="M17 8l4 4m0 0l-4 4m4-4H3"
+										/>
 									</svg>
 									<div className="flex-grow text-right">
 										<div className="font-medium text-base leading-tight">
@@ -494,13 +598,18 @@ export default function StationManager({
 							)}
 						</div>
 						<svg
-							className={`w-5 h-5 ml-3 transition-transform ${isStationSelectorExpanded ? 'rotate-180' : ''}`}
+							className={`w-5 h-5 ml-3 transition-transform ${isStationSelectorExpanded ? "rotate-180" : ""}`}
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
 						>
 							<title>Toggle station selector</title>
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M19 9l-7 7-7-7"
+							/>
 						</svg>
 					</button>
 
@@ -508,68 +617,18 @@ export default function StationManager({
 					{selectedOrigin && selectedDestination && (
 						<button
 							type="button"
-							onClick={async () => {
-								hapticMedium();
-								// Set swapping flags and timestamp to prevent dropdown from showing
-								setIsSwapping(true);
-								isSwappingRef.current = true;
-								lastSwapTimeRef.current = Date.now();
-								setOpenList(null);
-
-								// Use a short delay to allow UI to update before swapping
-								setTimeout(() => {
-									const temp = selectedOrigin;
-									const _tempDest = availableDestinations;
-
-									setSelectedOrigin(selectedDestination);
-									setSelectedDestination(temp);
-
-									// If both values were non-null, we need to update the URL
-									if (selectedOrigin && selectedDestination) {
-										const newPath = `/${selectedDestination}/${temp}`;
-										window.history.pushState({}, "", newPath);
-									}
-
-									// If we had a selected destination, reset destinations to all stations
-									if (selectedDestination) {
-										setAvailableDestinations(stations);
-									}
-								}, 50);
-
-								// After the swap, load destinations for the new origin
-								setTimeout(async () => {
-									if (selectedDestination) {
-										setIsLoadingDestinations(true);
-										try {
-											const newDestinations = await fetchTrainsLeavingFromStation(
-												selectedDestination,
-											);
-											setAvailableDestinations(newDestinations);
-										} catch (error) {
-											console.error("Error loading destinations:", error);
-											setAvailableDestinations(stations);
-										} finally {
-											setIsLoadingDestinations(false);
-										}
-									}
-								}, 100);
-
-								// Reset swapping flags after everything is complete
-								setTimeout(() => {
-									setIsSwapping(false);
-									isSwappingRef.current = false;
-								}, 150);
-							}}
+							onClick={handleSwap}
 							disabled={!selectedOrigin || !selectedDestination || isSwapping}
-							className="btn btn-outline btn-primary btn-sm w-12 h-12 flex-shrink-0
+							className="btn w-12 h-12 flex-shrink-0 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
 									disabled:opacity-50 disabled:cursor-not-allowed
-									touch-manipulation select-none tooltip tooltip-top"
+									touch-manipulation select-none tooltip tooltip-top
+									shadow-lg hover:shadow-xl transition-all duration-200"
 							data-tip={t("swapDirection")}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
-								width="20"
-								height="20"
+								width="24"
+								height="24"
 								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"
@@ -591,228 +650,181 @@ export default function StationManager({
 			</div>
 
 			{/* Station selector - collapsible on mobile */}
-			<div className={`collapse ${isStationSelectorExpanded ? 'collapse-open' : 'collapse-close'} sm:collapse-open`}>
-				<div className="collapse-content px-0">
+			<div
+				className={`collapse ${isStationSelectorExpanded ? "collapse-open" : "collapse-close"} sm:collapse-open`}
+			>
+				<div id="station-selector" className="collapse-content px-0">
 					<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
-				<div className="space-y-2">
-					<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
-						{t("from")}
-					</h3>
-					<div className="flex flex-row-reverse items-center gap-2">
-						<div className="join">
-							<button
-								type="button"
-								onClick={handleLocationRequest}
-								className={`btn btn-outline btn-primary join-item w-12 h-12
+						<div className="space-y-2">
+							<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
+								{t("from")}
+							</h3>
+							<div className="flex flex-row-reverse items-center gap-2">
+								<div className="flex">
+									<button
+										type="button"
+										onClick={handleLocationRequest}
+										className={`btn w-12 h-12 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
 										disabled:opacity-50 disabled:cursor-not-allowed
 										touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
+										shadow-lg hover:shadow-xl transition-all duration-200 rounded-r-none
 										${isLocating ? "animate-bounce-subtle" : ""}`}
-								aria-label="Paikanna"
-								data-tip={t("locate")}
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 100 100"
-									width="28"
-									height="28"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="4"
-								>
-									<title>{t("locate")}</title>
-									{/* Outer Circle */}
-									<circle cx="50" cy="50" r="40" />
-									{/* Inner Circle with smaller radius */}
-									<circle cx="50" cy="50" r="8" />
-									{/* Shorter Crosshair Lines for cleaner look */}
-									<line x1="50" y1="10" x2="50" y2="35" />
-									<line x1="50" y1="65" x2="50" y2="90" />
-									<line x1="10" y1="50" x2="35" y2="50" />
-									<line x1="65" y1="50" x2="90" y2="50" />
-									{/* Slightly smaller center dot */}
-									<circle cx="50" cy="50" r="2" fill="currentColor" />
-								</svg>
-							</button>
-							{/* Swap button hidden on mobile since it's available inline above */}
-							<button
-								type="button"
-								onClick={async () => {
-									hapticMedium();
-									// Set swapping flags and timestamp to prevent dropdown from showing
-									setIsSwapping(true);
-									isSwappingRef.current = true;
-									lastSwapTimeRef.current = Date.now();
-									setOpenList(null);
-
-									// Use a short delay to allow UI to update before swapping
-									setTimeout(() => {
-										const temp = selectedOrigin;
-										const _tempDest = availableDestinations;
-
-										setSelectedOrigin(selectedDestination);
-										setSelectedDestination(temp);
-
-										// Update the URL state immediately after setting local state
-										if (typeof window !== "undefined") {
-											const newPath = selectedDestination && temp
-												? `/${selectedDestination}/${temp}`
-												: selectedDestination
-													? `/${selectedDestination}`
-													: "/";
-											window.history.pushState({}, "", newPath);
-										}
-
-										// If we had a selected destination, reset destinations to all stations
-										if (selectedDestination) {
-											setAvailableDestinations(stations);
-										}
-									}, 50);
-
-									// After the swap, load destinations for the new origin
-									setTimeout(async () => {
-										if (selectedDestination) {
-											setIsLoadingDestinations(true);
-											try {
-												const newDestinations = await fetchTrainsLeavingFromStation(
-													selectedDestination,
-												);
-												setAvailableDestinations(newDestinations);
-											} catch (error) {
-												console.error("Error loading destinations:", error);
-												setAvailableDestinations(stations);
-											} finally {
-												setIsLoadingDestinations(false);
-											}
-										}
-									}, 100);
-
-									// Reset swapping flags after everything is complete
-									setTimeout(() => {
-										setIsSwapping(false);
-										isSwappingRef.current = false;
-									}, 150);
-								}}
-								disabled={!selectedOrigin || !selectedDestination}
-								className="hidden sm:block btn btn-outline btn-primary join-item w-12 h-12
-										disabled:opacity-50 disabled:cursor-not-allowed
-										touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top"
-								data-tip={t("swapDirection")}
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="20"
-									height="20"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									className="mx-auto"
-									aria-labelledby="swapDirectionIcon"
-								>
-									<title id="swapDirectionIcon">{t("swapDirection")}</title>
-									<polyline points="17 1 21 5 17 9" />
-									<path d="M3 11V9a4 4 0 0 1 4-4h14" />
-									<polyline points="7 23 3 19 7 15" />
-									<path d="M21 13v2a4 4 0 0 1-4 4H3" />
-								</svg>
-							</button>
-						</div>
-						<div className="flex-grow">
-							<div className="h-full">
-								<StationList
-									stations={stations}
-									onStationSelect={handleOriginSelect}
-									selectedValue={selectedOrigin}
-									isOpen={openList === "from"}
-									onOpenChange={(isOpen) => {
-										setOpenList(isOpen ? "from" : null);
-									}}
-									onFocus={() => handleInputFocus("from")}
-								/>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div className="space-y-2">
-					<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
-						{t("to")}
-					</h3>
-					<div className="flex items-center gap-2">
-						<div className="flex-grow">
-							<div className="h-full">
-								<StationList
-									stations={availableDestinations}
-									onStationSelect={handleDestinationSelect}
-									selectedValue={selectedDestination}
-									isOpen={openList === "to" && !isSwapping}
-									onOpenChange={(isOpen) => {
-										setOpenList(isOpen ? "to" : null);
-									}}
-									inputRef={toInputRef}
-									onFocus={() => handleInputFocus("to")}
-									isLoading={isLoadingDestinations && !isSwapping}
-								/>
-							</div>
-						</div>
-					</div>
-					{hasMounted &&
-						showHint !== null &&
-						showHint &&
-						isLocalStorageAvailable() && (
-							<div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-300 mt-1">
-								<p>{t("hint")}</p>
-								<button
-									type="button"
-									onClick={() => {
-										hapticLight();
-										setShowHint(false);
-										if (isLocalStorageAvailable()) {
-											localStorage.setItem("hideDestinationHint", "true");
-										}
-									}}
-									className="btn btn-ghost btn-sm ml-2 p-2 hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-all duration-150 touch-manipulation select-none active:scale-95"
-									aria-label="Sulje vihje"
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeWidth="2"
-										strokeLinecap="round"
-										strokeLinejoin="round"
+										aria-label={t("locate")}
+										data-tip={t("locate")}
 									>
-										<title>{t("closeHint")}</title>
-										<line x1="18" y1="6" x2="6" y2="18" />
-										<line x1="6" y1="6" x2="18" y2="18" />
-									</svg>
-								</button>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 100 100"
+											width="36"
+											height="36"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="4"
+										>
+											<title>{t("locate")}</title>
+											{/* Outer Circle */}
+											<circle cx="50" cy="50" r="40" />
+											{/* Inner Circle with smaller radius */}
+											<circle cx="50" cy="50" r="8" />
+											{/* Shorter Crosshair Lines for cleaner look */}
+											<line x1="50" y1="10" x2="50" y2="35" />
+											<line x1="50" y1="65" x2="50" y2="90" />
+											<line x1="10" y1="50" x2="35" y2="50" />
+											<line x1="65" y1="50" x2="90" y2="50" />
+											{/* Slightly smaller center dot */}
+											<circle cx="50" cy="50" r="2" fill="currentColor" />
+										</svg>
+									</button>
+									{/* Divider */}
+									<div className="hidden sm:block w-px h-12 bg-white/20" />
+									{/* Swap button hidden on mobile since it's available inline above */}
+									<button
+										type="button"
+										onClick={handleSwap}
+										disabled={
+											!selectedOrigin || !selectedDestination || isSwapping
+										}
+										className="hidden sm:block btn w-12 h-12 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
+										disabled:opacity-50 disabled:cursor-not-allowed
+										touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
+										shadow-lg hover:shadow-xl transition-all duration-200 rounded-l-none"
+										data-tip={t("swapDirection")}
+									>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="24"
+											height="24"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											className="block mx-auto rotate-90"
+											aria-labelledby="swapDirectionIcon"
+										>
+											<title id="swapDirectionIcon">{t("swapDirection")}</title>
+											<polyline points="17 1 21 5 17 9" />
+											<path d="M3 11V9a4 4 0 0 1 4-4h14" />
+											<polyline points="7 23 3 19 7 15" />
+											<path d="M21 13v2a4 4 0 0 1-4 4H3" />
+										</svg>
+									</button>
+								</div>
+								<div className="flex-grow">
+									<div className="h-full">
+										<StationList
+											stations={stations}
+											onStationSelect={handleOriginSelect}
+											selectedValue={selectedOrigin}
+											isOpen={openList === "from"}
+											onOpenChange={(isOpen) => {
+												setOpenList(isOpen ? "from" : null);
+											}}
+											onFocus={() => handleInputFocus("from")}
+										/>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div className="space-y-2">
+							<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
+								{t("to")}
+							</h3>
+							<div className="flex items-center gap-2">
+								<div className="flex-grow">
+									<div className="h-full">
+										<StationList
+											stations={availableDestinations}
+											onStationSelect={handleDestinationSelect}
+											selectedValue={selectedDestination}
+											isOpen={openList === "to" && !isSwapping}
+											onOpenChange={(isOpen) => {
+												setOpenList(isOpen ? "to" : null);
+											}}
+											inputRef={toInputRef}
+											onFocus={() => handleInputFocus("to")}
+											isLoading={isLoadingDestinations && !isSwapping}
+										/>
+									</div>
+								</div>
+							</div>
+							{hasMounted &&
+								showHint !== null &&
+								showHint &&
+								isLocalStorageAvailable() && (
+									<div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-300 mt-1">
+										<p>{t("hint")}</p>
+										<button
+											type="button"
+											onClick={() => {
+												hapticLight();
+												setShowHint(false);
+												if (isLocalStorageAvailable()) {
+													localStorage.setItem("hideDestinationHint", "true");
+												}
+											}}
+											className="btn btn-ghost btn-sm ml-2 p-2 hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-all duration-150 touch-manipulation select-none active:scale-95"
+											aria-label="Sulje vihje"
+										>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="2"
+												strokeLinecap="round"
+												strokeLinejoin="round"
+											>
+												<title>{t("closeHint")}</title>
+												<line x1="18" y1="6" x2="6" y2="18" />
+												<line x1="6" y1="6" x2="18" y2="18" />
+											</svg>
+										</button>
+									</div>
+								)}
+						</div>
+
+						{locationError && (
+							<div className="sm:col-span-2 mt-4">
+								<ErrorState
+									type={locationError.type}
+									message={locationError.message}
+									onRetry={() => {
+										setLocationError(null);
+										handleLocationRequest();
+									}}
+									onDismiss={() => {
+										setLocationError(null);
+									}}
+									showDismiss={true}
+									className="bg-red-50 dark:bg-red-900/20 rounded-lg"
+								/>
 							</div>
 						)}
-				</div>
-
-				{locationError && (
-					<div className="sm:col-span-2 mt-4">
-						<ErrorState
-							type={locationError.type}
-							message={locationError.message}
-							onRetry={() => {
-								setLocationError(null);
-								handleLocationRequest();
-							}}
-							onDismiss={() => {
-								setLocationError(null);
-							}}
-							showDismiss={true}
-							className="bg-red-50 dark:bg-red-900/20 rounded-lg"
-						/>
-					</div>
-				)}
 					</div>
 				</div>
 			</div>
