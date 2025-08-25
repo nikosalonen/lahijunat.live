@@ -128,7 +128,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .absolute",
+					".station-list-container .dropdown-content",
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -162,7 +162,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .absolute",
+					".station-list-container .dropdown-content",
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -187,7 +187,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .absolute",
+					".station-list-container .dropdown-content",
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -222,7 +222,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .absolute",
+					".station-list-container .dropdown-content",
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -247,7 +247,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .absolute",
+					".station-list-container .dropdown-content",
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -626,7 +626,7 @@ describe("StationManager", () => {
 				// Wait for the dropdown to appear
 				await waitFor(() => {
 					const dropdown = container.querySelector(
-						".station-list-container .absolute",
+						".station-list-container .dropdown-content",
 					);
 					expect(dropdown).toBeInTheDocument();
 				});
@@ -656,7 +656,7 @@ describe("StationManager", () => {
 
 				await waitFor(() => {
 					const dropdown = container.querySelector(
-						".station-list-container .absolute",
+						".station-list-container .dropdown-content",
 					);
 					expect(dropdown).toBeInTheDocument();
 				});
@@ -679,7 +679,7 @@ describe("StationManager", () => {
 
 				await waitFor(() => {
 					const dropdown = container.querySelector(
-						".station-list-container .absolute",
+						".station-list-container .dropdown-content",
 					);
 					expect(dropdown).toBeInTheDocument();
 				});
@@ -740,7 +740,7 @@ describe("StationManager", () => {
 
 				await waitFor(() => {
 					const dropdown = container.querySelector(
-						".station-list-container .absolute",
+						".station-list-container .dropdown-content",
 					);
 					expect(dropdown).toBeInTheDocument();
 				});
