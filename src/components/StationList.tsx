@@ -187,10 +187,14 @@ export default function StationList({
 			? filteredStations[highlightedIndex]
 			: null;
 
+	// Dynamic min-height so the container shortens when there are few results
+	const filteredCount = filteredStations.length;
+	const rootMinHeightClass = isOpen && (isLoading || filteredCount >= 5)
+		? "min-h-[16rem]"
+		: "";
+
 	return (
-		<div
-			className={`relative station-list-container ${isOpen ? "min-h-[16rem]" : ""}`}
-		>
+		<div className={`relative station-list-container ${rootMinHeightClass}`}>
 			<input
 				ref={finalInputRef}
 				type="text"
@@ -231,7 +235,9 @@ export default function StationList({
 					id={listboxId}
 					data-testid="station-listbox"
 					role="listbox"
-					className="dropdown-content menu bg-base-100 rounded-box w-full mt-2 min-h-[12rem] max-h-60 overflow-y-auto shadow-xl z-50 animate-slide-down"
+					className={`dropdown-content menu bg-base-100 rounded-box w-full mt-2 ${
+						isLoading || filteredCount >= 5 ? "min-h-[12rem]" : ""
+					} max-h-60 overflow-y-auto shadow-xl z-50 animate-slide-down`}
 					style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
 				>
 					{isLoading ? (
