@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import LoadingSpinner from "../LoadingSpinner";
 
 // Mock translations
-vi.mock("../utils/translations", () => ({
+vi.mock("../../utils/translations", () => ({
 	t: (key: string) => {
 		const translations: Record<string, string> = {
 			loading: "Ladataan...",
