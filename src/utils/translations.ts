@@ -124,7 +124,13 @@ export const translations: Translations = {
 	},
 };
 
+// For better editor support and compile-time checking downstream
+export type TranslationKey = keyof typeof translations.fi & string;
+
 export const t = (key: string): string => {
 	const lang = getCurrentLanguage();
 	return translations[lang]?.[key] || translations.fi[key] || key;
 };
+
+// Typed helper for compile-time key validation (optional usage)
+export const tt = (key: TranslationKey): string => t(key);
