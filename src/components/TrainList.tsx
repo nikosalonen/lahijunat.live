@@ -402,7 +402,6 @@ export default function TrainList({
 				{/* Desktop header with h2 and progress */}
 				<div class="hidden sm:flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 					<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 order-2 sm:order-1">
-						{t("departingTrains")}{" "}
 						<span class="sm:hidden">
 							{stationCode} → {destinationCode}
 						</span>
@@ -411,13 +410,13 @@ export default function TrainList({
 						</span>
 					</h2>
 					<div class="self-end sm:self-auto order-1 sm:order-2">
-						<ProgressCircle progress={state.progress} />
+						<ProgressCircle progress={state.progress} size="w-8 h-8" />
 					</div>
 				</div>
 
 				{/* Mobile progress circle only */}
 				<div class="sm:hidden flex justify-end mb-4">
-					<ProgressCircle progress={state.progress} />
+					<ProgressCircle progress={state.progress} size="w-8 h-8" />
 				</div>
 				<div
 					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"
@@ -459,7 +458,7 @@ export default function TrainList({
 								hapticLight();
 								setDisplayedTrainCount((prev) => prev + INITIAL_TRAIN_COUNT);
 							}}
-							class="btn btn-primary px-6 py-3 text-white rounded-lg transition-all duration-150 shadow-sm hover:shadow-md active:shadow-lg active:scale-95 touch-manipulation select-none font-medium"
+							class="btn btn-primary btn-wide touch-manipulation select-none"
 						>
 							{t("showMore")}
 						</button>
