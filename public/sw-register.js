@@ -1,6 +1,14 @@
-// Service Worker registration
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js');
-  });
+// Service Worker registration (robust: register even if page already loaded)
+if ("serviceWorker" in navigator) {
+  const registerSW = () => {
+    navigator.serviceWorker
+      .register("/sw.js", { type: "module" })
+      .catch((err) => console.error("SW registration failed:", err));
+  };
+
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    registerSW();
+  } else {
+    window.addEventListener("load", registerSW);
+  }
 }
