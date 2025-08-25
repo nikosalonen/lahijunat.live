@@ -355,24 +355,25 @@
 }
 
 /* Button Enhancement */
-
-.btn-primary {
-	background: var(--gradient-primary);
-	color: white;
-	border: none;
-	transition: all 0.2s ease;
-}
-
-/* Only apply hover effects on devices that support proper hover */
-@media (hover: hover) {
-	.btn-primary:hover {
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-medium);
+@layer components {
+	.btn-primary {
+		background: var(--gradient-primary);
+		color: white;
+		border: none;
+		transition: all 0.2s ease;
 	}
-}
 
-.btn-primary:active {
-	transform: translateY(0);
+	/* Only apply hover effects on devices that support proper hover */
+	@media (hover: hover) {
+		.btn-primary:hover {
+			transform: translateY(-1px);
+			box-shadow: var(--shadow-medium);
+		}
+	}
+
+	.btn-primary:active {
+		transform: translateY(0);
+	}
 }
 
 /* Card Styles */
