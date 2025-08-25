@@ -16,11 +16,7 @@ function StationOption({
 	isHighlighted: boolean;
 	onSelect: (station: Station) => void;
 }) {
-	const handleKeyDown = (e: KeyboardEvent) => {
-		if (e.key === "Enter" || e.key === " ") {
-			onSelect(station);
-		}
-	};
+	// Rely on native keyboard activation for <button> elements
 
 	return (
 		<button
@@ -30,12 +26,11 @@ function StationOption({
 				hapticSelection();
 				onSelect(station);
 			}}
-			onKeyDown={handleKeyDown}
 			tabIndex={0}
 			role="option"
 			aria-selected={isSelected}
-			class={`btn btn-ghost justify-start normal-case w-full text-left p-4 sm:p-3 text-lg sm:text-base min-h-[48px] station-option cursor-pointer dark:text-white transition-colors duration-200 touch-manipulation select-none focus-ring ${
-				isHighlighted ? "bg-blue-100 dark:bg-blue-700 animate-scale-in" : ""
+			class={`btn btn-ghost justify-start normal-case btn-block text-left text-lg sm:text-base min-h-[48px] station-option transition-colors duration-200 touch-manipulation select-none focus-ring ${
+				isHighlighted ? "bg-blue-100 animate-scale-in" : ""
 			}`}
 		>
 			{station.name} ({station.shortCode})
