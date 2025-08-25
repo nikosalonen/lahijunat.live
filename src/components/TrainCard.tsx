@@ -52,11 +52,11 @@ const getCardStyle = (
 	isHighlighted: boolean,
 ) => {
 	const baseStyles =
-		"card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300";
+		"card bg-base-100 shadow-xl border border-base-300 rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300";
 
 	// Priority 1: Cancelled trains
 	if (isCancelled)
-		return `${baseStyles} bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-300 dark:border-red-800 shadow-lg`;
+		return `${baseStyles} bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-300 dark:border-red-800`;
 
 	// Priority 2: Departed trains
 	if (minutesToDeparture !== null && minutesToDeparture < 0)
@@ -69,12 +69,12 @@ const getCardStyle = (
 		minutesToDeparture !== null &&
 		minutesToDeparture >= 0
 	) {
-		return "card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300 !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring-4 ring-[#8c4799]/30 dark:ring-[#b388ff]/30 animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark";
+		return `${baseStyles} !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring ring-[#8c4799]/30 dark:ring-[#b388ff]/30 animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark`;
 	}
 
 	// Priority 4: Highlighted (not departing soon) - Static purple highlight
 	if (isHighlighted)
-		return "card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300 bg-gradient-to-br from-[#f3e5f5] to-[#e8d5f0] dark:from-[#2d1a33] dark:to-[#1f0f26] !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring-4 ring-[#8c4799]/30 dark:ring-[#b388ff]/30 shadow-xl";
+		return `${baseStyles} bg-primary/5 dark:bg-primary/10 !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring ring-[#8c4799]/30 dark:ring-[#b388ff]/30`;
 
 	// Priority 5: Departing soon (not highlighted) - Regular blinking
 	if (
@@ -82,11 +82,11 @@ const getCardStyle = (
 		minutesToDeparture !== null &&
 		minutesToDeparture >= 0
 	) {
-		return `${baseStyles} border-gray-300 dark:border-gray-600 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 animate-soft-blink dark:animate-soft-blink-dark`;
+		return `${baseStyles} border-base-300 dark:border-base-300/40 dark:bg-base-200 animate-soft-blink dark:animate-soft-blink-dark`;
 	}
 
 	// Default case
-	return `${baseStyles} surface-elevated`;
+	return `${baseStyles}`;
 };
 
 export default function TrainCard({
@@ -380,6 +380,8 @@ export default function TrainCard({
 		const currentTrack = trackInfo.track;
 		const storedTrack = trackMemory[trackInfo.journeyKey]?.track;
 		return storedTrack && currentTrack && storedTrack !== currentTrack;
+		// // TEMPORARY: Force track change indicator for testing
+		// return true;
 	}, [
 		train.trainNumber,
 		train.timeTableRows,
@@ -444,34 +446,27 @@ export default function TrainCard({
 
 	return (
 		<div
-			class={`p-3 sm:p-4 ${cardStyle} w-full max-w-full text-left relative overflow-hidden`}
+			class={`${cardStyle} w-full max-w-full text-left relative overflow-hidden`}
 			style={{ opacity: hasDeparted ? opacity : 1 }}
 		>
-			<div class="flex items-start justify-between gap-2 sm:gap-4">
-				<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
-					{/* Train identifier */}
-					{train.commuterLineID && (
-						<button
-							onClick={handleFavorite}
-							aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
-							type="button"
-							class="flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold focus:outline-none transition-transform duration-300 train-button-hover relative group border-none outline-none ring-0 touch-manipulation select-none min-h-[44px] min-w-[44px]"
-							style={{ outline: "none", border: "none", boxShadow: "none" }}
-						>
-							<div class="relative">
-								<span
-									class={`h-14 w-14 sm:h-16 sm:w-16 rounded-2xl flex items-center justify-center shadow-lg train-span-hover transition-all duration-300 ${
-										train.cancelled
-											? "bg-gradient-to-br from-red-500 to-red-600 text-white"
-											: "bg-[#8c4799] text-white"
-									}`}
-								>
-									<span class="text-lg sm:text-xl font-bold drop-shadow-lg">
-										{train.commuterLineID}
-									</span>
-								</span>
+			<div class="card-body p-3 sm:p-4">
+				<div class="flex items-start justify-between gap-2 sm:gap-4">
+					<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
+						{/* Train identifier */}
+						{train.commuterLineID && (
+							<button
+								onClick={handleFavorite}
+								aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
+								type="button"
+								class={`flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold rounded-2xl shadow-lg transition-transform duration-300 relative group touch-manipulation select-none focus:outline-none border-none ring-0 ${
+									train.cancelled
+										? "bg-gradient-to-br from-red-500 to-red-600 text-white"
+										: "bg-[#8c4799] text-white"
+								}`}
+							>
+								{train.commuterLineID}
 								{isHighlighted && (
-									<div class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
+									<div class="badge badge-error badge-sm absolute -top-1 -right-1 shadow">
 										<svg
 											class="w-3 h-3 text-white"
 											fill="currentColor"
@@ -480,127 +475,135 @@ export default function TrainCard({
 										>
 											<title>Favorite</title>
 											<path
-												fill-rule="evenodd"
+												fillRule="evenodd"
 												d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-												clip-rule="evenodd"
+												clipRule="evenodd"
 											/>
 										</svg>
 									</div>
 								)}
-							</div>
-						</button>
-					)}
+							</button>
+						)}
 
-					{/* Main train info */}
-					<div class="space-y-2 sm:space-y-1 min-w-0 flex-1 overflow-hidden">
-						<div class="flex flex-col gap-1">
-							<div class="flex flex-col gap-2 sm:gap-1">
-								<TimeDisplay
-									departureRow={departureRow}
-									arrivalRow={arrivalRow}
-									timeDifferenceMinutes={timeDifferenceMinutes}
-								/>
-								{duration && (
-									<output
-										class={`text-sm sm:text-base font-medium flex items-center truncate ${
-											durationSpeedType === "fast"
-												? "text-green-600 dark:text-green-400"
-												: durationSpeedType === "slow"
-													? "text-orange-600 dark:text-orange-400"
-													: "text-gray-500 dark:text-gray-300"
-										}`}
-										aria-label={`${t("duration")} ${duration.hours} ${t(
-											"hours",
-										)} ${duration.minutes} ${t("minutes")}`}
-									>
-										<svg
-											class="w-4 h-4 inline-block mr-1 -mt-1"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-											aria-hidden="true"
+						{/* Main train info - Using card-title semantic structure */}
+						<div class="space-y-2 sm:space-y-1 min-w-0 flex-1 overflow-hidden">
+							<div class="card-title p-0 flex-col items-start gap-1">
+								<div class="flex flex-col gap-2 sm:gap-1 w-full">
+									<TimeDisplay
+										departureRow={departureRow}
+										arrivalRow={arrivalRow}
+										timeDifferenceMinutes={timeDifferenceMinutes}
+									/>
+									{duration && (
+										<output
+											class={`text-sm sm:text-base font-medium flex items-center truncate ${
+												durationSpeedType === "fast"
+													? "text-success"
+													: durationSpeedType === "slow"
+														? "text-warning"
+														: "text-base-content/60"
+											}`}
+											aria-label={`${t("duration")} ${duration.hours} ${t(
+												"hours",
+											)} ${duration.minutes} ${t("minutes")}`}
 										>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-											/>
-										</svg>
-										{duration.hours}h {duration.minutes}m
-									</output>
-								)}
+											<svg
+												class="w-4 h-4 inline-block mr-1 -mt-1"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+												aria-hidden="true"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth="2"
+													d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+												/>
+											</svg>
+											{duration.hours}h {duration.minutes}m
+										</output>
+									)}
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
 
-				{/* Track info and departure countdown */}
-				<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0">
-					{train.cancelled ? (
-						<span class="px-4 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm sm:text-base font-semibold shadow-lg">
-							{t("cancelled")}
-						</span>
-					) : (
-						<>
-							<output
-								aria-label={`${t("track")} ${departureRow.commercialTrack}`}
-								class={`px-4 py-2 sm:px-4 sm:py-2 rounded-xl text-sm sm:text-base font-semibold shadow-lg transition-all duration-300 ${
-									isTrackChanged
-										? "bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 text-red-700 dark:text-red-300 ring-2 ring-red-500 dark:ring-red-400"
-										: "bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300"
-								}`}
-							>
-								{t("track")} {departureRow.commercialTrack}
-							</output>
-							{minutesToDeparture !== null &&
-								minutesToDeparture <= 30 &&
-								minutesToDeparture >= 0 && (
-									<div
-										class={`flex items-center gap-2 px-3 py-2 rounded-xl font-semibold text-lg sm:text-xl shadow-lg transition-all duration-300 ${
-											minutesToDeparture >= 0
-												? "bg-gradient-to-r from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 text-emerald-700 dark:text-emerald-300"
-												: "bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-600 dark:text-gray-300"
+					{/* Track info and departure countdown */}
+					<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0">
+						{train.cancelled ? (
+							<span class="badge badge-error badge-lg text-white">
+								{t("cancelled")}
+							</span>
+						) : (
+							<>
+								<div class="indicator">
+									<output
+										aria-label={`${t("track")} ${departureRow.commercialTrack}${isTrackChanged ? ` (${t("changed")})` : ""}`}
+										class={`badge badge-lg font-semibold transition-all duration-300 ${
+											isTrackChanged
+												? "badge-error badge-outline"
+												: "badge-ghost"
 										}`}
 									>
-										<svg
-											class="w-5 h-5"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
+										{t("track")} {departureRow.commercialTrack}
+									</output>
+									{isTrackChanged && (
+										<span
+											class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
 											aria-hidden="true"
 										>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M12 8v4l2 2"
-											/>
-											<circle
-												cx="12"
-												cy="12"
-												r="9"
-												stroke-width="2"
-												fill="none"
-											/>
-										</svg>
-										<span>
-											{minutesToDeparture === 0
-												? "0 min"
-												: `${minutesToDeparture} min`}
+											!
 										</span>
-									</div>
-								)}
-						</>
-					)}
+									)}
+								</div>
+								{minutesToDeparture !== null &&
+									minutesToDeparture <= 30 &&
+									minutesToDeparture >= 0 && (
+										<div
+											class={
+												"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
+											}
+										>
+											<svg
+												class="w-5 h-5"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+												aria-hidden="true"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth="2"
+													d="M12 8v4l2 2"
+												/>
+												<circle
+													cx="12"
+													cy="12"
+													r="9"
+													strokeWidth="2"
+													fill="none"
+												/>
+											</svg>
+											<span>
+												{minutesToDeparture === 0
+													? "0 min"
+													: `${minutesToDeparture} min`}
+											</span>
+										</div>
+									)}
+							</>
+						)}
+					</div>
 				</div>
-			</div>
-			<div aria-live="polite" class="sr-only">
-				{train.cancelled
-					? t("cancelled")
-					: departingSoon
-						? t("departingSoon")
-						: ""}
+				<div aria-live="polite" class="sr-only">
+					{train.cancelled
+						? t("cancelled")
+						: departingSoon
+							? t("departingSoon")
+							: ""}
+				</div>
 			</div>
 		</div>
 	);

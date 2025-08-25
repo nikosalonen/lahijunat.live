@@ -10,11 +10,15 @@ import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const { title } = Astro.props as Props;
 
-import "../styles/global.css";
+// Determine locale from route path
+const currentPath = Astro.url.pathname;
+const isEnglish = currentPath.startsWith("/en");
+const locale = isEnglish ? "en" : "fi";
+const ogLocale = isEnglish ? "en_US" : "fi_FI";
 ---
 
 <!doctype html>
-<html lang={`fi`} class="light">
+<html lang={locale} class="light" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -51,7 +55,7 @@ import "../styles/global.css";
       content={new URL("/Juna-meta-header.png", Astro.site).toString()}
     />
     <meta property="og:image:alt" content="Lähijunat Live logo" />
-    <meta property="og:locale" content="fi_FI" />
+    <meta property="og:locale" content={ogLocale} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -143,34 +147,34 @@ import "../styles/global.css";
         return "light";
       })();
 
-      // Apply theme immediately to prevent flash
+      // Apply theme immediately to prevent flash (class + data-theme for daisyUI)
       if (theme === "dark") {
         document.documentElement.classList.remove("light");
         document.documentElement.classList.add("dark");
+        document.documentElement.setAttribute("data-theme", "dark");
       } else {
         document.documentElement.classList.remove("dark");
         document.documentElement.classList.add("light");
+        document.documentElement.setAttribute("data-theme", "light");
       }
     </script>
     <script
       src="https://cdn.counter.dev/script.js"
       data-id="da3ed73f-eedb-4dd0-acac-8e7366f8508e"
       data-utcoffset="2"></script>
-    <script>
+    <script type="module">
       import { registerSWUpdateHandler } from "../utils/swUpdate";
       registerSWUpdateHandler();
     </script>
   </head>
-  <body class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <body class="min-h-screen bg-base-100">
     <div class="min-h-screen flex flex-col">
-      <nav class="py-5 sm:py-4 bg-[#8c4799] w-full shadow-lg">
-        <div class="container mx-auto px-4 sm:px-4">
-          <div
-            class="flex flex-row items-center justify-between gap-4 sm:gap-4"
-          >
+      <nav class="py-3 sm:py-4 bg-[#8c4799] text-white w-full shadow-lg">
+        <div class="container mx-auto px-3 sm:px-4">
+          <div class="flex items-center justify-between">
             <a
               href="/"
-              class="text-2xl font-bold text-white hover:text-blue-100 transition-colors"
+              class="text-xl sm:text-2xl font-bold text-white hover:text-blue-100 transition-colors flex-shrink-0"
             >
               <div class="flex items-center gap-2">
                 <Image
@@ -178,24 +182,53 @@ import "../styles/global.css";
                   height={32}
                   src="/Juna.png"
                   alt="Lähijunat Live"
-                  class="h-8"
+                  class="h-7 sm:h-8"
                   fetchpriority="high"
                   loading="eager"
                 />
-                <span>Lähijunat Live</span>
+                <span class="hidden sm:inline">Lähijunat Live</span>
+                <span class="sm:hidden">Lähijunat</span>
               </div>
             </a>
-            <div class="flex items-center gap-4">
-              <LanguageSwitcher client:load />
-              <button
+            <div class="flex items-center gap-2 sm:gap-4">
+              <div class="relative z-10">
+                <LanguageSwitcher client:load />
+              </div>
+              <label
                 id="theme-toggle"
-                type="button"
-                class="text-white hover:text-blue-100 transition-colors p-3 sm:p-2 rounded-lg hover:bg-white/10 active:bg-white/20 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
+                class="swap swap-rotate relative z-0 min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center rounded-lg text-white hover:bg-white/10 active:bg-white/20 cursor-pointer tooltip tooltip-left sm:tooltip-bottom"
                 aria-label="Toggle theme"
+                role="switch"
+                aria-checked="false"
+                data-tip="Toggle theme"
               >
+                <input type="checkbox" class="sr-only" />
+                <!-- Light icon (sun) -->
+                <svg
+                  id="theme-toggle-light-icon"
+                  class="swap-on w-5 h-5 sm:w-6 sm:h-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="12" cy="12" r="4" fill="currentColor"></circle>
+                  <line x1="12" y1="2" x2="12" y2="4"></line>
+                  <line x1="12" y1="20" x2="12" y2="22"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="2" y1="12" x2="4" y2="12"></line>
+                  <line x1="20" y1="12" x2="22" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <!-- Dark icon (moon) -->
                 <svg
                   id="theme-toggle-dark-icon"
-                  class="w-6 h-6 hidden"
+                  class="swap-off w-5 h-5 sm:w-6 sm:h-6"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
@@ -204,23 +237,12 @@ import "../styles/global.css";
                     d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
                   ></path>
                 </svg>
-                <svg
-                  id="theme-toggle-light-icon"
-                  class="w-6 h-6 hidden"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                  ></path>
-                </svg>
-              </button>
+              </label>
             </div>
           </div>
         </div>
       </nav>
-      <div class="flex-grow w-full max-w-full overflow-hidden">
+      <div class="flex-grow w-full">
         <main>
           <slot />
         </main>
@@ -229,40 +251,40 @@ import "../styles/global.css";
     </div>
 
     <script>
-      const themeToggleDarkIcon = document.getElementById(
-        "theme-toggle-dark-icon"
-      );
-      const themeToggleLightIcon = document.getElementById(
-        "theme-toggle-light-icon"
-      );
       const themeToggleBtn = document.getElementById("theme-toggle");
+      const themeToggleInput = themeToggleBtn?.querySelector("input");
 
-      // Change the icons inside the button based on previous settings
-      if (
-        localStorage.getItem("theme") === "dark" ||
-        (!localStorage.getItem("theme") &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches)
-      ) {
-        themeToggleLightIcon?.classList.remove("hidden");
-      } else {
-        themeToggleDarkIcon?.classList.remove("hidden");
-      }
 
-      themeToggleBtn?.addEventListener("click", function () {
-        // Toggle icons
-        themeToggleDarkIcon?.classList.toggle("hidden");
-        themeToggleLightIcon?.classList.toggle("hidden");
-
-        // If is dark mode
-        if (document.documentElement.classList.contains("dark")) {
-          document.documentElement.classList.remove("dark");
-          document.documentElement.classList.add("light");
-          localStorage.setItem("theme", "light");
-        } else {
+      const updateTheme = (theme: "light" | "dark") => {
+        if (theme === "dark") {
           document.documentElement.classList.remove("light");
           document.documentElement.classList.add("dark");
+          document.documentElement.setAttribute("data-theme", "dark");
           localStorage.setItem("theme", "dark");
+          // daisyUI swap: checkbox unchecked shows swap-off (moon)
+          if (themeToggleInput) themeToggleInput.checked = false;
+          themeToggleBtn?.setAttribute("aria-checked", "false");
+        } else {
+          document.documentElement.classList.remove("dark");
+          document.documentElement.classList.add("light");
+          document.documentElement.setAttribute("data-theme", "light");
+          localStorage.setItem("theme", "light");
+          // daisyUI swap: checkbox checked shows swap-on (sun)
+          if (themeToggleInput) themeToggleInput.checked = true;
+          themeToggleBtn?.setAttribute("aria-checked", "true");
         }
+      };
+
+      // Initialize on load
+      const isDark = document.documentElement.classList.contains("dark");
+      updateTheme(isDark ? "dark" : "light");
+
+      // Handle clicks on the label
+      themeToggleBtn?.addEventListener("click", (e) => {
+        // Prevent default to control the checkbox ourselves
+        e.preventDefault();
+        const isDark = document.documentElement.classList.contains("dark");
+        updateTheme(isDark ? "light" : "dark");
       });
     </script>
   </body>
@@ -288,6 +310,5 @@ import "../styles/global.css";
   nav {
     padding-top: max(1rem, env(safe-area-inset-top));
     margin-top: calc(-1 * env(safe-area-inset-top));
-    background-color: #8c4799;
   }
 </style>

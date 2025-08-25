@@ -88,16 +88,35 @@ export default function StationManager({
 	const isSwappingRef = useRef(false);
 	const lastSwapTimeRef = useRef(0);
 
+	// Mobile accordion state - expanded by default if no stations selected
+	const [isStationSelectorExpanded, setIsStationSelectorExpanded] = useState(
+		!initialFromStation || !initialToStation,
+	);
+
 	const hasMounted = useHasMounted();
 	const [, forceUpdate] = useState({});
 	const toInputRef = useRef<HTMLInputElement>(null);
 
 	useLanguageChange();
 
+	// Smart accordion toggle logic
+	useEffect(() => {
+		// Auto-collapse when both stations are selected (on mobile)
+		if (selectedOrigin && selectedDestination) {
+			setIsStationSelectorExpanded(false);
+		}
+		// Auto-expand if no stations are selected
+		else if (!selectedOrigin && !selectedDestination) {
+			setIsStationSelectorExpanded(true);
+		}
+	}, [selectedOrigin, selectedDestination]);
+
 	// Auto-focus "to" input when "from" is selected and "to" is empty
 	useEffect(() => {
 		if (selectedOrigin && !selectedDestination) {
 			setOpenList("to");
+			// Ensure accordion is expanded when user needs to select destination
+			setIsStationSelectorExpanded(true);
 			// Use setTimeout to ensure the input is rendered before focusing
 			setTimeout(() => {
 				toInputRef.current?.focus();
@@ -348,6 +367,23 @@ export default function StationManager({
 		}
 	};
 
+	// Persist selections to localStorage on change
+	useEffect(() => {
+		if (selectedOrigin) {
+			localStorage.setItem("selectedOrigin", selectedOrigin);
+		} else {
+			localStorage.removeItem("selectedOrigin");
+		}
+	}, [selectedOrigin]);
+
+	useEffect(() => {
+		if (selectedDestination) {
+			localStorage.setItem("selectedDestination", selectedDestination);
+		} else {
+			localStorage.removeItem("selectedDestination");
+		}
+	}, [selectedDestination]);
+
 	// Update URL when stations change
 	useEffect(() => {
 		if (typeof window === "undefined") return;
@@ -426,124 +462,169 @@ export default function StationManager({
 		[fetchDestinations],
 	);
 
+	const handleSwap = useCallback(async () => {
+		if (!selectedOrigin || !selectedDestination) return;
+
+		hapticMedium();
+		// Set swapping flags and timestamp to prevent dropdown from showing
+		setIsSwapping(true);
+		isSwappingRef.current = true;
+		lastSwapTimeRef.current = Date.now();
+		setOpenList(null);
+
+		// Use a short delay to allow UI to update before swapping
+		setTimeout(() => {
+			const temp = selectedOrigin;
+
+			setSelectedOrigin(selectedDestination);
+			setSelectedDestination(temp);
+			// Keep storage in sync for PWA restores
+			if (selectedDestination) {
+				localStorage.setItem("selectedOrigin", selectedDestination);
+			} else {
+				localStorage.removeItem("selectedOrigin");
+			}
+			if (temp) {
+				localStorage.setItem("selectedDestination", temp);
+			} else {
+				localStorage.removeItem("selectedDestination");
+			}
+
+			// Update the URL state immediately after setting local state
+			if (typeof window !== "undefined") {
+				const newPath =
+					selectedDestination && temp
+						? `/${selectedDestination}/${temp}`
+						: selectedDestination
+							? `/${selectedDestination}`
+							: "/";
+				window.history.pushState({}, "", newPath);
+			}
+
+			// If we had a selected destination, reset destinations to all stations
+			if (selectedDestination) {
+				setAvailableDestinations(stations);
+			}
+		}, 50);
+
+		// After the swap, load destinations for the new origin
+		setTimeout(async () => {
+			if (selectedDestination) {
+				setIsLoadingDestinations(true);
+				try {
+					const newDestinations =
+						await fetchTrainsLeavingFromStation(selectedDestination);
+					setAvailableDestinations(newDestinations);
+				} catch (error) {
+					console.error("Error loading destinations:", error);
+					setAvailableDestinations(stations);
+				} finally {
+					setIsLoadingDestinations(false);
+				}
+			}
+		}, 100);
+
+		// Reset swapping flags after everything is complete
+		setTimeout(() => {
+			setIsSwapping(false);
+			isSwappingRef.current = false;
+		}, 150);
+	}, [selectedOrigin, selectedDestination, stations]);
+
+	// Find selected stations for summary
+	const selectedOriginStation = stations.find(
+		(s) => s.shortCode === selectedOrigin,
+	);
+	const selectedDestinationStation = stations.find(
+		(s) => s.shortCode === selectedDestination,
+	);
+
 	return (
-		<div className="w-full max-w-4xl mx-auto px-4 py-2 sm:p-6">
+		<div className="w-full max-w-3xl mx-auto px-2 sm:px-6 md:px-8 lg:px-12 py-2 sm:py-6 md:py-8">
 			<h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center dark:text-white">
 				{t("h1title")}
 			</h1>
-			<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
-				<div className="space-y-2">
-					<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
-						{t("from")}
-					</h3>
-					<div className="flex flex-row-reverse items-center gap-2">
-						<button
-							type="button"
-							onClick={handleLocationRequest}
-							className={`flex-shrink-0 w-12 h-12 location-button
-								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-xl focus-ring
-								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
-								border border-blue-200 dark:border-blue-700 shadow-lg
-								touch-manipulation select-none
-								${isLocating ? "animate-bounce-subtle" : ""}`}
-							aria-label="Paikanna"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 100 100"
-								width="28"
-								height="28"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="4"
-							>
-								<title>{t("locate")}</title>
-								{/* Outer Circle */}
-								<circle cx="50" cy="50" r="40" />
-								{/* Inner Circle with smaller radius */}
-								<circle cx="50" cy="50" r="8" />
-								{/* Shorter Crosshair Lines for cleaner look */}
-								<line x1="50" y1="10" x2="50" y2="35" />
-								<line x1="50" y1="65" x2="50" y2="90" />
-								<line x1="10" y1="50" x2="35" y2="50" />
-								<line x1="65" y1="50" x2="90" y2="50" />
-								{/* Slightly smaller center dot */}
-								<circle cx="50" cy="50" r="2" fill="currentColor" />
-							</svg>
-						</button>
-						<div className="flex-grow">
-							<div className="h-full">
-								<StationList
-									stations={stations}
-									onStationSelect={handleOriginSelect}
-									selectedValue={selectedOrigin}
-									isOpen={openList === "from"}
-									onOpenChange={(isOpen) => {
-										setOpenList(isOpen ? "from" : null);
-									}}
-									onFocus={() => handleInputFocus("from")}
-								/>
-							</div>
+
+			{/* Mobile compact header with toggle and action buttons */}
+			<div className="sm:hidden mb-4">
+				<div className="flex items-center gap-2 min-w-0">
+					<button
+						type="button"
+						onClick={() =>
+							setIsStationSelectorExpanded(!isStationSelectorExpanded)
+						}
+						className="flex-grow btn btn-ghost normal-case justify-between p-3 h-auto min-h-0 min-w-0"
+						aria-expanded={isStationSelectorExpanded}
+						aria-controls="station-selector"
+					>
+						<div className="text-left flex-grow min-w-0 overflow-hidden">
+							{selectedOrigin && selectedDestination ? (
+								<div className="flex items-center gap-3 min-w-0">
+									<div className="flex-grow min-w-0">
+										<div className="font-medium text-base leading-tight truncate">
+											{selectedOriginStation?.name}
+										</div>
+										<div className="text-xs opacity-60 font-mono">
+											{selectedOrigin}
+										</div>
+									</div>
+									<svg
+										className="w-4 h-4 flex-shrink-0 opacity-60"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<title>Route direction</title>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth="2"
+											d="M17 8l4 4m0 0l-4 4m4-4H3"
+										/>
+									</svg>
+									<div className="flex-grow text-right min-w-0">
+										<div className="font-medium text-base leading-tight truncate">
+											{selectedDestinationStation?.name}
+										</div>
+										<div className="text-xs opacity-60 font-mono">
+											{selectedDestination}
+										</div>
+									</div>
+								</div>
+							) : (
+								<div className="font-medium text-base">
+									{t("selectStations")}
+								</div>
+							)}
 						</div>
-					</div>
-				</div>
+						<svg
+							className={`w-5 h-5 ml-3 transition-transform ${isStationSelectorExpanded ? "rotate-180" : ""}`}
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<title>Toggle station selector</title>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M19 9l-7 7-7-7"
+							/>
+						</svg>
+					</button>
 
-				<div className="space-y-2">
-					<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
-						{t("to")}
-					</h3>
-					<div className="flex flex-row-reverse items-center gap-2">
+					{/* Swap button on the same row */}
+					{selectedOrigin && selectedDestination && (
 						<button
 							type="button"
-							onClick={async () => {
-								hapticMedium();
-								// Set swapping flags and timestamp to prevent dropdown from showing
-								setIsSwapping(true);
-								isSwappingRef.current = true;
-								lastSwapTimeRef.current = Date.now();
-								setOpenList(null);
-								setIsLoadingDestinations(false);
-
-								const tempOrigin = selectedOrigin;
-								const tempDestination = selectedDestination;
-
-								// Swap the stations
-								setSelectedOrigin(tempDestination);
-								setSelectedDestination(tempOrigin);
-								if (tempOrigin) {
-									setStoredValue("selectedDestination", tempOrigin);
-								}
-								if (tempDestination) {
-									setStoredValue("selectedOrigin", tempDestination);
-								}
-
-								// Immediately fetch destinations for the new origin (old destination)
-								if (tempDestination) {
-									try {
-										const destinations =
-											await fetchTrainsLeavingFromStation(tempDestination);
-										setAvailableDestinations(destinations);
-									} catch (error) {
-										console.error(
-											"Error fetching destinations during swap:",
-											error,
-										);
-										setAvailableDestinations(stations);
-									}
-								}
-
-								// Reset swapping flags after everything is complete
-								setTimeout(() => {
-									setIsSwapping(false);
-									isSwappingRef.current = false;
-								}, 100);
-							}}
-							disabled={!selectedOrigin || !selectedDestination}
-							className="flex-shrink-0 w-12 h-12 location-button
-								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-xl
-								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
-								border border-blue-200 dark:border-blue-700 shadow-lg
-								touch-manipulation select-none"
+							onClick={handleSwap}
+							disabled={!selectedOrigin || !selectedDestination || isSwapping}
+							className="btn w-12 h-12 p-1 flex-shrink-0 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
+						disabled:opacity-50 disabled:cursor-not-allowed
+						touch-manipulation select-none tooltip tooltip-top
+						shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200"
+							data-tip={t("swapDirection")}
+							aria-label={t("swapDirection")}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -552,103 +633,209 @@ export default function StationManager({
 								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"
-								strokeWidth="2"
+								strokeWidth="2.5"
 								strokeLinecap="round"
 								strokeLinejoin="round"
-								className="rotate-90"
-								aria-labelledby="swapDirectionIcon"
+								className="block mx-auto"
+								aria-hidden="true"
 							>
-								<title id="swapDirectionIcon">{t("swapDirection")}</title>
-								<polyline points="17 1 21 5 17 9" />
-								<path d="M3 11V9a4 4 0 0 1 4-4h14" />
-								<polyline points="7 23 3 19 7 15" />
-								<path d="M21 13v2a4 4 0 0 1-4 4H3" />
+								{/* Rotation/refresh icon for swapping */}
+								<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+								<path d="M21 3v5h-5" />
+								<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+								<path d="M3 21v-5h5" />
 							</svg>
 						</button>
-						<div className="flex-grow">
-							<div className="h-full">
-								<StationList
-									stations={availableDestinations}
-									onStationSelect={handleDestinationSelect}
-									selectedValue={selectedDestination}
-									isOpen={openList === "to" && !isSwapping}
-									onOpenChange={(isOpen) => {
-										setOpenList(isOpen ? "to" : null);
-									}}
-									inputRef={toInputRef}
-									onFocus={() => handleInputFocus("to")}
-									isLoading={isLoadingDestinations && !isSwapping}
-								/>
+					)}
+				</div>
+			</div>
+
+			{/* Station selector - collapsible on mobile */}
+			<div
+				className={`collapse ${isStationSelectorExpanded ? "collapse-open" : "collapse-close"} sm:collapse-open`}
+			>
+				<div id="station-selector" className="collapse-content px-0">
+					<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
+						<div className="space-y-2">
+							<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
+								{t("from")}
+							</h3>
+							<div className="flex flex-row-reverse items-center gap-2">
+								<div className="flex">
+									<button
+										type="button"
+										onClick={handleLocationRequest}
+										className={`btn w-12 h-12 p-1 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
+							disabled:opacity-50 disabled:cursor-not-allowed
+							touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
+							shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 rounded-r-none
+							${isLocating ? "animate-pulse" : ""}`}
+										aria-label={t("locate")}
+										data-tip={t("locate")}
+									>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 24 24"
+											width="36"
+											height="36"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										>
+											<title>{t("locate")}</title>
+											{/* Modern GPS/Location Pin Icon */}
+											<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+											<circle cx="12" cy="9" r="2.5" fill="currentColor" />
+											{/* Remove pulse animation - was causing strange effects */}
+										</svg>
+									</button>
+									{/* Divider */}
+									<div className="hidden sm:block w-px h-12 bg-white/20" />
+									{/* Swap button hidden on mobile since it's available inline above */}
+									<button
+										type="button"
+										onClick={handleSwap}
+										disabled={
+											!selectedOrigin || !selectedDestination || isSwapping
+										}
+										className="hidden sm:block btn w-12 h-12 p-1 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
+								disabled:opacity-50 disabled:cursor-not-allowed
+								touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
+								shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 rounded-l-none"
+										data-tip={t("swapDirection")}
+										aria-label={t("swapDirection")}
+									>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="28"
+											height="28"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2.5"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											className="block mx-auto"
+											aria-hidden="true"
+										>
+											{/* Rotation/refresh icon for swapping */}
+											<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+											<path d="M21 3v5h-5" />
+											<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+											<path d="M3 21v-5h5" />
+										</svg>
+									</button>
+								</div>
+								<div className="flex-grow">
+									<div className="h-full">
+										<StationList
+											stations={stations}
+											onStationSelect={handleOriginSelect}
+											selectedValue={selectedOrigin}
+											isOpen={openList === "from"}
+											onOpenChange={(isOpen) => {
+												setOpenList(isOpen ? "from" : null);
+											}}
+											onFocus={() => handleInputFocus("from")}
+										/>
+									</div>
+								</div>
 							</div>
 						</div>
-					</div>
-					{hasMounted &&
-						showHint !== null &&
-						showHint &&
-						isLocalStorageAvailable() && (
-							<div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-300 mt-1">
-								<p>{t("hint")}</p>
-								<button
-									type="button"
-									onClick={() => {
-										hapticLight();
-										setShowHint(false);
-										if (isLocalStorageAvailable()) {
-											localStorage.setItem("hideDestinationHint", "true");
-										}
+
+						<div className="space-y-2">
+							<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
+								{t("to")}
+							</h3>
+							<div className="flex items-center gap-2">
+								<div className="flex-grow">
+									<div className="h-full">
+										<StationList
+											stations={availableDestinations}
+											onStationSelect={handleDestinationSelect}
+											selectedValue={selectedDestination}
+											isOpen={openList === "to" && !isSwapping}
+											onOpenChange={(isOpen) => {
+												setOpenList(isOpen ? "to" : null);
+											}}
+											inputRef={toInputRef}
+											onFocus={() => handleInputFocus("to")}
+											isLoading={isLoadingDestinations && !isSwapping}
+										/>
+									</div>
+								</div>
+							</div>
+							{hasMounted &&
+								showHint !== null &&
+								showHint &&
+								isLocalStorageAvailable() && (
+									<div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-300 mt-1">
+										<p>{t("hint")}</p>
+										<button
+											type="button"
+											onClick={() => {
+												hapticLight();
+												setShowHint(false);
+												if (isLocalStorageAvailable()) {
+													localStorage.setItem("hideDestinationHint", "true");
+												}
+											}}
+											className="btn btn-ghost btn-sm ml-2 p-2 hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-all duration-150 touch-manipulation select-none active:scale-95"
+											aria-label="Sulje vihje"
+										>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="2"
+												strokeLinecap="round"
+												strokeLinejoin="round"
+											>
+												<title>{t("closeHint")}</title>
+												<line x1="18" y1="6" x2="6" y2="18" />
+												<line x1="6" y1="6" x2="18" y2="18" />
+											</svg>
+										</button>
+									</div>
+								)}
+						</div>
+
+						{locationError && (
+							<div className="sm:col-span-2 mt-4">
+								<ErrorState
+									type={locationError.type}
+									message={locationError.message}
+									onRetry={() => {
+										setLocationError(null);
+										handleLocationRequest();
 									}}
-									className="ml-2 p-2 hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-all duration-150 touch-manipulation select-none active:scale-95"
-									aria-label="Sulje vihje"
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="16"
-										height="16"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeWidth="2"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-									>
-										<title>{t("closeHint")}</title>
-										<line x1="18" y1="6" x2="6" y2="18" />
-										<line x1="6" y1="6" x2="18" y2="18" />
-									</svg>
-								</button>
+									onDismiss={() => {
+										setLocationError(null);
+									}}
+									showDismiss={true}
+									className="bg-red-50 dark:bg-red-900/20 rounded-lg"
+								/>
 							</div>
 						)}
+					</div>
 				</div>
-
-				{locationError && (
-					<div className="sm:col-span-2 mt-4">
-						<ErrorState
-							type={locationError.type}
-							message={locationError.message}
-							onRetry={() => {
-								setLocationError(null);
-								handleLocationRequest();
-							}}
-							onDismiss={() => {
-								setLocationError(null);
-							}}
-							showDismiss={true}
-							className="bg-red-50 dark:bg-red-900/20 rounded-lg"
-						/>
-					</div>
-				)}
-
-				{selectedOrigin && selectedDestination && (
-					<div className="sm:col-span-2 mt-6">
-						<TrainList
-							stationCode={selectedOrigin}
-							destinationCode={selectedDestination}
-							stations={stations}
-							key={`${selectedOrigin}-${selectedDestination}`}
-						/>
-					</div>
-				)}
 			</div>
+
+			{selectedOrigin && selectedDestination && (
+				<div className="mt-6">
+					<TrainList
+						stationCode={selectedOrigin}
+						destinationCode={selectedDestination}
+						stations={stations}
+						key={`${selectedOrigin}-${selectedDestination}`}
+					/>
+				</div>
+			)}
 		</div>
 	);
 }

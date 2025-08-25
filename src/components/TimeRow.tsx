@@ -35,7 +35,7 @@ const TimeRow = ({
 		: arrivalRow?.scheduledTime;
 
 	return (
-		<span class="block w-full text-gray-600 dark:text-gray-300 text-base sm:text-lg whitespace-nowrap">
+		<span class="block w-full text-base-content/70 text-base sm:text-lg">
 			{useLiveEstimate && <span aria-hidden="true">~</span>}
 			<time datetime={displayedTime}>{formatTime(displayedTime)}</time>
 			{arrivalRow && <span class="mx-1 sm:mx-2">→</span>}

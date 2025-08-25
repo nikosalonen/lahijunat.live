@@ -8,11 +8,22 @@ interface Props {
 
 export default function TrainListSkeleton({ count = 5 }: Props) {
 	return (
-		<div class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4 animate-slide-up">
-			{/* Header skeleton */}
-			<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-2">
-				<div class="bg-gray-200 dark:bg-gray-700 rounded h-8 w-64 shimmer-bg animate-shimmer order-2 sm:order-1" />
-				<div class="bg-gray-200 dark:bg-gray-700 rounded-full h-6 w-6 shimmer-bg animate-shimmer self-end sm:self-auto order-1 sm:order-2" />
+		<output
+			class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4 animate-slide-up"
+			aria-busy="true"
+		>
+			{/* Desktop header skeleton */}
+			<div class="hidden sm:flex sm:flex-row sm:items-center sm:justify-between gap-2">
+				<div class="skeleton h-8 w-64 order-2 sm:order-1" aria-hidden="true" />
+				<div
+					class="skeleton rounded-full h-6 w-6 self-end sm:self-auto order-1 sm:order-2"
+					aria-hidden="true"
+				/>
+			</div>
+
+			{/* Mobile progress skeleton */}
+			<div class="sm:hidden flex justify-end mb-4" aria-hidden="true">
+				<div class="skeleton rounded-full h-6 w-6" />
 			</div>
 
 			{/* Train cards skeleton */}
@@ -27,6 +38,6 @@ export default function TrainListSkeleton({ count = 5 }: Props) {
 					</div>
 				))}
 			</div>
-		</div>
+		</output>
 	);
 }

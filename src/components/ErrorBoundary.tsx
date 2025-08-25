@@ -58,10 +58,14 @@ export default class ErrorBoundary extends Component<Props, State> {
 
 			return (
 				<div className="min-h-[200px] flex items-center justify-center p-4 sm:p-6">
-					<div className="text-center max-w-xs sm:max-w-md w-full">
+					<div
+						className="text-center max-w-xs sm:max-w-md w-full"
+						role="alert"
+						aria-live="polite"
+					>
 						<div className="mb-3 sm:mb-4">
 							<svg
-								className="mx-auto h-12 w-12 text-red-500"
+								className="mx-auto h-12 w-12 text-error"
 								fill="none"
 								viewBox="0 0 24 24"
 								stroke="currentColor"
@@ -75,16 +79,17 @@ export default class ErrorBoundary extends Component<Props, State> {
 								/>
 							</svg>
 						</div>
-						<h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 mb-2 px-2">
+						<h3 className="text-base sm:text-lg font-medium text-base-content mb-2 px-2">
 							{t("errorTitle")}
 						</h3>
-						<p className="text-sm text-gray-600 dark:text-gray-300 mb-4 sm:mb-6 px-2 leading-relaxed">
+						<p className="text-sm text-base-content/70 mb-4 sm:mb-6 px-2 leading-relaxed">
 							{t("errorMessage")}
 						</p>
 						<button
 							type="button"
+							aria-label={t("retry")}
 							onClick={this.handleRetry}
-							className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 touch-manipulation select-none active:scale-95 min-w-[120px] w-auto max-w-[200px]"
+							className="btn btn-primary inline-flex items-center justify-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 touch-manipulation select-none active:scale-95 min-w-[120px] w-auto max-w-[200px]"
 						>
 							<svg
 								className="mr-1.5 sm:mr-2 h-4 w-4 flex-shrink-0"

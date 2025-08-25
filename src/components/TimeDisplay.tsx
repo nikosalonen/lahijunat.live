@@ -21,29 +21,23 @@ const TimeDisplay = ({
 		<span
 			class={`text-xl sm:text-2xl font-medium ${rowIsCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} min-w-0 relative pt-8 sm:pt-6`}
 		>
+			{/* Always show late badge container to maintain consistent spacing */}
 			{departureRow.liveEstimateTime &&
-			timeDifferenceMinutes > 0 &&
-			!rowIsCancelled ? (
-				<>
+				timeDifferenceMinutes > 0 &&
+				!rowIsCancelled && (
 					<output
 						aria-label={`${t("late")} ${timeDifferenceMinutes} ${t("minutes")}`}
-						class="absolute top-0 left-0 px-2 py-0.5 sm:px-2 sm:py-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-lg text-sm sm:text-base font-semibold shadow-lg"
+						aria-live="polite"
+						class="absolute top-0 left-0 badge badge-warning badge-lg font-semibold shadow-lg"
 					>
 						{`+${timeDifferenceMinutes} min`}
 					</output>
-					<TimeRow
-						departureRow={departureRow}
-						arrivalRow={arrivalRow}
-						isCancelled={rowIsCancelled}
-					/>
-				</>
-			) : (
-				<TimeRow
-					departureRow={departureRow}
-					arrivalRow={arrivalRow}
-					isCancelled={rowIsCancelled}
-				/>
-			)}
+				)}
+			<TimeRow
+				departureRow={departureRow}
+				arrivalRow={arrivalRow}
+				isCancelled={rowIsCancelled}
+			/>
 		</span>
 	);
 };

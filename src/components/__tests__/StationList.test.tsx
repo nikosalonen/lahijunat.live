@@ -64,7 +64,7 @@ describe("StationList", () => {
 			<StationList {...defaultProps} isOpen={true} isLoading={true} />,
 		);
 
-		expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
+		expect(container.querySelector(".skeleton")).toBeInTheDocument();
 	});
 
 	it("renders station list when not loading", () => {
@@ -292,7 +292,7 @@ describe("StationList", () => {
 			expect(input).toHaveAttribute("aria-expanded", "true");
 			expect(input).toHaveAttribute("aria-autocomplete", "list");
 
-			const listbox = screen.getByTestId("station-listbox");
+			const listbox = screen.getByRole("listbox");
 			expect(listbox).toBeInTheDocument();
 
 			const options = screen.getAllByRole("option");
@@ -342,7 +342,7 @@ describe("StationList", () => {
 				<StationList {...defaultProps} isLoading={true} />,
 			);
 
-			expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
+			expect(container.querySelector(".skeleton")).toBeInTheDocument();
 		});
 
 		it("provides clear feedback for selection", () => {
@@ -358,7 +358,7 @@ describe("StationList", () => {
 			render(<StationList {...defaultProps} stations={[]} isOpen={true} />);
 
 			// Should not crash and should show no options
-			const listbox = screen.queryByTestId("station-listbox");
+			const listbox = screen.queryByRole("listbox");
 			expect(listbox).toBeInTheDocument();
 
 			const options = screen.queryAllByRole("option");
@@ -384,7 +384,7 @@ describe("StationList", () => {
 			);
 
 			// Should render without crashing
-			const listbox = screen.getByTestId("station-listbox");
+			const listbox = screen.getByRole("listbox");
 			expect(listbox).toBeInTheDocument();
 		});
 

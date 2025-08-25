@@ -1,7 +1,7 @@
 // @ts-check
 
 import fs from "node:fs/promises";
-import path, { join } from "node:path";
+import path from "node:path";
 import preact from "@astrojs/preact";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
@@ -10,29 +10,18 @@ const mySwPlugin = () => {
 	return {
 		name: "customSw",
 		hooks: {
-			"astro:config:done": async ({ config: _cfg }) => {
+			"astro:config:done": async (/** @type {any} */ { config: _cfg }) => {
 				// Config received but not used in this plugin
 			},
-			"astro:build:done": async (_args) => {
-				const swUrl = join("/", "sw.js");
-				const injection = `
-                    <script>
-                        if ('serviceWorker' in navigator) {
-                            window.addEventListener('load', () => {
-                                navigator.serviceWorker.register('${swUrl}');
-                            });
-														self.addEventListener('message', (event) => {
-														if (event.data && event.data.type === 'SKIP_WAITING') {
-															self.skipWaiting();
-														}
-													});
-                        }
-                    </script>`
-					.split("\n")
-					.map((x) => x.trim())
-					.join("");
+			"astro:build:done": async (/** @type {any} */ _args) => {
+				// Use external script to avoid CSP issues with inline scripts
+				const injection = `<script src="/sw-register.js"></script>`;
 
 				// Recursively find all HTML files
+				/**
+				 * @param {string} dirPath
+				 * @returns {Promise<void>}
+				 */
 				async function processDirectory(dirPath) {
 					try {
 						const normalizedPath = path.resolve(dirPath);
@@ -45,10 +34,20 @@ const mySwPlugin = () => {
 								await processDirectory(fullPath);
 							} else if (entry.name.endsWith(".html")) {
 								const html = await fs.readFile(fullPath, "utf8");
-								const updatedHtml = html.replace(
-									"</head>",
-									`${injection}</head>`,
-								);
+								// Guard against duplicate injection
+								const alreadyInjected = html.includes('src="/sw-register.js"');
+								let updatedHtml = html;
+								if (!alreadyInjected) {
+									const headCloseRe = /<\/head\s*>/i;
+									const bodyCloseRe = /<\/body\s*>/i;
+									if (headCloseRe.test(html)) {
+										updatedHtml = html.replace(headCloseRe, `${injection}</head>`);
+									} else if (bodyCloseRe.test(html)) {
+										updatedHtml = html.replace(bodyCloseRe, `${injection}</body>`);
+									} else {
+										updatedHtml = `${html}\n${injection}\n`;
+									}
+								}
 								await fs.writeFile(fullPath, updatedHtml);
 							}
 						}

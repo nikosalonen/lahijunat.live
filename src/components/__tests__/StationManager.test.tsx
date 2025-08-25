@@ -128,7 +128,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .absolute",
+					".station-list-container .dropdown-content",
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -139,11 +139,11 @@ describe("StationManager", () => {
 		}
 
 		// Check if loading state is shown (skeleton animation)
-		expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
+		expect(container.querySelector(".skeleton")).toBeInTheDocument();
 
 		// Wait for destinations to load
 		await waitFor(() => {
-			expect(container.querySelector(".animate-pulse")).not.toBeInTheDocument();
+			expect(container.querySelector(".skeleton")).not.toBeInTheDocument();
 		});
 	});
 
@@ -162,7 +162,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .absolute",
+					".station-list-container .dropdown-content",
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -187,7 +187,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .absolute",
+					".station-list-container .dropdown-content",
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -222,7 +222,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .absolute",
+					".station-list-container .dropdown-content",
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -247,7 +247,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .absolute",
+					".station-list-container .dropdown-content",
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -457,7 +457,7 @@ describe("StationManager", () => {
 			fireEvent.click(locationButton);
 
 			// Button should show loading state
-			expect(locationButton.className).toContain("animate-bounce-subtle");
+			expect(locationButton.className).toContain("animate-pulse");
 
 			// Resolve geolocation
 			resolveGeolocation?.({
@@ -474,7 +474,7 @@ describe("StationManager", () => {
 			} as GeolocationPosition);
 
 			await waitFor(() => {
-				expect(locationButton.className).not.toContain("animate-pulse");
+				expect(locationButton.className).not.toContain("animate-bounce-subtle");
 			});
 		});
 
@@ -556,12 +556,16 @@ describe("StationManager", () => {
 			originalVisibilityState = document.visibilityState;
 
 			// Mock window.location
-			delete (window as unknown as { location: unknown }).location;
-			window.location = {
-				...originalLocation,
-				search: "",
-				pathname: "/",
-			} as Location;
+			Object.defineProperty(window, "location", {
+				value: {
+					...originalLocation,
+					search: "",
+					pathname: "/",
+					reload: vi.fn(),
+				} as Location,
+				writable: true,
+				configurable: true,
+			});
 
 			// Mock document.visibilityState
 			Object.defineProperty(document, "visibilityState", {
@@ -577,11 +581,16 @@ describe("StationManager", () => {
 			Object.defineProperty(window, "history", {
 				value: mockHistory,
 				writable: true,
+				configurable: true,
 			});
 		});
 
 		afterEach(() => {
-			window.location = originalLocation;
+			Object.defineProperty(window, "location", {
+				value: originalLocation,
+				writable: true,
+				configurable: true,
+			});
 			Object.defineProperty(document, "visibilityState", {
 				value: originalVisibilityState,
 				writable: true,
@@ -621,7 +630,7 @@ describe("StationManager", () => {
 				// Wait for the dropdown to appear
 				await waitFor(() => {
 					const dropdown = container.querySelector(
-						".station-list-container .absolute",
+						".station-list-container .dropdown-content",
 					);
 					expect(dropdown).toBeInTheDocument();
 				});
@@ -651,7 +660,7 @@ describe("StationManager", () => {
 
 				await waitFor(() => {
 					const dropdown = container.querySelector(
-						".station-list-container .absolute",
+						".station-list-container .dropdown-content",
 					);
 					expect(dropdown).toBeInTheDocument();
 				});
@@ -674,7 +683,7 @@ describe("StationManager", () => {
 
 				await waitFor(() => {
 					const dropdown = container.querySelector(
-						".station-list-container .absolute",
+						".station-list-container .dropdown-content",
 					);
 					expect(dropdown).toBeInTheDocument();
 				});
@@ -735,7 +744,7 @@ describe("StationManager", () => {
 
 				await waitFor(() => {
 					const dropdown = container.querySelector(
-						".station-list-container .absolute",
+						".station-list-container .dropdown-content",
 					);
 					expect(dropdown).toBeInTheDocument();
 				});

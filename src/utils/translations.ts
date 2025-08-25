@@ -2,13 +2,7 @@
 
 import { getCurrentLanguage } from "./language";
 
-type Translations = {
-	[key: string]: {
-		[key: string]: string;
-	};
-};
-
-export const translations: Translations = {
+export const translations = {
 	fi: {
 		title: "Lähijunat Live | Lähijunien aikataulut reaaliaikaisesti",
 		description: "Reaaliaikaiset lähtöajat Suomen lähijunille",
@@ -21,7 +15,7 @@ export const translations: Translations = {
 		to: "Minne",
 		locate: "Paikanna",
 		loading: "Ladataan...",
-		h1title: "Lähijunien aikataulut",
+		h1title: "Lähtevät lähijunat",
 		placeholder: "Valitse asema...",
 		swapDirection: "Vaihda suunta",
 		hint: "Määränpäät on suodatettu näyttämään vain asemat, joihin on suoria junayhteyksiä valitulta lähtöasemalta.",
@@ -34,6 +28,12 @@ export const translations: Translations = {
 		hours: "tuntia",
 		minutes: "minuuttia",
 		track: "Raide",
+		changed: "muuttunut",
+		selectStations: "Valitse asemat",
+		quick: "pika",
+		route: "reitti",
+		expand: "laajenna",
+		collapse: "pienennä",
 		error: "Virhe ladattaessa junatiedot",
 		departingTrains: "Lähtevät junat",
 		highlighted: "Korostettu",
@@ -72,7 +72,7 @@ export const translations: Translations = {
 		to: "To",
 		locate: "Locate",
 		loading: "Loading...",
-		h1title: "Local Trains Schedules",
+		h1title: "Departing commuter trains",
 		placeholder: "Select a station...",
 		swapDirection: "Swap direction",
 		hint: "The destinations are filtered to show only stations with direct train connections from the selected departure station.",
@@ -85,6 +85,12 @@ export const translations: Translations = {
 		hours: "hours",
 		minutes: "minutes",
 		track: "Track",
+		changed: "changed",
+		selectStations: "Select stations",
+		quick: "quick",
+		route: "route",
+		expand: "expand",
+		collapse: "collapse",
 		error: "Error loading train data",
 		departingTrains: "Departing trains",
 		highlighted: "Highlighted",
@@ -112,7 +118,21 @@ export const translations: Translations = {
 	},
 };
 
-export const t = (key: string): string => {
+// Derive TranslationKey from actual translation keys for compile-time safety
+export type TranslationKey = keyof typeof translations.fi & string;
+
+// Function overloads: compile-time safety for known keys, fallback for dynamic keys
+export function t(key: TranslationKey): string;
+export function t(key: string): string;
+export function t(key: string): string {
 	const lang = getCurrentLanguage();
-	return translations[lang]?.[key] || translations.fi[key] || key;
-};
+	const hasLang = lang in translations;
+	const dict = hasLang
+		? translations[lang as keyof typeof translations]
+		: translations.fi;
+	return (
+		dict[key as keyof typeof dict] ??
+		translations.fi[key as keyof typeof translations.fi] ??
+		key
+	);
+}

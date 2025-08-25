@@ -4,6 +4,7 @@ import type { MutableRef } from "preact/hooks";
 import {
 	useCallback,
 	useEffect,
+	useId,
 	useMemo,
 	useRef,
 	useState,
@@ -46,6 +47,7 @@ export default function StationList({
 	isLoading = false,
 	onFocus,
 }: Props) {
+	const listboxId = useId();
 	const [searchTerm, setSearchTerm] = useState("");
 	const [highlightedIndex, setHighlightedIndex] = useState(-1);
 	const localInputRef = useRef<HTMLInputElement>(null);
@@ -185,8 +187,14 @@ export default function StationList({
 			? filteredStations[highlightedIndex]
 			: null;
 
+	// Dynamic min-height so the container shortens when there are few results
+	const filteredCount = filteredStations.length;
+	const rootMinHeightClass = isOpen && (isLoading || filteredCount >= 5)
+		? "min-h-[16rem]"
+		: "";
+
 	return (
-		<div className="relative station-list-container">
+		<div className={`relative station-list-container ${rootMinHeightClass}`}>
 			<input
 				ref={finalInputRef}
 				type="text"
@@ -196,7 +204,7 @@ export default function StationList({
 				aria-activedescendant={
 					highlightedStation ? `option-${highlightedIndex}` : undefined
 				}
-				aria-controls={isOpen ? "station-listbox" : undefined}
+				aria-controls={isOpen ? listboxId : undefined}
 				value={
 					isOpen
 						? searchTerm
@@ -219,15 +227,17 @@ export default function StationList({
 				}}
 				onKeyDown={handleKeyDown}
 				placeholder={t("placeholder")}
-				className="w-full h-12 px-4 glass-card dark:text-white focus-ring rounded-xl transition-all duration-300 touch-manipulation text-lg sm:text-base hover-lift shadow-lg border-gray-300 dark:border-gray-700"
+				className="input input-bordered w-full h-12 dark:text-white touch-manipulation shadow-lg text-base"
 			/>
 			{(isOpen || isLoading) && (
 				<div
 					ref={listboxRef}
-					id="station-listbox"
+					id={listboxId}
 					data-testid="station-listbox"
 					role="listbox"
-					className="absolute w-full mt-2 glass-card border border-gray-300 dark:border-gray-700 rounded-xl shadow-xl max-h-60 overflow-y-auto z-50 animate-slide-down backdrop-blur-md"
+					className={`dropdown-content menu bg-base-100 rounded-box w-full mt-2 ${
+						isLoading || filteredCount >= 5 ? "min-h-[12rem]" : ""
+					} max-h-60 overflow-y-auto shadow-xl z-50 animate-slide-down`}
 					style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
 				>
 					{isLoading ? (

@@ -3,6 +3,8 @@
  * @type {import('tailwindcss').Config}
  */
 
+import daisyui from "daisyui";
+
 export default {
 	content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
 	theme: {
@@ -77,5 +79,23 @@ export default {
 		},
 	},
 	darkMode: "class",
-	plugins: [],
+	plugins: [daisyui],
+	daisyui: {
+		themes: [
+			{
+				light: {
+					...require("daisyui/src/theming/themes").light,
+					primary: "#8c4799",
+					"primary-content": "#ffffff",
+				},
+			},
+			{
+				dark: {
+					...require("daisyui/src/theming/themes").dark,
+					primary: "#8c4799",
+					"primary-content": "#ffffff",
+				},
+			},
+		],
+	},
 };

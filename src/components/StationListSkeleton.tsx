@@ -2,21 +2,21 @@
 
 export default function StationListSkeleton() {
 	return (
-		<div class="p-4 text-center">
+		<output class="p-4 text-center" aria-busy="true">
 			<div class="space-y-2">
 				{Array.from({ length: 5 }, (_, index) => (
 					<div
 						// biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton items that don't reorder
 						key={`station-skeleton-item-${index}`}
-						class="flex items-center justify-between p-2 animate-pulse"
+						class="flex items-center justify-between p-2"
 					>
 						<div class="flex items-center space-x-3">
-							<div class="bg-gray-200 dark:bg-gray-700 rounded h-4 w-32" />
-							<div class="bg-gray-200 dark:bg-gray-700 rounded h-3 w-8" />
+							<div class="skeleton h-4 w-32" aria-hidden="true" />
+							<div class="skeleton h-3 w-8" aria-hidden="true" />
 						</div>
 					</div>
 				))}
 			</div>
-		</div>
+		</output>
 	);
 }
