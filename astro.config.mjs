@@ -36,9 +36,18 @@ const mySwPlugin = () => {
 								const html = await fs.readFile(fullPath, "utf8");
 								// Guard against duplicate injection
 								const alreadyInjected = html.includes('src="/sw-register.js"');
-								const updatedHtml = alreadyInjected
-									? html
-									: html.replace("</head>", `${injection}</head>`);
+								let updatedHtml = html;
+								if (!alreadyInjected) {
+									const headCloseRe = /<\/head\s*>/i;
+									const bodyCloseRe = /<\/body\s*>/i;
+									if (headCloseRe.test(html)) {
+										updatedHtml = html.replace(headCloseRe, `${injection}</head>`);
+									} else if (bodyCloseRe.test(html)) {
+										updatedHtml = html.replace(bodyCloseRe, `${injection}</body>`);
+									} else {
+										updatedHtml = `${html}\n${injection}\n`;
+									}
+								}
 								await fs.writeFile(fullPath, updatedHtml);
 							}
 						}
