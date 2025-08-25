@@ -188,7 +188,7 @@ export default function StationList({
 			: null;
 
 	return (
-		<div className="relative station-list-container">
+		<div className={`relative station-list-container ${isOpen ? "min-h-[16rem]" : ""}`}>
 			<input
 				ref={finalInputRef}
 				type="text"
