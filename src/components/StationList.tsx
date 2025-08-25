@@ -4,6 +4,7 @@ import type { MutableRef } from "preact/hooks";
 import {
 	useCallback,
 	useEffect,
+	useId,
 	useMemo,
 	useRef,
 	useState,
@@ -46,6 +47,7 @@ export default function StationList({
 	isLoading = false,
 	onFocus,
 }: Props) {
+	const listboxId = useId();
 	const [searchTerm, setSearchTerm] = useState("");
 	const [highlightedIndex, setHighlightedIndex] = useState(-1);
 	const localInputRef = useRef<HTMLInputElement>(null);
@@ -196,7 +198,7 @@ export default function StationList({
 				aria-activedescendant={
 					highlightedStation ? `option-${highlightedIndex}` : undefined
 				}
-				aria-controls={isOpen ? "station-listbox" : undefined}
+				aria-controls={isOpen ? listboxId : undefined}
 				value={
 					isOpen
 						? searchTerm
@@ -219,12 +221,12 @@ export default function StationList({
 				}}
 				onKeyDown={handleKeyDown}
 				placeholder={t("placeholder")}
-				className="input input-bordered input-lg sm:input-md w-full dark:text-white touch-manipulation shadow-lg"
+				className="input input-bordered w-full h-12 dark:text-white touch-manipulation shadow-lg text-base"
 			/>
 			{(isOpen || isLoading) && (
 				<div
 					ref={listboxRef}
-					id="station-listbox"
+					id={listboxId}
 					data-testid="station-listbox"
 					role="listbox"
 					className="dropdown-content menu bg-base-100 rounded-box w-full mt-2 min-h-[12rem] max-h-60 overflow-y-auto shadow-xl z-50 animate-slide-down"
