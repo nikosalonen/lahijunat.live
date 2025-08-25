@@ -448,158 +448,160 @@ export default function TrainCard({
 
 	return (
 		<div
-			class={`p-3 sm:p-4 ${cardStyle} w-full max-w-full text-left relative overflow-hidden`}
+			class={`${cardStyle} w-full max-w-full text-left relative overflow-hidden`}
 			style={{ opacity: hasDeparted ? opacity : 1 }}
 		>
-			<div class="flex items-start justify-between gap-2 sm:gap-4">
-				<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
-					{/* Train identifier */}
-					{train.commuterLineID && (
-						<button
-							onClick={handleFavorite}
-							aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
-							type="button"
-							class={`flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold rounded-2xl shadow-lg transition-transform duration-300 relative group touch-manipulation select-none focus:outline-none border-none ring-0 ${
-								train.cancelled
-									? "bg-gradient-to-br from-red-500 to-red-600 text-white"
-									: "bg-[#8c4799] text-white"
-							}`}
-						>
-							{train.commuterLineID}
-							{isHighlighted && (
-								<div class="badge badge-error badge-sm absolute -top-1 -right-1 shadow">
-									<svg
-										class="w-3 h-3 text-white"
-										fill="currentColor"
-										viewBox="0 0 20 20"
-										aria-hidden="true"
-									>
-										<title>Favorite</title>
-										<path
-											fill-rule="evenodd"
-											d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-											clip-rule="evenodd"
-										/>
-									</svg>
-								</div>
-							)}
-						</button>
-					)}
-
-					{/* Main train info */}
-					<div class="space-y-2 sm:space-y-1 min-w-0 flex-1 overflow-hidden">
-						<div class="flex flex-col gap-1">
-							<div class="flex flex-col gap-2 sm:gap-1">
-								<TimeDisplay
-									departureRow={departureRow}
-									arrivalRow={arrivalRow}
-									timeDifferenceMinutes={timeDifferenceMinutes}
-								/>
-								{duration && (
-									<output
-										class={`text-sm sm:text-base font-medium flex items-center truncate ${
-											durationSpeedType === "fast"
-												? "text-success"
-												: durationSpeedType === "slow"
-													? "text-warning"
-													: "text-base-content/60"
-										}`}
-										aria-label={`${t("duration")} ${duration.hours} ${t(
-											"hours",
-										)} ${duration.minutes} ${t("minutes")}`}
-									>
+			<div class="card-body p-3 sm:p-4">
+				<div class="flex items-start justify-between gap-2 sm:gap-4">
+					<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
+						{/* Train identifier */}
+						{train.commuterLineID && (
+							<button
+								onClick={handleFavorite}
+								aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
+								type="button"
+								class={`flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold rounded-2xl shadow-lg transition-transform duration-300 relative group touch-manipulation select-none focus:outline-none border-none ring-0 ${
+									train.cancelled
+										? "bg-gradient-to-br from-red-500 to-red-600 text-white"
+										: "bg-[#8c4799] text-white"
+								}`}
+							>
+								{train.commuterLineID}
+								{isHighlighted && (
+									<div class="badge badge-error badge-sm absolute -top-1 -right-1 shadow">
 										<svg
-											class="w-4 h-4 inline-block mr-1 -mt-1"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
+											class="w-3 h-3 text-white"
+											fill="currentColor"
+											viewBox="0 0 20 20"
 											aria-hidden="true"
 										>
+											<title>Favorite</title>
 											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+												fill-rule="evenodd"
+												d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+												clip-rule="evenodd"
 											/>
 										</svg>
-										{duration.hours}h {duration.minutes}m
-									</output>
+									</div>
 								)}
+							</button>
+						)}
+
+						{/* Main train info - Using card-title semantic structure */}
+						<div class="space-y-2 sm:space-y-1 min-w-0 flex-1 overflow-hidden">
+							<div class="card-title p-0 flex-col items-start gap-1">
+								<div class="flex flex-col gap-2 sm:gap-1 w-full">
+									<TimeDisplay
+										departureRow={departureRow}
+										arrivalRow={arrivalRow}
+										timeDifferenceMinutes={timeDifferenceMinutes}
+									/>
+									{duration && (
+										<output
+											class={`text-sm sm:text-base font-medium flex items-center truncate ${
+												durationSpeedType === "fast"
+													? "text-success"
+													: durationSpeedType === "slow"
+														? "text-warning"
+														: "text-base-content/60"
+											}`}
+											aria-label={`${t("duration")} ${duration.hours} ${t(
+												"hours",
+											)} ${duration.minutes} ${t("minutes")}`}
+										>
+											<svg
+												class="w-4 h-4 inline-block mr-1 -mt-1"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+												aria-hidden="true"
+											>
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+												/>
+											</svg>
+											{duration.hours}h {duration.minutes}m
+										</output>
+									)}
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
 
-				{/* Track info and departure countdown */}
-				<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0">
-					{train.cancelled ? (
-						<span class="badge badge-error badge-lg text-white">
-							{t("cancelled")}
-						</span>
-					) : (
-						<>
-														<div class="indicator">
-								<output
-									aria-label={`${t("track")} ${departureRow.commercialTrack}${isTrackChanged ? ` (${t("changed")})` : ""}`}
-									class={`badge badge-lg font-semibold transition-all duration-300 ${
-										isTrackChanged ? "badge-error badge-outline" : "badge-ghost"
-									}`}
-								>
-									{t("track")} {departureRow.commercialTrack}
-								</output>
-								{isTrackChanged && (
-									<span
-										class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
-										aria-hidden="true"
+					{/* Track info and departure countdown */}
+					<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0">
+						{train.cancelled ? (
+							<span class="badge badge-error badge-lg text-white">
+								{t("cancelled")}
+							</span>
+						) : (
+							<>
+								<div class="indicator">
+									<output
+										aria-label={`${t("track")} ${departureRow.commercialTrack}${isTrackChanged ? ` (${t("changed")})` : ""}`}
+										class={`badge badge-lg font-semibold transition-all duration-300 ${
+											isTrackChanged ? "badge-error badge-outline" : "badge-ghost"
+										}`}
 									>
-										!
-									</span>
-								)}
-							</div>
-							{minutesToDeparture !== null &&
-								minutesToDeparture <= 30 &&
-								minutesToDeparture >= 0 && (
-									<div
-										class={"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"}
-									>
-										<svg
-											class="w-5 h-5"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
+										{t("track")} {departureRow.commercialTrack}
+									</output>
+									{isTrackChanged && (
+										<span
+											class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
 											aria-hidden="true"
 										>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
-												d="M12 8v4l2 2"
-											/>
-											<circle
-												cx="12"
-												cy="12"
-												r="9"
-												stroke-width="2"
-												fill="none"
-											/>
-										</svg>
-										<span>
-											{minutesToDeparture === 0
-												? "0 min"
-												: `${minutesToDeparture} min`}
+											!
 										</span>
-									</div>
-								)}
-						</>
-					)}
+									)}
+								</div>
+								{minutesToDeparture !== null &&
+									minutesToDeparture <= 30 &&
+									minutesToDeparture >= 0 && (
+										<div
+											class={"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"}
+										>
+											<svg
+												class="w-5 h-5"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+												aria-hidden="true"
+											>
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M12 8v4l2 2"
+												/>
+												<circle
+													cx="12"
+													cy="12"
+													r="9"
+													stroke-width="2"
+													fill="none"
+												/>
+											</svg>
+											<span>
+												{minutesToDeparture === 0
+													? "0 min"
+													: `${minutesToDeparture} min`}
+											</span>
+										</div>
+									)}
+							</>
+						)}
+					</div>
 				</div>
-			</div>
-			<div aria-live="polite" class="sr-only">
-				{train.cancelled
-					? t("cancelled")
-					: departingSoon
-						? t("departingSoon")
-						: ""}
+				<div aria-live="polite" class="sr-only">
+					{train.cancelled
+						? t("cancelled")
+						: departingSoon
+							? t("departingSoon")
+							: ""}
+				</div>
 			</div>
 		</div>
 	);
