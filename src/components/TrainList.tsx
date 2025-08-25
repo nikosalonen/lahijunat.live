@@ -398,7 +398,7 @@ export default function TrainList({
 
 	return (
 		<div>
-			<div class="max-w-4xl mx-auto space-y-6 px-0 sm:px-4">
+			<div class="max-w-4xl mx-auto space-y-6 px-2 sm:px-4">
 				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 					<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 order-2 sm:order-1">
 						{t("departingTrains")}{" "}

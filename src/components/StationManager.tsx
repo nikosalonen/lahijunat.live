@@ -427,7 +427,7 @@ export default function StationManager({
 	);
 
 	return (
-		<div className="w-full max-w-4xl mx-auto px-4 py-2 sm:p-6">
+		<div className="w-full max-w-4xl mx-auto px-2 sm:px-4 py-2 sm:p-6">
 			<h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center dark:text-white">
 				{t("h1title")}
 			</h1>

@@ -7,7 +7,7 @@ const stations = await fetchStations();
 ---
 
 <Layout title="lahijunat.live | Lähijunien aikataulut reaaliaikaisesti">
-  <div class="py-8">
+  <div class="py-4 sm:py-8">
     <StationManager client:load stations={stations} />
   </div>
 </Layout>
