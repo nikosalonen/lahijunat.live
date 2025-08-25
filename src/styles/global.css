@@ -412,9 +412,13 @@
 	box-sizing: border-box;
 }
 
-*,
-*::before,
-*::after {
+/* Constrain media elements, not all elements/pseudo-elements */
+img,
+picture,
+video,
+canvas,
+svg,
+iframe {
 	max-width: 100%;
 }
 

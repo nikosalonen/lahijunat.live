@@ -624,6 +624,7 @@ export default function StationManager({
 						touch-manipulation select-none tooltip tooltip-top
 						shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200"
 							data-tip={t("swapDirection")}
+							aria-label={t("swapDirection")}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -636,9 +637,8 @@ export default function StationManager({
 								strokeLinecap="round"
 								strokeLinejoin="round"
 								className="block mx-auto"
-								aria-labelledby="swapDirectionIcon"
+								aria-hidden="true"
 							>
-								<title id="swapDirectionIcon">{t("swapDirection")}</title>
 								{/* Rotation/refresh icon for swapping */}
 								<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
 								<path d="M21 3v5h-5" />
@@ -701,10 +701,11 @@ export default function StationManager({
 											!selectedOrigin || !selectedDestination || isSwapping
 										}
 										className="hidden sm:block btn w-12 h-12 p-1 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
-							disabled:opacity-50 disabled:cursor-not-allowed
-							touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
-							shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 rounded-l-none"
+								disabled:opacity-50 disabled:cursor-not-allowed
+								touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
+								shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 rounded-l-none"
 										data-tip={t("swapDirection")}
+										aria-label={t("swapDirection")}
 									>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
@@ -717,9 +718,8 @@ export default function StationManager({
 											strokeLinecap="round"
 											strokeLinejoin="round"
 											className="block mx-auto"
-											aria-labelledby="swapDirectionIcon"
+											aria-hidden="true"
 										>
-											<title id="swapDirectionIcon">{t("swapDirection")}</title>
 											{/* Rotation/refresh icon for swapping */}
 											<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
 											<path d="M21 3v5h-5" />
