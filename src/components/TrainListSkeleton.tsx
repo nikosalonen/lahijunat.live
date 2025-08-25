@@ -13,7 +13,7 @@ export default function TrainListSkeleton({ count = 5 }: Props) {
 			aria-busy="true"
 		>
 			{/* Desktop header skeleton */}
-			<div class="hidden sm:flex sm:flex-row sm:items-center sm:justify-between gap-2 px-2">
+			<div class="hidden sm:flex sm:flex-row sm:items-center sm:justify-between gap-2">
 				<div class="skeleton h-8 w-64 order-2 sm:order-1" aria-hidden="true" />
 				<div
 					class="skeleton rounded-full h-6 w-6 self-end sm:self-auto order-1 sm:order-2"
@@ -22,7 +22,7 @@ export default function TrainListSkeleton({ count = 5 }: Props) {
 			</div>
 
 			{/* Mobile progress skeleton */}
-			<div class="sm:hidden flex justify-end mb-4 px-2" aria-hidden="true">
+			<div class="sm:hidden flex justify-end mb-4" aria-hidden="true">
 				<div class="skeleton rounded-full h-6 w-6" />
 			</div>
 
