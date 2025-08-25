@@ -27,13 +27,12 @@ const getErrorConfig = (type: ErrorType) => {
 			return {
 				icon: (
 					<svg
-						className="w-6 h-6"
+						class="w-6 h-6"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
 						aria-hidden="true"
 					>
-						<title>Network Error</title>
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
@@ -50,13 +49,12 @@ const getErrorConfig = (type: ErrorType) => {
 			return {
 				icon: (
 					<svg
-						className="w-6 h-6"
+						class="w-6 h-6"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
 						aria-hidden="true"
 					>
-						<title>API Error</title>
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
@@ -73,13 +71,12 @@ const getErrorConfig = (type: ErrorType) => {
 			return {
 				icon: (
 					<svg
-						className="w-6 h-6"
+						class="w-6 h-6"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
 						aria-hidden="true"
 					>
-						<title>Location Error</title>
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
@@ -102,13 +99,12 @@ const getErrorConfig = (type: ErrorType) => {
 			return {
 				icon: (
 					<svg
-						className="w-6 h-6"
+						class="w-6 h-6"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
 						aria-hidden="true"
 					>
-						<title>Not Found</title>
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
@@ -125,13 +121,12 @@ const getErrorConfig = (type: ErrorType) => {
 			return {
 				icon: (
 					<svg
-						className="w-6 h-6"
+						class="w-6 h-6"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
 						aria-hidden="true"
 					>
-						<title>Rate Limit</title>
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
@@ -148,13 +143,12 @@ const getErrorConfig = (type: ErrorType) => {
 			return {
 				icon: (
 					<svg
-						className="w-6 h-6"
+						class="w-6 h-6"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
 						aria-hidden="true"
 					>
-						<title>Error</title>
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
@@ -182,6 +176,19 @@ export default function ErrorState({
 	const config = getErrorConfig(type);
 	const displayMessage = message || config.defaultMessage;
 
+	const ariaProps =
+		type === "location" || type === "notFound"
+			? ({
+					role: "status",
+					"aria-live": "polite",
+					"aria-atomic": true,
+				} as const)
+			: ({
+					role: "alert",
+					"aria-live": "assertive",
+					"aria-atomic": true,
+				} as const);
+
 	const handleRetry = () => {
 		hapticLight();
 		onRetry?.();
@@ -193,27 +200,21 @@ export default function ErrorState({
 	};
 
 	return (
-		<div className={`p-4 sm:p-6 ${className}`}>
-			<div className={`alert ${config.alertType || "alert-error"}`}>
-				<div className="flex-shrink-0">
-					{config.icon}
-				</div>
-				<div className="flex-1">
-					<h3 className="font-bold text-lg">
-						{config.title}
-					</h3>
-					<p className="text-sm opacity-80">
-						{displayMessage}
-					</p>
-					<div className="flex flex-col sm:flex-row gap-2 mt-3">
+		<div class={`p-4 sm:p-6 ${className}`}>
+			<div class={`alert ${config.alertType}`} {...ariaProps}>
+				<div class="flex-shrink-0">{config.icon}</div>
+				<div class="flex-1">
+					<h3 class="font-bold text-lg">{config.title}</h3>
+					<p class="text-sm opacity-80">{displayMessage}</p>
+					<div class="flex flex-col sm:flex-row gap-2 mt-3">
 						{showRetry && onRetry && (
 							<button
 								type="button"
 								onClick={handleRetry}
-								className="btn btn-primary btn-sm"
+								class="btn btn-primary btn-sm"
 							>
 								<svg
-									className="w-4 h-4 mr-2"
+									class="w-4 h-4 mr-2"
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke="currentColor"
@@ -233,10 +234,10 @@ export default function ErrorState({
 							<button
 								type="button"
 								onClick={handleDismiss}
-								className="btn btn-ghost btn-sm"
+								class="btn btn-ghost btn-sm"
 							>
 								<svg
-									className="w-4 h-4 mr-2"
+									class="w-4 h-4 mr-2"
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke="currentColor"
