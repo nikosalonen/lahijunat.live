@@ -248,7 +248,10 @@ import "../styles/global.css";
       const themeToggleBtn = document.getElementById("theme-toggle");
       const themeToggleInput = themeToggleBtn?.querySelector("input");
 
-      function updateTheme(theme) {
+      /**
+       * @param {string} theme
+       */
+      function updateTheme(theme: string) {
         if (theme === "dark") {
           document.documentElement.classList.remove("light");
           document.documentElement.classList.add("dark");

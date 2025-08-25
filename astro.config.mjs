@@ -10,10 +10,10 @@ const mySwPlugin = () => {
 	return {
 		name: "customSw",
 		hooks: {
-			"astro:config:done": async ({ config: _cfg }) => {
+			"astro:config:done": async (/** @type {any} */ { config: _cfg }) => {
 				// Config received but not used in this plugin
 			},
-			"astro:build:done": async (_args) => {
+			"astro:build:done": async (/** @type {any} */ _args) => {
 				const swUrl = join("/", "sw.js");
 				const injection = `
                     <script>
@@ -33,6 +33,9 @@ const mySwPlugin = () => {
 					.join("");
 
 				// Recursively find all HTML files
+				/**
+				 * @param {string} dirPath
+				 */
 				async function processDirectory(dirPath) {
 					try {
 						const normalizedPath = path.resolve(dirPath);
