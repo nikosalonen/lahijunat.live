@@ -68,7 +68,7 @@ const LanguageSwitcher = () => {
 	const currentLanguageDisplay = labels[currentLang];
 
 	return (
-		<div className="dropdown dropdown-end">
+		<div className={`dropdown dropdown-end ${isOpen ? "dropdown-open" : ""}`}>
 			<button
 				type="button"
 				tabIndex={0}
