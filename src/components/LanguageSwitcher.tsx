@@ -29,14 +29,11 @@ const LanguageSwitcher = () => {
 				setCurrentLang(e.currentTarget.value);
 			}}
 			value={currentLang}
-			className="bg-transparent text-white hover:text-blue-100 transition-colors cursor-pointer border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-blue-100"
+			className="select select-sm select-ghost bg-transparent text-white border border-white/25 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-white/20 hover:bg-white/10 shadow-none"
+			style={{ backgroundColor: "transparent" }}
 		>
-			<option value="fi" className="bg-[#8c4799] text-white">
-				🇫🇮 Suomi
-			</option>
-			<option value="en" className="bg-[#8c4799] text-white">
-				🇬🇧 English
-			</option>
+			<option value="fi">🇫🇮 Suomi</option>
+			<option value="en">🇬🇧 English</option>
 		</select>
 	);
 };

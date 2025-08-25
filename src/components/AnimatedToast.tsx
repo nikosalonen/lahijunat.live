@@ -40,13 +40,13 @@ export default function AnimatedToast({
 	const getTypeStyles = () => {
 		switch (type) {
 			case "success":
-				return "bg-green-50 border-green-200 text-green-800 dark:bg-green-900 dark:border-green-700 dark:text-green-100";
+				return "alert-success";
 			case "error":
-				return "bg-red-50 border-red-200 text-red-800 dark:bg-red-900 dark:border-red-700 dark:text-red-100";
+				return "alert-error";
 			case "warning":
-				return "bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-100";
+				return "alert-warning";
 			default:
-				return "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-100";
+				return "alert-info";
 		}
 	};
 
@@ -132,17 +132,15 @@ export default function AnimatedToast({
 
 	return (
 		<div
-			class={`fixed top-4 right-4 z-[60] max-w-sm w-full transition-all duration-300 ease-out transform ${
+			class={`toast toast-end fixed top-4 right-4 z-[60] max-w-sm w-full transition-all duration-300 ease-out transform ${
 				isVisible && !isExiting
 					? "translate-x-0 opacity-100 scale-100"
 					: "translate-x-full opacity-0 scale-95"
 			}`}
 			{...getAriaAttributes()}
 		>
-			<div
-				class={`rounded-lg border shadow-lg p-4 ${getTypeStyles()} toast-container`}
-			>
-				<div class="flex items-start">
+			<div class={`alert ${getTypeStyles()} shadow-lg toast-container`}>
+				<div class="flex items-start w-full">
 					<div class="flex-shrink-0 text-lg mr-3 animate-scale-in">
 						{getIcon()}
 					</div>
@@ -156,7 +154,7 @@ export default function AnimatedToast({
 							setTimeout(() => onClose?.(), ANIMATION_DURATION);
 						}}
 						aria-label="Close notification"
-						class="flex-shrink-0 ml-3 text-lg opacity-70 hover:opacity-100 transition-opacity duration-150 focus-ring rounded p-1"
+						class="btn btn-ghost btn-xs ml-3"
 					>
 						<svg
 							width="16"

@@ -34,7 +34,7 @@ function StationOption({
 			tabIndex={0}
 			role="option"
 			aria-selected={isSelected}
-			class={`w-full text-left p-4 sm:p-3 text-lg sm:text-base min-h-[48px] station-option cursor-pointer dark:text-white transition-colors duration-200 touch-manipulation select-none focus-ring ${
+			class={`btn btn-ghost justify-start normal-case w-full text-left p-4 sm:p-3 text-lg sm:text-base min-h-[48px] station-option cursor-pointer dark:text-white transition-colors duration-200 touch-manipulation select-none focus-ring ${
 				isHighlighted ? "bg-blue-100 dark:bg-blue-700 animate-scale-in" : ""
 			}`}
 		>

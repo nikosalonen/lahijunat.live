@@ -31,6 +31,8 @@ const TimeDisplay = ({
 					>
 						{`+${timeDifferenceMinutes} min`}
 					</output>
+					{/* Spacer to add air between the delay tag and time row */}
+					<div class="h-2 sm:h-1" />
 					<TimeRow
 						departureRow={departureRow}
 						arrivalRow={arrivalRow}

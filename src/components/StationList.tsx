@@ -219,7 +219,7 @@ export default function StationList({
 				}}
 				onKeyDown={handleKeyDown}
 				placeholder={t("placeholder")}
-				className="w-full h-12 px-4 glass-card dark:text-white focus-ring rounded-xl transition-all duration-300 touch-manipulation text-lg sm:text-base hover-lift shadow-lg border-gray-300 dark:border-gray-700"
+				className="input input-bordered w-full h-12 px-4 dark:text-white rounded-xl transition-all duration-300 touch-manipulation text-lg sm:text-base shadow-lg"
 			/>
 			{(isOpen || isLoading) && (
 				<div
@@ -227,7 +227,7 @@ export default function StationList({
 					id="station-listbox"
 					data-testid="station-listbox"
 					role="listbox"
-					className="absolute w-full mt-2 glass-card border border-gray-300 dark:border-gray-700 rounded-xl shadow-xl max-h-60 overflow-y-auto z-50 animate-slide-down backdrop-blur-md"
+					className="absolute w-full mt-2 card bg-base-100 border border-base-300 rounded-xl shadow-xl max-h-60 overflow-y-auto z-50 animate-slide-down"
 					style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
 				>
 					{isLoading ? (

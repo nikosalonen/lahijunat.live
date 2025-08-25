@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
 @custom-variant dark (&:where(.dark, .dark *));
 @font-face {
@@ -275,14 +276,14 @@
 
 /* Enhanced Micro-interactions */
 .hover-lift {
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.2s ease;
 }
 
 /* Only apply hover effects on devices that support proper hover */
 @media (hover: hover) {
 	.hover-lift:hover {
-		transform: translateY(-4px) scale(1.02);
-		box-shadow: var(--shadow-strong);
+		transform: translateY(-2px) scale(1.01);
+		box-shadow: var(--shadow-medium);
 	}
 
 	.dark .hover-lift:hover {
@@ -290,16 +291,16 @@
 	}
 
 	.train-button-hover:hover {
-		transform: scale(1.05);
+		transform: scale(1.02);
 	}
 
 	.train-span-hover:hover {
-		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 	}
 
 	.station-option:hover {
 		background-color: rgb(243 244 246); /* gray-100 */
-		transform: translateY(-1px);
+		transform: translateY(-0.5px);
 	}
 
 	.dark .station-option:hover {
@@ -325,8 +326,8 @@
 
 	.location-button:hover:not(:disabled) {
 		background-color: rgb(219 234 254); /* blue-100 */
-		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-		transform: translateY(-1px);
+		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+		transform: translateY(-0.5px);
 	}
 
 	.dark .location-button:hover:not(:disabled) {
@@ -348,24 +349,25 @@
 	}
 
 	.toast-container:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+		transform: translateY(-0.5px);
+		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 	}
 }
 
 /* Button Enhancement */
+
 .btn-primary {
 	background: var(--gradient-primary);
 	color: white;
 	border: none;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.2s ease;
 }
 
 /* Only apply hover effects on devices that support proper hover */
 @media (hover: hover) {
 	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: var(--shadow-strong);
+		transform: translateY(-1px);
+		box-shadow: var(--shadow-medium);
 	}
 }
 

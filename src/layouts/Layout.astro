@@ -14,7 +14,7 @@ import "../styles/global.css";
 ---
 
 <!doctype html>
-<html lang={`fi`} class="light">
+<html lang={`fi`} class="light" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -143,13 +143,15 @@ import "../styles/global.css";
         return "light";
       })();
 
-      // Apply theme immediately to prevent flash
+      // Apply theme immediately to prevent flash (class + data-theme for daisyUI)
       if (theme === "dark") {
         document.documentElement.classList.remove("light");
         document.documentElement.classList.add("dark");
+        document.documentElement.setAttribute("data-theme", "dark");
       } else {
         document.documentElement.classList.remove("dark");
         document.documentElement.classList.add("light");
+        document.documentElement.setAttribute("data-theme", "light");
       }
     </script>
     <script
@@ -161,7 +163,7 @@ import "../styles/global.css";
       registerSWUpdateHandler();
     </script>
   </head>
-  <body class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <body class="min-h-screen bg-base-100">
     <div class="min-h-screen flex flex-col">
       <nav class="py-5 sm:py-4 bg-[#8c4799] w-full shadow-lg">
         <div class="container mx-auto px-4 sm:px-4">
@@ -185,12 +187,14 @@ import "../styles/global.css";
                 <span>Lähijunat Live</span>
               </div>
             </a>
-            <div class="flex items-center gap-4">
-              <LanguageSwitcher client:load />
+            <div class="flex items-center gap-8 sm:gap-8">
+              <div class="relative z-10">
+                <LanguageSwitcher client:load />
+              </div>
               <button
                 id="theme-toggle"
                 type="button"
-                class="text-white hover:text-blue-100 transition-colors p-3 sm:p-2 rounded-lg hover:bg-white/10 active:bg-white/20 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
+                class="relative z-0 ml-1 sm:ml-2 text-white hover:text-blue-100 transition-colors p-3 sm:p-2 rounded-lg hover:bg-white/10 active:bg-white/20 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
                 aria-label="Toggle theme"
               >
                 <svg
@@ -207,13 +211,23 @@ import "../styles/global.css";
                 <svg
                   id="theme-toggle-light-icon"
                   class="w-6 h-6 hidden"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path
-                    d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                  ></path>
+                  <circle cx="12" cy="12" r="4" fill="currentColor" />
+                  <line x1="12" y1="2" x2="12" y2="4" />
+                  <line x1="12" y1="20" x2="12" y2="22" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="2" y1="12" x2="4" y2="12" />
+                  <line x1="20" y1="12" x2="22" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                 </svg>
               </button>
             </div>
@@ -257,10 +271,12 @@ import "../styles/global.css";
         if (document.documentElement.classList.contains("dark")) {
           document.documentElement.classList.remove("dark");
           document.documentElement.classList.add("light");
+          document.documentElement.setAttribute("data-theme", "light");
           localStorage.setItem("theme", "light");
         } else {
           document.documentElement.classList.remove("light");
           document.documentElement.classList.add("dark");
+          document.documentElement.setAttribute("data-theme", "dark");
           localStorage.setItem("theme", "dark");
         }
       });
@@ -288,6 +304,5 @@ import "../styles/global.css";
   nav {
     padding-top: max(1rem, env(safe-area-inset-top));
     margin-top: calc(-1 * env(safe-area-inset-top));
-    background-color: #8c4799;
   }
 </style>

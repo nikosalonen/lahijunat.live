@@ -9,7 +9,7 @@ export default function Footer() {
 		<footer class="py-4 text-center text-white bg-[#8c4799] w-full mt-auto">
 			<div class="space-y-2">
 				<p>
-					{t("madeBy")}{" "}
+					{t("madeBy")} {""}
 					<a
 						href="https://bsky.app/profile/niko.torttu.fi"
 						class="hover:text-blue-100 transition-colors"
@@ -21,7 +21,7 @@ export default function Footer() {
 				</p>
 				<p class="text-sm">v{pkg.version}</p>
 				<p class="text-sm">
-					{t("dataSource")}:{" "}
+					{t("dataSource")}: {""}
 					<a
 						href="https://www.digitraffic.fi/"
 						class="hover:text-blue-100 transition-colors"
@@ -30,7 +30,7 @@ export default function Footer() {
 					>
 						Fintraffic
 					</a>
-					- {t("trainIcon")}{" "}
+					- {t("trainIcon")} {""}
 					<a
 						href="https://tyyliopas.hsl.fi/"
 						class="hover:text-blue-100 transition-colors"

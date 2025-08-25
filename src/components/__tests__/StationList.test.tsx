@@ -64,7 +64,7 @@ describe("StationList", () => {
 			<StationList {...defaultProps} isOpen={true} isLoading={true} />,
 		);
 
-		expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
+		expect(container.querySelector(".skeleton")).toBeInTheDocument();
 	});
 
 	it("renders station list when not loading", () => {
@@ -342,7 +342,7 @@ describe("StationList", () => {
 				<StationList {...defaultProps} isLoading={true} />,
 			);
 
-			expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
+			expect(container.querySelector(".skeleton")).toBeInTheDocument();
 		});
 
 		it("provides clear feedback for selection", () => {

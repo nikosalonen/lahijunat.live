@@ -16,20 +16,16 @@ describe("LoadingSpinner", () => {
 	it("renders spinner with correct classes", () => {
 		const { container } = render(<LoadingSpinner />);
 
-		const spinner = container.querySelector(".animate-spin");
-		expect(spinner).toHaveClass("animate-spin");
-		expect(spinner).toHaveClass("rounded-full");
-		expect(spinner).toHaveClass("h-16");
-		expect(spinner).toHaveClass("w-16");
-		expect(spinner).toHaveClass("border-t-2");
-		expect(spinner).toHaveClass("border-b-2");
-		expect(spinner).toHaveClass("border-blue-500");
+		const spinner = container.querySelector(".loading-spinner");
+		expect(spinner).toHaveClass("loading");
+		expect(spinner).toHaveClass("loading-spinner");
+		expect(spinner).toHaveClass("loading-lg");
 	});
 
 	it("renders with correct accessibility attributes", () => {
 		const { container } = render(<LoadingSpinner />);
 
-		const spinner = container.querySelector(".animate-spin");
+		const spinner = container.querySelector(".loading-spinner");
 		expect(spinner).toHaveAttribute("aria-hidden", "true");
 
 		const screenReaderText = container.querySelector(".sr-only");

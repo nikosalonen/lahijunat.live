@@ -139,11 +139,11 @@ describe("StationManager", () => {
 		}
 
 		// Check if loading state is shown (skeleton animation)
-		expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
+		expect(container.querySelector(".skeleton")).toBeInTheDocument();
 
 		// Wait for destinations to load
 		await waitFor(() => {
-			expect(container.querySelector(".animate-pulse")).not.toBeInTheDocument();
+			expect(container.querySelector(".skeleton")).not.toBeInTheDocument();
 		});
 	});
 
@@ -556,12 +556,14 @@ describe("StationManager", () => {
 			originalVisibilityState = document.visibilityState;
 
 			// Mock window.location
-			delete (window as unknown as { location: unknown }).location;
-			window.location = {
-				...originalLocation,
-				search: "",
-				pathname: "/",
-			} as Location;
+			Object.defineProperty(window, "location", {
+				value: {
+					...originalLocation,
+					search: "",
+					pathname: "/",
+				} as Location,
+				writable: true,
+			});
 
 			// Mock document.visibilityState
 			Object.defineProperty(document, "visibilityState", {
@@ -581,7 +583,10 @@ describe("StationManager", () => {
 		});
 
 		afterEach(() => {
-			window.location = originalLocation;
+			Object.defineProperty(window, "location", {
+				value: originalLocation,
+				writable: true,
+			});
 			Object.defineProperty(document, "visibilityState", {
 				value: originalVisibilityState,
 				writable: true,

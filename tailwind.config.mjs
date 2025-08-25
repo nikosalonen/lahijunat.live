@@ -78,4 +78,8 @@ export default {
 	},
 	darkMode: "class",
 	plugins: [],
+	daisyui: {
+		// keep light/dark; can add custom later
+		themes: ["light", "dark"],
+	},
 };

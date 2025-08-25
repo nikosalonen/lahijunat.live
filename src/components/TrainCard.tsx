@@ -52,11 +52,11 @@ const getCardStyle = (
 	isHighlighted: boolean,
 ) => {
 	const baseStyles =
-		"card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300";
+		"card bg-base-100 shadow-xl border border-base-300 rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300";
 
 	// Priority 1: Cancelled trains
 	if (isCancelled)
-		return `${baseStyles} bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-300 dark:border-red-800 shadow-lg`;
+		return `${baseStyles} bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-300 dark:border-red-800`;
 
 	// Priority 2: Departed trains
 	if (minutesToDeparture !== null && minutesToDeparture < 0)
@@ -69,12 +69,12 @@ const getCardStyle = (
 		minutesToDeparture !== null &&
 		minutesToDeparture >= 0
 	) {
-		return "card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300 !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring-4 ring-[#8c4799]/30 dark:ring-[#b388ff]/30 animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark";
+		return "card bg-base-100 shadow-xl rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300 !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring ring-[#8c4799]/30 dark:ring-[#b388ff]/30 animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark";
 	}
 
 	// Priority 4: Highlighted (not departing soon) - Static purple highlight
 	if (isHighlighted)
-		return "card-modern rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300 bg-gradient-to-br from-[#f3e5f5] to-[#e8d5f0] dark:from-[#2d1a33] dark:to-[#1f0f26] !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring-4 ring-[#8c4799]/30 dark:ring-[#b388ff]/30 shadow-xl";
+		return "card bg-base-100 shadow-xl rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300 bg-primary/5 dark:bg-primary/10 !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring ring-[#8c4799]/30 dark:ring-[#b388ff]/30";
 
 	// Priority 5: Departing soon (not highlighted) - Regular blinking
 	if (
@@ -82,11 +82,11 @@ const getCardStyle = (
 		minutesToDeparture !== null &&
 		minutesToDeparture >= 0
 	) {
-		return `${baseStyles} border-gray-300 dark:border-gray-600 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 animate-soft-blink dark:animate-soft-blink-dark`;
+		return `${baseStyles} border-base-300 dark:border-base-300/40 dark:bg-base-200 animate-soft-blink dark:animate-soft-blink-dark`;
 	}
 
 	// Default case
-	return `${baseStyles} surface-elevated`;
+	return `${baseStyles}`;
 };
 
 export default function TrainCard({
@@ -455,39 +455,30 @@ export default function TrainCard({
 							onClick={handleFavorite}
 							aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
 							type="button"
-							class="flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold focus:outline-none transition-transform duration-300 train-button-hover relative group border-none outline-none ring-0 touch-manipulation select-none min-h-[44px] min-w-[44px]"
-							style={{ outline: "none", border: "none", boxShadow: "none" }}
+							class={`flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold rounded-2xl shadow-lg transition-transform duration-300 relative group touch-manipulation select-none focus:outline-none border-none ring-0 ${
+								train.cancelled
+									? "bg-gradient-to-br from-red-500 to-red-600 text-white"
+									: "bg-[#8c4799] text-white"
+							}`}
 						>
-							<div class="relative">
-								<span
-									class={`h-14 w-14 sm:h-16 sm:w-16 rounded-2xl flex items-center justify-center shadow-lg train-span-hover transition-all duration-300 ${
-										train.cancelled
-											? "bg-gradient-to-br from-red-500 to-red-600 text-white"
-											: "bg-[#8c4799] text-white"
-									}`}
-								>
-									<span class="text-lg sm:text-xl font-bold drop-shadow-lg">
-										{train.commuterLineID}
-									</span>
-								</span>
-								{isHighlighted && (
-									<div class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
-										<svg
-											class="w-3 h-3 text-white"
-											fill="currentColor"
-											viewBox="0 0 20 20"
-											aria-hidden="true"
-										>
-											<title>Favorite</title>
-											<path
-												fill-rule="evenodd"
-												d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-												clip-rule="evenodd"
-											/>
-										</svg>
-									</div>
-								)}
-							</div>
+							{train.commuterLineID}
+							{isHighlighted && (
+								<div class="badge badge-error badge-sm absolute -top-1 -right-1 shadow">
+									<svg
+										class="w-3 h-3 text-white"
+										fill="currentColor"
+										viewBox="0 0 20 20"
+										aria-hidden="true"
+									>
+										<title>Favorite</title>
+										<path
+											fill-rule="evenodd"
+											d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								</div>
+							)}
 						</button>
 					)}
 
@@ -504,10 +495,10 @@ export default function TrainCard({
 									<output
 										class={`text-sm sm:text-base font-medium flex items-center truncate ${
 											durationSpeedType === "fast"
-												? "text-green-600 dark:text-green-400"
+												? "text-success"
 												: durationSpeedType === "slow"
-													? "text-orange-600 dark:text-orange-400"
-													: "text-gray-500 dark:text-gray-300"
+													? "text-warning"
+													: "text-base-content/60"
 										}`}
 										aria-label={`${t("duration")} ${duration.hours} ${t(
 											"hours",
@@ -538,17 +529,15 @@ export default function TrainCard({
 				{/* Track info and departure countdown */}
 				<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0">
 					{train.cancelled ? (
-						<span class="px-4 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm sm:text-base font-semibold shadow-lg">
+						<span class="badge badge-error badge-lg text-white">
 							{t("cancelled")}
 						</span>
 					) : (
 						<>
 							<output
 								aria-label={`${t("track")} ${departureRow.commercialTrack}`}
-								class={`px-4 py-2 sm:px-4 sm:py-2 rounded-xl text-sm sm:text-base font-semibold shadow-lg transition-all duration-300 ${
-									isTrackChanged
-										? "bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 text-red-700 dark:text-red-300 ring-2 ring-red-500 dark:ring-red-400"
-										: "bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300"
+								class={`badge badge-lg font-semibold transition-all duration-300 ${
+									isTrackChanged ? "badge-error badge-outline" : "badge-ghost"
 								}`}
 							>
 								{t("track")} {departureRow.commercialTrack}
@@ -557,11 +546,7 @@ export default function TrainCard({
 								minutesToDeparture <= 30 &&
 								minutesToDeparture >= 0 && (
 									<div
-										class={`flex items-center gap-2 px-3 py-2 rounded-xl font-semibold text-lg sm:text-xl shadow-lg transition-all duration-300 ${
-											minutesToDeparture >= 0
-												? "bg-gradient-to-r from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 text-emerald-700 dark:text-emerald-300"
-												: "bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-600 dark:text-gray-300"
-										}`}
+										class={"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"}
 									>
 										<svg
 											class="w-5 h-5"

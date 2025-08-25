@@ -200,7 +200,7 @@ export default function ErrorState({
 					<button
 						type="button"
 						onClick={handleRetry}
-						className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 sm:px-5 py-3 sm:py-2 border border-transparent text-base sm:text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 active:from-blue-800 active:to-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 touch-manipulation select-none active:scale-95 min-h-[48px] sm:min-w-[120px] sm:max-w-[200px] shadow-lg"
+						className="btn btn-primary flex-1 sm:flex-none inline-flex items-center justify-center px-4 sm:px-5 py-3 sm:py-2 text-base sm:text-sm font-medium rounded-xl text-white transition-all duration-200 touch-manipulation select-none active:scale-95 min-h-[48px] sm:min-w-[120px] sm:max-w-[200px] shadow-lg"
 					>
 						<svg
 							className="mr-2 h-5 w-5 sm:h-4 sm:w-4 flex-shrink-0"
@@ -223,7 +223,7 @@ export default function ErrorState({
 					<button
 						type="button"
 						onClick={handleDismiss}
-						className="flex-1 sm:flex-none inline-flex items-center justify-center px-4 sm:px-5 py-3 sm:py-2 border border-gray-300 dark:border-gray-600 text-base sm:text-sm font-medium rounded-xl text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:bg-gray-100 dark:active:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 touch-manipulation select-none active:scale-95 min-h-[48px] sm:min-w-[120px] sm:max-w-[200px] shadow-lg"
+						className="btn btn-ghost flex-1 sm:flex-none inline-flex items-center justify-center px-4 sm:px-5 py-3 sm:py-2 text-base sm:text-sm font-medium rounded-xl transition-all duration-200 touch-manipulation select-none active:scale-95 min-h-[48px] sm:min-w-[120px] sm:max-w-[200px] shadow-lg"
 					>
 						<svg
 							className="mr-2 h-5 w-5 sm:h-4 sm:w-4 flex-shrink-0"

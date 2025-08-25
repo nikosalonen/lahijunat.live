@@ -84,7 +84,7 @@ export default class ErrorBoundary extends Component<Props, State> {
 						<button
 							type="button"
 							onClick={this.handleRetry}
-							className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 touch-manipulation select-none active:scale-95 min-w-[120px] w-auto max-w-[200px]"
+							className="btn btn-primary inline-flex items-center justify-center px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 touch-manipulation select-none active:scale-95 min-w-[120px] w-auto max-w-[200px]"
 						>
 							<svg
 								className="mr-1.5 sm:mr-2 h-4 w-4 flex-shrink-0"

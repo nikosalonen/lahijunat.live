@@ -440,12 +440,12 @@ export default function StationManager({
 						<button
 							type="button"
 							onClick={handleLocationRequest}
-							className={`flex-shrink-0 w-12 h-12 location-button
-								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-xl focus-ring
-								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
-								border border-blue-200 dark:border-blue-700 shadow-lg
-								touch-manipulation select-none
-								${isLocating ? "animate-bounce-subtle" : ""}`}
+							className={`btn btn-outline btn-primary flex-shrink-0 w-12 h-12 location-button
+									disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-xl focus-ring
+									text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
+									border border-blue-200 dark:border-blue-700 shadow-lg
+									touch-manipulation select-none
+									${isLocating ? "animate-bounce-subtle" : ""}`}
 							aria-label="Paikanna"
 						>
 							<svg
@@ -539,11 +539,11 @@ export default function StationManager({
 								}, 100);
 							}}
 							disabled={!selectedOrigin || !selectedDestination}
-							className="flex-shrink-0 w-12 h-12 location-button
-								disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-xl
-								text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
-								border border-blue-200 dark:border-blue-700 shadow-lg
-								touch-manipulation select-none"
+							className="btn btn-outline btn-primary flex-shrink-0 w-12 h-12 location-button
+									disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 rounded-xl
+									text-blue-700 dark:text-blue-100 font-medium flex items-center justify-center
+									border border-blue-200 dark:border-blue-700 shadow-lg
+									touch-manipulation select-none"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -597,7 +597,7 @@ export default function StationManager({
 											localStorage.setItem("hideDestinationHint", "true");
 										}
 									}}
-									className="ml-2 p-2 hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-all duration-150 touch-manipulation select-none active:scale-95"
+									className="btn btn-ghost btn-sm ml-2 p-2 hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-all duration-150 touch-manipulation select-none active:scale-95"
 									aria-label="Sulje vihje"
 								>
 									<svg
