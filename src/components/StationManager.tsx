@@ -547,21 +547,21 @@ export default function StationManager({
 
 			{/* Mobile compact header with toggle and action buttons */}
 			<div className="sm:hidden mb-4">
-				<div className="flex items-center gap-2">
+				<div className="flex items-center gap-2 min-w-0">
 					<button
 						type="button"
 						onClick={() =>
 							setIsStationSelectorExpanded(!isStationSelectorExpanded)
 						}
-						className="flex-grow btn btn-ghost normal-case justify-between p-3 h-auto min-h-0"
+						className="flex-grow btn btn-ghost normal-case justify-between p-3 h-auto min-h-0 min-w-0"
 						aria-expanded={isStationSelectorExpanded}
 						aria-controls="station-selector"
 					>
-						<div className="text-left flex-grow">
+						<div className="text-left flex-grow min-w-0 overflow-hidden">
 							{selectedOrigin && selectedDestination ? (
-								<div className="flex items-center gap-3">
-									<div className="flex-grow">
-										<div className="font-medium text-base leading-tight">
+								<div className="flex items-center gap-3 min-w-0">
+									<div className="flex-grow min-w-0">
+										<div className="font-medium text-base leading-tight truncate">
 											{selectedOriginStation?.name}
 										</div>
 										<div className="text-xs opacity-60 font-mono">
@@ -582,8 +582,8 @@ export default function StationManager({
 											d="M17 8l4 4m0 0l-4 4m4-4H3"
 										/>
 									</svg>
-									<div className="flex-grow text-right">
-										<div className="font-medium text-base leading-tight">
+									<div className="flex-grow text-right min-w-0">
+										<div className="font-medium text-base leading-tight truncate">
 											{selectedDestinationStation?.name}
 										</div>
 										<div className="text-xs opacity-60 font-mono">
