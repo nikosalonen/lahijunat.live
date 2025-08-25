@@ -1,4 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
+import type { JSX } from "preact/jsx-runtime";
 import { getCurrentLanguage, switchLanguage } from "../utils/language";
 
 type Lang = "fi" | "en";
@@ -39,11 +40,24 @@ const LanguageSwitcher = () => {
 		setIsOpen(true);
 	};
 
-	const handleBlur = (event: FocusEvent) => {
+	const handleBlur = (event: JSX.TargetedFocusEvent<HTMLElement>) => {
 		// Check if the new focus target is within the dropdown
-		const dropdown = (event.currentTarget as HTMLElement).closest(".dropdown");
-		if (dropdown && !dropdown.contains(event.relatedTarget as Node)) {
-			setIsOpen(false);
+		const dropdown = event.currentTarget.closest(".dropdown");
+		if (!dropdown) return;
+
+		if (event.relatedTarget) {
+			// Standard case: relatedTarget is available
+			if (!dropdown.contains(event.relatedTarget as Node)) {
+				setIsOpen(false);
+			}
+		} else {
+			// Safari fallback: relatedTarget is null, check on next tick
+			setTimeout(() => {
+				const activeElement = document.activeElement;
+				if (!activeElement || !dropdown.contains(activeElement)) {
+					setIsOpen(false);
+				}
+			}, 0);
 		}
 	};
 
