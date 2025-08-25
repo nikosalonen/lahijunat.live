@@ -413,6 +413,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile Scroll Optimization */
+html {
+	/* Enable smooth scrolling */
+	scroll-behavior: smooth;
+	/* Optimize for mobile touch scrolling */
+	-webkit-overflow-scrolling: touch;
+	/* Prevent scroll bouncing on iOS */
+	overscroll-behavior: none;
+	/* Improve scroll performance */
+	scroll-padding-top: 1rem;
+}
+
+body {
+	/* Enable hardware acceleration for smoother scrolling */
+	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
+	/* Optimize touch scrolling on mobile */
+	-webkit-overflow-scrolling: touch;
+	/* Prevent scroll bouncing */
+	overscroll-behavior: none;
+}
+
+/* Optimize scrollable containers */
+.scroll-smooth {
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
+	scroll-behavior: smooth;
+}
+
+/* Mobile-specific scroll optimizations */
+@media (max-width: 768px) {
+	/* Improve momentum scrolling on iOS */
+	* {
+		-webkit-overflow-scrolling: touch;
+	}
+
+	/* Prevent body scroll when modals/dropdowns are open */
+	.scroll-lock {
+		overflow: hidden;
+		position: fixed;
+		width: 100%;
+	}
+}
+
 @keyframes glow-pulse {
 	0%,
 	100% {
