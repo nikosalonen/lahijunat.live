@@ -254,8 +254,8 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
       const themeToggleBtn = document.getElementById("theme-toggle");
       const themeToggleInput = themeToggleBtn?.querySelector("input");
 
-      // @ts-ignore
-      const updateTheme = (theme) => {
+
+      const updateTheme = (theme: "light" | "dark") => {
         if (theme === "dark") {
           document.documentElement.classList.remove("light");
           document.documentElement.classList.add("dark");
@@ -280,12 +280,11 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
       updateTheme(isDark ? "dark" : "light");
 
       // Handle clicks on the label
-      themeToggleBtn?.addEventListener("click", function (e) {
+      themeToggleBtn?.addEventListener("click", (e) => {
         // Prevent default to control the checkbox ourselves
         e.preventDefault();
-        const currentlyDark =
-          document.documentElement.classList.contains("dark");
-        updateTheme(currentlyDark ? "light" : "dark");
+        const isDark = document.documentElement.classList.contains("dark");
+        updateTheme(isDark ? "light" : "dark");
       });
     </script>
   </body>
