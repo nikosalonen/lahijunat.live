@@ -10,11 +10,15 @@ import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const { title } = Astro.props as Props;
 
-import "../styles/global.css";
+// Determine locale from route path
+const currentPath = Astro.url.pathname;
+const isEnglish = currentPath.startsWith('/en');
+const locale = isEnglish ? 'en' : 'fi';
+const ogLocale = isEnglish ? 'en_US' : 'fi_FI';
 ---
 
 <!doctype html>
-<html lang={`fi`} class="light" data-theme="light">
+<html lang={locale} class="light" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -51,7 +55,7 @@ import "../styles/global.css";
       content={new URL("/Juna-meta-header.png", Astro.site).toString()}
     />
     <meta property="og:image:alt" content="Lähijunat Live logo" />
-    <meta property="og:locale" content="fi_FI" />
+    <meta property="og:locale" content={ogLocale} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -158,14 +162,14 @@ import "../styles/global.css";
       src="https://cdn.counter.dev/script.js"
       data-id="da3ed73f-eedb-4dd0-acac-8e7366f8508e"
       data-utcoffset="2"></script>
-    <script>
+    <script type="module">
       import { registerSWUpdateHandler } from "../utils/swUpdate";
       registerSWUpdateHandler();
     </script>
   </head>
   <body class="min-h-screen bg-base-100">
     <div class="min-h-screen flex flex-col">
-      <nav class="py-3 sm:py-4 bg-[#8c4799] w-full shadow-lg">
+      <nav class="py-3 sm:py-4 bg-[#8c4799] text-white w-full shadow-lg">
         <div class="container mx-auto px-3 sm:px-4">
           <div class="flex items-center justify-between">
             <a
@@ -194,9 +198,11 @@ import "../styles/global.css";
                 id="theme-toggle"
                 class="swap swap-rotate relative z-0 min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center rounded-lg text-white hover:bg-white/10 active:bg-white/20 cursor-pointer tooltip tooltip-left sm:tooltip-bottom"
                 aria-label="Toggle theme"
+                role="switch"
+                aria-checked="false"
                 data-tip="Toggle theme"
               >
-                  <input type="checkbox" class="hidden" />
+                  <input type="checkbox" class="sr-only" />
                   <!-- Light icon (sun) -->
                   <svg
                     id="theme-toggle-light-icon"
@@ -257,6 +263,7 @@ import "../styles/global.css";
           localStorage.setItem("theme", "dark");
           // daisyUI swap: checkbox unchecked shows swap-off (moon)
           if (themeToggleInput) themeToggleInput.checked = false;
+          themeToggleBtn?.setAttribute("aria-checked", "false");
         } else {
           document.documentElement.classList.remove("dark");
           document.documentElement.classList.add("light");
@@ -264,6 +271,7 @@ import "../styles/global.css";
           localStorage.setItem("theme", "light");
           // daisyUI swap: checkbox checked shows swap-on (sun)
           if (themeToggleInput) themeToggleInput.checked = true;
+          themeToggleBtn?.setAttribute("aria-checked", "true");
         }
       }
 
