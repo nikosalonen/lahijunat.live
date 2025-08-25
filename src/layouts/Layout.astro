@@ -206,6 +206,95 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
           });
         });
       }
+
+      // PWA Back Button Handling (inline to ensure it works in production)
+      // Check if the app is currently running in PWA standalone mode
+      function isPWAMode() {
+        return window.matchMedia('(display-mode: standalone)').matches ||
+               navigator.standalone === true ||
+               document.referrer.includes('android-app://');
+      }
+
+      // Check if we're currently on a "root" page where back button should exit
+      function isOnRootPage() {
+        const path = window.location.pathname;
+        return path === '/' ||
+               path === '/en' ||
+               path === '/fi' ||
+               (path === '/index' || path === '/en/index' || path === '/fi/index');
+      }
+
+      // Attempt to exit the PWA
+      function exitPWA() {
+        try {
+          // Method 1: Try to close the window (works in some PWA contexts)
+          window.close();
+
+          // Method 2: Fallback for platforms that don't support window.close()
+          setTimeout(() => {
+            if (!document.hidden) {
+              // Navigate back or try system exit
+              if (window.history.length > 1) {
+                window.history.back();
+              } else {
+                // Last resort: try to navigate to a system URI
+                window.location.href = 'about:blank';
+              }
+            }
+          }, 100);
+
+        } catch (error) {
+          console.log('PWA exit method not available:', error);
+          // Fallback: just go back in history
+          window.history.back();
+        }
+      }
+
+      // Set up PWA back button handling
+      function setupPWABackButton() {
+        // Only set up in PWA mode
+        if (!isPWAMode()) return;
+
+        let hasSetupBackHandler = false;
+
+        // Handle the popstate event (browser back button)
+        const handleBackButton = (event) => {
+          // Check if we're on a root page and should exit
+          if (isOnRootPage()) {
+            // Prevent default back navigation
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Exit the PWA
+            exitPWA();
+          }
+        };
+
+        // Add event listener for back button
+        window.addEventListener('popstate', handleBackButton, true);
+
+        // Push an initial state to enable back button detection on root pages
+        // Only do this once to avoid creating excessive history entries
+        if (!hasSetupBackHandler && isOnRootPage()) {
+          window.history.pushState({ pwaRoot: true }, '', window.location.href);
+          hasSetupBackHandler = true;
+        }
+
+        // Handle Android hardware back button (if available)
+        document.addEventListener('backbutton', (event) => {
+          if (isOnRootPage()) {
+            event.preventDefault();
+            exitPWA();
+          }
+        }, false);
+      }
+
+      // Initialize PWA back button handling when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupPWABackButton);
+      } else {
+        setupPWABackButton();
+      }
     </script>
   </head>
   <body class="min-h-screen bg-base-100">
