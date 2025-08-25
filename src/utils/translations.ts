@@ -126,9 +126,13 @@ export function t(key: TranslationKey): string;
 export function t(key: string): string;
 export function t(key: string): string {
 	const lang = getCurrentLanguage();
-	const langTranslations = translations[lang as keyof typeof translations];
-	const fallbackTranslations = translations.fi;
-	return (langTranslations?.[key as keyof typeof langTranslations] ||
-			fallbackTranslations[key as keyof typeof fallbackTranslations] ||
-			key) as string;
+	const hasLang = lang in translations;
+	const dict = hasLang
+		? translations[lang as keyof typeof translations]
+		: translations.fi;
+	return (
+		dict[key as keyof typeof dict] ??
+		translations.fi[key as keyof typeof translations.fi] ??
+		key
+	);
 }
