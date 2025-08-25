@@ -399,7 +399,8 @@ export default function TrainList({
 	return (
 		<div>
 			<div class="max-w-4xl mx-auto space-y-6 px-2 sm:px-4">
-				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+				{/* Desktop header with h2 and progress */}
+				<div class="hidden sm:flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 					<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 order-2 sm:order-1">
 						{t("departingTrains")}{" "}
 						<span class="sm:hidden">
@@ -412,6 +413,11 @@ export default function TrainList({
 					<div class="self-end sm:self-auto order-1 sm:order-2">
 						<ProgressCircle progress={state.progress} />
 					</div>
+				</div>
+
+				{/* Mobile progress circle only */}
+				<div class="sm:hidden flex justify-end mb-4">
+					<ProgressCircle progress={state.progress} />
 				</div>
 				<div
 					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"

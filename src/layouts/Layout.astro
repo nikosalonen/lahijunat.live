@@ -190,12 +190,12 @@ import "../styles/global.css";
               <div class="relative z-10">
                 <LanguageSwitcher client:load />
               </div>
-              <div class="tooltip tooltip-bottom" data-tip="Toggle theme">
-                <label
-                  id="theme-toggle"
-                  class="swap swap-rotate relative z-0 min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center rounded-lg text-white hover:bg-white/10 active:bg-white/20 cursor-pointer"
-                  aria-label="Toggle theme"
-                >
+              <label
+                id="theme-toggle"
+                class="swap swap-rotate relative z-0 min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center rounded-lg text-white hover:bg-white/10 active:bg-white/20 cursor-pointer tooltip tooltip-left sm:tooltip-bottom"
+                aria-label="Toggle theme"
+                data-tip="Toggle theme"
+              >
                   <input type="checkbox" class="hidden" />
                   <!-- Light icon (sun) -->
                   <svg
@@ -230,7 +230,6 @@ import "../styles/global.css";
                     <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
                   </svg>
                 </label>
-              </div>
             </div>
           </div>
         </div>

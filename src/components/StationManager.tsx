@@ -88,16 +88,35 @@ export default function StationManager({
 	const isSwappingRef = useRef(false);
 	const lastSwapTimeRef = useRef(0);
 
+	// Mobile accordion state - expanded by default if no stations selected
+	const [isStationSelectorExpanded, setIsStationSelectorExpanded] = useState(
+		!initialFromStation || !initialToStation
+	);
+
 	const hasMounted = useHasMounted();
 	const [, forceUpdate] = useState({});
 	const toInputRef = useRef<HTMLInputElement>(null);
 
 	useLanguageChange();
 
+	// Smart accordion toggle logic
+	useEffect(() => {
+		// Auto-collapse when both stations are selected (on mobile)
+		if (selectedOrigin && selectedDestination) {
+			setIsStationSelectorExpanded(false);
+		}
+		// Auto-expand if no stations are selected
+		else if (!selectedOrigin && !selectedDestination) {
+			setIsStationSelectorExpanded(true);
+		}
+	}, [selectedOrigin, selectedDestination]);
+
 	// Auto-focus "to" input when "from" is selected and "to" is empty
 	useEffect(() => {
 		if (selectedOrigin && !selectedDestination) {
 			setOpenList("to");
+			// Ensure accordion is expanded when user needs to select destination
+			setIsStationSelectorExpanded(true);
 			// Use setTimeout to ensure the input is rendered before focusing
 			setTimeout(() => {
 				toInputRef.current?.focus();
@@ -426,12 +445,155 @@ export default function StationManager({
 		[fetchDestinations],
 	);
 
+	// Find selected stations for summary
+	const selectedOriginStation = stations.find(s => s.shortCode === selectedOrigin);
+	const selectedDestinationStation = stations.find(s => s.shortCode === selectedDestination);
+
 	return (
 		<div className="w-full max-w-4xl mx-auto px-2 sm:px-4 py-2 sm:p-6">
 			<h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center dark:text-white">
 				{t("h1title")}
 			</h1>
-			<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
+
+			{/* Mobile compact header with toggle and action buttons */}
+			<div className="sm:hidden mb-4">
+				<div className="flex items-center gap-2">
+					<button
+						type="button"
+						onClick={() => setIsStationSelectorExpanded(!isStationSelectorExpanded)}
+						className="flex-grow btn btn-ghost normal-case justify-between p-3 h-auto min-h-0"
+					>
+						<div className="text-left flex-grow">
+							{selectedOrigin && selectedDestination ? (
+								<div className="flex items-center gap-3">
+									<div className="flex-grow">
+										<div className="font-medium text-base leading-tight">
+											{selectedOriginStation?.name}
+										</div>
+										<div className="text-xs opacity-60 font-mono">
+											{selectedOrigin}
+										</div>
+									</div>
+									<svg className="w-4 h-4 flex-shrink-0 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<title>Route direction</title>
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+									</svg>
+									<div className="flex-grow text-right">
+										<div className="font-medium text-base leading-tight">
+											{selectedDestinationStation?.name}
+										</div>
+										<div className="text-xs opacity-60 font-mono">
+											{selectedDestination}
+										</div>
+									</div>
+								</div>
+							) : (
+								<div className="font-medium text-base">
+									{t("selectStations")}
+								</div>
+							)}
+						</div>
+						<svg
+							className={`w-5 h-5 ml-3 transition-transform ${isStationSelectorExpanded ? 'rotate-180' : ''}`}
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<title>Toggle station selector</title>
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</button>
+
+					{/* Swap button on the same row */}
+					{selectedOrigin && selectedDestination && (
+						<button
+							type="button"
+							onClick={async () => {
+								hapticMedium();
+								// Set swapping flags and timestamp to prevent dropdown from showing
+								setIsSwapping(true);
+								isSwappingRef.current = true;
+								lastSwapTimeRef.current = Date.now();
+								setOpenList(null);
+
+								// Use a short delay to allow UI to update before swapping
+								setTimeout(() => {
+									const temp = selectedOrigin;
+									const _tempDest = availableDestinations;
+
+									setSelectedOrigin(selectedDestination);
+									setSelectedDestination(temp);
+
+									// If both values were non-null, we need to update the URL
+									if (selectedOrigin && selectedDestination) {
+										const newPath = `/${selectedDestination}/${temp}`;
+										window.history.pushState({}, "", newPath);
+									}
+
+									// If we had a selected destination, reset destinations to all stations
+									if (selectedDestination) {
+										setAvailableDestinations(stations);
+									}
+								}, 50);
+
+								// After the swap, load destinations for the new origin
+								setTimeout(async () => {
+									if (selectedDestination) {
+										setIsLoadingDestinations(true);
+										try {
+											const newDestinations = await fetchTrainsLeavingFromStation(
+												selectedDestination,
+											);
+											setAvailableDestinations(newDestinations);
+										} catch (error) {
+											console.error("Error loading destinations:", error);
+											setAvailableDestinations(stations);
+										} finally {
+											setIsLoadingDestinations(false);
+										}
+									}
+								}, 100);
+
+								// Reset swapping flags after everything is complete
+								setTimeout(() => {
+									setIsSwapping(false);
+									isSwappingRef.current = false;
+								}, 150);
+							}}
+							disabled={!selectedOrigin || !selectedDestination || isSwapping}
+							className="btn btn-outline btn-primary btn-sm w-12 h-12 flex-shrink-0
+									disabled:opacity-50 disabled:cursor-not-allowed
+									touch-manipulation select-none tooltip tooltip-top"
+							data-tip={t("swapDirection")}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								className="rotate-90"
+								aria-labelledby="swapDirectionIcon"
+							>
+								<title id="swapDirectionIcon">{t("swapDirection")}</title>
+								<polyline points="17 1 21 5 17 9" />
+								<path d="M3 11V9a4 4 0 0 1 4-4h14" />
+								<polyline points="7 23 3 19 7 15" />
+								<path d="M21 13v2a4 4 0 0 1-4 4H3" />
+							</svg>
+						</button>
+					)}
+				</div>
+			</div>
+
+			{/* Station selector - collapsible on mobile */}
+			<div className={`collapse ${isStationSelectorExpanded ? 'collapse-open' : 'collapse-close'} sm:collapse-open`}>
+				<div className="collapse-content px-0">
+					<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
 				<div className="space-y-2">
 					<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
 						{t("from")}
@@ -443,9 +605,10 @@ export default function StationManager({
 								onClick={handleLocationRequest}
 								className={`btn btn-outline btn-primary join-item w-12 h-12
 										disabled:opacity-50 disabled:cursor-not-allowed
-										touch-manipulation select-none
+										touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
 										${isLocating ? "animate-bounce-subtle" : ""}`}
 								aria-label="Paikanna"
+								data-tip={t("locate")}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
@@ -470,6 +633,7 @@ export default function StationManager({
 									<circle cx="50" cy="50" r="2" fill="currentColor" />
 								</svg>
 							</button>
+							{/* Swap button hidden on mobile since it's available inline above */}
 							<button
 								type="button"
 								onClick={async () => {
@@ -529,21 +693,22 @@ export default function StationManager({
 									}, 150);
 								}}
 								disabled={!selectedOrigin || !selectedDestination}
-								className="btn btn-outline btn-primary join-item w-12 h-12
+								className="hidden sm:block btn btn-outline btn-primary join-item w-12 h-12
 										disabled:opacity-50 disabled:cursor-not-allowed
-										touch-manipulation select-none"
+										touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top"
+								data-tip={t("swapDirection")}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
-									width="28"
-									height="28"
+									width="20"
+									height="20"
 									viewBox="0 0 24 24"
 									fill="none"
 									stroke="currentColor"
 									strokeWidth="2"
 									strokeLinecap="round"
 									strokeLinejoin="round"
-									className="rotate-90"
+									className="mx-auto"
 									aria-labelledby="swapDirectionIcon"
 								>
 									<title id="swapDirectionIcon">{t("swapDirection")}</title>
@@ -648,18 +813,20 @@ export default function StationManager({
 						/>
 					</div>
 				)}
-
-				{selectedOrigin && selectedDestination && (
-					<div className="sm:col-span-2 mt-6">
-						<TrainList
-							stationCode={selectedOrigin}
-							destinationCode={selectedDestination}
-							stations={stations}
-							key={`${selectedOrigin}-${selectedDestination}`}
-						/>
 					</div>
-				)}
+				</div>
 			</div>
+
+			{selectedOrigin && selectedDestination && (
+				<div className="mt-6">
+					<TrainList
+						stationCode={selectedOrigin}
+						destinationCode={selectedDestination}
+						stations={stations}
+						key={`${selectedOrigin}-${selectedDestination}`}
+					/>
+				</div>
+			)}
 		</div>
 	);
 }
