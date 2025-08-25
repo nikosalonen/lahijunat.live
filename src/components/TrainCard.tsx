@@ -69,12 +69,12 @@ const getCardStyle = (
 		minutesToDeparture !== null &&
 		minutesToDeparture >= 0
 	) {
-		return "card bg-base-100 shadow-xl rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300 !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring ring-[#8c4799]/30 dark:ring-[#b388ff]/30 animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark";
+		return `${baseStyles} !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring ring-[#8c4799]/30 dark:ring-[#b388ff]/30 animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark`;
 	}
 
 	// Priority 4: Highlighted (not departing soon) - Static purple highlight
 	if (isHighlighted)
-		return "card bg-base-100 shadow-xl rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300 bg-primary/5 dark:bg-primary/10 !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring ring-[#8c4799]/30 dark:ring-[#b388ff]/30";
+		return `${baseStyles} bg-primary/5 dark:bg-primary/10 !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring ring-[#8c4799]/30 dark:ring-[#b388ff]/30`;
 
 	// Priority 5: Departing soon (not highlighted) - Regular blinking
 	if (
@@ -375,7 +375,6 @@ export default function TrainCard({
 
 	// Memoized track change check
 	const isTrackChanged = useMemo(() => {
-
 		const trackInfo = getRelevantTrackInfo(train, stationCode, destinationCode);
 		if (!trackInfo) return false;
 		const currentTrack = trackInfo.track;
@@ -383,7 +382,6 @@ export default function TrainCard({
 		return storedTrack && currentTrack && storedTrack !== currentTrack;
 		// // TEMPORARY: Force track change indicator for testing
 		// return true;
-
 	}, [
 		train.trainNumber,
 		train.timeTableRows,
@@ -477,9 +475,9 @@ export default function TrainCard({
 										>
 											<title>Favorite</title>
 											<path
-												fill-rule="evenodd"
+												fillRule="evenodd"
 												d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-												clip-rule="evenodd"
+												clipRule="evenodd"
 											/>
 										</svg>
 									</div>
@@ -517,9 +515,9 @@ export default function TrainCard({
 												aria-hidden="true"
 											>
 												<path
-													stroke-linecap="round"
-													stroke-linejoin="round"
-													stroke-width="2"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth="2"
 													d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
 												/>
 											</svg>
@@ -543,7 +541,9 @@ export default function TrainCard({
 									<output
 										aria-label={`${t("track")} ${departureRow.commercialTrack}${isTrackChanged ? ` (${t("changed")})` : ""}`}
 										class={`badge badge-lg font-semibold transition-all duration-300 ${
-											isTrackChanged ? "badge-error badge-outline" : "badge-ghost"
+											isTrackChanged
+												? "badge-error badge-outline"
+												: "badge-ghost"
 										}`}
 									>
 										{t("track")} {departureRow.commercialTrack}
@@ -561,7 +561,9 @@ export default function TrainCard({
 									minutesToDeparture <= 30 &&
 									minutesToDeparture >= 0 && (
 										<div
-											class={"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"}
+											class={
+												"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
+											}
 										>
 											<svg
 												class="w-5 h-5"
@@ -571,16 +573,16 @@ export default function TrainCard({
 												aria-hidden="true"
 											>
 												<path
-													stroke-linecap="round"
-													stroke-linejoin="round"
-													stroke-width="2"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth="2"
 													d="M12 8v4l2 2"
 												/>
 												<circle
 													cx="12"
 													cy="12"
 													r="9"
-													stroke-width="2"
+													strokeWidth="2"
 													fill="none"
 												/>
 											</svg>
