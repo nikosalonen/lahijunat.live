@@ -457,7 +457,7 @@ describe("StationManager", () => {
 			fireEvent.click(locationButton);
 
 			// Button should show loading state
-			expect(locationButton.className).toContain("animate-bounce-subtle");
+			expect(locationButton.className).toContain("animate-pulse");
 
 			// Resolve geolocation
 			resolveGeolocation?.({

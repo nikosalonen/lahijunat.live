@@ -619,30 +619,31 @@ export default function StationManager({
 							type="button"
 							onClick={handleSwap}
 							disabled={!selectedOrigin || !selectedDestination || isSwapping}
-							className="btn w-12 h-12 flex-shrink-0 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
-									disabled:opacity-50 disabled:cursor-not-allowed
-									touch-manipulation select-none tooltip tooltip-top
-									shadow-lg hover:shadow-xl transition-all duration-200"
+							className="btn w-12 h-12 p-1 flex-shrink-0 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
+						disabled:opacity-50 disabled:cursor-not-allowed
+						touch-manipulation select-none tooltip tooltip-top
+						shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200"
 							data-tip={t("swapDirection")}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
-								width="24"
-								height="24"
+								width="28"
+								height="28"
 								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"
-								strokeWidth="2"
+								strokeWidth="2.5"
 								strokeLinecap="round"
 								strokeLinejoin="round"
-								className="rotate-90"
+								className="block mx-auto"
 								aria-labelledby="swapDirectionIcon"
 							>
 								<title id="swapDirectionIcon">{t("swapDirection")}</title>
-								<polyline points="17 1 21 5 17 9" />
-								<path d="M3 11V9a4 4 0 0 1 4-4h14" />
-								<polyline points="7 23 3 19 7 15" />
-								<path d="M21 13v2a4 4 0 0 1-4 4H3" />
+								{/* Rotation/refresh icon for swapping */}
+								<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+								<path d="M21 3v5h-5" />
+								<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+								<path d="M3 21v-5h5" />
 							</svg>
 						</button>
 					)}
@@ -664,35 +665,30 @@ export default function StationManager({
 									<button
 										type="button"
 										onClick={handleLocationRequest}
-										className={`btn w-12 h-12 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
-										disabled:opacity-50 disabled:cursor-not-allowed
-										touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
-										shadow-lg hover:shadow-xl transition-all duration-200 rounded-r-none
-										${isLocating ? "animate-bounce-subtle" : ""}`}
+										className={`btn w-12 h-12 p-1 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
+							disabled:opacity-50 disabled:cursor-not-allowed
+							touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
+							shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 rounded-r-none
+							${isLocating ? "animate-pulse" : ""}`}
 										aria-label={t("locate")}
 										data-tip={t("locate")}
 									>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 100 100"
+											viewBox="0 0 24 24"
 											width="36"
 											height="36"
 											fill="none"
 											stroke="currentColor"
-											strokeWidth="4"
+											strokeWidth="2"
+											strokeLinecap="round"
+											strokeLinejoin="round"
 										>
 											<title>{t("locate")}</title>
-											{/* Outer Circle */}
-											<circle cx="50" cy="50" r="40" />
-											{/* Inner Circle with smaller radius */}
-											<circle cx="50" cy="50" r="8" />
-											{/* Shorter Crosshair Lines for cleaner look */}
-											<line x1="50" y1="10" x2="50" y2="35" />
-											<line x1="50" y1="65" x2="50" y2="90" />
-											<line x1="10" y1="50" x2="35" y2="50" />
-											<line x1="65" y1="50" x2="90" y2="50" />
-											{/* Slightly smaller center dot */}
-											<circle cx="50" cy="50" r="2" fill="currentColor" />
+											{/* Modern GPS/Location Pin Icon */}
+											<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+											<circle cx="12" cy="9" r="2.5" fill="currentColor" />
+											{/* Remove pulse animation - was causing strange effects */}
 										</svg>
 									</button>
 									{/* Divider */}
@@ -704,30 +700,31 @@ export default function StationManager({
 										disabled={
 											!selectedOrigin || !selectedDestination || isSwapping
 										}
-										className="hidden sm:block btn w-12 h-12 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
-										disabled:opacity-50 disabled:cursor-not-allowed
-										touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
-										shadow-lg hover:shadow-xl transition-all duration-200 rounded-l-none"
+										className="hidden sm:block btn w-12 h-12 p-1 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
+							disabled:opacity-50 disabled:cursor-not-allowed
+							touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
+							shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 rounded-l-none"
 										data-tip={t("swapDirection")}
 									>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
-											width="24"
-											height="24"
+											width="28"
+											height="28"
 											viewBox="0 0 24 24"
 											fill="none"
 											stroke="currentColor"
-											strokeWidth="2"
+											strokeWidth="2.5"
 											strokeLinecap="round"
 											strokeLinejoin="round"
-											className="block mx-auto rotate-90"
+											className="block mx-auto"
 											aria-labelledby="swapDirectionIcon"
 										>
 											<title id="swapDirectionIcon">{t("swapDirection")}</title>
-											<polyline points="17 1 21 5 17 9" />
-											<path d="M3 11V9a4 4 0 0 1 4-4h14" />
-											<polyline points="7 23 3 19 7 15" />
-											<path d="M21 13v2a4 4 0 0 1-4 4H3" />
+											{/* Rotation/refresh icon for swapping */}
+											<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+											<path d="M21 3v5h-5" />
+											<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+											<path d="M3 21v-5h5" />
 										</svg>
 									</button>
 								</div>
