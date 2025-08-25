@@ -2,7 +2,7 @@
 if ("serviceWorker" in navigator) {
   const registerSW = () => {
     navigator.serviceWorker
-      .register("/sw.js", { type: "module" })
+      .register("/sw.js")
       .catch((err) => console.error("SW registration failed:", err));
   };
 

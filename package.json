@@ -4,7 +4,7 @@
 	"version": "1.10.0",
 	"scripts": {
 		"dev": "astro dev",
-		"build": "astro build && workbox injectManifest workbox-config.cjs",
+		"build": "astro build && cp src/sw-utils.js dist/ && workbox generateSW workbox-config.cjs",
 		"preview": "astro preview",
 		"astro": "astro",
 		"lint": "biome check --write src",
