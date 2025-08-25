@@ -3,6 +3,8 @@
  * @type {import('tailwindcss').Config}
  */
 
+import daisyui from "daisyui";
+
 export default {
 	content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
 	theme: {
@@ -77,7 +79,7 @@ export default {
 		},
 	},
 	darkMode: "class",
-	plugins: [],
+	plugins: [daisyui],
 	daisyui: {
 		// keep light/dark; can add custom later
 		themes: ["light", "dark"],
