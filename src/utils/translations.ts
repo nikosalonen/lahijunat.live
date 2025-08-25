@@ -2,13 +2,7 @@
 
 import { getCurrentLanguage } from "./language";
 
-type Translations = {
-	[key: string]: {
-		[key: string]: string;
-	};
-};
-
-export const translations: Translations = {
+export const translations = {
 	fi: {
 		title: "Lähijunat Live | Lähijunien aikataulut reaaliaikaisesti",
 		description: "Reaaliaikaiset lähtöajat Suomen lähijunille",
@@ -124,13 +118,17 @@ export const translations: Translations = {
 	},
 };
 
-// For better editor support and compile-time checking downstream
+// Derive TranslationKey from actual translation keys for compile-time safety
 export type TranslationKey = keyof typeof translations.fi & string;
 
-export const t = (key: string): string => {
+// Function overloads: compile-time safety for known keys, fallback for dynamic keys
+export function t(key: TranslationKey): string;
+export function t(key: string): string;
+export function t(key: string): string {
 	const lang = getCurrentLanguage();
-	return translations[lang]?.[key] || translations.fi[key] || key;
-};
-
-// Typed helper for compile-time key validation (optional usage)
-export const tt = (key: TranslationKey): string => t(key);
+	const langTranslations = translations[lang as keyof typeof translations];
+	const fallbackTranslations = translations.fi;
+	return (langTranslations?.[key as keyof typeof langTranslations] ||
+			fallbackTranslations[key as keyof typeof fallbackTranslations] ||
+			key) as string;
+}
