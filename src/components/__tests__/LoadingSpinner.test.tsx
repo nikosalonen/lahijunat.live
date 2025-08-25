@@ -28,18 +28,20 @@ describe("LoadingSpinner", () => {
 		const spinner = container.querySelector(".loading-spinner");
 		expect(spinner).toHaveAttribute("aria-hidden", "true");
 
-		const screenReaderText = container.querySelector(".sr-only");
-		expect(screenReaderText).toBeInTheDocument();
-		expect(screenReaderText).toHaveTextContent("Ladataan...");
+		const progressContainer = container.querySelector('[role="progressbar"]');
+		expect(progressContainer).toBeInTheDocument();
+		expect(progressContainer).toHaveAttribute("aria-live", "polite");
+		expect(progressContainer).toHaveAttribute("aria-busy", "true");
+		expect(progressContainer).toHaveAttribute("aria-label", "Ladataan...");
 	});
 
 	it("renders in a centered container", () => {
 		const { container } = render(<LoadingSpinner />);
 
-		const output = container.querySelector("output");
-		expect(output).toHaveClass("flex");
-		expect(output).toHaveClass("justify-center");
-		expect(output).toHaveClass("items-center");
-		expect(output).toHaveClass("h-screen");
+		const container_element = container.querySelector('[role="progressbar"]');
+		expect(container_element).toHaveClass("flex");
+		expect(container_element).toHaveClass("justify-center");
+		expect(container_element).toHaveClass("items-center");
+		expect(container_element).toHaveClass("h-screen");
 	});
 });

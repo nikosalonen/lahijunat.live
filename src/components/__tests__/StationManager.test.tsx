@@ -474,7 +474,7 @@ describe("StationManager", () => {
 			} as GeolocationPosition);
 
 			await waitFor(() => {
-				expect(locationButton.className).not.toContain("animate-pulse");
+				expect(locationButton.className).not.toContain("animate-bounce-subtle");
 			});
 		});
 
@@ -561,8 +561,10 @@ describe("StationManager", () => {
 					...originalLocation,
 					search: "",
 					pathname: "/",
+					reload: vi.fn(),
 				} as Location,
 				writable: true,
+				configurable: true,
 			});
 
 			// Mock document.visibilityState
@@ -579,6 +581,7 @@ describe("StationManager", () => {
 			Object.defineProperty(window, "history", {
 				value: mockHistory,
 				writable: true,
+				configurable: true,
 			});
 		});
 
@@ -586,6 +589,7 @@ describe("StationManager", () => {
 			Object.defineProperty(window, "location", {
 				value: originalLocation,
 				writable: true,
+				configurable: true,
 			});
 			Object.defineProperty(document, "visibilityState", {
 				value: originalVisibilityState,
