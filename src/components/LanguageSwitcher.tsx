@@ -37,11 +37,12 @@ const LanguageSwitcher = () => {
 			<button
 				type="button"
 				tabIndex={0}
-				className="btn btn-ghost btn-sm text-white border border-white/25 hover:bg-white/10 focus:bg-white/10 normal-case min-h-[2.5rem] h-auto px-3 py-1"
+				className="btn btn-ghost btn-xs sm:btn-sm text-white border border-white/25 hover:bg-white/10 focus:bg-white/10 normal-case min-h-[2rem] sm:min-h-[2.5rem] h-auto px-2 sm:px-3 py-1 text-sm"
 			>
-				{currentLanguageDisplay}
+				<span className="hidden sm:inline">{currentLanguageDisplay}</span>
+				<span className="sm:hidden">{currentLang === "fi" ? "🇫🇮" : "🇬🇧"}</span>
 				<svg
-					className="w-4 h-4 ml-1"
+					className="w-3 h-3 sm:w-4 sm:h-4 ml-0.5 sm:ml-1"
 					fill="none"
 					stroke="currentColor"
 					viewBox="0 0 24 24"
