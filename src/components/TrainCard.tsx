@@ -375,11 +375,15 @@ export default function TrainCard({
 
 	// Memoized track change check
 	const isTrackChanged = useMemo(() => {
+
 		const trackInfo = getRelevantTrackInfo(train, stationCode, destinationCode);
 		if (!trackInfo) return false;
 		const currentTrack = trackInfo.track;
 		const storedTrack = trackMemory[trackInfo.journeyKey]?.track;
 		return storedTrack && currentTrack && storedTrack !== currentTrack;
+		// // TEMPORARY: Force track change indicator for testing
+		// return true;
+
 	}, [
 		train.trainNumber,
 		train.timeTableRows,
@@ -534,14 +538,24 @@ export default function TrainCard({
 						</span>
 					) : (
 						<>
-							<output
-								aria-label={`${t("track")} ${departureRow.commercialTrack}`}
-								class={`badge badge-lg font-semibold transition-all duration-300 ${
-									isTrackChanged ? "badge-error badge-outline" : "badge-ghost"
-								}`}
-							>
-								{t("track")} {departureRow.commercialTrack}
-							</output>
+														<div class="indicator">
+								<output
+									aria-label={`${t("track")} ${departureRow.commercialTrack}${isTrackChanged ? ` (${t("changed")})` : ""}`}
+									class={`badge badge-lg font-semibold transition-all duration-300 ${
+										isTrackChanged ? "badge-error badge-outline" : "badge-ghost"
+									}`}
+								>
+									{t("track")} {departureRow.commercialTrack}
+								</output>
+								{isTrackChanged && (
+									<span
+										class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
+										aria-hidden="true"
+									>
+										!
+									</span>
+								)}
+							</div>
 							{minutesToDeparture !== null &&
 								minutesToDeparture <= 30 &&
 								minutesToDeparture >= 0 && (
