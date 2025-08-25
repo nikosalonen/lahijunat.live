@@ -21,31 +21,23 @@ const TimeDisplay = ({
 		<span
 			class={`text-xl sm:text-2xl font-medium ${rowIsCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} min-w-0 relative pt-8 sm:pt-6`}
 		>
+			{/* Always show late badge container to maintain consistent spacing */}
 			{departureRow.liveEstimateTime &&
-			timeDifferenceMinutes > 0 &&
-			!rowIsCancelled ? (
-				<>
+				timeDifferenceMinutes > 0 &&
+				!rowIsCancelled && (
 					<output
 						aria-label={`${t("late")} ${timeDifferenceMinutes} ${t("minutes")}`}
+						aria-live="polite"
 						class="absolute top-0 left-0 badge badge-warning badge-lg font-semibold shadow-lg"
 					>
 						{`+${timeDifferenceMinutes} min`}
 					</output>
-					{/* Spacer to add air between the delay tag and time row */}
-					<div class="h-2 sm:h-1" />
-					<TimeRow
-						departureRow={departureRow}
-						arrivalRow={arrivalRow}
-						isCancelled={rowIsCancelled}
-					/>
-				</>
-			) : (
-				<TimeRow
-					departureRow={departureRow}
-					arrivalRow={arrivalRow}
-					isCancelled={rowIsCancelled}
-				/>
-			)}
+				)}
+			<TimeRow
+				departureRow={departureRow}
+				arrivalRow={arrivalRow}
+				isCancelled={rowIsCancelled}
+			/>
 		</span>
 	);
 };
