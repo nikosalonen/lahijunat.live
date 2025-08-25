@@ -1,6 +1,6 @@
 /** @format */
 
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 
 interface ToastProps {
 	message: string;
@@ -20,16 +20,21 @@ export default function AnimatedToast({
 }: ToastProps) {
 	const [isVisible, setIsVisible] = useState(false);
 	const [isExiting, setIsExiting] = useState(false);
+	const didClose = useRef(false);
+
+	const closeOnce = () => {
+		if (didClose.current) return;
+		didClose.current = true;
+		setIsExiting(true);
+		setTimeout(() => onClose?.(), ANIMATION_DURATION);
+	};
 
 	useEffect(() => {
 		// Trigger entrance animation
 		const enterTimer = setTimeout(() => setIsVisible(true), 10);
 
 		// Auto-dismiss after duration
-		const exitTimer = setTimeout(() => {
-			setIsExiting(true);
-			setTimeout(() => onClose?.(), ANIMATION_DURATION);
-		}, duration);
+		const exitTimer = setTimeout(closeOnce, duration);
 
 		return () => {
 			clearTimeout(enterTimer);
@@ -132,14 +137,16 @@ export default function AnimatedToast({
 
 	return (
 		<div
-			class={`toast toast-end fixed top-4 right-4 z-[60] max-w-sm w-full transition-all duration-300 ease-out transform ${
+			class={`toast toast-end top-4 right-4 z-[60] max-w-sm w-full transition-all duration-300 ease-out transform ${
 				isVisible && !isExiting
 					? "translate-x-0 opacity-100 scale-100"
 					: "translate-x-full opacity-0 scale-95"
 			}`}
-			{...getAriaAttributes()}
 		>
-			<div class={`alert ${getTypeStyles()} shadow-lg toast-container`}>
+			<div
+				class={`alert ${getTypeStyles()} shadow-lg toast-container`}
+				{...getAriaAttributes()}
+			>
 				<div class="flex items-start w-full">
 					<div class="flex-shrink-0 text-lg mr-3 animate-scale-in">
 						{getIcon()}
@@ -149,10 +156,7 @@ export default function AnimatedToast({
 					</div>
 					<button
 						type="button"
-						onClick={() => {
-							setIsExiting(true);
-							setTimeout(() => onClose?.(), ANIMATION_DURATION);
-						}}
+						onClick={closeOnce}
 						aria-label="Close notification"
 						class="btn btn-ghost btn-xs ml-3"
 					>
