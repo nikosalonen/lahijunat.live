@@ -81,7 +81,21 @@ export default {
 	darkMode: "class",
 	plugins: [daisyui],
 	daisyui: {
-		// keep light/dark; can add custom later
-		themes: ["light", "dark"],
+		themes: [
+			{
+				light: {
+					...require("daisyui/src/theming/themes").light,
+					primary: "#8c4799",
+					"primary-content": "#ffffff",
+				},
+			},
+			{
+				dark: {
+					...require("daisyui/src/theming/themes").dark,
+					primary: "#8c4799",
+					"primary-content": "#ffffff",
+				},
+			},
+		],
 	},
 };

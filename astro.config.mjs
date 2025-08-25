@@ -1,7 +1,7 @@
 // @ts-check
 
 import fs from "node:fs/promises";
-import path, { join } from "node:path";
+import path from "node:path";
 import preact from "@astrojs/preact";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
@@ -14,27 +14,13 @@ const mySwPlugin = () => {
 				// Config received but not used in this plugin
 			},
 			"astro:build:done": async (/** @type {any} */ _args) => {
-				const swUrl = join("/", "sw.js");
-				const injection = `
-                    <script>
-                        if ('serviceWorker' in navigator) {
-                            window.addEventListener('load', () => {
-                                navigator.serviceWorker.register('${swUrl}');
-                            });
-														self.addEventListener('message', (event) => {
-														if (event.data && event.data.type === 'SKIP_WAITING') {
-															self.skipWaiting();
-														}
-													});
-                        }
-                    </script>`
-					.split("\n")
-					.map((x) => x.trim())
-					.join("");
+				// Use external script to avoid CSP issues with inline scripts
+				const injection = `<script src="/sw-register.js"></script>`;
 
 				// Recursively find all HTML files
 				/**
 				 * @param {string} dirPath
+				 * @returns {Promise<void>}
 				 */
 				async function processDirectory(dirPath) {
 					try {
@@ -48,10 +34,11 @@ const mySwPlugin = () => {
 								await processDirectory(fullPath);
 							} else if (entry.name.endsWith(".html")) {
 								const html = await fs.readFile(fullPath, "utf8");
-								const updatedHtml = html.replace(
-									"</head>",
-									`${injection}</head>`,
-								);
+								// Guard against duplicate injection
+								const alreadyInjected = html.includes('src="/sw-register.js"');
+								const updatedHtml = alreadyInjected
+									? html
+									: html.replace("</head>", `${injection}</head>`);
 								await fs.writeFile(fullPath, updatedHtml);
 							}
 						}
