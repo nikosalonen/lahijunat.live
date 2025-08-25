@@ -13,7 +13,8 @@ export const calculateDuration = (
 ): Duration => {
 	const startMs =
 		typeof start === "string" ? new Date(start).getTime() : start.getTime();
-	const endMs = typeof end === "string" ? new Date(end).getTime() : end.getTime();
+	const endMs =
+		typeof end === "string" ? new Date(end).getTime() : end.getTime();
 	const durationMinutes = Math.round((endMs - startMs) / (1000 * 60));
 	return {
 		hours: Math.floor(durationMinutes / 60),
@@ -22,9 +23,7 @@ export const calculateDuration = (
 };
 
 export const getDepartureDate = (row: Train["timeTableRows"][0]): Date => {
-	return new Date(
-		row.actualTime ?? row.liveEstimateTime ?? row.scheduledTime,
-	);
+	return new Date(row.actualTime ?? row.liveEstimateTime ?? row.scheduledTime);
 };
 
 export const getArrivalDate = (row: Train["timeTableRows"][0]): Date => {

@@ -25,10 +25,10 @@ interface Props {
 }
 
 type HighlightedTrainData = {
-    highlighted?: boolean;
-    removeAfter?: string;
-    track?: string;
-    trackChanged?: boolean;
+	highlighted?: boolean;
+	removeAfter?: string;
+	track?: string;
+	trackChanged?: boolean;
 };
 
 const formatMinutesToDeparture = (departure: Date, currentTime: Date) => {

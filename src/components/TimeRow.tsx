@@ -5,7 +5,7 @@ const TimeRow = ({
 	departureRow,
 	arrivalRow,
 	isCancelled,
-}:	{
+}: {
 	departureRow: Train["timeTableRows"][0];
 	arrivalRow?: Train["timeTableRows"][0];
 	isCancelled?: boolean;
@@ -13,17 +13,17 @@ const TimeRow = ({
 	const rowIsCancelled = Boolean(isCancelled ?? departureRow.cancelled);
 	const useLiveEstimate = Boolean(
 		departureRow.liveEstimateTime &&
-		!rowIsCancelled &&
-		departureRow.differenceInMinutes !== undefined &&
-		departureRow.differenceInMinutes > 1,
+			!rowIsCancelled &&
+			departureRow.differenceInMinutes !== undefined &&
+			departureRow.differenceInMinutes > 1,
 	);
 
 	const useArrivalLiveEstimate = Boolean(
 		arrivalRow?.liveEstimateTime &&
-		!rowIsCancelled &&
-		!arrivalRow?.cancelled &&
-		arrivalRow?.differenceInMinutes !== undefined &&
-		arrivalRow.differenceInMinutes > 1,
+			!rowIsCancelled &&
+			!arrivalRow?.cancelled &&
+			arrivalRow?.differenceInMinutes !== undefined &&
+			arrivalRow.differenceInMinutes > 1,
 	);
 
 	const displayedTime = useLiveEstimate
@@ -35,21 +35,19 @@ const TimeRow = ({
 		: arrivalRow?.scheduledTime;
 
 	return (
-			<span class="block w-full text-gray-600 dark:text-gray-300 text-base sm:text-lg whitespace-nowrap">
-				{useLiveEstimate && <span aria-hidden="true">~</span>}
-				<time datetime={displayedTime}>
-					{formatTime(displayedTime)}
-				</time>
-				{arrivalRow && <span class="mx-1 sm:mx-2">→</span>}
-				{arrivalRow && arrivalDisplayedTime && (
-					<>
-						{useArrivalLiveEstimate && <span aria-hidden="true">~</span>}
-						<time datetime={arrivalDisplayedTime}>
-							{formatTime(arrivalDisplayedTime)}
-						</time>
-					</>
-				)}
-			</span>
+		<span class="block w-full text-gray-600 dark:text-gray-300 text-base sm:text-lg whitespace-nowrap">
+			{useLiveEstimate && <span aria-hidden="true">~</span>}
+			<time datetime={displayedTime}>{formatTime(displayedTime)}</time>
+			{arrivalRow && <span class="mx-1 sm:mx-2">→</span>}
+			{arrivalRow && arrivalDisplayedTime && (
+				<>
+					{useArrivalLiveEstimate && <span aria-hidden="true">~</span>}
+					<time datetime={arrivalDisplayedTime}>
+						{formatTime(arrivalDisplayedTime)}
+					</time>
+				</>
+			)}
+		</span>
 	);
 };
 

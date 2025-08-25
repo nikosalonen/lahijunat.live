@@ -122,7 +122,10 @@ describe("TimeRow", () => {
 		};
 
 		const { getByText, container } = render(
-			<TimeRow departureRow={mockDepartureRow} arrivalRow={delayedArrivalRow} />,
+			<TimeRow
+				departureRow={mockDepartureRow}
+				arrivalRow={delayedArrivalRow}
+			/>,
 		);
 
 		// arrival formatted time should reflect 11:10 instead of 11:00
