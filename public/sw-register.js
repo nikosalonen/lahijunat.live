@@ -2,6 +2,7 @@
 if ("serviceWorker" in navigator) {
 	let refreshing = false;
 	let updateBanner = null;
+	let dismissTimeoutId = null;
 
 	// Simple translation system for PWA banner
 	const bannerTranslations = {
@@ -25,16 +26,12 @@ if ("serviceWorker" in navigator) {
 	// Get translation for current language
 	function getBannerTranslation(key) {
 		const lang = getCurrentLanguage();
-		const translation = bannerTranslations[lang]?.[key] || bannerTranslations.fi[key];
-		console.log(`Banner translation for ${key} in ${lang}:`, translation);
-		return translation;
+		return bannerTranslations[lang]?.[key] || bannerTranslations.fi[key];
 	}
 
 	// Create update notification banner
 	function createUpdateBanner() {
 		if (updateBanner) return updateBanner;
-
-		console.log("Creating PWA update banner...");
 
 		// Detect mobile device
 		const isMobile = window.innerWidth < 640;
@@ -63,10 +60,8 @@ if ("serviceWorker" in navigator) {
 		// Animate in and push header down
 		setTimeout(() => {
 			const bannerElement = document.getElementById("pwa-banner");
-			console.log("Animating banner...", bannerElement);
 			if (bannerElement) {
 				bannerElement.style.transform = "translateY(0)";
-				console.log("Banner transform set to translateY(0)");
 			}
 			// Push header down to avoid overlap
 			const nav = document.querySelector("nav");
@@ -75,7 +70,6 @@ if ("serviceWorker" in navigator) {
 			if (nav) {
 				nav.style.marginTop = `${bannerHeight}px`;
 				nav.style.transition = "margin-top 0.3s ease-in-out";
-				console.log(`Header pushed down by ${bannerHeight}px`);
 			}
 		}, 100);
 
@@ -101,11 +95,29 @@ if ("serviceWorker" in navigator) {
 
 			dismissBtn.addEventListener("click", () => {
 				hideUpdateBanner();
-				// Show again in 30 minutes
-				setTimeout(
-					() => showUpdateBanner(newWorker, registration),
-					30 * 60 * 1000,
-				);
+
+				// Clear any existing timeout to prevent multiple scheduled re-shows
+				if (dismissTimeoutId) {
+					clearTimeout(dismissTimeoutId);
+					dismissTimeoutId = null;
+				}
+
+				// Show again in 30 minutes with fresh worker reference
+				dismissTimeoutId = setTimeout(async () => {
+					try {
+						// Get fresh registration and worker references
+						const currentRegistration = await navigator.serviceWorker.getRegistration();
+						const currentWorker = currentRegistration?.waiting || currentRegistration?.installing;
+
+						if (currentWorker && currentRegistration) {
+							showUpdateBanner(currentWorker, currentRegistration);
+						}
+					} catch (error) {
+						console.warn("Failed to re-show update banner:", error);
+					} finally {
+						dismissTimeoutId = null;
+					}
+				}, 30 * 60 * 1000);
 			});
 
 			// Mark that listeners have been bound to prevent duplicates
@@ -140,6 +152,12 @@ if ("serviceWorker" in navigator) {
 			const bannerEl = document.getElementById("pwa-banner");
 			if (bannerEl) {
 				bannerEl.style.transform = "translateY(-100%)";
+			}
+
+			// Clear any pending re-show timeout
+			if (dismissTimeoutId) {
+				clearTimeout(dismissTimeoutId);
+				dismissTimeoutId = null;
 			}
 
 			// Clean up language change listener
