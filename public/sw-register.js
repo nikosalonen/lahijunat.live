@@ -70,6 +70,11 @@ if ("serviceWorker" in navigator) {
 					// Push header down based on actual banner height
 					const nav = document.querySelector("nav");
 					if (nav) {
+						// Capture original marginTop before changing it
+						if (!nav.dataset.originalMarginTop) {
+							const computedStyle = getComputedStyle(nav);
+							nav.dataset.originalMarginTop = nav.style.marginTop || computedStyle.marginTop || "0px";
+						}
 						nav.style.marginTop = `${bannerHeight}px`;
 						nav.style.transition = "margin-top 0.3s ease-in-out";
 					}
@@ -183,7 +188,12 @@ if ("serviceWorker" in navigator) {
 			// Reset header margin to original with smooth transition
 			const nav = document.querySelector("nav");
 			if (nav) {
-				nav.style.marginTop = "0";
+				// Restore original marginTop value with fallback to empty string
+				const originalMargin = nav.dataset.originalMarginTop;
+				nav.style.marginTop = originalMargin || "";
+				if (originalMargin) {
+					delete nav.dataset.originalMarginTop;
+				}
 				nav.style.transition = "margin-top 0.3s ease-in-out";
 			}
 			setTimeout(() => {
