@@ -62,14 +62,24 @@ if ("serviceWorker" in navigator) {
 			const bannerElement = document.getElementById("pwa-banner");
 			if (bannerElement) {
 				bannerElement.style.transform = "translateY(0)";
-			}
-			// Push header down to avoid overlap
-			const nav = document.querySelector("nav");
-			const currentIsMobile = window.innerWidth < 640;
-			const bannerHeight = currentIsMobile ? 48 : 60;
-			if (nav) {
-				nav.style.marginTop = `${bannerHeight}px`;
-				nav.style.transition = "margin-top 0.3s ease-in-out";
+
+				// Wait for layout to complete after transform, then measure actual height
+				requestAnimationFrame(() => {
+					const bannerHeight = bannerElement.getBoundingClientRect().height;
+
+					// Push header down based on actual banner height
+					const nav = document.querySelector("nav");
+					if (nav) {
+						nav.style.marginTop = `${bannerHeight}px`;
+						nav.style.transition = "margin-top 0.3s ease-in-out";
+					}
+
+					// Set focus for screen readers and assistive technology
+					if (!bannerElement.hasAttribute("tabindex")) {
+						bannerElement.tabIndex = -1;
+					}
+					bannerElement.focus();
+				});
 			}
 		}, 100);
 
