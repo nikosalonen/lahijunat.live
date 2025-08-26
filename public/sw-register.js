@@ -78,23 +78,29 @@ if ("serviceWorker" in navigator) {
 		const updateBtn = banner.querySelector("#sw-update-btn");
 		const dismissBtn = banner.querySelector("#sw-dismiss-btn");
 
-		updateBtn.addEventListener("click", () => {
-			// Prefer registration.waiting (most current) over newWorker (potentially stale)
-			const workerToUpdate = registration?.waiting || newWorker;
-			if (workerToUpdate) {
-				workerToUpdate.postMessage({ type: "SKIP_WAITING" });
-			}
-			hideUpdateBanner();
-		});
+		// Only bind event listeners once per banner instance
+		if (!banner.dataset.listenersBound) {
+			updateBtn.addEventListener("click", () => {
+				// Prefer registration.waiting (most current) over newWorker (potentially stale)
+				const workerToUpdate = registration?.waiting || newWorker;
+				if (workerToUpdate) {
+					workerToUpdate.postMessage({ type: "SKIP_WAITING" });
+				}
+				hideUpdateBanner();
+			});
 
-		dismissBtn.addEventListener("click", () => {
-			hideUpdateBanner();
-			// Show again in 30 minutes
-			setTimeout(
-				() => showUpdateBanner(newWorker, registration),
-				30 * 60 * 1000,
-			);
-		});
+			dismissBtn.addEventListener("click", () => {
+				hideUpdateBanner();
+				// Show again in 30 minutes
+				setTimeout(
+					() => showUpdateBanner(newWorker, registration),
+					30 * 60 * 1000,
+				);
+			});
+
+			// Mark that listeners have been bound to prevent duplicates
+			banner.dataset.listenersBound = "1";
+		}
 
 		// Listen for language changes and update banner text
 		const handleLanguageChange = () => {
