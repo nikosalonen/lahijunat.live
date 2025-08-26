@@ -343,8 +343,6 @@
 	.dark .location-button:active:not(:disabled) {
 		background-color: rgb(29 78 216); /* blue-700 */
 	}
-
-
 }
 
 /* Button Enhancement */
@@ -407,7 +405,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* Constrain media elements, not all elements/pseudo-elements */
 img,
 picture,
@@ -431,7 +428,6 @@ html {
 
 	/* Prevent horizontal overflow at root to avoid side-scroll */
 	overflow-x: hidden;
-
 }
 
 body {

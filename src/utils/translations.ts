@@ -59,6 +59,10 @@ export const translations = {
 		notFoundMessage: "Hakuehdoillasi ei löytynyt junia.",
 		rateLimitTitle: "Liikaa pyyntöjä",
 		rateLimitMessage: "Odota hetki ennen seuraavaa hakua.",
+		// PWA Update Banner
+		pwaUpdateTitle: "🚀 Uusi versio sovelluksesta on saatavilla!",
+		pwaUpdateButton: "Päivitä nyt",
+		pwaUpdateDismiss: "Myöhemmin",
 	},
 	en: {
 		title: "Local Trains Live | Real-time schedules for local trains",
@@ -115,6 +119,10 @@ export const translations = {
 		notFoundMessage: "No trains found matching your search criteria.",
 		rateLimitTitle: "Too many requests",
 		rateLimitMessage: "Please wait a moment before searching again.",
+		// PWA Update Banner
+		pwaUpdateTitle: "🚀 New version of the app is available!",
+		pwaUpdateButton: "Update now",
+		pwaUpdateDismiss: "Later",
 	},
 };
 

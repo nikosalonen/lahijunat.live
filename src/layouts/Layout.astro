@@ -162,51 +162,7 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
       src="https://cdn.counter.dev/script.js"
       data-id="da3ed73f-eedb-4dd0-acac-8e7366f8508e"
       data-utcoffset="2"></script>
-    <script is:inline>
-      // Service Worker update handling (inline to ensure production builds work without module imports)
-      if ("serviceWorker" in navigator) {
-        let refreshing = false;
 
-        navigator.serviceWorker.addEventListener("controllerchange", () => {
-          if (refreshing) return;
-          refreshing = true;
-          window.location.reload();
-        });
-
-        // Check for updates every 60 minutes
-        setInterval(async () => {
-          const registration = await navigator.serviceWorker.getRegistration();
-          if (registration) {
-            try {
-              await registration.update();
-            } catch (err) {
-              console.error("Error checking for SW updates:", err);
-            }
-          }
-        }, 60 * 60 * 1000);
-
-        // Prompt user to refresh when a new SW is installed
-        navigator.serviceWorker.ready.then((registration) => {
-          registration.addEventListener("updatefound", () => {
-            const newWorker = registration.installing;
-            if (!newWorker) return;
-            newWorker.addEventListener("statechange", () => {
-              if (
-                newWorker.state === "installed" &&
-                navigator.serviceWorker.controller
-              ) {
-                const shouldUpdate = window.confirm(
-                  "Uusi versio sovelluksesta on saatavilla. Haluatko päivittää nyt?",
-                );
-                if (shouldUpdate) {
-                  newWorker.postMessage({ type: "SKIP_WAITING" });
-                }
-              }
-            });
-          });
-        });
-      }
-    </script>
   </head>
   <body class="min-h-screen bg-base-100">
     <div class="min-h-screen flex flex-col">

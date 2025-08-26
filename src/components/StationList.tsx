@@ -189,9 +189,8 @@ export default function StationList({
 
 	// Dynamic min-height so the container shortens when there are few results
 	const filteredCount = filteredStations.length;
-	const rootMinHeightClass = isOpen && (isLoading || filteredCount >= 5)
-		? "min-h-[16rem]"
-		: "";
+	const rootMinHeightClass =
+		isOpen && (isLoading || filteredCount >= 5) ? "min-h-[16rem]" : "";
 
 	return (
 		<div className={`relative station-list-container ${rootMinHeightClass}`}>

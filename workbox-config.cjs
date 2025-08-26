@@ -4,7 +4,7 @@ module.exports = {
 	// Avoid precaching HTML pages to keep install size small; use runtime caching instead
 	globIgnores: ["**/*.html"],
 	swDest: "dist/sw.js",
-	mode: "generateSW",
+	mode: "production",
 
 	// Service worker configuration
 	skipWaiting: false, // Let user decide when to update
@@ -22,6 +22,22 @@ module.exports = {
 
 	// Runtime caching strategies
 	runtimeCaching: [
+		{
+			// HTML pages: NetworkFirst to prevent navigation preload cancellation
+			urlPattern: ({ request }) => request.mode === "navigate",
+			handler: "NetworkFirst",
+			options: {
+				cacheName: "pages",
+				networkTimeoutSeconds: 3,
+				cacheableResponse: {
+					statuses: [0, 200],
+				},
+				expiration: {
+					maxEntries: 50,
+					maxAgeSeconds: 60 * 60 * 24, // 24 hours
+				},
+			},
+		},
 		{
 			// API responses from Digitraffic: prefer fresh data, fall back to cache
 			urlPattern: ({ url }) =>
