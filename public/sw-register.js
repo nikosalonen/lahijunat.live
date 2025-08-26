@@ -3,6 +3,31 @@ if ("serviceWorker" in navigator) {
   let refreshing = false;
   let updateBanner = null;
 
+  // Simple translation system for PWA banner
+  const bannerTranslations = {
+    fi: {
+      title: "🚀 Uusi versio sovelluksesta on saatavilla!",
+      updateButton: "Päivitä nyt",
+      dismissButton: "Myöhemmin"
+    },
+    en: {
+      title: "🚀 New version of the app is available!",
+      updateButton: "Update now",
+      dismissButton: "Later"
+    }
+  };
+
+  // Get current language from localStorage (same as main app)
+  function getCurrentLanguage() {
+    return localStorage.getItem("lang") || "fi";
+  }
+
+  // Get translation for current language
+  function getBannerTranslation(key) {
+    const lang = getCurrentLanguage();
+    return bannerTranslations[lang]?.[key] || bannerTranslations.fi[key];
+  }
+
   // Create update notification banner
   function createUpdateBanner() {
     if (updateBanner) return updateBanner;
@@ -28,7 +53,7 @@ if ("serviceWorker" in navigator) {
         border-bottom: 3px solid #10b981;
       ">
         <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
-          <span>Uusi versio sovelluksesta on saatavilla!</span>
+          <span>${getBannerTranslation('title')}</span>
           <div style="display: flex; gap: 8px;">
             <button id="sw-update-btn" style="
               background: rgba(255,255,255,0.9);
@@ -42,7 +67,7 @@ if ("serviceWorker" in navigator) {
               transition: all 0.2s;
               box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             " onmouseover="this.style.background='rgba(255,255,255,1)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.9)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'">
-              Päivitä nyt
+${getBannerTranslation('updateButton')}
             </button>
             <button id="sw-dismiss-btn" style="
               background: transparent;
@@ -55,7 +80,7 @@ if ("serviceWorker" in navigator) {
               font-weight: 500;
               transition: all 0.2s;
             " onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.borderColor='rgba(255,255,255,0.8)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255,255,255,0.6)'; this.style.transform='translateY(0)'">
-              Myöhemmin
+${getBannerTranslation('dismissButton')}
             </button>
           </div>
         </div>
@@ -90,6 +115,25 @@ if ("serviceWorker" in navigator) {
       // Show again in 30 minutes
       setTimeout(() => showUpdateBanner(newWorker), 30 * 60 * 1000);
     });
+
+    // Listen for language changes and update banner text
+    const handleLanguageChange = () => {
+      if (updateBanner) {
+        // Update the banner text elements
+        const titleSpan = banner.querySelector('span');
+        const updateButton = banner.querySelector('#sw-update-btn');
+        const dismissButton = banner.querySelector('#sw-dismiss-btn');
+
+        if (titleSpan) titleSpan.textContent = getBannerTranslation('title');
+        if (updateButton) updateButton.textContent = getBannerTranslation('updateButton');
+        if (dismissButton) dismissButton.textContent = getBannerTranslation('dismissButton');
+      }
+    };
+
+    window.addEventListener('languagechange', handleLanguageChange);
+
+    // Store the cleanup function for later removal
+    banner._languageChangeHandler = handleLanguageChange;
   }
 
   // Hide update banner
@@ -97,6 +141,12 @@ if ("serviceWorker" in navigator) {
     if (updateBanner) {
       const bannerEl = updateBanner.firstElementChild;
       bannerEl.style.transform = 'translateY(-100%)';
+
+      // Clean up language change listener
+      if (updateBanner._languageChangeHandler) {
+        window.removeEventListener('languagechange', updateBanner._languageChangeHandler);
+      }
+
       // Reset body padding to original
       document.body.style.paddingTop = 'env(safe-area-inset-top)';
       setTimeout(() => {
