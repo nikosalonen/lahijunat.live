@@ -25,19 +25,23 @@ if ("serviceWorker" in navigator) {
 	// Get translation for current language
 	function getBannerTranslation(key) {
 		const lang = getCurrentLanguage();
-		return bannerTranslations[lang]?.[key] || bannerTranslations.fi[key];
+		const translation = bannerTranslations[lang]?.[key] || bannerTranslations.fi[key];
+		console.log(`Banner translation for ${key} in ${lang}:`, translation);
+		return translation;
 	}
 
 	// Create update notification banner
 	function createUpdateBanner() {
 		if (updateBanner) return updateBanner;
 
+		console.log("Creating PWA update banner...");
+
 		// Detect mobile device
 		const isMobile = window.innerWidth < 640;
 
 		updateBanner = document.createElement("div");
 		updateBanner.innerHTML = `
-      <div class="fixed top-0 left-0 right-0 z-[1001] transform -translate-y-full transition-transform duration-300 ease-in-out bg-gradient-to-r from-emerald-600 to-emerald-700 text-white border-b-4 border-emerald-400 shadow-lg shadow-emerald-500/30 ${isMobile ? 'py-2 px-3 text-sm min-h-[48px]' : 'py-3 px-4 text-base min-h-[60px]'}">
+      <div id="pwa-banner" class="fixed top-0 left-0 right-0 z-[1001] transition-transform duration-300 ease-in-out bg-gradient-to-r from-emerald-600 to-emerald-700 text-white border-b-4 border-emerald-400 shadow-lg shadow-emerald-500/30 ${isMobile ? 'py-2 px-3 text-sm min-h-[48px]' : 'py-3 px-4 text-base min-h-[60px]'}" style="transform: translateY(-100%);">
         <div class="flex items-center justify-center ${isMobile ? 'gap-2' : 'gap-3'} flex-wrap w-full max-w-full">
           <span class="flex-shrink-1 min-w-0 text-center font-medium text-white">
             ${getBannerTranslation("title")}
@@ -58,7 +62,12 @@ if ("serviceWorker" in navigator) {
 
 		// Animate in and push header down
 		setTimeout(() => {
-			updateBanner.firstElementChild.style.transform = "translateY(0)";
+			const bannerElement = document.getElementById("pwa-banner");
+			console.log("Animating banner...", bannerElement);
+			if (bannerElement) {
+				bannerElement.style.transform = "translateY(0)";
+				console.log("Banner transform set to translateY(0)");
+			}
 			// Push header down to avoid overlap
 			const nav = document.querySelector("nav");
 			const currentIsMobile = window.innerWidth < 640;
@@ -66,6 +75,7 @@ if ("serviceWorker" in navigator) {
 			if (nav) {
 				nav.style.marginTop = `${bannerHeight}px`;
 				nav.style.transition = "margin-top 0.3s ease-in-out";
+				console.log(`Header pushed down by ${bannerHeight}px`);
 			}
 		}, 100);
 
@@ -127,8 +137,10 @@ if ("serviceWorker" in navigator) {
 	// Hide update banner
 	function hideUpdateBanner() {
 		if (updateBanner) {
-			const bannerEl = updateBanner.firstElementChild;
-			bannerEl.style.transform = "translateY(-100%)";
+			const bannerEl = document.getElementById("pwa-banner");
+			if (bannerEl) {
+				bannerEl.style.transform = "translateY(-100%)";
+			}
 
 			// Clean up language change listener
 			if (updateBanner._languageChangeHandler) {
