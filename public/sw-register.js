@@ -38,16 +38,16 @@ if ("serviceWorker" in navigator) {
 
 		updateBanner = document.createElement("div");
 		updateBanner.innerHTML = `
-      <div id="pwa-banner" class="fixed top-0 left-0 right-0 z-[1001] transition-transform duration-300 ease-in-out bg-gradient-to-r from-emerald-600 to-emerald-700 text-white border-b-4 border-emerald-400 shadow-lg shadow-emerald-500/30 ${isMobile ? 'py-2 px-3 text-sm min-h-[48px]' : 'py-3 px-4 text-base min-h-[60px]'}" style="transform: translateY(-100%);">
-        <div class="flex items-center justify-center ${isMobile ? 'gap-2' : 'gap-3'} flex-wrap w-full max-w-full">
+      <div id="pwa-banner" role="status" aria-live="polite" tabindex="-1" class="fixed top-0 left-0 right-0 z-[1001] transition-transform duration-300 ease-in-out bg-gradient-to-r from-emerald-600 to-emerald-700 text-white border-b-4 border-emerald-400 shadow-lg shadow-emerald-500/30 ${isMobile ? "py-2 px-3 text-sm min-h-[48px]" : "py-3 px-4 text-base min-h-[60px]"}" style="transform: translateY(-100%);">
+        <div class="flex items-center justify-center ${isMobile ? "gap-2" : "gap-3"} flex-wrap w-full max-w-full">
           <span class="flex-shrink-1 min-w-0 text-center font-medium text-white">
             ${getBannerTranslation("title")}
           </span>
           <div class="flex gap-2 flex-shrink-0">
-            <button id="sw-update-btn" class="btn ${isMobile ? 'btn-xs' : 'btn-sm'} bg-white/90 text-emerald-700 border-white hover:bg-white hover:border-white hover:-translate-y-0.5 transition-all font-semibold shadow-sm">
+            <button id="sw-update-btn" aria-label="${getBannerTranslation("updateButton")}" class="btn ${isMobile ? "btn-xs" : "btn-sm"} bg-white/90 text-emerald-700 border-white hover:bg-white hover:border-white hover:-translate-y-0.5 transition-all font-semibold shadow-sm">
               ${getBannerTranslation("updateButton")}
             </button>
-            <button id="sw-dismiss-btn" class="btn btn-outline ${isMobile ? 'btn-xs' : 'btn-sm'} border-white/60 text-white hover:bg-white/20 hover:border-white hover:-translate-y-0.5 transition-all font-medium">
+            <button id="sw-dismiss-btn" aria-label="${getBannerTranslation("dismissButton")}" class="btn btn-outline ${isMobile ? "btn-xs" : "btn-sm"} border-white/60 text-white hover:bg-white/20 hover:border-white hover:-translate-y-0.5 transition-all font-medium">
               ${getBannerTranslation("dismissButton")}
             </button>
           </div>
@@ -75,9 +75,6 @@ if ("serviceWorker" in navigator) {
 					}
 
 					// Set focus for screen readers and assistive technology
-					if (!bannerElement.hasAttribute("tabindex")) {
-						bannerElement.tabIndex = -1;
-					}
 					bannerElement.focus();
 				});
 			}
