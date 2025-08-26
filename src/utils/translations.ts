@@ -60,7 +60,7 @@ export const translations = {
 		rateLimitTitle: "Liikaa pyyntöjä",
 		rateLimitMessage: "Odota hetki ennen seuraavaa hakua.",
 		// PWA Update Banner
-		pwaUpdateTitle: "🚀 Uusi versio sovelluksesta on saatavilla!",
+		pwaUpdateTitle: "♻️ Uusi versio sovelluksesta on saatavilla!",
 		pwaUpdateButton: "Päivitä nyt",
 		pwaUpdateDismiss: "Myöhemmin",
 	},

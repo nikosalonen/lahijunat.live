@@ -6,12 +6,12 @@ if ("serviceWorker" in navigator) {
 	// Simple translation system for PWA banner
 	const bannerTranslations = {
 		fi: {
-			title: "🚀 Uusi versio sovelluksesta on saatavilla!",
+			title: "♻️ Uusi versio sovelluksesta on saatavilla!",
 			updateButton: "Päivitä nyt",
 			dismissButton: "Myöhemmin",
 		},
 		en: {
-			title: "🚀 New version of the app is available!",
+      title: "♻️ New version of the app is available!",
 			updateButton: "Update now",
 			dismissButton: "Later",
 		},
@@ -32,55 +32,22 @@ if ("serviceWorker" in navigator) {
 	function createUpdateBanner() {
 		if (updateBanner) return updateBanner;
 
+		// Detect mobile device
+		const isMobile = window.innerWidth < 640;
+
 		updateBanner = document.createElement("div");
 		updateBanner.innerHTML = `
-      <div style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        background: linear-gradient(135deg, #059669 0%, #047857 100%);
-        color: white;
-        padding: 12px 16px;
-        text-align: center;
-        z-index: 1001;
-        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3), 0 2px 4px rgba(0,0,0,0.15);
-        transform: translateY(-100%);
-        transition: transform 0.3s ease-in-out;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: 14px;
-        line-height: 1.4;
-        border-bottom: 3px solid #10b981;
-      ">
-        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
-          <span>${getBannerTranslation("title")}</span>
-          <div style="display: flex; gap: 8px;">
-            <button id="sw-update-btn" style="
-              background: rgba(255,255,255,0.9);
-              border: 1px solid rgba(255,255,255,1);
-              color: #047857;
-              padding: 6px 12px;
-              border-radius: 6px;
-              cursor: pointer;
-              font-size: 12px;
-              font-weight: 600;
-              transition: all 0.2s;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            " onmouseover="this.style.background='rgba(255,255,255,1)'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.9)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'">
-${getBannerTranslation("updateButton")}
+      <div class="fixed top-0 left-0 right-0 z-[1001] transform -translate-y-full transition-transform duration-300 ease-in-out bg-gradient-to-r from-emerald-600 to-emerald-700 text-white border-b-4 border-emerald-400 shadow-lg shadow-emerald-500/30 ${isMobile ? 'py-2 px-3 text-sm min-h-[48px]' : 'py-3 px-4 text-base min-h-[60px]'}">
+        <div class="flex items-center justify-center ${isMobile ? 'gap-2' : 'gap-3'} flex-wrap w-full max-w-full">
+          <span class="flex-shrink-1 min-w-0 text-center font-medium text-white">
+            ${getBannerTranslation("title")}
+          </span>
+          <div class="flex gap-2 flex-shrink-0">
+            <button id="sw-update-btn" class="btn ${isMobile ? 'btn-xs' : 'btn-sm'} bg-white/90 text-emerald-700 border-white hover:bg-white hover:border-white hover:-translate-y-0.5 transition-all font-semibold shadow-sm">
+              ${getBannerTranslation("updateButton")}
             </button>
-            <button id="sw-dismiss-btn" style="
-              background: transparent;
-              border: 1px solid rgba(255,255,255,0.6);
-              color: white;
-              padding: 6px 12px;
-              border-radius: 6px;
-              cursor: pointer;
-              font-size: 12px;
-              font-weight: 500;
-              transition: all 0.2s;
-            " onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.borderColor='rgba(255,255,255,0.8)'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(255,255,255,0.6)'; this.style.transform='translateY(0)'">
-${getBannerTranslation("dismissButton")}
+            <button id="sw-dismiss-btn" class="btn btn-outline ${isMobile ? 'btn-xs' : 'btn-sm'} border-white/60 text-white hover:bg-white/20 hover:border-white hover:-translate-y-0.5 transition-all font-medium">
+              ${getBannerTranslation("dismissButton")}
             </button>
           </div>
         </div>
@@ -89,11 +56,17 @@ ${getBannerTranslation("dismissButton")}
 
 		document.body.appendChild(updateBanner);
 
-		// Animate in and adjust body padding
+		// Animate in and push header down
 		setTimeout(() => {
 			updateBanner.firstElementChild.style.transform = "translateY(0)";
-			// Push content down to avoid overlap with header
-			document.body.style.paddingTop = "calc(env(safe-area-inset-top) + 60px)";
+			// Push header down to avoid overlap
+			const nav = document.querySelector("nav");
+			const currentIsMobile = window.innerWidth < 640;
+			const bannerHeight = currentIsMobile ? 48 : 60;
+			if (nav) {
+				nav.style.marginTop = `${bannerHeight}px`;
+				nav.style.transition = "margin-top 0.3s ease-in-out";
+			}
 		}, 100);
 
 		return updateBanner;
@@ -159,8 +132,12 @@ ${getBannerTranslation("dismissButton")}
 				);
 			}
 
-			// Reset body padding to original
-			document.body.style.paddingTop = "env(safe-area-inset-top)";
+			// Reset header margin to original with smooth transition
+			const nav = document.querySelector("nav");
+			if (nav) {
+				nav.style.marginTop = "0";
+				nav.style.transition = "margin-top 0.3s ease-in-out";
+			}
 			setTimeout(() => {
 				if (updateBanner?.parentNode) {
 					updateBanner.parentNode.removeChild(updateBanner);
