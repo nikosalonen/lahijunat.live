@@ -23,6 +23,22 @@ module.exports = {
 	// Runtime caching strategies
 	runtimeCaching: [
 		{
+			// HTML pages: NetworkFirst with navigation preload support
+			urlPattern: ({ request }) => request.mode === "navigate",
+			handler: "NetworkFirst",
+			options: {
+				cacheName: "pages",
+				networkTimeoutSeconds: 3,
+				cacheableResponse: {
+					statuses: [0, 200],
+				},
+				expiration: {
+					maxEntries: 50,
+					maxAgeSeconds: 60 * 60 * 24, // 24 hours
+				},
+			},
+		},
+		{
 			// API responses from Digitraffic: prefer fresh data, fall back to cache
 			urlPattern: ({ url }) =>
 				url.origin === "https://rata.digitraffic.fi" &&
