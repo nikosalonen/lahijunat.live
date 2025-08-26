@@ -1,10 +1,11 @@
 // Custom service worker utilities
 // This file will be imported via importScripts in the generated service worker
 
-import { pageCache } from "workbox-recipes";
+// Load workbox-recipes module for proper navigation preload support
+workbox.loadModule("workbox-recipes");
 
 // Use workbox-recipes pageCache for proper navigation preload support
-pageCache({
+workbox.recipes.pageCache({
 	cacheName: "pages",
 	networkTimeoutSeconds: 3,
 	matchCallback: ({ request }) => request.mode === "navigate",
