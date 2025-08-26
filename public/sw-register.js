@@ -100,20 +100,24 @@ ${getBannerTranslation("dismissButton")}
 	}
 
 	// Show update banner
-	function showUpdateBanner(newWorker) {
+	function showUpdateBanner(newWorker, registration) {
 		const banner = createUpdateBanner();
 		const updateBtn = banner.querySelector("#sw-update-btn");
 		const dismissBtn = banner.querySelector("#sw-dismiss-btn");
 
 		updateBtn.addEventListener("click", () => {
-			newWorker.postMessage({ type: "SKIP_WAITING" });
+			// Prefer registration.waiting (most current) over newWorker (potentially stale)
+			const workerToUpdate = registration?.waiting || newWorker;
+			if (workerToUpdate) {
+				workerToUpdate.postMessage({ type: "SKIP_WAITING" });
+			}
 			hideUpdateBanner();
 		});
 
 		dismissBtn.addEventListener("click", () => {
 			hideUpdateBanner();
 			// Show again in 30 minutes
-			setTimeout(() => showUpdateBanner(newWorker), 30 * 60 * 1000);
+			setTimeout(() => showUpdateBanner(newWorker, registration), 30 * 60 * 1000);
 		});
 
 		// Listen for language changes and update banner text
@@ -188,7 +192,7 @@ ${getBannerTranslation("dismissButton")}
 						navigator.serviceWorker.controller
 					) {
 						// Show update banner instead of confirm dialog
-						showUpdateBanner(newWorker);
+						showUpdateBanner(newWorker, registration);
 					}
 				});
 			});
