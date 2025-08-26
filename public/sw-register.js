@@ -7,12 +7,12 @@ if ("serviceWorker" in navigator) {
 	// Simple translation system for PWA banner
 	const bannerTranslations = {
 		fi: {
-			title: "♻️ Uusi versio sovelluksesta on saatavilla!",
+			title: "🚀 Uusi versio sovelluksesta on saatavilla!",
 			updateButton: "Päivitä nyt",
 			dismissButton: "Myöhemmin",
 		},
 		en: {
-      title: "♻️ New version of the app is available!",
+      			title: "🚀 New version of the app is available!",
 			updateButton: "Update now",
 			dismissButton: "Later",
 		},
@@ -122,6 +122,11 @@ if ("serviceWorker" in navigator) {
 
 			// Mark that listeners have been bound to prevent duplicates
 			banner.dataset.listenersBound = "1";
+		}
+
+		// Remove any existing language change listener to prevent duplicates
+		if (banner._languageChangeHandler) {
+			window.removeEventListener("languagechange", banner._languageChangeHandler);
 		}
 
 		// Listen for language changes and update banner text
