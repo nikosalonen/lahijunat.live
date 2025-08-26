@@ -4,7 +4,7 @@ module.exports = {
 	// Avoid precaching HTML pages to keep install size small; use runtime caching instead
 	globIgnores: ["**/*.html"],
 	swDest: "dist/sw.js",
-	mode: "generateSW",
+	mode: "production",
 
 	// Service worker configuration
 	skipWaiting: false, // Let user decide when to update
