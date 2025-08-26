@@ -117,7 +117,10 @@ ${getBannerTranslation("dismissButton")}
 		dismissBtn.addEventListener("click", () => {
 			hideUpdateBanner();
 			// Show again in 30 minutes
-			setTimeout(() => showUpdateBanner(newWorker, registration), 30 * 60 * 1000);
+			setTimeout(
+				() => showUpdateBanner(newWorker, registration),
+				30 * 60 * 1000,
+			);
 		});
 
 		// Listen for language changes and update banner text
@@ -180,6 +183,11 @@ ${getBannerTranslation("dismissButton")}
 		try {
 			const registration = await navigator.serviceWorker.register("/sw.js");
 			console.log("SW registered successfully");
+
+			// Check if there's already a worker waiting (e.g., updated while page wasn't active)
+			if (registration.waiting) {
+				showUpdateBanner(registration.waiting, registration);
+			}
 
 			// Handle updates immediately when found
 			registration.addEventListener("updatefound", () => {
