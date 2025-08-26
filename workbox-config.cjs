@@ -21,23 +21,8 @@ module.exports = {
 	importScripts: ["sw-utils.js"],
 
 	// Runtime caching strategies
+	// NOTE: Navigation preload for pages is handled in sw-utils.js using workbox-recipes.pageCache()
 	runtimeCaching: [
-		{
-			// HTML pages: NetworkFirst with navigation preload support
-			urlPattern: ({ request }) => request.mode === "navigate",
-			handler: "NetworkFirst",
-			options: {
-				cacheName: "pages",
-				networkTimeoutSeconds: 3,
-				cacheableResponse: {
-					statuses: [0, 200],
-				},
-				expiration: {
-					maxEntries: 50,
-					maxAgeSeconds: 60 * 60 * 24, // 24 hours
-				},
-			},
-		},
 		{
 			// API responses from Digitraffic: prefer fresh data, fall back to cache
 			urlPattern: ({ url }) =>
