@@ -502,10 +502,13 @@ export default function TrainCard({
 													: durationSpeedType === "slow"
 														? "text-warning"
 														: "text-base-content/60"
-											}`}
-											aria-label={`${t("duration")} ${duration.hours} ${t(
-												"hours",
-											)} ${duration.minutes} ${t("minutes")}`}
+											} ${train.cancelled ? "opacity-0 pointer-events-none select-none" : ""}`}
+											aria-hidden={train.cancelled ? "true" : undefined}
+											aria-label={
+												!train.cancelled
+													? `${t("duration")} ${duration.hours} ${t("hours")} ${duration.minutes} ${t("minutes")}`
+													: undefined
+											}
 										>
 											<svg
 												class="w-4 h-4 inline-block mr-1 -mt-1"
