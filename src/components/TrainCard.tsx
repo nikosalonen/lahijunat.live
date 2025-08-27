@@ -494,7 +494,7 @@ export default function TrainCard({
 										arrivalRow={arrivalRow}
 										timeDifferenceMinutes={timeDifferenceMinutes}
 									/>
-									{duration && !train.cancelled && (
+									{duration && (
 										<output
 											class={`text-sm sm:text-base font-medium flex items-center truncate ${
 												durationSpeedType === "fast"
@@ -502,10 +502,13 @@ export default function TrainCard({
 													: durationSpeedType === "slow"
 														? "text-warning"
 														: "text-base-content/60"
-											}`}
-											aria-label={`${t("duration")} ${duration.hours} ${t(
-												"hours",
-											)} ${duration.minutes} ${t("minutes")}`}
+											} ${train.cancelled ? "opacity-0 pointer-events-none select-none" : ""}`}
+											aria-hidden={train.cancelled ? "true" : undefined}
+											aria-label={
+												!train.cancelled
+													? `${t("duration")} ${duration.hours} ${t("hours")} ${duration.minutes} ${t("minutes")}`
+													: undefined
+											}
 										>
 											<svg
 												class="w-4 h-4 inline-block mr-1 -mt-1"
@@ -523,28 +526,6 @@ export default function TrainCard({
 											</svg>
 											{duration.hours}h {duration.minutes}m
 										</output>
-									)}
-									{duration && train.cancelled && (
-										<div
-											class="text-sm sm:text-base font-medium flex items-center truncate opacity-0"
-											aria-hidden="true"
-										>
-											<svg
-												class="w-4 h-4 inline-block mr-1 -mt-1"
-												fill="none"
-												stroke="currentColor"
-												viewBox="0 0 24 24"
-												aria-hidden="true"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth="2"
-													d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-												/>
-											</svg>
-											{duration.hours}h {duration.minutes}m
-										</div>
 									)}
 								</div>
 							</div>
