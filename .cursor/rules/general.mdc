@@ -1,23 +1,16 @@
 ---
-description: 
-globs: 
+description: General rules for the lahijunat.live project
 alwaysApply: true
 ---
 
-# Your rule content
+# General rules
 
 - Use Astro best practices
-- Create UI components using React
+- Create UI components using Preact
 - Keep the code style constant
-- Use tailwind for styling
+- Use DaisyUI components when possible
 - If unsure, ask first
-- Write comments when functionality is complex 
-- use conventional commits:
-```
-<type>[optional scope]: <description>
-
-[optional body]
-
-[optional footer(s)]
-```
-
+- Write comments when functionality is complex
+- Use conventional commits
+- Use Tailwind CSS for styling
+- Use TypeScript
