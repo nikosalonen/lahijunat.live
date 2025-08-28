@@ -570,7 +570,7 @@ export default function StationManager({
 						className={`relative flex-grow normal-case justify-between p-4 min-h-[80px] min-w-0 rounded-lg border transition-all duration-200 ${
 							isStationSelectorExpanded
 								? "bg-base-100 border-base-300 shadow-sm"
-								: "bg-base-200 hover:bg-base-300 border-base-300 hover:border-base-400 shadow-md hover:shadow-lg"
+								: "bg-base-200 hover:bg-base-300 border-base-300 hover:border-base-400 shadow-brand-soft hover:shadow-brand-medium"
 						}`}
 						aria-expanded={isStationSelectorExpanded}
 						aria-controls="station-selector"
@@ -645,7 +645,7 @@ export default function StationManager({
 							className="btn w-12 h-12 p-1 flex-shrink-0 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
 						disabled:opacity-50 disabled:cursor-not-allowed
 						touch-manipulation select-none tooltip tooltip-top
-						shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200"
+						shadow-brand-medium hover:shadow-brand-strong transition-[background-color,box-shadow] duration-200"
 							data-tip={t("swapDirection")}
 							aria-label={t("swapDirection")}
 						>
@@ -693,7 +693,7 @@ export default function StationManager({
 										className={`btn w-12 h-12 p-1 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
 							disabled:opacity-50 disabled:cursor-not-allowed
 							touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
-							shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 rounded-r-none
+							shadow-brand-medium hover:shadow-brand-strong transition-[background-color,box-shadow] duration-200 rounded-r-none
 							${isLocating ? "animate-pulse" : ""}`}
 										aria-label={t("locate")}
 										data-tip={t("locate")}
@@ -728,7 +728,7 @@ export default function StationManager({
 										className="hidden sm:block btn w-12 h-12 p-1 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
 								disabled:opacity-50 disabled:cursor-not-allowed
 								touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
-								shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 rounded-l-none"
+								shadow-brand-medium hover:shadow-brand-strong transition-[background-color,box-shadow] duration-200 rounded-l-none"
 										data-tip={t("swapDirection")}
 										aria-label={t("swapDirection")}
 									>

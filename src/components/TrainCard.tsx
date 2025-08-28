@@ -52,7 +52,7 @@ const getCardStyle = (
 	isHighlighted: boolean,
 ) => {
 	const baseStyles =
-		"card bg-base-100 shadow-xl border border-base-300 rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300";
+		"card bg-base-100 shadow-brand-strong border border-base-300 rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300";
 
 	// Priority 1: Cancelled trains
 	if (isCancelled)
@@ -458,7 +458,7 @@ export default function TrainCard({
 								onClick={handleFavorite}
 								aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
 								type="button"
-								class={`flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold rounded-2xl shadow-lg transition-transform duration-300 relative group touch-manipulation select-none focus:outline-none border-none ring-0 ${
+								class={`flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold rounded-2xl shadow-brand-medium transition-transform duration-300 relative group touch-manipulation select-none focus:outline-none border-none ring-0 ${
 									train.cancelled
 										? "bg-gradient-to-br from-red-500 to-red-600 text-white"
 										: "bg-[#8c4799] text-white"
