@@ -9,6 +9,16 @@ export default {
 	content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
 	theme: {
 		extend: {
+			colors: {
+				brand: {
+					primary: "#8c4799",
+				},
+			},
+			boxShadow: {
+				"brand-soft": "0 2px 8px rgba(140, 71, 153, 0.08)",
+				"brand-medium": "0 4px 16px rgba(140, 71, 153, 0.12)",
+				"brand-strong": "0 8px 32px rgba(140, 71, 153, 0.16)",
+			},
 			keyframes: {
 				"fade-out": {
 					"0%": { opacity: "1" },

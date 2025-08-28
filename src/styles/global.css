@@ -203,47 +203,7 @@
 	background-size: 200% 100%;
 }
 
-/* Modern Glass Effect */
-.glass-card {
-	/* Fallback styles for older browsers without backdrop-filter support */
-	background: rgba(255, 255, 255, 0.95);
-	border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-/* Dark mode fallback for older browsers */
-.dark .glass-card {
-	background: rgba(31, 41, 55, 0.95);
-	border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* Enhanced glass effect for modern browsers with backdrop-filter support */
-@supports (backdrop-filter: blur(1px)) {
-	.glass-card {
-		background: var(--glass-bg);
-		border: 1px solid var(--glass-border);
-		backdrop-filter: var(--glass-backdrop);
-	}
-}
-
-/* Webkit vendor prefix support */
-@supports (-webkit-backdrop-filter: blur(1px)) {
-	.glass-card {
-		background: var(--glass-bg);
-		border: 1px solid var(--glass-border);
-		-webkit-backdrop-filter: var(--glass-backdrop);
-	}
-}
-
-/* Enhanced Surface */
-.surface-elevated {
-	background: var(--gradient-surface);
-	box-shadow: var(--shadow-medium);
-	border: 1px solid rgba(140, 71, 153, 0.08);
-}
-
-.dark .surface-elevated {
-	border: 1px solid rgba(255, 255, 255, 0.05);
-}
+/* Prefer DaisyUI card/glass components over custom helpers */
 
 /* Staggered animation delays for lists */
 .stagger-1 {
@@ -270,8 +230,10 @@
 }
 
 /* Enhanced focus states */
-.focus-ring {
-	@apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800;
+@layer utilities {
+	.focus-ring:focus-visible {
+		@apply outline-none ring-2 ring-offset-2 ring-primary dark:ring-offset-gray-800;
+	}
 }
 
 /* Enhanced Micro-interactions */
@@ -345,60 +307,20 @@
 	}
 }
 
-/* Button Enhancement */
-@layer components {
-	.btn-primary {
-		background: var(--gradient-primary);
-		color: white;
-		border: none;
-		transition: all 0.2s ease;
+/* Rely on DaisyUI's btn/btn-primary styling */
+
+/* Prefer DaisyUI card utilities; remove card-modern */
+
+/* Use Tailwind utilities for gradient text: bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent */
+
+/* Reduced-motion support */
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.001ms !important;
+		scroll-behavior: auto !important;
 	}
-
-	/* Only apply hover effects on devices that support proper hover */
-	@media (hover: hover) {
-		.btn-primary:hover {
-			transform: translateY(-1px);
-			box-shadow: var(--shadow-medium);
-		}
-	}
-
-	.btn-primary:active {
-		transform: translateY(0);
-	}
-}
-
-/* Card Styles */
-.card-modern {
-	background: var(--gradient-surface);
-	border: 1px solid rgba(140, 71, 153, 0.08);
-	box-shadow: var(--shadow-soft);
-	transition:
-		background 0.3s ease,
-		box-shadow 0.3s ease,
-		transform 0.3s ease,
-		opacity 0.3s ease,
-		border 0.3s ease,
-		border-color 0.3s ease;
-}
-
-/* Only apply hover effects on devices that support proper hover */
-@media (hover: hover) {
-	.card-modern:hover {
-		box-shadow: var(--shadow-medium);
-		transform: translateY(-2px);
-	}
-}
-
-.dark .card-modern {
-	border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Text Gradients */
-.text-gradient-primary {
-	background: var(--gradient-primary);
-	-webkit-background-clip: text;
-	background-clip: text;
-	-webkit-text-fill-color: transparent;
 }
 
 @tailwind base;
