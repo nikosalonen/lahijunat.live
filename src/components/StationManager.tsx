@@ -567,7 +567,7 @@ export default function StationManager({
 						onClick={() =>
 							setIsStationSelectorExpanded(!isStationSelectorExpanded)
 						}
-						className={`flex-grow normal-case justify-between p-4 min-h-[80px] min-w-0 rounded-lg border transition-all duration-200 ${
+						className={`relative flex-grow normal-case justify-between p-4 min-h-[80px] min-w-0 rounded-lg border transition-all duration-200 ${
 							isStationSelectorExpanded
 								? "bg-base-100 border-base-300 shadow-sm"
 								: "bg-base-200 hover:bg-base-300 border-base-300 hover:border-base-400 shadow-md hover:shadow-lg"
@@ -615,22 +615,25 @@ export default function StationManager({
 								</div>
 							)}
 						</div>
-						<div className="w-5 h-5 ml-3 flex-shrink-0 flex items-center justify-center">
-							<svg
-								className={`w-5 h-5 transition-transform ${isStationSelectorExpanded ? "rotate-180" : ""}`}
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<title>Toggle station selector</title>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="M19 9l-7 7-7-7"
-								/>
-							</svg>
-						</div>
+						{/* Center-bottom caret when collapsed (mobile) */}
+						{!isStationSelectorExpanded && (
+							<div className="absolute left-1/2 -translate-x-1/2 bottom-2 w-5 h-5 flex items-center justify-center sm:hidden pointer-events-none">
+								<svg
+									className="w-5 h-5"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<title>Toggle station selector</title>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth="2"
+										d="M19 9l-7 7-7-7"
+									/>
+								</svg>
+							</div>
+						)}
 					</button>
 
 					{/* Swap button on the same row */}
@@ -845,6 +848,26 @@ export default function StationManager({
 							</div>
 						)}
 					</div>
+
+					{/* Center-bottom caret when expanded (mobile) */}
+					{isStationSelectorExpanded && (
+						<div className="sm:hidden flex justify-center mt-2">
+							<svg
+								className="w-5 h-5 rotate-180"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<title>Close station selector</title>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="2"
+									d="M19 9l-7 7-7-7"
+								/>
+							</svg>
+						</div>
+					)}
 				</div>
 			</div>
 
