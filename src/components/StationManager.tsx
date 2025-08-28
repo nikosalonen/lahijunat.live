@@ -88,9 +88,10 @@ export default function StationManager({
 	const isSwappingRef = useRef(false);
 	const lastSwapTimeRef = useRef(0);
 
-	// Mobile accordion state - expanded by default if no stations selected
-	// On mobile: accordion closes only when TO station is selected
-	// On desktop: accordion is always open (sm:collapse-open)
+// Mobile accordion state
+// Expanded by default if either origin or destination is missing
+// On mobile: accordion auto-closes only when "to" station is selected
+// On desktop: accordion is always open via sm:collapse-open
 	const [isStationSelectorExpanded, setIsStationSelectorExpanded] = useState(
 		!initialFromStation || !initialToStation,
 	);
@@ -102,7 +103,9 @@ export default function StationManager({
 	useLanguageChange();
 
 	// Smart accordion toggle logic
-	useEffect(() => {
+  useEffect(() => {
+	// Ignore transient swaps to avoid flicker
+	if (isSwapping) return;
 		// On mobile: only auto-collapse when TO station is selected (not when FROM is selected)
 		// On desktop: accordion is always open, so this doesn't matter
 		if (selectedDestination) {
@@ -112,7 +115,7 @@ export default function StationManager({
 		else if (!selectedOrigin && !selectedDestination) {
 			setIsStationSelectorExpanded(true);
 		}
-	}, [selectedOrigin, selectedDestination]);
+	}, [selectedOrigin, selectedDestination, isSwapping]);
 
 	// Auto-focus "to" input when "from" is selected and "to" is empty
 	useEffect(() => {
@@ -285,6 +288,8 @@ export default function StationManager({
 	const handleDestinationSelect = (station: Station) => {
 		setSelectedDestination(station.shortCode);
 		setStoredValue("selectedDestination", station.shortCode);
+		// Close the dropdown after selection
+		setOpenList(null);
 	};
 
 	const handleLocationRequest = async () => {
