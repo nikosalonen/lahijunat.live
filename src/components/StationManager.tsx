@@ -100,11 +100,18 @@ export default function StationManager({
 	const [, forceUpdate] = useState({});
 	const toInputRef = useRef<HTMLInputElement>(null);
 	const prevDestinationRef = useRef<string | null>(null);
+	const isFirstRunRef = useRef(true);
 
 	useLanguageChange();
 
 	// Smart accordion toggle logic
 	useEffect(() => {
+		// Skip the first run to avoid collapsing accordion on initial mount/restore
+		if (isFirstRunRef.current) {
+			isFirstRunRef.current = false;
+			return;
+		}
+
 		// Ignore transient swaps to avoid flicker
 		if (isSwapping) return;
 
