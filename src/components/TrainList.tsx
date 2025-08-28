@@ -415,9 +415,9 @@ export default function TrainList({
 					</div>
 				</div>
 
-				{/* Mobile vertical progress bar */}
+				{/* Mobile horizontal progress bar (left → right) */}
 				<div class="sm:hidden flex justify-end mb-4">
-					<ProgressVertical progress={state.progress} heightClass="h-8" widthClass="w-1.5" />
+					<ProgressVertical progress={state.progress} heightClass="h-1.5" widthClass="w-24" />
 				</div>
 				<div
 					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"
