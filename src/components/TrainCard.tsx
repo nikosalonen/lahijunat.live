@@ -52,7 +52,7 @@ const getCardStyle = (
 	isHighlighted: boolean,
 ) => {
 	const baseStyles =
-		"card bg-base-100 shadow-brand-strong border border-base-300 rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300";
+		"card bg-base-100 shadow-xl border border-base-300 rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300";
 
 	// Priority 1: Cancelled trains
 	if (isCancelled)

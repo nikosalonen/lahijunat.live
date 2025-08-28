@@ -58,30 +58,30 @@
 @keyframes soft-blink {
 	0% {
 		background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-		box-shadow: 0 8px 32px rgba(140, 71, 153, 0.16);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 	}
 	50% {
 		background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
-		box-shadow: 0 12px 48px rgba(140, 71, 153, 0.24);
+		box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
 	}
 	100% {
 		background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-		box-shadow: 0 8px 32px rgba(140, 71, 153, 0.16);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 	}
 }
 
 @keyframes soft-blink-dark {
 	0% {
 		background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-		box-shadow: 0 8px 32px rgba(140, 71, 153, 0.16);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 	}
 	50% {
 		background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-		box-shadow: 0 12px 48px rgba(140, 71, 153, 0.24);
+		box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
 	}
 	100% {
 		background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-		box-shadow: 0 8px 32px rgba(140, 71, 153, 0.16);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 	}
 }
 
@@ -91,21 +91,21 @@
 		border-color: #8c4799;
 		box-shadow:
 			0 0 0 1px #8c4799,
-			0 8px 32px rgba(140, 71, 153, 0.16);
+			0 8px 32px rgba(0, 0, 0, 0.15);
 	}
 	50% {
 		background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
 		border-color: #7a3f86;
 		box-shadow:
 			0 0 0 1px #7a3f86,
-			0 12px 48px rgba(140, 71, 153, 0.24);
+			0 12px 48px rgba(0, 0, 0, 0.25);
 	}
 	100% {
 		background: linear-gradient(135deg, #faf7ff 0%, #f3e8ff 100%);
 		border-color: #8c4799;
 		box-shadow:
 			0 0 0 1px #8c4799,
-			0 8px 32px rgba(140, 71, 153, 0.16);
+			0 8px 32px rgba(0, 0, 0, 0.15);
 	}
 }
 
@@ -115,21 +115,21 @@
 		border-color: #b388ff;
 		box-shadow:
 			0 0 0 1px #b388ff,
-			0 8px 32px rgba(179, 136, 255, 0.16);
+			0 8px 32px rgba(0, 0, 0, 0.4);
 	}
 	50% {
 		background: linear-gradient(135deg, #3730a3 0%, #4338ca 100%);
 		border-color: #7c4dff;
 		box-shadow:
 			0 0 0 1px #7c4dff,
-			0 12px 48px rgba(179, 136, 255, 0.24);
+			0 12px 48px rgba(0, 0, 0, 0.6);
 	}
 	100% {
 		background: linear-gradient(135deg, #2d1a33 0%, #1f1726 100%);
 		border-color: #b388ff;
 		box-shadow:
 			0 0 0 1px #b388ff,
-			0 8px 32px rgba(179, 136, 255, 0.16);
+			0 8px 32px rgba(0, 0, 0, 0.4);
 	}
 }
 
