@@ -16,6 +16,7 @@ import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
 import ProgressCircle from "./ProgressCircle";
+import ProgressVertical from "./ProgressVertical";
 import TrainCard from "./TrainCard";
 import TrainListSkeleton from "./TrainListSkeleton";
 
@@ -414,9 +415,9 @@ export default function TrainList({
 					</div>
 				</div>
 
-				{/* Mobile progress circle only */}
-				<div class="sm:hidden flex justify-end mb-4">
-					<ProgressCircle progress={state.progress} size="w-8 h-8" />
+				{/* Mobile horizontal progress bar (left → right) */}
+				<div class="sm:hidden w-full mb-4">
+					<ProgressVertical progress={state.progress} heightClass="h-1.5" widthClass="w-full" direction="rtl" />
 				</div>
 				<div
 					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"

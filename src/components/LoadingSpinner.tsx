@@ -5,7 +5,7 @@ import { t } from "../utils/translations";
 export default function LoadingSpinner() {
 	return (
 		<div
-			className="flex flex-col justify-center items-center h-screen animate-slide-up"
+			className="flex flex-col justify-center items-center min-h-screen animate-slide-up"
 			role="progressbar"
 			aria-live="polite"
 			aria-busy="true"

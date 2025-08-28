@@ -97,24 +97,36 @@ export default function StationManager({
 	);
 
 	const hasMounted = useHasMounted();
-	const [, forceUpdate] = useState({});
 	const toInputRef = useRef<HTMLInputElement>(null);
+	const prevDestinationRef = useRef<string | null>(null);
+	const isFirstRunRef = useRef(true);
 
 	useLanguageChange();
 
 	// Smart accordion toggle logic
-  useEffect(() => {
-	// Ignore transient swaps to avoid flicker
-	if (isSwapping) return;
-		// On mobile: only auto-collapse when TO station is selected (not when FROM is selected)
+	useEffect(() => {
+		// Skip the first run to avoid collapsing accordion on initial mount/restore
+		if (isFirstRunRef.current) {
+			isFirstRunRef.current = false;
+			return;
+		}
+
+		// Ignore transient swaps to avoid flicker
+		if (isSwapping) return;
+
+		// On mobile: only auto-collapse when TO station is newly selected
 		// On desktop: accordion is always open, so this doesn't matter
-		if (selectedDestination) {
+		if (selectedDestination && prevDestinationRef.current !== selectedDestination) {
+			// Only close accordion when TO station is newly selected
 			setIsStationSelectorExpanded(false);
 		}
 		// Auto-expand if no stations are selected
 		else if (!selectedOrigin && !selectedDestination) {
 			setIsStationSelectorExpanded(true);
 		}
+
+		// Update the previous destination reference
+		prevDestinationRef.current = selectedDestination;
 	}, [selectedOrigin, selectedDestination, isSwapping]);
 
 	// Auto-focus "to" input when "from" is selected and "to" is empty
@@ -183,12 +195,7 @@ export default function StationManager({
 		}
 	}, [initialFromStation, initialToStation]);
 
-	useEffect(() => {
-		const handleLanguageChange = () => forceUpdate({});
-		window.addEventListener("languagechange", handleLanguageChange);
-		return () =>
-			window.removeEventListener("languagechange", handleLanguageChange);
-	}, []);
+
 
 	const handleNearestStation = useCallback(
 		(nearestStation: { station: Station }) => {
@@ -561,7 +568,11 @@ export default function StationManager({
 						onClick={() =>
 							setIsStationSelectorExpanded(!isStationSelectorExpanded)
 						}
-						className="flex-grow btn btn-ghost normal-case justify-between p-3 h-auto min-h-0 min-w-0"
+						className={`relative flex-grow normal-case justify-between p-4 min-h-[80px] min-w-0 rounded-lg border transition-all duration-200 ${
+							isStationSelectorExpanded
+								? "bg-base-100 border-base-300 shadow-sm"
+								: "bg-base-200 hover:bg-base-300 border-base-300 hover:border-base-400 shadow-brand-soft hover:shadow-brand-medium"
+						}`}
 						aria-expanded={isStationSelectorExpanded}
 						aria-controls="station-selector"
 					>
@@ -569,11 +580,11 @@ export default function StationManager({
 							{selectedOrigin && selectedDestination ? (
 								<div className="flex items-center gap-3 min-w-0">
 									<div className="flex-grow min-w-0">
-										<div className="font-medium text-base leading-tight truncate">
-											{selectedOriginStation?.name}
-										</div>
-										<div className="text-xs opacity-60 font-mono">
+										<div className="font-bold text-2xl leading-tight truncate font-mono">
 											{selectedOrigin}
+										</div>
+										<div className="text-sm opacity-70 leading-tight truncate">
+											{selectedOriginStation?.name}
 										</div>
 									</div>
 									<svg
@@ -591,11 +602,11 @@ export default function StationManager({
 										/>
 									</svg>
 									<div className="flex-grow text-right min-w-0">
-										<div className="font-medium text-base leading-tight truncate">
-											{selectedDestinationStation?.name}
-										</div>
-										<div className="text-xs opacity-60 font-mono">
+										<div className="font-bold text-2xl leading-tight truncate font-mono">
 											{selectedDestination}
+										</div>
+										<div className="text-sm opacity-70 leading-tight truncate">
+											{selectedDestinationStation?.name}
 										</div>
 									</div>
 								</div>
@@ -605,20 +616,25 @@ export default function StationManager({
 								</div>
 							)}
 						</div>
-						<svg
-							className={`w-5 h-5 ml-3 transition-transform ${isStationSelectorExpanded ? "rotate-180" : ""}`}
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<title>Toggle station selector</title>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="2"
-								d="M19 9l-7 7-7-7"
-							/>
-						</svg>
+						{/* Center-bottom caret when collapsed (mobile) */}
+						{!isStationSelectorExpanded && (
+							<div className="absolute left-1/2 -translate-x-1/2 bottom-2 w-5 h-5 flex items-center justify-center sm:hidden pointer-events-none">
+								<svg
+									className="w-5 h-5"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<title>Toggle station selector</title>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth="2"
+										d="M19 9l-7 7-7-7"
+									/>
+								</svg>
+							</div>
+						)}
 					</button>
 
 					{/* Swap button on the same row */}
@@ -630,7 +646,7 @@ export default function StationManager({
 							className="btn w-12 h-12 p-1 flex-shrink-0 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
 						disabled:opacity-50 disabled:cursor-not-allowed
 						touch-manipulation select-none tooltip tooltip-top
-						shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200"
+						shadow-brand-medium hover:shadow-brand-strong transition-[background-color,box-shadow] duration-200"
 							data-tip={t("swapDirection")}
 							aria-label={t("swapDirection")}
 						>
@@ -660,8 +676,13 @@ export default function StationManager({
 
 			{/* Station selector - collapsible on mobile */}
 			<div
-				className={`collapse ${isStationSelectorExpanded ? "collapse-open" : "collapse-close"} sm:collapse-open`}
+				className={`collapse ${isStationSelectorExpanded ? "collapse-open" : "collapse-close"} sm:collapse-open ${
+					!isStationSelectorExpanded ? "bg-base-100 border border-base-300 rounded-lg shadow-sm sm:border-0 sm:bg-transparent" : ""
+				}`}
 			>
+				{/* Upward caret when expanded (mobile) - clickable to close */}
+
+
 				<div id="station-selector" className="collapse-content px-0">
 					<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
 						<div className="space-y-2">
@@ -676,7 +697,7 @@ export default function StationManager({
 										className={`btn w-12 h-12 p-1 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
 							disabled:opacity-50 disabled:cursor-not-allowed
 							touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
-							shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 rounded-r-none
+							shadow-brand-medium hover:shadow-brand-strong transition-[background-color,box-shadow] duration-200 rounded-r-none
 							${isLocating ? "animate-pulse" : ""}`}
 										aria-label={t("locate")}
 										data-tip={t("locate")}
@@ -711,7 +732,7 @@ export default function StationManager({
 										className="hidden sm:block btn w-12 h-12 p-1 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
 								disabled:opacity-50 disabled:cursor-not-allowed
 								touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
-								shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 rounded-l-none"
+								shadow-brand-medium hover:shadow-brand-strong transition-[background-color,box-shadow] duration-200 rounded-l-none"
 										data-tip={t("swapDirection")}
 										aria-label={t("swapDirection")}
 									>
@@ -831,6 +852,36 @@ export default function StationManager({
 							</div>
 						)}
 					</div>
+
+					{/* Center-bottom caret when expanded (mobile) - clickable to close */}
+					{isStationSelectorExpanded && (
+						<div className="sm:hidden flex justify-center mt-2">
+							<button
+								type="button"
+								onClick={() => {
+									hapticLight();
+									setIsStationSelectorExpanded(false);
+								}}
+								className="w-8 h-8 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all duration-200 touch-manipulation select-none"
+								aria-label={t("closeStationSelector")}
+							>
+								<svg
+									className="w-5 h-5 rotate-180"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<title>Close station selector</title>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth="2"
+										d="M19 9l-7 7-7-7"
+								/>
+								</svg>
+							</button>
+						</div>
+					)}
 				</div>
 			</div>
 

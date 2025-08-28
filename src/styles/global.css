@@ -58,54 +58,54 @@
 @keyframes soft-blink {
 	0% {
 		background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-		box-shadow: var(--shadow-soft);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 	}
 	50% {
 		background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
-		box-shadow: var(--shadow-medium);
+		box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
 	}
 	100% {
 		background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-		box-shadow: var(--shadow-soft);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 	}
 }
 
 @keyframes soft-blink-dark {
 	0% {
 		background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 	}
 	50% {
 		background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-		box-shadow: 0 4px 16px rgba(30, 58, 138, 0.4);
+		box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
 	}
 	100% {
 		background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 	}
 }
 
 @keyframes soft-blink-highlight {
 	0% {
 		background: linear-gradient(135deg, #faf7ff 0%, #f3e8ff 100%);
-		border-color: var(--color-primary-500);
+		border-color: #8c4799;
 		box-shadow:
-			var(--shadow-glow),
-			0 0 24px rgba(140, 71, 153, 0.2);
+			0 0 0 1px #8c4799,
+			0 8px 32px rgba(0, 0, 0, 0.15);
 	}
 	50% {
 		background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
-		border-color: var(--color-primary-700);
+		border-color: #7a3f86;
 		box-shadow:
-			0 0 0 1px var(--color-primary-700),
-			0 8px 32px rgba(107, 44, 117, 0.3);
+			0 0 0 1px #7a3f86,
+			0 12px 48px rgba(0, 0, 0, 0.25);
 	}
 	100% {
 		background: linear-gradient(135deg, #faf7ff 0%, #f3e8ff 100%);
-		border-color: var(--color-primary-500);
+		border-color: #8c4799;
 		box-shadow:
-			var(--shadow-glow),
-			0 0 24px rgba(140, 71, 153, 0.2);
+			0 0 0 1px #8c4799,
+			0 8px 32px rgba(0, 0, 0, 0.15);
 	}
 }
 
@@ -115,21 +115,21 @@
 		border-color: #b388ff;
 		box-shadow:
 			0 0 0 1px #b388ff,
-			0 8px 32px rgba(179, 136, 255, 0.3);
+			0 8px 32px rgba(0, 0, 0, 0.4);
 	}
 	50% {
 		background: linear-gradient(135deg, #3730a3 0%, #4338ca 100%);
 		border-color: #7c4dff;
 		box-shadow:
 			0 0 0 1px #7c4dff,
-			0 12px 48px rgba(124, 77, 255, 0.4);
+			0 12px 48px rgba(0, 0, 0, 0.6);
 	}
 	100% {
 		background: linear-gradient(135deg, #2d1a33 0%, #1f1726 100%);
 		border-color: #b388ff;
 		box-shadow:
 			0 0 0 1px #b388ff,
-			0 8px 32px rgba(179, 136, 255, 0.3);
+			0 8px 32px rgba(0, 0, 0, 0.4);
 	}
 }
 
@@ -203,47 +203,7 @@
 	background-size: 200% 100%;
 }
 
-/* Modern Glass Effect */
-.glass-card {
-	/* Fallback styles for older browsers without backdrop-filter support */
-	background: rgba(255, 255, 255, 0.95);
-	border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-/* Dark mode fallback for older browsers */
-.dark .glass-card {
-	background: rgba(31, 41, 55, 0.95);
-	border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* Enhanced glass effect for modern browsers with backdrop-filter support */
-@supports (backdrop-filter: blur(1px)) {
-	.glass-card {
-		background: var(--glass-bg);
-		border: 1px solid var(--glass-border);
-		backdrop-filter: var(--glass-backdrop);
-	}
-}
-
-/* Webkit vendor prefix support */
-@supports (-webkit-backdrop-filter: blur(1px)) {
-	.glass-card {
-		background: var(--glass-bg);
-		border: 1px solid var(--glass-border);
-		-webkit-backdrop-filter: var(--glass-backdrop);
-	}
-}
-
-/* Enhanced Surface */
-.surface-elevated {
-	background: var(--gradient-surface);
-	box-shadow: var(--shadow-medium);
-	border: 1px solid rgba(140, 71, 153, 0.08);
-}
-
-.dark .surface-elevated {
-	border: 1px solid rgba(255, 255, 255, 0.05);
-}
+/* Prefer DaisyUI card/glass components over custom helpers */
 
 /* Staggered animation delays for lists */
 .stagger-1 {
@@ -270,8 +230,10 @@
 }
 
 /* Enhanced focus states */
-.focus-ring {
-	@apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800;
+@layer utilities {
+	.focus-ring:focus-visible {
+		@apply outline-none ring-2 ring-offset-2 ring-primary dark:ring-offset-gray-800;
+	}
 }
 
 /* Enhanced Micro-interactions */
@@ -283,7 +245,7 @@
 @media (hover: hover) {
 	.hover-lift:hover {
 		transform: translateY(-2px) scale(1.01);
-		box-shadow: var(--shadow-medium);
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 	}
 
 	.dark .hover-lift:hover {
@@ -345,60 +307,20 @@
 	}
 }
 
-/* Button Enhancement */
-@layer components {
-	.btn-primary {
-		background: var(--gradient-primary);
-		color: white;
-		border: none;
-		transition: all 0.2s ease;
+/* Rely on DaisyUI's btn/btn-primary styling */
+
+/* Prefer DaisyUI card utilities; remove card-modern */
+
+/* Use Tailwind utilities for gradient text: bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent */
+
+/* Reduced-motion support */
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.001ms !important;
+		scroll-behavior: auto !important;
 	}
-
-	/* Only apply hover effects on devices that support proper hover */
-	@media (hover: hover) {
-		.btn-primary:hover {
-			transform: translateY(-1px);
-			box-shadow: var(--shadow-medium);
-		}
-	}
-
-	.btn-primary:active {
-		transform: translateY(0);
-	}
-}
-
-/* Card Styles */
-.card-modern {
-	background: var(--gradient-surface);
-	border: 1px solid rgba(140, 71, 153, 0.08);
-	box-shadow: var(--shadow-soft);
-	transition:
-		background 0.3s ease,
-		box-shadow 0.3s ease,
-		transform 0.3s ease,
-		opacity 0.3s ease,
-		border 0.3s ease,
-		border-color 0.3s ease;
-}
-
-/* Only apply hover effects on devices that support proper hover */
-@media (hover: hover) {
-	.card-modern:hover {
-		box-shadow: var(--shadow-medium);
-		transform: translateY(-2px);
-	}
-}
-
-.dark .card-modern {
-	border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Text Gradients */
-.text-gradient-primary {
-	background: var(--gradient-primary);
-	-webkit-background-clip: text;
-	background-clip: text;
-	-webkit-text-fill-color: transparent;
 }
 
 @tailwind base;
@@ -421,8 +343,8 @@ html {
 	scroll-behavior: smooth;
 	/* Optimize for mobile touch scrolling */
 	-webkit-overflow-scrolling: touch;
-	/* Prevent scroll bouncing on iOS */
-	overscroll-behavior: none;
+	/* Prevent bouncing above the header while keeping normal body scroll */
+	overscroll-behavior-y: none;
 	/* Improve scroll performance */
 	scroll-padding-top: 1rem;
 
@@ -436,8 +358,8 @@ body {
 	transform: translate3d(0, 0, 0);
 	/* Optimize touch scrolling on mobile */
 	-webkit-overflow-scrolling: touch;
-	/* Prevent scroll bouncing */
-	overscroll-behavior: none;
+	/* Allow native scroll chaining */
+	overscroll-behavior: auto;
 	/* Prevent horizontal scroll on mobile */
 	overflow-x: hidden;
 	/* Ensure width is constrained to viewport */
@@ -452,11 +374,6 @@ body {
 
 /* Mobile-specific scroll optimizations */
 @media (max-width: 768px) {
-	/* Improve momentum scrolling on iOS */
-	* {
-		-webkit-overflow-scrolling: touch;
-	}
-
 	/* Prevent body scroll when modals/dropdowns are open */
 	.scroll-lock {
 		overflow: hidden;
