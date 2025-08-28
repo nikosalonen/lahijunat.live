@@ -567,7 +567,7 @@ export default function StationManager({
 						onClick={() =>
 							setIsStationSelectorExpanded(!isStationSelectorExpanded)
 						}
-						className={`flex-grow normal-case justify-between p-4 h-auto min-h-0 min-w-0 transition-all duration-200 ${
+						className={`flex-grow normal-case justify-between p-4 min-h-[80px] min-w-0 transition-all duration-200 ${
 							isStationSelectorExpanded
 								? "btn btn-ghost"
 								: "bg-base-200 hover:bg-base-300 border border-base-300 hover:border-base-400 shadow-md hover:shadow-lg rounded-lg"
@@ -615,20 +615,22 @@ export default function StationManager({
 								</div>
 							)}
 						</div>
-						<svg
-							className={`w-5 h-5 ml-3 transition-transform ${isStationSelectorExpanded ? "rotate-180" : ""}`}
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<title>Toggle station selector</title>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="2"
-								d="M19 9l-7 7-7-7"
-							/>
-						</svg>
+						<div className="w-5 h-5 ml-3 flex-shrink-0 flex items-center justify-center">
+							<svg
+								className={`w-5 h-5 transition-transform ${isStationSelectorExpanded ? "rotate-180" : ""}`}
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<title>Toggle station selector</title>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="2"
+									d="M19 9l-7 7-7-7"
+								/>
+							</svg>
+						</div>
 					</button>
 
 					{/* Swap button on the same row */}
