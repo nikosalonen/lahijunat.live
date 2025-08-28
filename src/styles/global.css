@@ -421,8 +421,8 @@ html {
 	scroll-behavior: smooth;
 	/* Optimize for mobile touch scrolling */
 	-webkit-overflow-scrolling: touch;
-	/* Allow native scroll chaining; avoid nested scroll traps */
-	overscroll-behavior: auto;
+	/* Prevent bouncing above the header while keeping normal body scroll */
+	overscroll-behavior-y: none;
 	/* Improve scroll performance */
 	scroll-padding-top: 1rem;
 
