@@ -569,11 +569,11 @@ export default function StationManager({
 							{selectedOrigin && selectedDestination ? (
 								<div className="flex items-center gap-3 min-w-0">
 									<div className="flex-grow min-w-0">
-										<div className="font-medium text-base leading-tight truncate">
-											{selectedOriginStation?.name}
-										</div>
-										<div className="text-xs opacity-60 font-mono">
+										<div className="font-bold text-lg leading-tight truncate font-mono">
 											{selectedOrigin}
+										</div>
+										<div className="text-sm opacity-70 leading-tight truncate">
+											{selectedOriginStation?.name}
 										</div>
 									</div>
 									<svg
@@ -591,11 +591,11 @@ export default function StationManager({
 										/>
 									</svg>
 									<div className="flex-grow text-right min-w-0">
-										<div className="font-medium text-base leading-tight truncate">
-											{selectedDestinationStation?.name}
-										</div>
-										<div className="text-xs opacity-60 font-mono">
+										<div className="font-bold text-lg leading-tight truncate font-mono">
 											{selectedDestination}
+										</div>
+										<div className="text-sm opacity-70 leading-tight truncate">
+											{selectedDestinationStation?.name}
 										</div>
 									</div>
 								</div>
