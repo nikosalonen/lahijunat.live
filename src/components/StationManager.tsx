@@ -97,7 +97,6 @@ export default function StationManager({
 	);
 
 	const hasMounted = useHasMounted();
-	const [, forceUpdate] = useState({});
 	const toInputRef = useRef<HTMLInputElement>(null);
 	const prevDestinationRef = useRef<string | null>(null);
 	const isFirstRunRef = useRef(true);
