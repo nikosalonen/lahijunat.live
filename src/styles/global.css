@@ -452,11 +452,6 @@ body {
 
 /* Mobile-specific scroll optimizations */
 @media (max-width: 768px) {
-	/* Improve momentum scrolling on iOS */
-	* {
-		-webkit-overflow-scrolling: touch;
-	}
-
 	/* Prevent body scroll when modals/dropdowns are open */
 	.scroll-lock {
 		overflow: hidden;
