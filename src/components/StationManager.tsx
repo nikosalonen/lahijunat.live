@@ -567,7 +567,11 @@ export default function StationManager({
 						onClick={() =>
 							setIsStationSelectorExpanded(!isStationSelectorExpanded)
 						}
-						className="flex-grow btn btn-ghost normal-case justify-between p-3 h-auto min-h-0 min-w-0"
+						className={`flex-grow normal-case justify-between p-4 h-auto min-h-0 min-w-0 transition-all duration-200 ${
+							isStationSelectorExpanded
+								? "btn btn-ghost"
+								: "bg-base-200 hover:bg-base-300 border border-base-300 hover:border-base-400 shadow-md hover:shadow-lg rounded-lg"
+						}`}
 						aria-expanded={isStationSelectorExpanded}
 						aria-controls="station-selector"
 					>
@@ -666,7 +670,9 @@ export default function StationManager({
 
 			{/* Station selector - collapsible on mobile */}
 			<div
-				className={`collapse ${isStationSelectorExpanded ? "collapse-open" : "collapse-close"} sm:collapse-open`}
+				className={`collapse ${isStationSelectorExpanded ? "collapse-open" : "collapse-close"} sm:collapse-open ${
+					!isStationSelectorExpanded ? "bg-base-100 border border-base-300 rounded-lg shadow-sm" : ""
+				}`}
 			>
 				<div id="station-selector" className="collapse-content px-0">
 					<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
