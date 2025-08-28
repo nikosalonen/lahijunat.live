@@ -89,6 +89,8 @@ export default function StationManager({
 	const lastSwapTimeRef = useRef(0);
 
 	// Mobile accordion state - expanded by default if no stations selected
+	// On mobile: accordion closes only when TO station is selected
+	// On desktop: accordion is always open (sm:collapse-open)
 	const [isStationSelectorExpanded, setIsStationSelectorExpanded] = useState(
 		!initialFromStation || !initialToStation,
 	);
@@ -101,8 +103,9 @@ export default function StationManager({
 
 	// Smart accordion toggle logic
 	useEffect(() => {
-		// Auto-collapse when both stations are selected (on mobile)
-		if (selectedOrigin && selectedDestination) {
+		// On mobile: only auto-collapse when TO station is selected (not when FROM is selected)
+		// On desktop: accordion is always open, so this doesn't matter
+		if (selectedDestination) {
 			setIsStationSelectorExpanded(false);
 		}
 		// Auto-expand if no stations are selected
