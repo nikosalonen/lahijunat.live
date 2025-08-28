@@ -189,12 +189,7 @@ export default function StationManager({
 		}
 	}, [initialFromStation, initialToStation]);
 
-	useEffect(() => {
-		const handleLanguageChange = () => forceUpdate({});
-		window.addEventListener("languagechange", handleLanguageChange);
-		return () =>
-			window.removeEventListener("languagechange", handleLanguageChange);
-	}, []);
+
 
 	const handleNearestStation = useCallback(
 		(nearestStation: { station: Station }) => {
