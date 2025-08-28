@@ -99,22 +99,28 @@ export default function StationManager({
 	const hasMounted = useHasMounted();
 	const [, forceUpdate] = useState({});
 	const toInputRef = useRef<HTMLInputElement>(null);
+	const prevDestinationRef = useRef<string | null>(null);
 
 	useLanguageChange();
 
 	// Smart accordion toggle logic
-  useEffect(() => {
-	// Ignore transient swaps to avoid flicker
-	if (isSwapping) return;
-		// On mobile: only auto-collapse when TO station is selected (not when FROM is selected)
+	useEffect(() => {
+		// Ignore transient swaps to avoid flicker
+		if (isSwapping) return;
+		
+		// On mobile: only auto-collapse when TO station is newly selected
 		// On desktop: accordion is always open, so this doesn't matter
-		if (selectedDestination) {
+		if (selectedDestination && prevDestinationRef.current !== selectedDestination) {
+			// Only close accordion when TO station is newly selected
 			setIsStationSelectorExpanded(false);
 		}
 		// Auto-expand if no stations are selected
 		else if (!selectedOrigin && !selectedDestination) {
 			setIsStationSelectorExpanded(true);
 		}
+		
+		// Update the previous destination reference
+		prevDestinationRef.current = selectedDestination;
 	}, [selectedOrigin, selectedDestination, isSwapping]);
 
 	// Auto-focus "to" input when "from" is selected and "to" is empty
