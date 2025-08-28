@@ -107,7 +107,7 @@ export default function StationManager({
 	useEffect(() => {
 		// Ignore transient swaps to avoid flicker
 		if (isSwapping) return;
-		
+
 		// On mobile: only auto-collapse when TO station is newly selected
 		// On desktop: accordion is always open, so this doesn't matter
 		if (selectedDestination && prevDestinationRef.current !== selectedDestination) {
@@ -118,7 +118,7 @@ export default function StationManager({
 		else if (!selectedOrigin && !selectedDestination) {
 			setIsStationSelectorExpanded(true);
 		}
-		
+
 		// Update the previous destination reference
 		prevDestinationRef.current = selectedDestination;
 	}, [selectedOrigin, selectedDestination, isSwapping]);
