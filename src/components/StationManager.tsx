@@ -679,6 +679,9 @@ export default function StationManager({
 					!isStationSelectorExpanded ? "bg-base-100 border border-base-300 rounded-lg shadow-sm sm:border-0 sm:bg-transparent" : ""
 				}`}
 			>
+				{/* Upward caret when expanded (mobile) - clickable to close */}
+
+
 				<div id="station-selector" className="collapse-content px-0">
 					<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
 						<div className="space-y-2">
@@ -849,23 +852,33 @@ export default function StationManager({
 						)}
 					</div>
 
-					{/* Center-bottom caret when expanded (mobile) */}
+					{/* Center-bottom caret when expanded (mobile) - clickable to close */}
 					{isStationSelectorExpanded && (
 						<div className="sm:hidden flex justify-center mt-2">
-							<svg
-								className="w-5 h-5 rotate-180"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
+							<button
+								type="button"
+								onClick={() => {
+									hapticLight();
+									setIsStationSelectorExpanded(false);
+								}}
+								className="w-8 h-8 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all duration-200 touch-manipulation select-none"
+								aria-label={t("closeStationSelector")}
 							>
-								<title>Close station selector</title>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="M19 9l-7 7-7-7"
+								<svg
+									className="w-5 h-5 rotate-180"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<title>Close station selector</title>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth="2"
+										d="M19 9l-7 7-7-7"
 								/>
-							</svg>
+								</svg>
+							</button>
 						</div>
 					)}
 				</div>
