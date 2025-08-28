@@ -42,6 +42,6 @@ describe("LoadingSpinner", () => {
 		expect(container_element).toHaveClass("flex");
 		expect(container_element).toHaveClass("justify-center");
 		expect(container_element).toHaveClass("items-center");
-		expect(container_element).toHaveClass("h-screen");
+		expect(container_element).toHaveClass("min-h-screen");
 	});
 });

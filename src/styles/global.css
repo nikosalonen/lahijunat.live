@@ -421,8 +421,8 @@ html {
 	scroll-behavior: smooth;
 	/* Optimize for mobile touch scrolling */
 	-webkit-overflow-scrolling: touch;
-	/* Prevent scroll bouncing on iOS */
-	overscroll-behavior: none;
+	/* Allow native scroll chaining; avoid nested scroll traps */
+	overscroll-behavior: auto;
 	/* Improve scroll performance */
 	scroll-padding-top: 1rem;
 
@@ -436,8 +436,8 @@ body {
 	transform: translate3d(0, 0, 0);
 	/* Optimize touch scrolling on mobile */
 	-webkit-overflow-scrolling: touch;
-	/* Prevent scroll bouncing */
-	overscroll-behavior: none;
+	/* Allow native scroll chaining */
+	overscroll-behavior: auto;
 	/* Prevent horizontal scroll on mobile */
 	overflow-x: hidden;
 	/* Ensure width is constrained to viewport */
