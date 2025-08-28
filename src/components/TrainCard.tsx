@@ -451,6 +451,7 @@ export default function TrainCard({
 			data-train-number={train.trainNumber}
 			data-train-cancelled={train.cancelled}
 			data-train-line={train.commuterLineID}
+			data-train-unknown-delay={departureRow?.unknownDelay || false}
 		>
 			<div class="card-body p-3 sm:p-4">
 				<div class="flex items-start justify-between gap-2 sm:gap-4">

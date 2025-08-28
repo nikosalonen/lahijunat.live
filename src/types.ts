@@ -28,6 +28,7 @@ export interface TimeTableRow {
 	liveEstimateTime?: string;
 	actualTime?: string;
 	differenceInMinutes?: number;
+	unknownDelay?: boolean;
 	station: Station;
 }
 

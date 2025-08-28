@@ -150,4 +150,62 @@ describe("TimeDisplay", () => {
 		const delayIndicator = queryByText("+15 min");
 		expect(delayIndicator).not.toBeInTheDocument();
 	});
+
+	it("should show unknown delay badge when unknownDelay is true", () => {
+		const departureRow = {
+			...mockDepartureRow,
+			liveEstimateTime: "2024-01-01T10:05:00Z",
+			differenceInMinutes: 5,
+			unknownDelay: true,
+		};
+
+		const { getByText, queryByText } = render(
+			<TimeDisplay
+				departureRow={departureRow}
+				timeDifferenceMinutes={5}
+			/>,
+		);
+
+		expect(getByText("unknownDelay")).toBeInTheDocument();
+		expect(queryByText("+5 min")).not.toBeInTheDocument();
+	});
+
+	it("should not show unknown delay badge when unknownDelay is false", () => {
+		const departureRow = {
+			...mockDepartureRow,
+			liveEstimateTime: "2024-01-01T10:05:00Z",
+			differenceInMinutes: 5,
+			unknownDelay: false,
+		};
+
+		const { getByText, queryByText } = render(
+			<TimeDisplay
+				departureRow={departureRow}
+				timeDifferenceMinutes={5}
+			/>,
+		);
+
+		expect(queryByText("unknownDelay")).not.toBeInTheDocument();
+		expect(getByText("+5 min")).toBeInTheDocument();
+	});
+
+	it("should not show unknown delay badge when train is cancelled", () => {
+		const departureRow = {
+			...mockDepartureRow,
+			liveEstimateTime: "2024-01-01T10:05:00Z",
+			differenceInMinutes: 5,
+			cancelled: true,
+			unknownDelay: true,
+		};
+
+		const { queryByText } = render(
+			<TimeDisplay
+				departureRow={departureRow}
+				timeDifferenceMinutes={5}
+			/>,
+		);
+
+		expect(queryByText("unknownDelay")).not.toBeInTheDocument();
+		expect(queryByText("+5 min")).not.toBeInTheDocument();
+	});
 });
