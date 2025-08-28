@@ -567,10 +567,10 @@ export default function StationManager({
 						onClick={() =>
 							setIsStationSelectorExpanded(!isStationSelectorExpanded)
 						}
-						className={`flex-grow normal-case justify-between p-4 min-h-[80px] min-w-0 transition-all duration-200 ${
+						className={`flex-grow normal-case justify-between p-4 min-h-[80px] min-w-0 rounded-lg border transition-all duration-200 ${
 							isStationSelectorExpanded
-								? "btn btn-ghost"
-								: "bg-base-200 hover:bg-base-300 border border-base-300 hover:border-base-400 shadow-md hover:shadow-lg rounded-lg"
+								? "bg-base-100 border-base-300 shadow-sm"
+								: "bg-base-200 hover:bg-base-300 border-base-300 hover:border-base-400 shadow-md hover:shadow-lg"
 						}`}
 						aria-expanded={isStationSelectorExpanded}
 						aria-controls="station-selector"
