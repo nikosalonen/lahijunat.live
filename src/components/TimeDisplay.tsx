@@ -17,14 +17,27 @@ const TimeDisplay = ({
 }) => {
 	useLanguageChange();
 	const rowIsCancelled = Boolean(isCancelled ?? departureRow.cancelled);
+	const hasUnknownDelay = Boolean(departureRow.unknownDelay);
+
 	return (
 		<span
 			class={`text-xl sm:text-2xl font-medium ${rowIsCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} min-w-0 relative pt-8 sm:pt-6`}
 		>
-			{/* Always show late badge container to maintain consistent spacing */}
+			{/* Show unknown delay badge if set */}
+			{hasUnknownDelay && !rowIsCancelled && (
+				<output
+					aria-label={t("unknownDelay")}
+					aria-live="polite"
+					class="absolute top-0 left-0 badge badge-warning badge-lg font-semibold shadow-lg"
+				>
+					{t("unknownDelay")}
+				</output>
+			)}
+			{/* Show specific delay badge if available and not unknown delay */}
 			{departureRow.liveEstimateTime &&
 				timeDifferenceMinutes > 0 &&
-				!rowIsCancelled && (
+				!rowIsCancelled &&
+				!hasUnknownDelay && (
 					<output
 						aria-label={`${t("late")} ${timeDifferenceMinutes} ${t("minutes")}`}
 						aria-live="polite"
