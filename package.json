@@ -1,7 +1,7 @@
 {
 	"name": "lahijunat-live",
 	"type": "module",
-	"version": "1.10.1-beta.2",
+	"version": "1.10.1-beta.3",
 	"scripts": {
 		"dev": "astro dev",
 		"build": "astro build && cp src/sw-utils.js dist/ && workbox generateSW workbox-config.cjs",
@@ -35,7 +35,7 @@
 		"@testing-library/jest-dom": "^6.8.0",
 		"@testing-library/preact": "^3.2.4",
 		"@types/node": "^24.3.0",
-		"daisyui": "^5.0.50",
+		"daisyui": "^5.0.51",
 		"jsdom": "^26.1.0",
 		"vitest": "^3.2.4",
 		"workbox-cli": "^7.3.0"
