@@ -21,7 +21,7 @@
 		"@tailwindcss/vite": "^4.1.13",
 		"astro": "^5.13.5",
 		"marked": "^16.2.1",
-		"preact": "^10.27.1",
+		"preact": "^10.27.2",
 		"tailwindcss": "^4.1.13",
 		"workbox-cacheable-response": "^7.3.0",
 		"workbox-core": "^7.3.0",
