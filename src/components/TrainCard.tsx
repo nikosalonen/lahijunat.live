@@ -31,6 +31,32 @@ type HighlightedTrainData = {
 	trackChanged?: boolean;
 };
 
+// Safe storage helpers to avoid iOS Safari private mode/localStorage quota issues
+const HIGHLIGHT_STORAGE_KEY = "highlightedTrains";
+let inMemoryHighlightStore: Record<string, HighlightedTrainData> = {};
+
+function safeReadHighlights(): Record<string, HighlightedTrainData> {
+	try {
+		const raw = localStorage.getItem(HIGHLIGHT_STORAGE_KEY);
+		if (!raw) return inMemoryHighlightStore;
+		const parsed = JSON.parse(raw);
+		// Ensure object shape
+		return parsed && typeof parsed === "object" ? parsed : {};
+	} catch {
+		return inMemoryHighlightStore;
+	}
+}
+
+function safeWriteHighlights(value: Record<string, HighlightedTrainData>): void {
+	try {
+		localStorage.setItem(HIGHLIGHT_STORAGE_KEY, JSON.stringify(value));
+		inMemoryHighlightStore = value;
+	} catch {
+		// Fallback to in-memory store when localStorage is unavailable or throws
+		inMemoryHighlightStore = value;
+	}
+}
+
 const formatMinutesToDeparture = (departure: Date, currentTime: Date) => {
 	const diffMs = departure.getTime() - currentTime.getTime();
 	const diffMinutes = diffMs / (1000 * 60);
@@ -224,15 +250,8 @@ export default function TrainCard({
 	}, [minutesToDeparture, hasDeparted, onDepart, onReappear]);
 
 	useEffect(() => {
-		// Load highlighted state from localStorage (safe parse)
-		let highlightedTrains: Record<string, HighlightedTrainData>;
-		try {
-			highlightedTrains = JSON.parse(
-				localStorage.getItem("highlightedTrains") || "{}",
-			);
-		} catch {
-			highlightedTrains = {};
-		}
+		// Load highlighted state safely (works even if localStorage is unavailable)
+		const highlightedTrains: Record<string, HighlightedTrainData> = safeReadHighlights();
 		const trainData = highlightedTrains[train.trainNumber];
 
 		if (trainData) {
@@ -243,10 +262,7 @@ export default function TrainCard({
 			) {
 				// Remove expired highlight
 				delete highlightedTrains[train.trainNumber];
-				localStorage.setItem(
-					"highlightedTrains",
-					JSON.stringify(highlightedTrains),
-				);
+				safeWriteHighlights(highlightedTrains);
 				setIsHighlighted(false);
 			} else {
 				setIsHighlighted(true);
@@ -274,10 +290,7 @@ export default function TrainCard({
 							...trainData,
 							removeAfter: desiredRemoveAfter.toISOString(),
 						};
-						localStorage.setItem(
-							"highlightedTrains",
-							JSON.stringify(highlightedTrains),
-						);
+						safeWriteHighlights(highlightedTrains);
 					}
 				}
 
@@ -292,20 +305,14 @@ export default function TrainCard({
 						track: departureRow.commercialTrack,
 						trackChanged: true,
 					};
-					localStorage.setItem(
-						"highlightedTrains",
-						JSON.stringify(highlightedTrains),
-					);
+					safeWriteHighlights(highlightedTrains);
 				} else if (departureRow && !trainData.track) {
 					// First time storing track
 					highlightedTrains[train.trainNumber] = {
 						...trainData,
 						track: departureRow.commercialTrack,
 					};
-					localStorage.setItem(
-						"highlightedTrains",
-						JSON.stringify(highlightedTrains),
-					);
+					safeWriteHighlights(highlightedTrains);
 				}
 			}
 		} else {
@@ -405,15 +412,8 @@ export default function TrainCard({
 		hapticImpact();
 		setIsHighlighted(newHighlighted);
 
-		// Update localStorage (safe parse)
-		let highlightedTrains: Record<string, HighlightedTrainData>;
-		try {
-			highlightedTrains = JSON.parse(
-				localStorage.getItem("highlightedTrains") || "{}",
-			);
-		} catch {
-			highlightedTrains = {};
-		}
+		// Update highlights using safe storage wrapper
+		const highlightedTrains: Record<string, HighlightedTrainData> = safeReadHighlights();
 
 		if (newHighlighted) {
 			// When highlighting, set removal time to 10 minutes after departure
@@ -436,10 +436,7 @@ export default function TrainCard({
 			delete highlightedTrains[train.trainNumber];
 		}
 
-		localStorage.setItem(
-			"highlightedTrains",
-			JSON.stringify(highlightedTrains),
-		);
+		safeWriteHighlights(highlightedTrains);
 	};
 
 	if (!departureRow) return null;
