@@ -44,10 +44,10 @@ if ("serviceWorker" in navigator) {
             ${getBannerTranslation("title")}
           </span>
           <div class="flex gap-2 flex-shrink-0">
-            <button id="sw-update-btn" aria-label="${getBannerTranslation("updateButton")}" class="btn ${isMobile ? "btn-xs" : "btn-sm"} bg-white/90 text-emerald-700 border-white hover:bg-white hover:border-white hover:-translate-y-0.5 transition-all font-semibold shadow-sm">
+            <button id="sw-update-btn" aria-label="${getBannerTranslation("updateButton")}" style="-webkit-tap-highlight-color: transparent;" class="btn btn-sm min-h-[44px] min-w-[44px] px-4 py-2 touch-manipulation select-none active:scale-95 bg-white/90 text-emerald-700 border-white hover:bg-white hover:border-white hover:-translate-y-0.5 transition-all font-semibold shadow-sm">
               ${getBannerTranslation("updateButton")}
             </button>
-            <button id="sw-dismiss-btn" aria-label="${getBannerTranslation("dismissButton")}" class="btn btn-outline ${isMobile ? "btn-xs" : "btn-sm"} border-white/60 text-white hover:bg-white/20 hover:border-white hover:-translate-y-0.5 transition-all font-medium">
+            <button id="sw-dismiss-btn" aria-label="${getBannerTranslation("dismissButton")}" style="-webkit-tap-highlight-color: transparent;" class="btn btn-outline btn-sm min-h-[44px] min-w-[44px] px-4 py-2 touch-manipulation select-none active:scale-95 border-white/60 text-white hover:bg-white/20 hover:border-white hover:-translate-y-0.5 transition-all font-medium">
               ${getBannerTranslation("dismissButton")}
             </button>
           </div>
