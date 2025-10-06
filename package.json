@@ -31,10 +31,10 @@
 		"workbox-strategies": "^7.3.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.4",
+		"@biomejs/biome": "2.2.5",
 		"@testing-library/jest-dom": "^6.8.0",
 		"@testing-library/preact": "^3.2.4",
-		"@types/node": "^24.5.2",
+		"@types/node": "^24.7.0",
 		"daisyui": "^5.1.25",
 		"jsdom": "^27.0.0",
 		"vitest": "^3.2.4",
