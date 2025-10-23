@@ -18,11 +18,11 @@
 	"dependencies": {
 		"@astrojs/markdown-component": "^1.0.5",
 		"@astrojs/preact": "^4.1.1",
-		"@tailwindcss/vite": "^4.1.14",
-		"astro": "^5.14.5",
-		"marked": "^16.4.0",
+		"@tailwindcss/vite": "^4.1.15",
+		"astro": "^5.14.8",
+		"marked": "^16.4.1",
 		"preact": "^10.27.2",
-		"tailwindcss": "^4.1.14",
+		"tailwindcss": "^4.1.15",
 		"workbox-cacheable-response": "^7.3.0",
 		"workbox-core": "^7.3.0",
 		"workbox-expiration": "^7.3.0",
@@ -31,13 +31,13 @@
 		"workbox-strategies": "^7.3.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.6",
+		"@biomejs/biome": "2.2.7",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/preact": "^3.2.4",
-		"@types/node": "^24.7.2",
-		"daisyui": "^5.3.3",
-		"jsdom": "^27.0.0",
-		"vitest": "^3.2.4",
+		"@types/node": "^24.9.1",
+		"daisyui": "^5.3.8",
+		"jsdom": "^27.0.1",
+		"vitest": "^4.0.1",
 		"workbox-cli": "^7.3.0"
 	}
 }
