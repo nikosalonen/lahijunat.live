@@ -4,8 +4,8 @@ permissions:
 
 on:
   schedule:
-    # Run every Sunday at 3 AM UTC (adjust as needed)
-    - cron: '0 3 * * 0'
+    # Run every Wednesday at 3 AM UTC (adjust as needed)
+    - cron: '0 3 * * 3'
 
   # Allow manual triggering for testing
   workflow_dispatch:
@@ -22,11 +22,21 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version-file: .nvmrc
           cache: 'npm'
-
+          cache-dependency-path: "**/package-lock.json"
+      - name: Cache dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.npm
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
       - name: Install dependencies
         run: npm ci
 
