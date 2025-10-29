@@ -429,14 +429,14 @@ export default function TrainList({
 						</span>
 					</h2>
 					<div class="self-end sm:self-auto order-1 sm:order-2">
-						<ProgressCircle progress={state.progress} size="w-8 h-8" />
+						<ProgressCircle progress={refreshProgress} size="w-8 h-8" />
 					</div>
 				</div>
 
 				{/* Mobile horizontal progress bar (left → right) */}
 				<div class="sm:hidden w-full mb-4">
 					<LinearProgress
-						progress={state.progress}
+						progress={refreshProgress}
 						heightClass="h-1.5"
 						widthClass="w-full"
 						direction="rtl"
