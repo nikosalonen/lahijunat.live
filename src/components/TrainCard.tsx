@@ -565,6 +565,21 @@ export default function TrainCard({
 										</span>
 									)}
 								</div>
+
+								{/* Arrival Track - only show if different from departure track */}
+								{arrivalRow &&
+									arrivalRow.commercialTrack !==
+										departureRow.commercialTrack && (
+										<div class="indicator">
+											<output
+												aria-label={`${t("arrival_track")} ${arrivalRow.commercialTrack}`}
+												class="badge badge-lg font-semibold badge-ghost"
+											>
+												{t("arrival_track")} {arrivalRow.commercialTrack}
+											</output>
+										</div>
+									)}
+
 								{minutesToDeparture !== null &&
 									minutesToDeparture <= 30 &&
 									minutesToDeparture >= 0 && (
