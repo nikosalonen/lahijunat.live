@@ -599,40 +599,94 @@ export default function TrainCard({
 							</span>
 						) : (
 							<>
+								{/* Interactive Flippable Track Badge */}
 								<div class="indicator">
-									<output
-										aria-label={`${t("track")} ${departureRow.commercialTrack}${isTrackChanged ? ` (${t("changed")})` : ""}`}
-										class={`badge badge-lg font-semibold transition-all duration-300 ${
-											isTrackChanged
-												? "badge-error badge-outline"
-												: "badge-ghost"
-										}`}
+									<button
+										type="button"
+										onClick={handleTrackFlip}
+										onKeyDown={handleTrackKeyDown}
+										aria-label={
+											!isTrackFlipped
+												? `${t("track")} ${departureRow.commercialTrack}${trackChangeInfo.changedSide === "departure" && isTrackChanged ? ` (${t("changed")})` : ""}. ${arrivalRow ? "Click to see arrival track" : ""}`
+												: `${arrivalRow ? `→ ${t("track")} ${arrivalRow.commercialTrack}` : `${t("track")} ${departureRow.commercialTrack}`}${trackChangeInfo.changedSide === "arrival" && isTrackChanged ? ` (${t("changed")})` : ""}. Click to see departure track`
+										}
+										aria-pressed={isTrackFlipped}
+										class="cursor-pointer focus-ring bg-transparent border-0 p-0"
 									>
-										{t("track")} {departureRow.commercialTrack}
-									</output>
-									{isTrackChanged && (
-										<span
-											class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
-											aria-hidden="true"
-										>
-											!
-										</span>
-									)}
-								</div>
-
-								{/* Arrival Track - only show if different from departure track */}
-								{arrivalRow &&
-									arrivalRow.commercialTrack !==
-										departureRow.commercialTrack && (
-										<div class="indicator">
-											<output
-												aria-label={`${t("arrival_track")} ${arrivalRow.commercialTrack}`}
-												class="badge badge-lg font-semibold badge-ghost"
+								<div
+									class="relative inline-block"
+										style={{
+											perspective: "1000px",
+											minHeight: "32px",
+										}}
+								>
+											<div
+												style={{
+													transformStyle: "preserve-3d",
+													transform: isTrackFlipped
+														? "rotateY(180deg)"
+														: "rotateY(0deg)",
+													transition: "transform 0.4s ease-out",
+													position: "relative",
+													minHeight: "32px",
+												}}
 											>
-												{t("arrival_track")} {arrivalRow.commercialTrack}
-											</output>
+												{/* Front face - Departure Track */}
+										<div
+													class={`badge badge-lg font-semibold ${
+														trackChangeInfo.changedSide === "departure" &&
+														isTrackChanged
+															? "badge-error badge-outline"
+															: "badge-ghost"
+											} whitespace-nowrap`}
+													style={{
+														backfaceVisibility: "hidden",
+														WebkitBackfaceVisibility: "hidden",
+													}}
+												>
+													{t("track")} {departureRow.commercialTrack}
+												</div>
+												{/* Back face - Arrival Track */}
+										<div
+													class={`badge badge-lg font-semibold ${
+														trackChangeInfo.changedSide === "arrival" &&
+														isTrackChanged
+															? "badge-error badge-outline"
+															: "badge-ghost"
+											} whitespace-nowrap`}
+													style={{
+														backfaceVisibility: "hidden",
+														WebkitBackfaceVisibility: "hidden",
+														transform: "rotateY(180deg)",
+														position: "absolute",
+														top: 0,
+														left: 0,
+														right: 0,
+													}}
+												>
+													{arrivalRow &&
+													arrivalRow.commercialTrack !==
+														departureRow.commercialTrack
+														? `→ ${t("track")} ${arrivalRow.commercialTrack}`
+														: `${t("track")} ${departureRow.commercialTrack}`}
+												</div>
+											</div>
 										</div>
-									)}
+									</button>
+									{/* Track change indicator - smart positioning */}
+									{isTrackChanged &&
+										((!isTrackFlipped &&
+											trackChangeInfo.changedSide === "departure") ||
+											(isTrackFlipped &&
+												trackChangeInfo.changedSide === "arrival")) && (
+											<span
+												class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
+												aria-hidden="true"
+											>
+												!
+											</span>
+										)}
+								</div>
 
 								{minutesToDeparture !== null &&
 									minutesToDeparture <= 30 &&
