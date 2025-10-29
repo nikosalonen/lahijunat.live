@@ -206,7 +206,28 @@ function getCachedTrains(
 	const cached = trainCache.get(cacheKey);
 	if (!cached) return null;
 
-	if (Date.now() - cached.timestamp > CACHE_CONFIG.TRAIN_DURATION) {
+	const now = Date.now();
+	const age = now - cached.timestamp;
+
+	// Check if there are urgent trains (departing within 5 minutes)
+	const hasUrgentTrains = cached.data.some((train) => {
+		const departureRow = train.timeTableRows.find(
+			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
+		);
+		if (!departureRow) return false;
+
+		const departureTime = new Date(
+			departureRow.liveEstimateTime ?? departureRow.scheduledTime,
+		).getTime();
+		const minutesToDeparture = (departureTime - now) / (1000 * 60);
+		return minutesToDeparture > 0 && minutesToDeparture <= 5;
+	});
+
+	const maxAge = hasUrgentTrains
+		? CACHE_CONFIG.TRAIN_DURATION_URGENT
+		: CACHE_CONFIG.TRAIN_DURATION;
+
+	if (age > maxAge) {
 		trainCache.delete(cacheKey);
 		return null;
 	}
