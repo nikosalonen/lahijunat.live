@@ -133,7 +133,9 @@ export default function TrainCard({
 	const [trackMemory, setTrackMemory] = useState<
 		Record<string, { track: string; timestamp: number }>
 	>({});
+	const [isTrackFlipped, setIsTrackFlipped] = useState(false);
 	const fadeRafRef = useRef<number | null>(null);
+
 
 	// Memoize all time-dependent calculations
 	const {
@@ -383,15 +385,49 @@ export default function TrainCard({
 		}
 	}, [train.trainNumber, train.timeTableRows, stationCode, destinationCode]);
 
-	// Memoized track change check
-	const isTrackChanged = useMemo(() => {
+	// Memoized track change check - determines which track changed (departure or arrival)
+	const trackChangeInfo = useMemo(() => {
 		const trackInfo = getRelevantTrackInfo(train, stationCode, destinationCode);
-		if (!trackInfo) return false;
+		if (!trackInfo) return { changed: false, changedSide: null };
+
 		const currentTrack = trackInfo.track;
 		const storedTrack = trackMemory[trackInfo.journeyKey]?.track;
-		return storedTrack && currentTrack && storedTrack !== currentTrack;
+		const trackChanged =
+			storedTrack && currentTrack && storedTrack !== currentTrack;
+
+		if (!trackChanged) return { changed: false, changedSide: null };
+
+		// Determine which side changed (departure or arrival)
+		const departureRow = train.timeTableRows.find(
+			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
+		);
+		const arrivalRow = train.timeTableRows.find(
+			(row) =>
+				row.stationShortCode === destinationCode && row.type === "ARRIVAL",
+		);
+
+		if (!departureRow) return { changed: false, changedSide: null };
+
+		// Check if departure track changed from stored
+		const departureChanged = departureRow.commercialTrack !== storedTrack;
+
+		// Check if arrival track changed from stored (only if arrival exists and differs from departure)
+		const arrivalChanged =
+			arrivalRow &&
+			arrivalRow.commercialTrack !== storedTrack &&
+			arrivalRow.commercialTrack !== departureRow.commercialTrack;
+
+		// Determine which side to show the indicator on
+		let changedSide: "departure" | "arrival" | null = null;
+		if (departureChanged) {
+			changedSide = "departure";
+		} else if (arrivalChanged) {
+			changedSide = "arrival";
+		}
+
+		return { changed: trackChanged, changedSide };
 		// // TEMPORARY: Force track change indicator for testing
-		// return true;
+		// return { changed: true, changedSide: "departure" };
 	}, [
 		train.trainNumber,
 		train.timeTableRows,
