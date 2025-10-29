@@ -325,10 +325,6 @@
 	}
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Constrain media elements, not all elements/pseudo-elements */
 img,
 picture,
