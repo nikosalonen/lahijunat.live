@@ -436,6 +436,22 @@ export default function TrainCard({
 		trackMemory,
 	]);
 
+	const isTrackChanged = trackChangeInfo.changed;
+
+	// Handler for flipping the track badge
+	const handleTrackFlip = () => {
+		setIsTrackFlipped((prev) => !prev);
+		hapticImpact();
+	};
+
+	// Keyboard handler for accessibility
+	const handleTrackKeyDown = (e: KeyboardEvent) => {
+		if (e.key === "Enter" || e.key === " ") {
+			e.preventDefault();
+			handleTrackFlip();
+		}
+	};
+
 	useEffect(() => {
 		const handleLanguageChange = () => {
 			setLanguageChange((prev) => prev + 1);
