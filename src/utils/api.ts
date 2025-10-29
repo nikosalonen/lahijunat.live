@@ -640,7 +640,10 @@ export async function fetchTrains(
 	).catch(async (error) => {
 		console.error("Error fetching trains:", error);
 		// If we have cached data, return it even if it's expired
-		const cachedFallback = getCachedTrainsEvenIfExpired(stationCode, destinationCode);
+		const cachedFallback = getCachedTrainsEvenIfExpired(
+			stationCode,
+			destinationCode,
+		);
 		if (cachedFallback) {
 			console.log("Using expired cached data due to error");
 			return cachedFallback;
