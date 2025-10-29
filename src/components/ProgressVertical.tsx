@@ -14,7 +14,11 @@ function LinearProgress({
 	direction?: "ltr" | "rtl";
 }) {
 	useLanguageChange();
-	const clamped = Math.max(0, Math.min(100, progress));
+	const clamped = Number.isFinite(progress)
+		? Math.max(0, Math.min(100, progress))
+		: progress === Number.POSITIVE_INFINITY
+			? 100
+			: 0;
 	const style: JSX.CSSProperties = {
 		width: `${clamped}%`,
 	};
@@ -27,6 +31,7 @@ function LinearProgress({
 			aria-valuemin={0}
 			aria-valuemax={100}
 			aria-valuenow={clamped}
+			aria-valuetext={`${clamped}%`}
 		>
 			<div
 				class={`absolute inset-y-0 ${direction === "rtl" ? "right-0" : "left-0"} bg-primary transition-[width] duration-1000 ease-linear`}
