@@ -501,8 +501,12 @@ export default function TrainCard({
 
 	return (
 		<div
-			class={`${cardStyle} w-full max-w-full text-left relative overflow-hidden`}
-			style={{ opacity: hasDeparted ? opacity : 1 }}
+			class={`${cardStyle} w-full max-w-full text-left relative overflow-hidden select-none`}
+			style={{
+				opacity: hasDeparted ? opacity : 1,
+				WebkitTouchCallout: "none",
+				WebkitTapHighlightColor: "transparent",
+			}}
 			data-train-number={train.trainNumber}
 			data-train-cancelled={train.cancelled}
 			data-train-line={train.commuterLineID}
