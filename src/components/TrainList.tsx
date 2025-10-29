@@ -15,8 +15,8 @@ import { hapticLight } from "../utils/haptics";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
+import LinearProgress from "./LinearProgress";
 import ProgressCircle from "./ProgressCircle";
-import ProgressVertical from "./ProgressVertical";
 import TrainCard from "./TrainCard";
 import TrainListSkeleton from "./TrainListSkeleton";
 
@@ -417,7 +417,7 @@ export default function TrainList({
 
 				{/* Mobile horizontal progress bar (left → right) */}
 				<div class="sm:hidden w-full mb-4">
-					<ProgressVertical
+					<LinearProgress
 						progress={state.progress}
 						heightClass="h-1.5"
 						widthClass="w-full"
