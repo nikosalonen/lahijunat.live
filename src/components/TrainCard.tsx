@@ -702,16 +702,19 @@ export default function TrainCard({
 														right: 0,
 													}}
 												>
-													{arrivalRow ? (
-														<>
-															<span aria-hidden="true">&rarr;</span>{" "}
-															{t("track")} {arrivalRow.commercialTrack}
-														</>
-													) : (
-														<>
-															{t("track")} {departureRow.commercialTrack}
-														</>
-													)}
+									{arrivalRow ? (
+										<>
+											<i
+												class="fa-solid fa-arrow-right mr-1"
+												aria-hidden="true"
+											/>
+											{t("track")} {arrivalRow.commercialTrack}
+										</>
+									) : (
+										<>
+											{t("track")} {departureRow.commercialTrack}
+										</>
+									)}
 												</div>
 											</div>
 										</div>
