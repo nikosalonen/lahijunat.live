@@ -404,6 +404,13 @@ export default function TrainList({
 		.slice(0, displayedTrainCount);
 	const hasMoreTrains = (state.trains || []).length > displayedTrainCount;
 
+	const refreshProgress = useMemo(() => {
+		const interval = Math.max(currentRefreshInterval, 1);
+		const elapsed = currentTime.getTime() - lastRefreshAt;
+		const remaining = 100 - (elapsed / interval) * 100;
+		return Math.max(0, Math.min(100, remaining));
+	}, [currentTime, lastRefreshAt, currentRefreshInterval]);
+
 	return (
 		<div>
 			<div class="max-w-4xl mx-auto space-y-6 px-2 sm:px-4">
