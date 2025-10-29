@@ -3,6 +3,9 @@ interface Coordinates {
 	longitude: number;
 }
 
+/**
+ * Compute the haversine distance in kilometres between two geographic points.
+ */
 export function calculateDistance(
 	coord1: Coordinates,
 	coord2: Coordinates,
@@ -22,10 +25,16 @@ export function calculateDistance(
 	return R * c;
 }
 
+/**
+ * Convert degrees to radians for trigonometric calculations.
+ */
 function toRad(degrees: number): number {
 	return degrees * (Math.PI / 180);
 }
 
+/**
+ * Provide a loose bounding box for mainland Finland in decimal degrees.
+ */
 export function finlandBounds(): {
 	minLat: number;
 	maxLat: number;
@@ -40,6 +49,9 @@ export function finlandBounds(): {
 	};
 }
 
+/**
+ * Check whether the given coordinates fall within the Finland bounding box.
+ */
 export function isInFinland(coord: Coordinates): boolean {
 	const bounds = finlandBounds();
 	return (

@@ -1,7 +1,9 @@
 /** biome-ignore-all lint/security/noGlobalEval: we're intentionally using it to avoid bundling issues */
 import type { Station, Train } from "../types";
 
-// Get version from environment variable or fallback - handle both browser and Node.js
+/**
+ * Resolve the app version from environment variables or package.json as a fallback.
+ */
 const getAppVersion = (): string => {
 	// Browser environment (Astro/Vite)
 	if (typeof import.meta !== "undefined" && import.meta.env) {
@@ -60,7 +62,9 @@ let activeRequests = 0;
 let lastRequestTime = 0;
 const pendingRequests = new Map<string, Promise<unknown>>();
 
-// Request deduplication and rate limiting
+/**
+ * Guard outbound requests with deduplication and concurrency limits.
+ */
 async function makeRateLimitedRequest<T>(
 	key: string,
 	requestFn: () => Promise<T>,
@@ -95,7 +99,9 @@ async function makeRateLimitedRequest<T>(
 	return requestPromise;
 }
 
-// Exponential backoff for 429 errors
+/**
+ * Retry a request with exponential backoff when the API responds with 429 or transient failures.
+ */
 async function makeRequestWithBackoff(
 	requestFn: () => Promise<Response>,
 	retryCount = 0,
@@ -152,6 +158,9 @@ interface GraphQLStation {
 // Improved cache implementation with type safety
 const stationCache = new Map<string, CacheEntry<Station[]>>();
 
+/**
+ * Return cached station metadata when it is still fresh.
+ */
 function getCachedStations(): Station[] | null {
 	const cached = stationCache.get(CACHE_CONFIG.STATION_KEY);
 	if (!cached) return null;
@@ -170,6 +179,9 @@ const trainCache = new Map<string, CacheEntry<Train[]>>();
 // Cache for destination data
 const destinationCache = new Map<string, CacheEntry<Station[]>>();
 
+/**
+ * Lookup destination stations for a given origin from the destination cache.
+ */
 function getCachedDestinations(stationCode: string): Station[] | null {
 	const cached = destinationCache.get(stationCode);
 	if (!cached) return null;
@@ -183,6 +195,9 @@ function getCachedDestinations(stationCode: string): Station[] | null {
 }
 
 // Cleanup function to prevent cache from growing too large
+/**
+ * Trim cache size by removing the oldest entries once the configured limit is exceeded.
+ */
 function cleanupCache<T>(cache: Map<string, CacheEntry<T>>): void {
 	if (cache.size <= CACHE_CONFIG.MAX_SIZE) return;
 
@@ -198,6 +213,9 @@ function cleanupCache<T>(cache: Map<string, CacheEntry<T>>): void {
 	}
 }
 
+/**
+ * Resolve cached train lists for an origin-destination pair, respecting urgency TTLs.
+ */
 function getCachedTrains(
 	stationCode: string,
 	destinationCode: string,
@@ -237,6 +255,9 @@ function getCachedTrains(
 }
 
 // Get cached trains even if expired (for fallback when API fails)
+/**
+ * Provide cached train data even if it has expired, used as a resilience fallback.
+ */
 function getCachedTrainsEvenIfExpired(
 	stationCode: string,
 	destinationCode: string,
@@ -382,7 +403,9 @@ const STATION_QUERY = `query GetStations {
 	}
 }`;
 
-// Improved fetchStations with better error handling and caching
+/**
+ * Fetch station metadata via GraphQL, caching results for subsequent lookups.
+ */
 export async function fetchStations(): Promise<Station[]> {
 	const cached = getCachedStations();
 	if (cached) return cached;
@@ -432,7 +455,9 @@ export async function fetchStations(): Promise<Station[]> {
 	});
 }
 
-// Optimized fetchTrainsLeavingFromStation with better error handling and data processing
+/**
+ * Fetch commuter trains departing from an origin station and return unique destination stations.
+ */
 export async function fetchTrainsLeavingFromStation(
 	stationCode: string,
 ): Promise<Station[]> {
@@ -544,7 +569,9 @@ export async function fetchTrainsLeavingFromStation(
 	});
 }
 
-// Optimized fetchTrains with better error handling and data processing
+/**
+ * Fetch commuter trains for an origin and destination pair, combining API data with local caching.
+ */
 export async function fetchTrains(
 	stationCode = "HKI",
 	destinationCode = "TKL",
@@ -622,7 +649,9 @@ export async function fetchTrains(
 	});
 }
 
-// Separate data processing logic for better maintainability
+/**
+ * Normalise and filter raw API train data so downstream consumers only see valid journeys.
+ */
 function processTrainData(
 	data: Train[],
 	stationCode: string,
@@ -697,6 +726,9 @@ function processTrainData(
 	return filteredTrains;
 }
 
+/**
+ * Ensure PSL→HKI round trips only expose the final Pasila departure and Helsinki arrival.
+ */
 function isPSLtoHKI(train: Train): boolean {
 	// Filter timeTableRows to only include last PSL departure and HKI arrival
 	const pslDepartures = train.timeTableRows.filter(
@@ -728,7 +760,9 @@ function isPSLtoHKI(train: Train): boolean {
 	return true;
 }
 
-// New function to handle track changes for I and P trains
+/**
+ * Extract a consistent track assignment for a journey, handling I/P round trips and return legs.
+ */
 export function getRelevantTrackInfo(
 	train: Train,
 	stationCode: string,
@@ -799,6 +833,9 @@ export function getRelevantTrackInfo(
 		: null;
 }
 
+/**
+ * Confirm the train visits both the origin and destination in the correct chronological order.
+ */
 function isValidJourney(
 	train: Train,
 	stationCode: string,
@@ -826,6 +863,9 @@ function isValidJourney(
 	return foundValidOrigin && foundValidDestination;
 }
 
+/**
+ * Compare trains by their live or scheduled departure time at a given station.
+ */
 function sortByDepartureTime(a: Train, b: Train, stationCode: string): number {
 	const getDepartureTime = (train: Train) => {
 		const departureRow = train.timeTableRows.find(
@@ -840,11 +880,16 @@ function sortByDepartureTime(a: Train, b: Train, stationCode: string): number {
 	);
 }
 
-// Helper function to delay execution
+/**
+ * Promise-based timeout helper used throughout the API client.
+ */
 function delay(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/**
+ * Iterate over all stations and log those without active destination services.
+ */
 export async function findStationsWithoutDestinations(): Promise<void> {
 	try {
 		console.log("Finding stations without destinations...");

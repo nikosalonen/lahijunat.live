@@ -137,7 +137,9 @@ export const translations = {
 // Derive TranslationKey from actual translation keys for compile-time safety
 export type TranslationKey = keyof typeof translations.fi & string;
 
-// Function overloads: compile-time safety for known keys, fallback for dynamic keys
+/**
+ * Translate a key using the active language dictionary, falling back to Finnish and finally the key.
+ */
 export function t(key: TranslationKey): string;
 export function t(key: string): string;
 export function t(key: string): string {
