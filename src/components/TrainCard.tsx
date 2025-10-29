@@ -495,6 +495,8 @@ export default function TrainCard({
 		safeWriteHighlights(highlightedTrains);
 	};
 
+
+
 	if (!departureRow) return null;
 
 	return (
