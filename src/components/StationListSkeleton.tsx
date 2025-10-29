@@ -6,7 +6,6 @@ export default function StationListSkeleton() {
 			<div class="space-y-2">
 				{Array.from({ length: 5 }, (_, index) => (
 					<div
-						// biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton items that don't reorder
 						key={`station-skeleton-item-${index}`}
 						class="flex items-center justify-between p-2"
 					>

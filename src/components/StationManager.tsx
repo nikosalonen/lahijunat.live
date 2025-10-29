@@ -88,10 +88,10 @@ export default function StationManager({
 	const isSwappingRef = useRef(false);
 	const lastSwapTimeRef = useRef(0);
 
-// Mobile accordion state
-// Expanded by default if either origin or destination is missing
-// On mobile: accordion auto-closes only when "to" station is selected
-// On desktop: accordion is always open via sm:collapse-open
+	// Mobile accordion state
+	// Expanded by default if either origin or destination is missing
+	// On mobile: accordion auto-closes only when "to" station is selected
+	// On desktop: accordion is always open via sm:collapse-open
 	const [isStationSelectorExpanded, setIsStationSelectorExpanded] = useState(
 		!initialFromStation || !initialToStation,
 	);
@@ -116,7 +116,10 @@ export default function StationManager({
 
 		// On mobile: only auto-collapse when TO station is newly selected
 		// On desktop: accordion is always open, so this doesn't matter
-		if (selectedDestination && prevDestinationRef.current !== selectedDestination) {
+		if (
+			selectedDestination &&
+			prevDestinationRef.current !== selectedDestination
+		) {
 			// Only close accordion when TO station is newly selected
 			setIsStationSelectorExpanded(false);
 		}
@@ -194,8 +197,6 @@ export default function StationManager({
 			setShowHint(true);
 		}
 	}, [initialFromStation, initialToStation]);
-
-
 
 	const handleNearestStation = useCallback(
 		(nearestStation: { station: Station }) => {
@@ -676,12 +677,17 @@ export default function StationManager({
 
 			{/* Station selector - collapsible on mobile */}
 			<div
-				className={`collapse ${isStationSelectorExpanded ? "collapse-open" : "collapse-close"} sm:collapse-open ${
-					!isStationSelectorExpanded ? "bg-base-100 border border-base-300 rounded-lg shadow-sm sm:border-0 sm:bg-transparent" : ""
-				}`}
+				className={[
+					"collapse",
+					isStationSelectorExpanded ? "collapse-open" : "collapse-close",
+					"sm:collapse-open",
+					!isStationSelectorExpanded &&
+						"bg-base-100 border border-base-300 rounded-lg shadow-sm sm:border-0 sm:bg-transparent",
+				]
+					.filter(Boolean)
+					.join(" ")}
 			>
 				{/* Upward caret when expanded (mobile) - clickable to close */}
-
 
 				<div id="station-selector" className="collapse-content px-0">
 					<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
@@ -877,7 +883,7 @@ export default function StationManager({
 										strokeLinejoin="round"
 										strokeWidth="2"
 										d="M19 9l-7 7-7-7"
-								/>
+									/>
 								</svg>
 							</button>
 						</div>

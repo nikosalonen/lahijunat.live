@@ -15,8 +15,8 @@ import { hapticLight } from "../utils/haptics";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
+import LinearProgress from "./LinearProgress";
 import ProgressCircle from "./ProgressCircle";
-import ProgressVertical from "./ProgressVertical";
 import TrainCard from "./TrainCard";
 import TrainListSkeleton from "./TrainListSkeleton";
 
@@ -148,19 +148,19 @@ export default function TrainList({
 			const now = new Date();
 			setCurrentTime(now);
 
-			// Update refresh interval based on train data
-			const newRefreshInterval = getAdaptiveRefreshInterval(trainData, now);
-			if (newRefreshInterval !== currentRefreshInterval) {
-				console.log(
-					`[TrainList] Adaptive refresh: ${newRefreshInterval}ms (${
-						newRefreshInterval / 1000
-					}s)`,
-				);
-				setCurrentRefreshInterval(newRefreshInterval);
-				currentRefreshIntervalRef.current = newRefreshInterval;
-				// Reset progress to 100% when interval changes so it counts down over the new duration
-				setState((prev) => ({ ...prev, progress: 100 }));
-			}
+		// Update refresh interval based on train data
+		const newRefreshInterval = getAdaptiveRefreshInterval(trainData, now);
+		if (newRefreshInterval !== currentRefreshIntervalRef.current) {
+			console.log(
+				`[TrainList] Adaptive refresh: ${newRefreshInterval}ms (${
+					newRefreshInterval / 1000
+				}s)`,
+			);
+			setCurrentRefreshInterval(newRefreshInterval);
+			currentRefreshIntervalRef.current = newRefreshInterval;
+			// Reset progress to 100% when interval changes so it counts down over the new duration
+			setState((prev) => ({ ...prev, progress: 100 }));
+		}
 
 			setState((prev) => ({
 				...prev,
@@ -417,7 +417,12 @@ export default function TrainList({
 
 				{/* Mobile horizontal progress bar (left → right) */}
 				<div class="sm:hidden w-full mb-4">
-					<ProgressVertical progress={state.progress} heightClass="h-1.5" widthClass="w-full" direction="rtl" />
+					<LinearProgress
+						progress={state.progress}
+						heightClass="h-1.5"
+						widthClass="w-full"
+						direction="rtl"
+					/>
 				</div>
 				<div
 					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"
@@ -429,11 +434,9 @@ export default function TrainList({
 					{displayedTrains.map((train, index) => (
 						<div
 							key={train.trainNumber}
-							class={`transition-[transform,opacity] duration-700 ease-in-out hover-lift ${
-								departedTrains.has(train.trainNumber)
-									? "animate-train-depart"
-									: "animate-scale-in"
-							}`}
+							class={
+								departedTrains.has(train.trainNumber) ? "" : "animate-scale-in"
+							}
 							style={{
 								"grid-row": `${index + 1}`,
 								animationDelay: `${index * 0.05}s`,
@@ -452,15 +455,28 @@ export default function TrainList({
 					))}
 				</div>
 				{hasMoreTrains && (
-					<div class="flex justify-center mt-4">
+					<div class="flex justify-center mt-6">
 						<button
 							type="button"
 							onClick={() => {
 								hapticLight();
 								setDisplayedTrainCount((prev) => prev + INITIAL_TRAIN_COUNT);
 							}}
-							class="btn btn-primary btn-wide touch-manipulation select-none"
+							class="btn bg-white dark:bg-base-100 border-2 border-gray-200 dark:border-gray-700 hover:border-[#8c4799] dark:hover:border-[#b388ff] hover:bg-[#8c4799] dark:hover:bg-[#b388ff] hover:text-white transition-all duration-200 touch-manipulation select-none rounded-2xl px-8 py-3 shadow-md hover:shadow-lg font-medium text-gray-700 dark:text-gray-200 hover:scale-105 active:scale-95"
 						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="w-5 h-5"
+								aria-hidden="true"
+							>
+								<polyline points="6 9 12 15 18 9" />
+							</svg>
 							{t("showMore")}
 						</button>
 					</div>

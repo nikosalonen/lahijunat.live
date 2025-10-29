@@ -1,5 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
 
+/**
+ * Track the number of times the window language changes so observers can re-render.
+ */
 export function useLanguageChange() {
 	const [languageChange, setLanguageChange] = useState(0);
 

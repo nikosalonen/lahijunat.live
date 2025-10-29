@@ -1,5 +1,6 @@
 /** @format */
 
+import type { JSX } from "preact";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
@@ -47,7 +48,9 @@ function safeReadHighlights(): Record<string, HighlightedTrainData> {
 	}
 }
 
-function safeWriteHighlights(value: Record<string, HighlightedTrainData>): void {
+function safeWriteHighlights(
+	value: Record<string, HighlightedTrainData>,
+): void {
 	try {
 		localStorage.setItem(HIGHLIGHT_STORAGE_KEY, JSON.stringify(value));
 		inMemoryHighlightStore = value;
@@ -78,7 +81,7 @@ const getCardStyle = (
 	isHighlighted: boolean,
 ) => {
 	const baseStyles =
-		"card bg-base-100 shadow-xl border border-base-300 rounded-xl relative hover-lift transition-[background,box-shadow,transform,opacity,border,border-color] duration-300";
+		"card bg-base-100 shadow-xl border border-base-300 rounded-xl relative transform-gpu -translate-y-0.5";
 
 	// Priority 1: Cancelled trains
 	if (isCancelled)
@@ -131,6 +134,7 @@ export default function TrainCard({
 	const [trackMemory, setTrackMemory] = useState<
 		Record<string, { track: string; timestamp: number }>
 	>({});
+	const [isTrackFlipped, setIsTrackFlipped] = useState(false);
 	const fadeRafRef = useRef<number | null>(null);
 
 	// Memoize all time-dependent calculations
@@ -251,7 +255,8 @@ export default function TrainCard({
 
 	useEffect(() => {
 		// Load highlighted state safely (works even if localStorage is unavailable)
-		const highlightedTrains: Record<string, HighlightedTrainData> = safeReadHighlights();
+		const highlightedTrains: Record<string, HighlightedTrainData> =
+			safeReadHighlights();
 		const trainData = highlightedTrains[train.trainNumber];
 
 		if (trainData) {
@@ -320,6 +325,50 @@ export default function TrainCard({
 		}
 	}, [train.trainNumber, currentTime, train.timeTableRows, stationCode]);
 
+	// Prime trackMemory from localStorage on mount to avoid stale baseline
+	useEffect(() => {
+		const MAX_AGE_MS = 1 * 60 * 60 * 1000; // 1 hour
+		const MAX_ENTRIES = 1000;
+		const now = Date.now();
+
+		try {
+			const stored = JSON.parse(localStorage.getItem("trackMemory") || "{}");
+			if (!stored || typeof stored !== "object") {
+				return;
+			}
+
+			// Cleanup old entries
+			const cleaned: Record<string, { track: string; timestamp: number }> = {};
+			for (const [journeyKey, entry] of Object.entries(stored)) {
+				const entryData = entry as { track: string; timestamp: number };
+				if (entryData && typeof entryData === "object" && entryData.timestamp) {
+					if (now - entryData.timestamp <= MAX_AGE_MS) {
+						cleaned[journeyKey] = entryData;
+					}
+				}
+			}
+
+			// If too many entries, remove oldest
+			const entries = Object.entries(cleaned);
+			if (entries.length >= MAX_ENTRIES) {
+				entries
+					.sort(([, a], [, b]) => a.timestamp - b.timestamp)
+					.slice(0, entries.length - MAX_ENTRIES + 1)
+					.forEach(([journeyKey]) => {
+						delete cleaned[journeyKey];
+					});
+			}
+
+			// Update localStorage with cleaned data and prime state
+			if (Object.keys(cleaned).length > 0) {
+				localStorage.setItem("trackMemory", JSON.stringify(cleaned));
+				setTrackMemory(cleaned);
+			}
+		} catch {
+			// Ignore parse errors, state remains empty
+		}
+	}, []); // Run once on mount
+
 	// Store and check original track for all trains (not just highlighted)
 	useEffect(() => {
 		const trackInfo = getRelevantTrackInfo(train, stationCode, destinationCode);
@@ -380,15 +429,49 @@ export default function TrainCard({
 		}
 	}, [train.trainNumber, train.timeTableRows, stationCode, destinationCode]);
 
-	// Memoized track change check
-	const isTrackChanged = useMemo(() => {
+	// Memoized track change check - determines which track changed (departure or arrival)
+	const trackChangeInfo = useMemo(() => {
 		const trackInfo = getRelevantTrackInfo(train, stationCode, destinationCode);
-		if (!trackInfo) return false;
+		if (!trackInfo) return { changed: false, changedSide: null };
+
 		const currentTrack = trackInfo.track;
 		const storedTrack = trackMemory[trackInfo.journeyKey]?.track;
-		return storedTrack && currentTrack && storedTrack !== currentTrack;
+		const trackChanged =
+			storedTrack && currentTrack && storedTrack !== currentTrack;
+
+		if (!trackChanged) return { changed: false, changedSide: null };
+
+		// Determine which side changed (departure or arrival)
+		const departureRow = train.timeTableRows.find(
+			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
+		);
+		const arrivalRow = train.timeTableRows.find(
+			(row) =>
+				row.stationShortCode === destinationCode && row.type === "ARRIVAL",
+		);
+
+		if (!departureRow) return { changed: false, changedSide: null };
+
+		// Check if departure track changed from stored
+		const departureChanged = departureRow.commercialTrack !== storedTrack;
+
+		// Check if arrival track changed from stored (only if arrival exists and differs from departure)
+		const arrivalChanged =
+			arrivalRow &&
+			arrivalRow.commercialTrack !== storedTrack &&
+			arrivalRow.commercialTrack !== departureRow.commercialTrack;
+
+		// Determine which side to show the indicator on
+		let changedSide: "departure" | "arrival" | null = null;
+		if (departureChanged) {
+			changedSide = "departure";
+		} else if (arrivalChanged) {
+			changedSide = "arrival";
+		}
+
+		return { changed: trackChanged, changedSide };
 		// // TEMPORARY: Force track change indicator for testing
-		// return true;
+		// return { changed: true, changedSide: "departure" };
 	}, [
 		train.trainNumber,
 		train.timeTableRows,
@@ -396,6 +479,24 @@ export default function TrainCard({
 		destinationCode,
 		trackMemory,
 	]);
+
+	const isTrackChanged = trackChangeInfo.changed;
+
+	// Handler for flipping the track badge
+	const handleTrackFlip = () => {
+		setIsTrackFlipped((prev) => !prev);
+		hapticImpact();
+	};
+
+	// Keyboard handler for accessibility
+	const handleTrackKeyDown = (
+		e: JSX.TargetedKeyboardEvent<HTMLButtonElement>,
+	) => {
+		if (e.key === "Enter" || e.key === " ") {
+			e.preventDefault();
+			handleTrackFlip();
+		}
+	};
 
 	useEffect(() => {
 		const handleLanguageChange = () => {
@@ -413,7 +514,8 @@ export default function TrainCard({
 		setIsHighlighted(newHighlighted);
 
 		// Update highlights using safe storage wrapper
-		const highlightedTrains: Record<string, HighlightedTrainData> = safeReadHighlights();
+		const highlightedTrains: Record<string, HighlightedTrainData> =
+			safeReadHighlights();
 
 		if (newHighlighted) {
 			// When highlighting, set removal time to 10 minutes after departure
@@ -443,8 +545,12 @@ export default function TrainCard({
 
 	return (
 		<div
-			class={`${cardStyle} w-full max-w-full text-left relative overflow-hidden`}
-			style={{ opacity: hasDeparted ? opacity : 1 }}
+			class={`${cardStyle} w-full max-w-full text-left relative overflow-hidden select-none transition-opacity duration-700 ease-in-out`}
+			style={{
+				opacity: hasDeparted ? opacity : 1,
+				WebkitTouchCallout: "none",
+				WebkitTapHighlightColor: "transparent",
+			}}
 			data-train-number={train.trainNumber}
 			data-train-cancelled={train.cancelled}
 			data-train-line={train.commuterLineID}
@@ -541,26 +647,100 @@ export default function TrainCard({
 							</span>
 						) : (
 							<>
+								{/* Interactive Flippable Track Badge */}
 								<div class="indicator">
-									<output
-										aria-label={`${t("track")} ${departureRow.commercialTrack}${isTrackChanged ? ` (${t("changed")})` : ""}`}
-										class={`badge badge-lg font-semibold transition-all duration-300 ${
-											isTrackChanged
-												? "badge-error badge-outline"
-												: "badge-ghost"
-										}`}
+									<button
+										type="button"
+										onClick={handleTrackFlip}
+										onKeyDown={handleTrackKeyDown}
+										aria-label={
+											!isTrackFlipped
+												? `${t("track")} ${departureRow.commercialTrack}${trackChangeInfo.changedSide === "departure" && isTrackChanged ? ` (${t("changed")})` : ""}. ${arrivalRow ? t("clickToSeeArrivalTrack") : ""}`
+												: `${arrivalRow ? `${t("arrivalTrack")} ${arrivalRow.commercialTrack}` : `${t("track")} ${departureRow.commercialTrack}`}${trackChangeInfo.changedSide === "arrival" && isTrackChanged ? ` (${t("changed")})` : ""}. ${t("clickToSeeDepartureTrack")}`
+										}
+										aria-pressed={isTrackFlipped}
+										class="cursor-pointer focus-ring bg-transparent border-0 p-0"
 									>
-										{t("track")} {departureRow.commercialTrack}
-									</output>
-									{isTrackChanged && (
-										<span
-											class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
-											aria-hidden="true"
+										<div
+											class="relative inline-block"
+											style={{
+												perspective: "1000px",
+												minHeight: "32px",
+											}}
 										>
-											!
-										</span>
-									)}
+											<div
+												style={{
+													transformStyle: "preserve-3d",
+													transform: isTrackFlipped
+														? "rotateY(180deg)"
+														: "rotateY(0deg)",
+													transition: "transform 0.4s ease-out",
+													position: "relative",
+													minHeight: "32px",
+												}}
+											>
+												{/* Front face - Departure Track */}
+												<div
+													class={`badge badge-lg font-semibold ${
+														trackChangeInfo.changedSide === "departure" &&
+														isTrackChanged
+															? "badge-error badge-outline"
+															: "badge-ghost"
+													} whitespace-nowrap`}
+													style={{
+														backfaceVisibility: "hidden",
+														WebkitBackfaceVisibility: "hidden",
+													}}
+												>
+													{t("track")} {departureRow.commercialTrack}
+												</div>
+												{/* Back face - Arrival Track */}
+												<div
+													class={`badge badge-lg font-semibold ${
+														trackChangeInfo.changedSide === "arrival" &&
+														isTrackChanged
+															? "badge-error badge-outline"
+															: "badge-ghost"
+													} whitespace-nowrap`}
+													style={{
+														backfaceVisibility: "hidden",
+														WebkitBackfaceVisibility: "hidden",
+														transform: "rotateY(180deg)",
+														position: "absolute",
+														top: 0,
+														left: 0,
+														right: 0,
+													}}
+												>
+													{arrivalRow ? (
+														<>
+															<span aria-hidden="true">&rarr;</span>{" "}
+															{t("track")} {arrivalRow.commercialTrack}
+														</>
+													) : (
+														<>
+															{t("track")} {departureRow.commercialTrack}
+														</>
+													)}
+												</div>
+											</div>
+										</div>
+									</button>
+									{/* Track change indicator - smart positioning */}
+									{isTrackChanged &&
+										((!isTrackFlipped &&
+											trackChangeInfo.changedSide === "departure") ||
+											(isTrackFlipped &&
+												trackChangeInfo.changedSide === "arrival")) && (
+											<span
+												class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
+												aria-hidden="true"
+											>
+												!
+											</span>
+										)}
 								</div>
+
 								{minutesToDeparture !== null &&
 									minutesToDeparture <= 30 &&
 									minutesToDeparture >= 0 && (

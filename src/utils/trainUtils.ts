@@ -1,5 +1,8 @@
 import type { Duration, Train } from "../types";
 
+/**
+ * Format an ISO date string into a Finnish locale HH:MM time.
+ */
 export const formatTime = (date: string) => {
 	return new Date(date).toLocaleTimeString("fi-FI", {
 		hour: "2-digit",
@@ -7,6 +10,9 @@ export const formatTime = (date: string) => {
 	});
 };
 
+/**
+ * Calculate a duration between two timestamps and express it as hours and minutes.
+ */
 export const calculateDuration = (
 	start: Date | string,
 	end: Date | string,
@@ -22,10 +28,16 @@ export const calculateDuration = (
 	};
 };
 
+/**
+ * Resolve a timetable row into an accurate departure moment prioritising realtime data.
+ */
 export const getDepartureDate = (row: Train["timeTableRows"][0]): Date => {
 	return new Date(row.actualTime ?? row.liveEstimateTime ?? row.scheduledTime);
 };
 
+/**
+ * Resolve a timetable row into an arrival moment using live estimates when available.
+ */
 export const getArrivalDate = (row: Train["timeTableRows"][0]): Date => {
 	return new Date(row.liveEstimateTime ?? row.scheduledTime);
 };

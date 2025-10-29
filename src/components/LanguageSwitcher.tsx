@@ -72,7 +72,7 @@ const LanguageSwitcher = () => {
 			<button
 				type="button"
 				tabIndex={0}
-				className="btn btn-ghost btn-xs sm:btn-sm text-base-content border border-base-300 hover:bg-base-200 focus:bg-base-200 normal-case min-h-[2rem] sm:min-h-[2.5rem] h-auto px-2 sm:px-3 py-1 text-sm"
+				className="btn btn-ghost btn-xs sm:btn-sm border border-base-300 hover:bg-base-200 focus:bg-base-200 normal-case min-h-[2rem] sm:min-h-[2.5rem] h-auto px-2 sm:px-3 py-1 text-sm group"
 				aria-label="Select language"
 				aria-haspopup="menu"
 				aria-controls="language-menu"
@@ -81,10 +81,14 @@ const LanguageSwitcher = () => {
 				onFocus={handleFocus}
 				onBlur={handleBlur}
 			>
-				<span className="hidden sm:inline">{currentLanguageDisplay}</span>
-				<span className="sm:hidden">{labels[currentLang].split(" ")[0]}</span>
+				<span className="hidden sm:inline text-white group-hover:text-black group-focus:text-black dark:group-hover:text-white dark:group-focus:text-white">
+					{currentLanguageDisplay}
+				</span>
+				<span className="sm:hidden text-white group-hover:text-black group-focus:text-black dark:group-hover:text-white dark:group-focus:text-white">
+					{labels[currentLang].split(" ")[0]}
+				</span>
 				<svg
-					className="w-3 h-3 sm:w-4 sm:h-4 ml-0.5 sm:ml-1"
+					className="w-3 h-3 sm:w-4 sm:h-4 ml-0.5 sm:ml-1 text-white group-hover:text-black group-focus:text-black dark:group-hover:text-white dark:group-focus:text-white"
 					fill="none"
 					stroke="currentColor"
 					viewBox="0 0 24 24"

@@ -29,7 +29,10 @@ export const translations = {
 		hours: "tuntia",
 		minutes: "minuuttia",
 		track: "Raide",
+		arrivalTrack: "Saapumisraide",
 		changed: "muuttunut",
+		clickToSeeArrivalTrack: "Klikkaa nähdäksesi saapumisraide",
+		clickToSeeDepartureTrack: "Klikkaa nähdäksesi lähtöraide",
 		selectStations: "Valitse asemat",
 		quick: "pika",
 		route: "reitti",
@@ -91,7 +94,10 @@ export const translations = {
 		hours: "hours",
 		minutes: "minutes",
 		track: "Track",
+		arrivalTrack: "Arrival track",
 		changed: "changed",
+		clickToSeeArrivalTrack: "Click to see arrival track",
+		clickToSeeDepartureTrack: "Click to see departure track",
 		selectStations: "Select stations",
 		quick: "quick",
 		route: "route",
@@ -131,7 +137,9 @@ export const translations = {
 // Derive TranslationKey from actual translation keys for compile-time safety
 export type TranslationKey = keyof typeof translations.fi & string;
 
-// Function overloads: compile-time safety for known keys, fallback for dynamic keys
+/**
+ * Translate a key using the active language dictionary, falling back to Finnish and finally the key.
+ */
 export function t(key: TranslationKey): string;
 export function t(key: string): string;
 export function t(key: string): string {
