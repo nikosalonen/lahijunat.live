@@ -228,10 +228,24 @@ function getCachedTrains(
 		: CACHE_CONFIG.TRAIN_DURATION;
 
 	if (age > maxAge) {
-		trainCache.delete(cacheKey);
+		// Don't delete expired entries - keep them for fallback in case API fails
+		// They will be replaced when fresh data is successfully fetched
 		return null;
 	}
 
+	return cached.data;
+}
+
+// Get cached trains even if expired (for fallback when API fails)
+function getCachedTrainsEvenIfExpired(
+	stationCode: string,
+	destinationCode: string,
+): Train[] | null {
+	const cacheKey = `${stationCode}-${destinationCode}`;
+	const cached = trainCache.get(cacheKey);
+	if (!cached) return null;
+
+	// Return data even if expired - don't delete from cache
 	return cached.data;
 }
 
@@ -599,7 +613,7 @@ export async function fetchTrains(
 	).catch(async (error) => {
 		console.error("Error fetching trains:", error);
 		// If we have cached data, return it even if it's expired
-		const cachedFallback = getCachedTrains(stationCode, destinationCode);
+		const cachedFallback = getCachedTrainsEvenIfExpired(stationCode, destinationCode);
 		if (cachedFallback) {
 			console.log("Using expired cached data due to error");
 			return cachedFallback;
