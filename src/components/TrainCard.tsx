@@ -325,6 +325,50 @@ export default function TrainCard({
 		}
 	}, [train.trainNumber, currentTime, train.timeTableRows, stationCode]);
 
+	// Prime trackMemory from localStorage on mount to avoid stale baseline
+	useEffect(() => {
+		const MAX_AGE_MS = 1 * 60 * 60 * 1000; // 1 hour
+		const MAX_ENTRIES = 1000;
+		const now = Date.now();
+
+		try {
+			const stored = JSON.parse(localStorage.getItem("trackMemory") || "{}");
+			if (!stored || typeof stored !== "object") {
+				return;
+			}
+
+			// Cleanup old entries
+			const cleaned: Record<string, { track: string; timestamp: number }> = {};
+			for (const [journeyKey, entry] of Object.entries(stored)) {
+				const entryData = entry as { track: string; timestamp: number };
+				if (entryData && typeof entryData === "object" && entryData.timestamp) {
+					if (now - entryData.timestamp <= MAX_AGE_MS) {
+						cleaned[journeyKey] = entryData;
+					}
+				}
+			}
+
+			// If too many entries, remove oldest
+			const entries = Object.entries(cleaned);
+			if (entries.length >= MAX_ENTRIES) {
+				entries
+					.sort(([, a], [, b]) => a.timestamp - b.timestamp)
+					.slice(0, entries.length - MAX_ENTRIES + 1)
+					.forEach(([journeyKey]) => {
+						delete cleaned[journeyKey];
+					});
+			}
+
+			// Update localStorage with cleaned data and prime state
+			if (Object.keys(cleaned).length > 0) {
+				localStorage.setItem("trackMemory", JSON.stringify(cleaned));
+				setTrackMemory(cleaned);
+			}
+		} catch {
+			// Ignore parse errors, state remains empty
+		}
+	}, []); // Run once on mount
+
 	// Store and check original track for all trains (not just highlighted)
 	useEffect(() => {
 		const trackInfo = getRelevantTrackInfo(train, stationCode, destinationCode);
