@@ -434,7 +434,7 @@ export default function TrainList({
 					{displayedTrains.map((train, index) => (
 						<div
 							key={train.trainNumber}
-							class={`transition-[transform,opacity] duration-700 ease-in-out hover-lift ${
+							class={`transition-[transform,opacity] duration-700 ease-in-out ${
 								departedTrains.has(train.trainNumber)
 									? "animate-train-depart"
 									: "animate-scale-in"
