@@ -1,5 +1,6 @@
 /** @format */
 
+import type { JSX } from "preact";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
@@ -135,7 +136,6 @@ export default function TrainCard({
 	>({});
 	const [isTrackFlipped, setIsTrackFlipped] = useState(false);
 	const fadeRafRef = useRef<number | null>(null);
-
 
 	// Memoize all time-dependent calculations
 	const {
@@ -489,7 +489,9 @@ export default function TrainCard({
 	};
 
 	// Keyboard handler for accessibility
-	const handleTrackKeyDown = (e: KeyboardEvent) => {
+	const handleTrackKeyDown = (
+		e: JSX.TargetedKeyboardEvent<HTMLButtonElement>,
+	) => {
 		if (e.key === "Enter" || e.key === " ") {
 			e.preventDefault();
 			handleTrackFlip();
@@ -539,13 +541,11 @@ export default function TrainCard({
 		safeWriteHighlights(highlightedTrains);
 	};
 
-
-
 	if (!departureRow) return null;
 
 	return (
 		<div
-			class={`${cardStyle} w-full max-w-full text-left relative overflow-hidden select-none`}
+			class={`${cardStyle} w-full max-w-full text-left relative overflow-hidden select-none transition-opacity duration-700 ease-in-out`}
 			style={{
 				opacity: hasDeparted ? opacity : 1,
 				WebkitTouchCallout: "none",
@@ -655,19 +655,19 @@ export default function TrainCard({
 										onKeyDown={handleTrackKeyDown}
 										aria-label={
 											!isTrackFlipped
-												? `${t("track")} ${departureRow.commercialTrack}${trackChangeInfo.changedSide === "departure" && isTrackChanged ? ` (${t("changed")})` : ""}. ${arrivalRow ? "Click to see arrival track" : ""}`
-												: `${arrivalRow ? `→ ${t("track")} ${arrivalRow.commercialTrack}` : `${t("track")} ${departureRow.commercialTrack}`}${trackChangeInfo.changedSide === "arrival" && isTrackChanged ? ` (${t("changed")})` : ""}. Click to see departure track`
+												? `${t("track")} ${departureRow.commercialTrack}${trackChangeInfo.changedSide === "departure" && isTrackChanged ? ` (${t("changed")})` : ""}. ${arrivalRow ? t("clickToSeeArrivalTrack") : ""}`
+												: `${arrivalRow ? `${t("arrivalTrack")} ${arrivalRow.commercialTrack}` : `${t("track")} ${departureRow.commercialTrack}`}${trackChangeInfo.changedSide === "arrival" && isTrackChanged ? ` (${t("changed")})` : ""}. ${t("clickToSeeDepartureTrack")}`
 										}
 										aria-pressed={isTrackFlipped}
 										class="cursor-pointer focus-ring bg-transparent border-0 p-0"
 									>
-								<div
-									class="relative inline-block"
-										style={{
-											perspective: "1000px",
-											minHeight: "32px",
-										}}
-								>
+										<div
+											class="relative inline-block"
+											style={{
+												perspective: "1000px",
+												minHeight: "32px",
+											}}
+										>
 											<div
 												style={{
 													transformStyle: "preserve-3d",
@@ -680,13 +680,13 @@ export default function TrainCard({
 												}}
 											>
 												{/* Front face - Departure Track */}
-										<div
+												<div
 													class={`badge badge-lg font-semibold ${
 														trackChangeInfo.changedSide === "departure" &&
 														isTrackChanged
 															? "badge-error badge-outline"
 															: "badge-ghost"
-											} whitespace-nowrap`}
+													} whitespace-nowrap`}
 													style={{
 														backfaceVisibility: "hidden",
 														WebkitBackfaceVisibility: "hidden",
@@ -695,13 +695,13 @@ export default function TrainCard({
 													{t("track")} {departureRow.commercialTrack}
 												</div>
 												{/* Back face - Arrival Track */}
-										<div
+												<div
 													class={`badge badge-lg font-semibold ${
 														trackChangeInfo.changedSide === "arrival" &&
 														isTrackChanged
 															? "badge-error badge-outline"
 															: "badge-ghost"
-											} whitespace-nowrap`}
+													} whitespace-nowrap`}
 													style={{
 														backfaceVisibility: "hidden",
 														WebkitBackfaceVisibility: "hidden",
@@ -712,11 +712,16 @@ export default function TrainCard({
 														right: 0,
 													}}
 												>
-													{arrivalRow &&
-													arrivalRow.commercialTrack !==
-														departureRow.commercialTrack
-														? `→ ${t("track")} ${arrivalRow.commercialTrack}`
-														: `${t("track")} ${departureRow.commercialTrack}`}
+													{arrivalRow ? (
+														<>
+															<span aria-hidden="true">&rarr;</span>{" "}
+															{t("track")} {arrivalRow.commercialTrack}
+														</>
+													) : (
+														<>
+															{t("track")} {departureRow.commercialTrack}
+														</>
+													)}
 												</div>
 											</div>
 										</div>
