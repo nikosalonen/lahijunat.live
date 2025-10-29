@@ -434,11 +434,9 @@ export default function TrainList({
 					{displayedTrains.map((train, index) => (
 						<div
 							key={train.trainNumber}
-							class={`transition-[transform,opacity] duration-700 ease-in-out ${
-								departedTrains.has(train.trainNumber)
-									? "animate-train-depart"
-									: "animate-scale-in"
-							}`}
+							class={
+								departedTrains.has(train.trainNumber) ? "" : "animate-scale-in"
+							}
 							style={{
 								"grid-row": `${index + 1}`,
 								animationDelay: `${index * 0.05}s`,
@@ -457,15 +455,28 @@ export default function TrainList({
 					))}
 				</div>
 				{hasMoreTrains && (
-					<div class="flex justify-center mt-4">
+					<div class="flex justify-center mt-6">
 						<button
 							type="button"
 							onClick={() => {
 								hapticLight();
 								setDisplayedTrainCount((prev) => prev + INITIAL_TRAIN_COUNT);
 							}}
-							class="btn btn-primary btn-wide touch-manipulation select-none"
+							class="btn bg-white dark:bg-base-100 border-2 border-gray-200 dark:border-gray-700 hover:border-[#8c4799] dark:hover:border-[#b388ff] hover:bg-[#8c4799] dark:hover:bg-[#b388ff] hover:text-white transition-all duration-200 touch-manipulation select-none rounded-2xl px-8 py-3 shadow-md hover:shadow-lg font-medium text-gray-700 dark:text-gray-200 hover:scale-105 active:scale-95"
 						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="w-5 h-5"
+								aria-hidden="true"
+							>
+								<polyline points="6 9 12 15 18 9" />
+							</svg>
 							{t("showMore")}
 						</button>
 					</div>
