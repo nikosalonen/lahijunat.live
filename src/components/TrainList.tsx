@@ -178,8 +178,6 @@ export default function TrainList({
 				);
 				setCurrentRefreshInterval(newRefreshInterval);
 				currentRefreshIntervalRef.current = newRefreshInterval;
-				// Reset progress to 100% when interval changes so it counts down over the new duration
-				setState((prev) => ({ ...prev, progress: 100 }));
 			}
 
 			setState((prev) => ({
