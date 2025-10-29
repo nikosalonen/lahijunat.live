@@ -403,11 +403,15 @@ export default function TrainList({
 				{/* Desktop header with h2 and progress */}
 				<div class="hidden sm:flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 					<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 order-2 sm:order-1">
-						<span class="sm:hidden">
-							{stationCode} → {destinationCode}
+						<span class="sm:hidden inline-flex items-center gap-2">
+							<span>{stationCode}</span>
+							<i class="fa-solid fa-arrow-right" aria-hidden="true" />
+							<span>{destinationCode}</span>
 						</span>
-						<span class="hidden sm:inline">
-							{fromStation?.name} → {toStation?.name}
+						<span class="hidden sm:inline-flex sm:items-center sm:gap-2">
+							<span>{fromStation?.name}</span>
+							<i class="fa-solid fa-arrow-right" aria-hidden="true" />
+							<span>{toStation?.name}</span>
 						</span>
 					</h2>
 					<div class="self-end sm:self-auto order-1 sm:order-2">

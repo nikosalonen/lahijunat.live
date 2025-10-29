@@ -38,7 +38,9 @@ const TimeRow = ({
 		<span class="block w-full text-base-content/70 text-base sm:text-lg">
 			{useLiveEstimate && <span aria-hidden="true">~</span>}
 			<time datetime={displayedTime}>{formatTime(displayedTime)}</time>
-			{arrivalRow && <span class="mx-1 sm:mx-2">→</span>}
+			{arrivalRow && (
+				<i class="fa-solid fa-arrow-right mx-1 sm:mx-2" aria-hidden="true" />
+			)}
 			{arrivalRow && arrivalDisplayedTime && (
 				<>
 					{useArrivalLiveEstimate && <span aria-hidden="true">~</span>}

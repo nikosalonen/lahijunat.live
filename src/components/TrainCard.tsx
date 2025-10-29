@@ -617,20 +617,10 @@ export default function TrainCard({
 													: undefined
 											}
 										>
-											<svg
-												class="w-4 h-4 inline-block mr-1 -mt-1"
-												fill="none"
-												stroke="currentColor"
-												viewBox="0 0 24 24"
+											<i
+												class="fa-solid fa-clock inline-block mr-1 -mt-1"
 												aria-hidden="true"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth="2"
-													d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-												/>
-											</svg>
+											/>
 											{duration.hours}h {duration.minutes}m
 										</output>
 									)}
@@ -749,27 +739,10 @@ export default function TrainCard({
 												"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
 											}
 										>
-											<svg
-												class="w-5 h-5"
-												fill="none"
-												stroke="currentColor"
-												viewBox="0 0 24 24"
+											<i
+												class="fa-solid fa-hourglass-half text-lg"
 												aria-hidden="true"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth="2"
-													d="M12 8v4l2 2"
-												/>
-												<circle
-													cx="12"
-													cy="12"
-													r="9"
-													strokeWidth="2"
-													fill="none"
-												/>
-											</svg>
+											/>
 											<span>
 												{minutesToDeparture === 0
 													? "0 min"

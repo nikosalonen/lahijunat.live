@@ -651,25 +651,10 @@ export default function StationManager({
 							data-tip={t("swapDirection")}
 							aria-label={t("swapDirection")}
 						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="28"
-								height="28"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2.5"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								className="block mx-auto"
+							<i
+								className="fa-solid fa-right-left text-2xl"
 								aria-hidden="true"
-							>
-								{/* Rotation/refresh icon for swapping */}
-								<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-								<path d="M21 3v5h-5" />
-								<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-								<path d="M3 21v-5h5" />
-							</svg>
+							/>
 						</button>
 					)}
 				</div>
@@ -701,30 +686,17 @@ export default function StationManager({
 										type="button"
 										onClick={handleLocationRequest}
 										className={`btn w-12 h-12 p-1 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
-							disabled:opacity-50 disabled:cursor-not-allowed
-							touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
-							shadow-brand-medium hover:shadow-brand-strong transition-[background-color,box-shadow] duration-200 rounded-r-none
-							${isLocating ? "animate-pulse" : ""}`}
+									disabled:opacity-50 disabled:cursor-not-allowed
+									touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
+									shadow-brand-medium hover:shadow-brand-strong transition-[background-color,box-shadow] duration-200 rounded-r-none
+									${isLocating ? "animate-pulse" : ""}`}
 										aria-label={t("locate")}
 										data-tip={t("locate")}
 									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 24 24"
-											width="36"
-											height="36"
-											fill="none"
-											stroke="currentColor"
-											strokeWidth="2"
-											strokeLinecap="round"
-											strokeLinejoin="round"
-										>
-											<title>{t("locate")}</title>
-											{/* Modern GPS/Location Pin Icon */}
-											<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-											<circle cx="12" cy="9" r="2.5" fill="currentColor" />
-											{/* Remove pulse animation - was causing strange effects */}
-										</svg>
+										<i
+											className="fa-solid fa-location-arrow text-3xl"
+											aria-hidden="true"
+										/>
 									</button>
 									{/* Divider */}
 									<div className="hidden sm:block w-px h-12 bg-white/20" />
@@ -736,31 +708,16 @@ export default function StationManager({
 											!selectedOrigin || !selectedDestination || isSwapping
 										}
 										className="hidden sm:block btn w-12 h-12 p-1 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
-								disabled:opacity-50 disabled:cursor-not-allowed
-								touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
-								shadow-brand-medium hover:shadow-brand-strong transition-[background-color,box-shadow] duration-200 rounded-l-none"
+						disabled:opacity-50 disabled:cursor-not-allowed
+						touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
+						shadow-brand-medium hover:shadow-brand-strong transition-[background-color,box-shadow] duration-200 rounded-l-none"
 										data-tip={t("swapDirection")}
 										aria-label={t("swapDirection")}
 									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="28"
-											height="28"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											strokeWidth="2.5"
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											className="block mx-auto"
+										<i
+											className="fa-solid fa-right-left text-2xl"
 											aria-hidden="true"
-										>
-											{/* Rotation/refresh icon for swapping */}
-											<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-											<path d="M21 3v5h-5" />
-											<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-											<path d="M3 21v-5h5" />
-										</svg>
+										/>
 									</button>
 								</div>
 								<div className="flex-grow">
