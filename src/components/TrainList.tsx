@@ -148,19 +148,19 @@ export default function TrainList({
 			const now = new Date();
 			setCurrentTime(now);
 
-			// Update refresh interval based on train data
-			const newRefreshInterval = getAdaptiveRefreshInterval(trainData, now);
-			if (newRefreshInterval !== currentRefreshInterval) {
-				console.log(
-					`[TrainList] Adaptive refresh: ${newRefreshInterval}ms (${
-						newRefreshInterval / 1000
-					}s)`,
-				);
-				setCurrentRefreshInterval(newRefreshInterval);
-				currentRefreshIntervalRef.current = newRefreshInterval;
-				// Reset progress to 100% when interval changes so it counts down over the new duration
-				setState((prev) => ({ ...prev, progress: 100 }));
-			}
+		// Update refresh interval based on train data
+		const newRefreshInterval = getAdaptiveRefreshInterval(trainData, now);
+		if (newRefreshInterval !== currentRefreshIntervalRef.current) {
+			console.log(
+				`[TrainList] Adaptive refresh: ${newRefreshInterval}ms (${
+					newRefreshInterval / 1000
+				}s)`,
+			);
+			setCurrentRefreshInterval(newRefreshInterval);
+			currentRefreshIntervalRef.current = newRefreshInterval;
+			// Reset progress to 100% when interval changes so it counts down over the new duration
+			setState((prev) => ({ ...prev, progress: 100 }));
+		}
 
 			setState((prev) => ({
 				...prev,
