@@ -30,6 +30,7 @@ const MemoizedTrainCard = memo(TrainCard);
 const INITIAL_TRAIN_COUNT = 15;
 const FADE_DURATION = 300; // Align with card opacity transition
 const DEPARTED_GRACE_MINUTES = -2; // How long to keep showing a train after departure
+const TIME_UPDATE_INTERVAL = 1000; // Update current time every 1 seconds when visible
 
 // Adaptive refresh intervals
 const REFRESH_INTERVALS = {
@@ -136,13 +137,34 @@ export default function TrainList({
 		REFRESH_INTERVALS.MEDIUM,
 	);
 	const currentRefreshIntervalRef = useRef<number>(REFRESH_INTERVALS.MEDIUM);
+	const [lastRefreshAt, setLastRefreshAt] = useState(() => Date.now());
+	const [isPageVisible, setIsPageVisible] = useState(() => {
+		if (typeof document === "undefined") {
+			return true;
+		}
+		return document.visibilityState === "visible";
+	});
+
+	useEffect(() => {
+		if (typeof document === "undefined") {
+			return;
+		}
+		const handleVisibilityChange = () => {
+			setIsPageVisible(document.visibilityState === "visible");
+		};
+		document.addEventListener("visibilitychange", handleVisibilityChange);
+		return () => {
+			document.removeEventListener("visibilitychange", handleVisibilityChange);
+		};
+	}, []);
 
 	const loadTrains = useCallback(async () => {
+		const startedAt = Date.now();
+		setLastRefreshAt(startedAt);
 		try {
 			if (state.initialLoad) {
 				setState((prev) => ({ ...prev, loading: true }));
 			}
-			setState((prev) => ({ ...prev, progress: 100 }));
 
 			const trainData = await fetchTrains(stationCode, destinationCode);
 			const now = new Date();
