@@ -51,5 +51,30 @@
 		"formatter": {
 			"quoteStyle": "double"
 		}
-	}
+	},
+	"css": {
+		"parser": {
+			"cssModules": false,
+			"allowWrongLineComments": false,
+			"tailwindDirectives": true
+		},
+		"linter": {
+			"enabled": true
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["src/styles/global.css"],
+			"linter": {
+				"rules": {
+					"complexity": {
+						"noImportantStyles": "off"
+					},
+					"suspicious": {
+						"noUnknownAtRules": "off"
+					}
+				}
+			}
+		}
+	]
 }
