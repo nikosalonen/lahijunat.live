@@ -160,10 +160,7 @@ describe("TimeDisplay", () => {
 		};
 
 		const { getByText, queryByText } = render(
-			<TimeDisplay
-				departureRow={departureRow}
-				timeDifferenceMinutes={5}
-			/>,
+			<TimeDisplay departureRow={departureRow} timeDifferenceMinutes={5} />,
 		);
 
 		expect(getByText("unknownDelay")).toBeInTheDocument();
@@ -179,10 +176,7 @@ describe("TimeDisplay", () => {
 		};
 
 		const { getByText, queryByText } = render(
-			<TimeDisplay
-				departureRow={departureRow}
-				timeDifferenceMinutes={5}
-			/>,
+			<TimeDisplay departureRow={departureRow} timeDifferenceMinutes={5} />,
 		);
 
 		expect(queryByText("unknownDelay")).not.toBeInTheDocument();
@@ -199,10 +193,7 @@ describe("TimeDisplay", () => {
 		};
 
 		const { queryByText } = render(
-			<TimeDisplay
-				departureRow={departureRow}
-				timeDifferenceMinutes={5}
-			/>,
+			<TimeDisplay departureRow={departureRow} timeDifferenceMinutes={5} />,
 		);
 
 		expect(queryByText("unknownDelay")).not.toBeInTheDocument();

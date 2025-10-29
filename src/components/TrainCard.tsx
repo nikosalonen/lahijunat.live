@@ -47,7 +47,9 @@ function safeReadHighlights(): Record<string, HighlightedTrainData> {
 	}
 }
 
-function safeWriteHighlights(value: Record<string, HighlightedTrainData>): void {
+function safeWriteHighlights(
+	value: Record<string, HighlightedTrainData>,
+): void {
 	try {
 		localStorage.setItem(HIGHLIGHT_STORAGE_KEY, JSON.stringify(value));
 		inMemoryHighlightStore = value;
@@ -251,7 +253,8 @@ export default function TrainCard({
 
 	useEffect(() => {
 		// Load highlighted state safely (works even if localStorage is unavailable)
-		const highlightedTrains: Record<string, HighlightedTrainData> = safeReadHighlights();
+		const highlightedTrains: Record<string, HighlightedTrainData> =
+			safeReadHighlights();
 		const trainData = highlightedTrains[train.trainNumber];
 
 		if (trainData) {
@@ -413,7 +416,8 @@ export default function TrainCard({
 		setIsHighlighted(newHighlighted);
 
 		// Update highlights using safe storage wrapper
-		const highlightedTrains: Record<string, HighlightedTrainData> = safeReadHighlights();
+		const highlightedTrains: Record<string, HighlightedTrainData> =
+			safeReadHighlights();
 
 		if (newHighlighted) {
 			// When highlighting, set removal time to 10 minutes after departure
