@@ -677,11 +677,15 @@ export default function StationManager({
 
 			{/* Station selector - collapsible on mobile */}
 			<div
-				className={`collapse ${isStationSelectorExpanded ? "collapse-open" : "collapse-close"} sm:collapse-open ${
-					!isStationSelectorExpanded
-						? "bg-base-100 border border-base-300 rounded-lg shadow-sm sm:border-0 sm:bg-transparent"
-						: ""
-				}`}
+				className={[
+					"collapse",
+					isStationSelectorExpanded ? "collapse-open" : "collapse-close",
+					"sm:collapse-open",
+					!isStationSelectorExpanded &&
+						"bg-base-100 border border-base-300 rounded-lg shadow-sm sm:border-0 sm:bg-transparent",
+				]
+					.filter(Boolean)
+					.join(" ")}
 			>
 				{/* Upward caret when expanded (mobile) - clickable to close */}
 
