@@ -63,13 +63,14 @@ describe("TimeRow", () => {
 	});
 
 	it("renders both departure and arrival times correctly", () => {
-		const { getByText } = render(
+		const { getByText, container } = render(
 			<TimeRow departureRow={mockDepartureRow} arrivalRow={mockArrivalRow} />,
 		);
 
 		expect(getByText("12.00")).toBeInTheDocument();
 		expect(getByText("13.00")).toBeInTheDocument();
-		expect(getByText("→")).toBeInTheDocument();
+		const arrowIcon = container.querySelector(".fa-arrow-right");
+		expect(arrowIcon).not.toBeNull();
 	});
 
 	it("shows tilde when train is delayed", () => {
