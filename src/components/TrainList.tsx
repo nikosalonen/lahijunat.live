@@ -126,10 +126,8 @@ export default function TrainList({
 			type: "network" | "api" | "notFound" | "rateLimit" | "generic";
 			message?: string;
 		} | null,
-		progress: 100,
 	});
 	const [currentTime, setCurrentTime] = useState(new Date());
-	const [animationPhase, setAnimationPhase] = useState(0);
 	const [displayedTrainCount, setDisplayedTrainCount] =
 		useState(INITIAL_TRAIN_COUNT);
 	const [departedTrains, setDepartedTrains] = useState<Set<string>>(new Set());
