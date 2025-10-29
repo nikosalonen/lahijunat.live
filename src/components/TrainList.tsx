@@ -262,66 +262,55 @@ export default function TrainList({
 	}, []);
 
 	useEffect(() => {
-		let startTime: number;
-		let animationFrame: number;
-		let updateInterval: ReturnType<typeof setInterval> | undefined;
-
-		const animate = (timestamp: number) => {
-			if (!startTime) startTime = timestamp;
-			const elapsed = timestamp - startTime;
-			const progress = (elapsed % 2500) / 2500; // 2.5s animation duration
-			setAnimationPhase(progress);
-			animationFrame = requestAnimationFrame(animate);
-		};
-
-		animationFrame = requestAnimationFrame(animate);
-
-		// Function to calculate time until next even second (:00 or :30)
+		let refreshTimeout: ReturnType<typeof setTimeout> | undefined;
+		let cancelled = false;
 		const getTimeUntilNextUpdate = () => {
 			const now = new Date();
 			const seconds = now.getSeconds();
 			const milliseconds = now.getMilliseconds();
-			const timeUntilNextHalfMinute =
-				(30 - (seconds % 30)) * 1000 - milliseconds;
-			return timeUntilNextHalfMinute;
+			return (30 - (seconds % 30)) * 1000 - milliseconds;
 		};
 
-		// Initial data load
-		loadTrains();
+		const scheduleRefresh = (delay: number) => {
+			refreshTimeout = setTimeout(async () => {
+				if (cancelled) {
+					return;
+				}
+				try {
+					await loadTrains();
+				} finally {
+					if (!cancelled) {
+						scheduleRefresh(currentRefreshIntervalRef.current);
+					}
+				}
+			}, delay);
+		};
 
-		// Update current time every second
-		const timeUpdateInterval = setInterval(() => {
-			setCurrentTime(new Date());
-		}, 1000);
-
-		// Schedule next update at the next even second
-		const updateTimeout = setTimeout(() => {
+		if (isPageVisible) {
 			loadTrains();
-			// Then set up adaptive interval based on train urgency
-			updateInterval = setInterval(() => {
-				loadTrains();
-			}, currentRefreshInterval);
-		}, getTimeUntilNextUpdate());
-
-		// Progress bar update interval
-		const progressInterval = setInterval(() => {
-			setState((prev) => ({
-				...prev,
-				progress: Math.max(
-					0,
-					prev.progress - 100 / (currentRefreshIntervalRef.current / 1000),
-				),
-			}));
-		}, 1000); // Update progress every second
+			scheduleRefresh(getTimeUntilNextUpdate());
+		}
 
 		return () => {
-			cancelAnimationFrame(animationFrame);
-			clearTimeout(updateTimeout);
-			if (updateInterval) clearInterval(updateInterval);
-			clearInterval(progressInterval);
-			clearInterval(timeUpdateInterval);
+			cancelled = true;
+			if (refreshTimeout) {
+				clearTimeout(refreshTimeout);
+			}
 		};
-	}, [loadTrains, currentRefreshInterval]);
+	}, [loadTrains, currentRefreshInterval, isPageVisible]);
+
+	useEffect(() => {
+		if (!isPageVisible) {
+			return;
+		}
+		setCurrentTime(new Date());
+		const interval = setInterval(() => {
+			setCurrentTime(new Date());
+		}, TIME_UPDATE_INTERVAL);
+		return () => {
+			clearInterval(interval);
+		};
+	}, [isPageVisible]);
 
 	if (state.loading && state.initialLoad) {
 		return <TrainListSkeleton />;
