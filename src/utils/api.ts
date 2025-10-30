@@ -668,6 +668,8 @@ export async function fetchTrains(
 /**
  * Normalise and filter raw API train data so downstream consumers only see valid journeys.
  */
+const DEPARTED_HYSTERESIS_MS = 10_000; // 10 seconds to avoid flicker when no actualTime
+
 function processTrainData(
     data: Train[],
     stationCode: string,
@@ -690,9 +692,7 @@ function processTrainData(
 	}
 	const isPSLHKIRoute = stationCode === "PSL" && destinationCode === "HKI";
 
-    const DEPARTED_HYSTERESIS_MS = 10_000; // 10 seconds to avoid flicker when no actualTime
-
-    const filteredTrains = data
+	const filteredTrains = data
 		.filter((train) => {
 			const isCommuter = train.trainCategory === "Commuter";
 			if (!isCommuter && process.env.NODE_ENV === "development") {
@@ -738,30 +738,52 @@ function processTrainData(
 				);
 			}
 			return isValid;
-        })
-        // Derive isDeparted/departedAt once here using server time
-        .map((train) => {
-            const departureRow = train.timeTableRows.find(
-                (row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
-            );
-
-            if (!departureRow) return train;
-
-            const actual = departureRow.actualTime;
-            if (actual) {
-                return { ...train, isDeparted: true, departedAt: actual };
-            }
-
-            const departureMs = getDepartureDate(departureRow).getTime();
-            const isDeparted = serverNowMs - departureMs >= DEPARTED_HYSTERESIS_MS;
-            return isDeparted
-                ? { ...train, isDeparted: true, departedAt: new Date(departureMs).toISOString() }
-                : { ...train, isDeparted: false };
-        })
-        .sort((a, b) => sortByDepartureTime(a, b, stationCode));
+		})
+		// Derive isDeparted/departedAt once here using server time
+		.map((train) =>
+			deriveDepartureStatus(train, stationCode, serverNowMs),
+		)
+		.sort((a, b) => sortByDepartureTime(a, b, stationCode));
 
 	console.log(`Found ${filteredTrains.length} valid trains after processing`);
 	return filteredTrains;
+}
+
+function deriveDepartureStatus(
+	train: Train,
+	stationCode: string,
+	serverNowMs: number,
+): Train {
+	const departureRow = train.timeTableRows.find(
+		(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
+	);
+
+	if (!departureRow) {
+		return train;
+	}
+
+	const actual = departureRow.actualTime;
+	if (actual) {
+		return {
+			...train,
+			isDeparted: true,
+			departedAt: actual,
+		};
+	}
+
+	const departureMs = getDepartureDate(departureRow).getTime();
+	if (serverNowMs - departureMs >= DEPARTED_HYSTERESIS_MS) {
+		return {
+			...train,
+			isDeparted: true,
+			departedAt: new Date(departureMs).toISOString(),
+		};
+	}
+
+	return {
+		...train,
+		isDeparted: false,
+	};
 }
 
 /**
