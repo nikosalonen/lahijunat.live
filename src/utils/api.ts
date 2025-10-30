@@ -221,6 +221,7 @@ function cleanupCache<T>(cache: Map<string, CacheEntry<T>>): void {
 /**
  * Resolve cached train lists for an origin-destination pair, respecting urgency TTLs.
  */
+
 function getCachedTrains(
 	stationCode: string,
 	destinationCode: string,
@@ -256,7 +257,13 @@ function getCachedTrains(
 		return null;
 	}
 
-	return cached.data;
+	const serverNowMs = now + (cached.serverOffsetMs ?? 0);
+	const refreshedData = cached.data.map((train) =>
+		deriveDepartureStatus(train, stationCode, serverNowMs),
+	);
+	cached.data = refreshedData;
+
+	return refreshedData;
 }
 
 // Get cached trains even if expired (for fallback when API fails)
@@ -272,7 +279,12 @@ function getCachedTrainsEvenIfExpired(
 	if (!cached) return null;
 
 	// Return data even if expired - don't delete from cache
-	return cached.data;
+	const serverNowMs = Date.now() + (cached.serverOffsetMs ?? 0);
+	const refreshedData = cached.data.map((train) =>
+		deriveDepartureStatus(train, stationCode, serverNowMs),
+	);
+	cached.data = refreshedData;
+	return refreshedData;
 }
 
 // Optimized GraphQL query with better filtering
