@@ -1,12 +1,15 @@
 import type { Duration, Train } from "../types";
 
 /**
- * Format an ISO date string into a Finnish locale HH:MM time.
+ * Format an ISO date string into a Finnish locale time.
+ * @param date - ISO date string to format
+ * @param includeSeconds - Whether to include seconds in the output (default: false)
  */
-export const formatTime = (date: string) => {
+export const formatTime = (date: string, includeSeconds = false) => {
 	return new Date(date).toLocaleTimeString("fi-FI", {
 		hour: "2-digit",
 		minute: "2-digit",
+		...(includeSeconds && { second: "2-digit" }),
 	});
 };
 
