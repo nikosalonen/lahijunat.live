@@ -150,6 +150,10 @@ interface CacheEntry<T> {
 	timestamp: number;
 }
 
+interface TrainCacheEntry extends CacheEntry<Train[]> {
+	serverOffsetMs?: number;
+}
+
 interface GraphQLStation {
 	name: string;
 	shortCode: string;
@@ -175,7 +179,7 @@ function getCachedStations(): Station[] | null {
 }
 
 // Cache for train data
-const trainCache = new Map<string, CacheEntry<Train[]>>();
+const trainCache = new Map<string, TrainCacheEntry>();
 
 // Cache for destination data
 const destinationCache = new Map<string, CacheEntry<Station[]>>();
