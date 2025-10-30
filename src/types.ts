@@ -15,6 +15,10 @@ export interface Train {
 	commuterLineID: string;
 	trainNumber: string;
 	timeTableRows: TimeTableRow[];
+	// Derived fields (computed in API layer)
+	isDeparted?: boolean;
+	/** ISO string when train is considered departed (actual or inferred) */
+	departedAt?: string;
 }
 
 export interface TimeTableRow {

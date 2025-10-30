@@ -28,7 +28,6 @@ interface Props {
 
 const MemoizedTrainCard = memo(TrainCard);
 const INITIAL_TRAIN_COUNT = 15;
-const FADE_DURATION = 300; // Align with card opacity transition
 const DEPARTED_GRACE_MINUTES = -2; // How long to keep showing a train after departure
 const TIME_UPDATE_INTERVAL = 1000; // Update current time every 1 seconds when visible
 const ANIMATION_DURATION_MS = 2500;
@@ -248,26 +247,47 @@ export default function TrainList({
 		currentRefreshIntervalRef.current = currentRefreshInterval;
 	}, [currentRefreshInterval]);
 
-	const handleTrainDeparted = useCallback((trainNumber: string) => {
-		setTimeout(() => {
-			setDepartedTrains((prev) => new Set([...prev, trainNumber]));
-		}, FADE_DURATION);
+	const handleTrainDeparted = useCallback((journeyKey: string) => {
+		setDepartedTrains((prev) => new Set([...prev, journeyKey]));
 	}, []);
 
-	const handleTrainReappear = useCallback((trainNumber: string) => {
+	const handleTrainReappear = useCallback((journeyKey: string) => {
 		setDepartedTrains((prev) => {
 			const next = new Set(prev);
-			next.delete(trainNumber);
+			next.delete(journeyKey);
 			return next;
 		});
 	}, []);
 
-// eslint-disable-next-line react-hooks/exhaustive-deps
+	useEffect(() => {
+		if (!state.trains?.length) {
+			return;
+		}
+
+		setDepartedTrains((prev) => {
+			let updated: Set<string> | undefined;
+
+			for (const train of state.trains) {
+				const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
+				if (!train.isDeparted && prev.has(journeyKey)) {
+					if (!updated) {
+						updated = new Set(prev);
+					}
+					updated.delete(journeyKey);
+				}
+			}
+
+			return updated ?? prev;
+		});
+	}, [state.trains, stationCode, destinationCode]);
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => {
 		let refreshTimeout: ReturnType<typeof setTimeout> | undefined;
 		let cancelled = false;
 		const getTimeUntilNextUpdate = () => {
-			const intervalMs = currentRefreshIntervalRef.current || REFRESH_INTERVALS.MEDIUM;
+			const intervalMs =
+				currentRefreshIntervalRef.current || REFRESH_INTERVALS.MEDIUM;
 			const now = Date.now();
 			const msIntoInterval = now % intervalMs;
 			const msUntilNextInterval = intervalMs - msIntoInterval;
@@ -383,34 +403,34 @@ export default function TrainList({
 
 	const displayedTrains = (state.trains || [])
 		.filter((train) => {
-			// Filter out trains that have been manually marked as departed (post-fade)
-			if (departedTrains.has(train.trainNumber)) return false;
+			const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
+			// Hide trains that have been faded out via transitionend
+			if (departedTrains.has(journeyKey)) return false;
 
-			// Filter out trains that have actually departed (departed more than 2 minutes ago)
-			const departureRow = train.timeTableRows.find(
-				(row) =>
-					row.stationShortCode === stationCode && row.type === "DEPARTURE",
-			);
-
-			if (departureRow) {
-				const departureTime = getDepartureDate(departureRow);
-				const minutesToDeparture =
-					(departureTime.getTime() - currentTime.getTime()) / (1000 * 60);
-
-				// Don't show trains that departed more than the grace period ago (inclusive)
-				const graceMinutes = Math.abs(DEPARTED_GRACE_MINUTES);
-				return minutesToDeparture >= -graceMinutes;
+			// If API-derived departure says it's departed, apply grace window
+			if (train.isDeparted) {
+				const departedAt = train.departedAt
+					? new Date(train.departedAt).getTime()
+					: undefined;
+				if (departedAt) {
+					const diffMinutes =
+						(currentTime.getTime() - departedAt) / (1000 * 60);
+					const graceMinutes = Math.abs(DEPARTED_GRACE_MINUTES);
+					return diffMinutes <= graceMinutes;
+				}
+				// No timestamp? Keep it for a single cycle until UI fades it
+				return true;
 			}
 
 			return true;
 		})
 		.slice(0, displayedTrainCount);
 	const hasMoreTrains = (state.trains || []).length > displayedTrainCount;
-const animationPhase = useMemo(() => {
-	const phase =
-		(currentTime.getTime() % ANIMATION_DURATION_MS) / ANIMATION_DURATION_MS;
-	return Number.isFinite(phase) ? phase : 0;
-}, [currentTime]);
+	const animationPhase = useMemo(() => {
+		const phase =
+			(currentTime.getTime() % ANIMATION_DURATION_MS) / ANIMATION_DURATION_MS;
+		return Number.isFinite(phase) ? phase : 0;
+	}, [currentTime]);
 
 	const refreshProgress = useMemo(() => {
 		const interval = Math.max(currentRefreshInterval, 1);
@@ -453,32 +473,33 @@ const animationPhase = useMemo(() => {
 				<div
 					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"
 					style={{
-					"--animation-phase": animationPhase,
+						"--animation-phase": animationPhase,
 						"grid-template-rows": `repeat(${displayedTrains.length}, minmax(0, 1fr))`,
 					}}
 				>
-					{displayedTrains.map((train, index) => (
-						<div
-							key={train.trainNumber}
-							class={
-								departedTrains.has(train.trainNumber) ? "" : "animate-scale-in"
-							}
-							style={{
-								"grid-row": `${index + 1}`,
-								animationDelay: `${index * 0.05}s`,
-							}}
-						>
-							<MemoizedTrainCard
-								train={train}
-								stationCode={stationCode}
-								destinationCode={destinationCode}
-								currentTime={currentTime}
-								onDepart={() => handleTrainDeparted(train.trainNumber)}
-								onReappear={() => handleTrainReappear(train.trainNumber)}
-								getDurationSpeedType={getDurationSpeedType}
-							/>
-						</div>
-					))}
+					{displayedTrains.map((train, index) => {
+						const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
+						return (
+							<div
+								key={journeyKey}
+								class={departedTrains.has(journeyKey) ? "" : "animate-scale-in"}
+								style={{
+									"grid-row": `${index + 1}`,
+									animationDelay: `${index * 0.05}s`,
+								}}
+							>
+								<MemoizedTrainCard
+									train={train}
+									stationCode={stationCode}
+									destinationCode={destinationCode}
+									currentTime={currentTime}
+									onDepart={() => handleTrainDeparted(journeyKey)}
+									onReappear={() => handleTrainReappear(journeyKey)}
+									getDurationSpeedType={getDurationSpeedType}
+								/>
+							</div>
+						);
+					})}
 				</div>
 				{hasMoreTrains && (
 					<div class="flex justify-center mt-6">

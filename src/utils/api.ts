@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/security/noGlobalEval: we're intentionally using it to avoid bundling issues */
 import type { Station, Train } from "../types";
+import { getDepartureDate } from "./trainUtils";
 
 /**
  * Resolve the app version from environment variables or package.json as a fallback.
@@ -149,6 +150,10 @@ interface CacheEntry<T> {
 	timestamp: number;
 }
 
+interface TrainCacheEntry extends CacheEntry<Train[]> {
+	serverOffsetMs?: number;
+}
+
 interface GraphQLStation {
 	name: string;
 	shortCode: string;
@@ -174,7 +179,7 @@ function getCachedStations(): Station[] | null {
 }
 
 // Cache for train data
-const trainCache = new Map<string, CacheEntry<Train[]>>();
+const trainCache = new Map<string, TrainCacheEntry>();
 
 // Cache for destination data
 const destinationCache = new Map<string, CacheEntry<Station[]>>();
@@ -216,6 +221,7 @@ function cleanupCache<T>(cache: Map<string, CacheEntry<T>>): void {
 /**
  * Resolve cached train lists for an origin-destination pair, respecting urgency TTLs.
  */
+
 function getCachedTrains(
 	stationCode: string,
 	destinationCode: string,
@@ -251,7 +257,13 @@ function getCachedTrains(
 		return null;
 	}
 
-	return cached.data;
+	const serverNowMs = now + (cached.serverOffsetMs ?? 0);
+	const refreshedData = cached.data.map((train) =>
+		deriveDepartureStatus(train, stationCode, serverNowMs),
+	);
+	cached.data = refreshedData;
+
+	return refreshedData;
 }
 
 // Get cached trains even if expired (for fallback when API fails)
@@ -267,7 +279,12 @@ function getCachedTrainsEvenIfExpired(
 	if (!cached) return null;
 
 	// Return data even if expired - don't delete from cache
-	return cached.data;
+	const serverNowMs = Date.now() + (cached.serverOffsetMs ?? 0);
+	const refreshedData = cached.data.map((train) =>
+		deriveDepartureStatus(train, stationCode, serverNowMs),
+	);
+	cached.data = refreshedData;
+	return refreshedData;
 }
 
 // Optimized GraphQL query with better filtering
@@ -615,6 +632,17 @@ export async function fetchTrains(
 
 			const data = await response.json();
 
+			// Use server time from Date header to reduce client clock skew
+			const serverDateHeader = response.headers.get("date");
+			let serverNowMs = Date.now();
+			if (serverDateHeader) {
+				const parsedDate = new Date(serverDateHeader);
+				const parsedMs = parsedDate.getTime();
+				if (Number.isFinite(parsedMs)) {
+					serverNowMs = parsedMs;
+				}
+			}
+
 			if (!Array.isArray(data)) {
 				console.error("Invalid API response format:", data);
 				throw new Error("Invalid API response format: expected an array");
@@ -625,13 +653,20 @@ export async function fetchTrains(
 				data,
 				stationCode,
 				destinationCode,
+				serverNowMs,
 			);
 			console.log(`Processed ${processedData.length} valid trains`);
+
+			const clientNowMs = Date.now();
+			const serverOffsetMs = serverNowMs - clientNowMs;
 
 			// Cache the processed data
 			trainCache.set(`${stationCode}-${destinationCode}`, {
 				data: processedData,
-				timestamp: Date.now(),
+				timestamp: clientNowMs,
+				serverOffsetMs: Number.isFinite(serverOffsetMs)
+					? serverOffsetMs
+					: undefined,
 			});
 			cleanupCache(trainCache);
 
@@ -655,10 +690,13 @@ export async function fetchTrains(
 /**
  * Normalise and filter raw API train data so downstream consumers only see valid journeys.
  */
+const DEPARTED_HYSTERESIS_MS = 2_000; // 2 seconds to avoid flicker when no actualTime
+
 function processTrainData(
 	data: Train[],
 	stationCode: string,
 	destinationCode: string,
+	serverNowMs: number,
 ): Train[] {
 	// Early return for empty data
 	if (!data.length) {
@@ -723,10 +761,49 @@ function processTrainData(
 			}
 			return isValid;
 		})
+		// Derive isDeparted/departedAt once here using server time
+		.map((train) => deriveDepartureStatus(train, stationCode, serverNowMs))
 		.sort((a, b) => sortByDepartureTime(a, b, stationCode));
 
 	console.log(`Found ${filteredTrains.length} valid trains after processing`);
 	return filteredTrains;
+}
+
+function deriveDepartureStatus(
+	train: Train,
+	stationCode: string,
+	serverNowMs: number,
+): Train {
+	const departureRow = train.timeTableRows.find(
+		(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
+	);
+
+	if (!departureRow) {
+		return train;
+	}
+
+	const actual = departureRow.actualTime;
+	if (actual) {
+		return {
+			...train,
+			isDeparted: true,
+			departedAt: actual,
+		};
+	}
+
+	const departureMs = getDepartureDate(departureRow).getTime();
+	if (serverNowMs - departureMs >= DEPARTED_HYSTERESIS_MS) {
+		return {
+			...train,
+			isDeparted: true,
+			departedAt: new Date(departureMs).toISOString(),
+		};
+	}
+
+	return {
+		...train,
+		isDeparted: false,
+	};
 }
 
 /**

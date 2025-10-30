@@ -88,8 +88,7 @@ const getCardStyle = (
 		return `${baseStyles} bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-300 dark:border-red-800`;
 
 	// Priority 2: Departed trains
-	if (minutesToDeparture !== null && minutesToDeparture < 0)
-		return `${baseStyles} bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 border-gray-300 dark:border-gray-600 opacity-0`;
+	// Do not set opacity via class; fade is driven by inline style and transitionend
 
 	// Priority 3: Highlighted + Departing soon (< 5 min) - Purple highlight with blinking
 	if (
@@ -218,40 +217,41 @@ export default function TrainCard({
 		getDurationSpeedType,
 	]);
 
-	// Handle depart/undepart transitions when estimate jumps forward
+	// Track depart/undepart transitions
 	useEffect(() => {
-		if (minutesToDeparture === null) return;
-		if (minutesToDeparture < 0 && !hasDeparted) {
+		const departed = Boolean(train.isDeparted);
+		if (departed && !hasDeparted) {
 			setHasDeparted(true);
-			setOpacity(1);
-			// Cancel any previous fade RAF just before scheduling a new one
-			if (fadeRafRef.current !== null) {
-				cancelAnimationFrame(fadeRafRef.current);
-				fadeRafRef.current = null;
-			}
-			fadeRafRef.current = requestAnimationFrame(() => {
-				setOpacity(0);
-			});
-			onDepart?.();
-		} else if (minutesToDeparture >= 0 && hasDeparted) {
-			// Estimation jumped forward; bring card back
+		} else if (!departed && hasDeparted) {
 			setHasDeparted(false);
-			setOpacity(1);
-			// Ensure no stale RAF can flip opacity back to 0
-			if (fadeRafRef.current !== null) {
-				cancelAnimationFrame(fadeRafRef.current);
-				fadeRafRef.current = null;
-			}
 			onReappear?.();
 		}
+	}, [train.isDeparted, hasDeparted, onReappear]);
 
-		return () => {
+	// Drive fade animation based on hasDeparted state
+	useEffect(() => {
+		if (!hasDeparted) {
 			if (fadeRafRef.current !== null) {
 				cancelAnimationFrame(fadeRafRef.current);
+				fadeRafRef.current = null;
+			}
+			setOpacity(1);
+			return;
+		}
+
+		setOpacity(1);
+		const rafId = requestAnimationFrame(() => {
+			setOpacity(0);
+		});
+		fadeRafRef.current = rafId;
+
+		return () => {
+			cancelAnimationFrame(rafId);
+			if (fadeRafRef.current === rafId) {
 				fadeRafRef.current = null;
 			}
 		};
-	}, [minutesToDeparture, hasDeparted, onDepart, onReappear]);
+	}, [hasDeparted]);
 
 	useEffect(() => {
 		// Load highlighted state safely (works even if localStorage is unavailable)
@@ -543,6 +543,34 @@ export default function TrainCard({
 
 	if (!departureRow) return null;
 
+	const hasDerivedActualDeparture = Boolean(
+		departureRow.actualTime ?? train.departedAt,
+	);
+	const showDebugInfo = import.meta.env.DEV;
+	const debugState = showDebugInfo
+		? {
+			trainIsDeparted: Boolean(train.isDeparted),
+			hasDeparted,
+			isDepartingSoon: departingSoon,
+			minutesToDeparture,
+			opacity,
+			departureActual: departureRow.actualTime ?? null,
+			derivedDepartedAt: train.departedAt ?? null,
+			departureEstimate: departureRow.liveEstimateTime ?? null,
+			departureScheduled: departureRow.scheduledTime ?? null,
+		}
+		: null;
+	const formatDebugValue = (value: unknown) => {
+		if (value === null || value === undefined) return "null";
+		if (typeof value === "boolean") return value ? "true" : "false";
+		if (typeof value === "number") {
+			if (Number.isNaN(value)) return "NaN";
+			if (!Number.isFinite(value)) return value > 0 ? "Infinity" : "-Infinity";
+			return value.toString();
+		}
+		return String(value);
+	};
+
 	return (
 		<div
 			class={`${cardStyle} w-full max-w-full text-left relative overflow-hidden select-none transition-opacity duration-700 ease-in-out`}
@@ -550,6 +578,12 @@ export default function TrainCard({
 				opacity: hasDeparted ? opacity : 1,
 				WebkitTouchCallout: "none",
 				WebkitTapHighlightColor: "transparent",
+			}}
+			onTransitionEnd={(e) => {
+				if (e.target !== e.currentTarget) return;
+				if (e.propertyName === "opacity" && hasDeparted && opacity === 0) {
+					onDepart?.();
+				}
 			}}
 			data-train-number={train.trainNumber}
 			data-train-cancelled={train.cancelled}
@@ -688,7 +722,6 @@ export default function TrainCard({
 															class="fa-solid fa-arrow-rotate-left ml-1.5 text-xs opacity-60"
 															aria-hidden="true"
 														/>
-
 													)}
 												</div>
 												{/* Back face - Arrival Track */}
@@ -709,58 +742,72 @@ export default function TrainCard({
 														right: 0,
 													}}
 												>
-									{arrivalRow ? (
-										<>
-											<i
-												class="fa-solid fa-arrow-right mr-1"
-												aria-hidden="true"
-											/>
-											{t("track")} {arrivalRow.commercialTrack}
-
-										</>
-									) : (
-										<>
-											{t("track")} {departureRow.commercialTrack}
-										</>
-									)}
+													{arrivalRow ? (
+														<>
+															<i
+																class="fa-solid fa-arrow-right mr-1"
+																aria-hidden="true"
+															/>
+															{t("track")} {arrivalRow.commercialTrack}
+														</>
+													) : (
+														<>
+															{t("track")} {departureRow.commercialTrack}
+														</>
+													)}
 												</div>
 											</div>
 										</div>
 									</button>
-									{/* Track change indicator - smart positioning */}
-									{isTrackChanged &&
-										((!isTrackFlipped &&
-											trackChangeInfo.changedSide === "departure") ||
-											(isTrackFlipped &&
-												trackChangeInfo.changedSide === "arrival")) && (
-											<span
-												class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
-												aria-hidden="true"
-											>
-												!
-											</span>
-										)}
-								</div>
+							{/* Track change indicator - smart positioning */}
+							{isTrackChanged &&
+								((!isTrackFlipped &&
+									trackChangeInfo.changedSide === "departure") ||
+									(isTrackFlipped &&
+										trackChangeInfo.changedSide === "arrival")) && (
+									<span
+										class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
+										aria-hidden="true"
+									>
+										!
+									</span>
+								)}
+							</div>
 
-								{minutesToDeparture !== null &&
-									minutesToDeparture <= 30 &&
-									minutesToDeparture >= 0 && (
-										<div
-											class={
-												"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
-											}
-										>
-											<span>
-												{minutesToDeparture === 0
-													? "0 min"
-													: `${minutesToDeparture} min`}
-											</span>
-										</div>
-									)}
+					{!hasDerivedActualDeparture &&
+						minutesToDeparture !== null &&
+						minutesToDeparture <= 30 &&
+						minutesToDeparture >= 0 && (
+							<div
+								class={
+									"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
+								}
+							>
+								<span>
+									{minutesToDeparture === 0
+										? "0 min"
+										: `${minutesToDeparture} min`}
+								</span>
+							</div>
+						)}
 							</>
 						)}
 					</div>
 				</div>
+		{showDebugInfo && debugState && (
+			<div class="mt-3 w-full overflow-hidden rounded border border-dashed border-base-300 bg-base-200/40 p-2 text-xs font-mono text-base-content/70">
+				{Object.entries(debugState).map(([label, value]) => (
+					<div key={label} class="flex items-center justify-between gap-3">
+						<span class="font-semibold uppercase tracking-wide">
+							{label}
+						</span>
+						<span class="text-right">
+							{formatDebugValue(value)}
+						</span>
+					</div>
+				))}
+			</div>
+		)}
 				<div aria-live="polite" class="sr-only">
 					{train.cancelled
 						? t("cancelled")
