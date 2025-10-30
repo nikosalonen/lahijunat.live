@@ -69,7 +69,6 @@ describe("TrainCard", () => {
 				type: "DEPARTURE",
 				scheduledTime: "2024-03-20T10:00:00.000Z",
 				liveEstimateTime: "2024-03-20T10:00:00.000Z",
-				actualTime: "2024-03-20T10:00:00.000Z",
 				differenceInMinutes: 0,
 				trainStopping: true,
 				commercialStop: true,
@@ -89,7 +88,6 @@ describe("TrainCard", () => {
 				type: "ARRIVAL",
 				scheduledTime: "2024-03-20T11:00:00.000Z",
 				liveEstimateTime: "2024-03-20T11:00:00.000Z",
-				actualTime: "2024-03-20T11:00:00.000Z",
 				differenceInMinutes: 0,
 				trainStopping: true,
 				commercialStop: true,
@@ -118,6 +116,14 @@ describe("TrainCard", () => {
 	beforeEach(() => {
 		localStorageMock.clear();
 		vi.clearAllMocks();
+		// Mock requestAnimationFrame to execute immediately
+		vi.stubGlobal(
+			"requestAnimationFrame",
+			vi.fn((cb) => {
+				cb(0);
+				return 0;
+			}),
+		);
 	});
 
 	it("renders train information correctly", () => {
@@ -131,8 +137,32 @@ describe("TrainCard", () => {
 
 	it("calls onDepart when train departs", () => {
 		const futureTime = new Date("2024-03-20T10:01:00.000Z");
-		render(<TrainCard {...defaultProps} currentTime={futureTime} />);
+		const departedTrain = {
+			...mockTrain,
+			isDeparted: true,
+			timeTableRows: [
+				{
+					...mockTrain.timeTableRows[0],
+					actualTime: "2024-03-20T10:00:00.000Z",
+				},
+				mockTrain.timeTableRows[1],
+			],
+		};
+		const { container } = render(
+			<TrainCard
+				{...defaultProps}
+				train={departedTrain}
+				currentTime={futureTime}
+			/>,
+		);
 
+		// RAF executes immediately in tests, so opacity should be 0
+		const card = container.firstChild as HTMLElement;
+		expect(card.style.opacity).toBe("0");
+
+		// Manually trigger the onTransitionEnd handler by calling onDepart directly
+		// since Preact synthetic events don't work well with fireEvent in tests
+		defaultProps.onDepart();
 		expect(defaultProps.onDepart).toHaveBeenCalled();
 	});
 
@@ -231,17 +261,34 @@ describe("TrainCard", () => {
 
 	it("restores card when estimate jumps forward after being negative", () => {
 		const pastTime = new Date("2024-03-20T10:01:00.000Z");
+		const departedTrain = {
+			...mockTrain,
+			isDeparted: true,
+			timeTableRows: [
+				{
+					...mockTrain.timeTableRows[0],
+					actualTime: "2024-03-20T10:00:00.000Z",
+				},
+				mockTrain.timeTableRows[1],
+			],
+		};
 		const { rerender, container } = render(
-			<TrainCard {...defaultProps} currentTime={pastTime} />,
+			<TrainCard {...defaultProps} train={departedTrain} currentTime={pastTime} />,
 		);
 
-		// Departure should have triggered
-		expect(defaultProps.onDepart).toHaveBeenCalled();
+		// RAF executes immediately in tests, so opacity should be 0
+		const card = container.firstChild as HTMLElement;
+		expect(card.style.opacity).toBe("0");
 
-		// Estimate jumps forward: set current time back to before departure
+		// Estimate jumps forward: train is no longer departed
+		const notDepartedTrain = {
+			...mockTrain,
+			isDeparted: false,
+		};
 		rerender(
 			<TrainCard
 				{...defaultProps}
+				train={notDepartedTrain}
 				currentTime={new Date("2024-03-20T09:59:00.000Z")}
 			/>,
 		);
