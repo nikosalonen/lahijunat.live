@@ -381,6 +381,17 @@ export default function TrainList({
 	const displayedTrains = (state.trains || [])
 		.filter((train) => {
 			const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
+
+			// If API says train is not departed, remove it from departedTrains set
+			// This allows trains to reappear if the API corrects their departure status
+			if (!train.isDeparted && departedTrains.has(journeyKey)) {
+				setDepartedTrains((prev) => {
+					const next = new Set(prev);
+					next.delete(journeyKey);
+					return next;
+				});
+			}
+
 			// Hide trains that have been faded out via transitionend
 			if (departedTrains.has(journeyKey)) return false;
 
