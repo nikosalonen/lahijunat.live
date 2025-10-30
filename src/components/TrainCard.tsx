@@ -5,11 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
-import {
-	calculateDuration,
-	formatTime,
-	getDepartureDate,
-} from "../utils/trainUtils";
+import { calculateDuration, getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
 
@@ -545,12 +541,33 @@ export default function TrainCard({
 
 	if (!departureRow) return null;
 
-	const derivedActualDeparture =
-		departureRow.actualTime ?? train.departedAt ?? null;
-	const departureTimeForBadge =
-		derivedActualDeparture ??
-		departureRow.liveEstimateTime ??
-		departureRow.scheduledTime;
+	const hasDerivedActualDeparture = Boolean(
+		departureRow.actualTime ?? train.departedAt,
+	);
+	const showDebugInfo = import.meta.env.DEV;
+	const debugState = showDebugInfo
+		? {
+			trainIsDeparted: Boolean(train.isDeparted),
+			hasDeparted,
+			isDepartingSoon: departingSoon,
+			minutesToDeparture,
+			opacity,
+			departureActual: departureRow.actualTime ?? null,
+			derivedDepartedAt: train.departedAt ?? null,
+			departureEstimate: departureRow.liveEstimateTime ?? null,
+			departureScheduled: departureRow.scheduledTime ?? null,
+		}
+		: null;
+	const formatDebugValue = (value: unknown) => {
+		if (value === null || value === undefined) return "null";
+		if (typeof value === "boolean") return value ? "true" : "false";
+		if (typeof value === "number") {
+			if (Number.isNaN(value)) return "NaN";
+			if (!Number.isFinite(value)) return value > 0 ? "Infinity" : "-Infinity";
+			return value.toString();
+		}
+		return String(value);
+	};
 
 	return (
 		<div
