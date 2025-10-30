@@ -649,19 +649,23 @@ export async function fetchTrains(
 			}
 
 			console.log(`Received ${data.length} trains from API`);
-			const processedData = processTrainData(
-				data,
-				stationCode,
-				destinationCode,
-				serverNowMs,
-			);
-			console.log(`Processed ${processedData.length} valid trains`);
+		const processedData = processTrainData(
+			data,
+			stationCode,
+			destinationCode,
+			serverNowMs,
+		);
+		console.log(`Processed ${processedData.length} valid trains`);
 
-			// Cache the processed data
-			trainCache.set(`${stationCode}-${destinationCode}`, {
-				data: processedData,
-				timestamp: Date.now(),
-			});
+		const clientNowMs = Date.now();
+		const serverOffsetMs = serverNowMs - clientNowMs;
+
+		// Cache the processed data
+		trainCache.set(`${stationCode}-${destinationCode}`, {
+			data: processedData,
+			timestamp: clientNowMs,
+			serverOffsetMs: Number.isFinite(serverOffsetMs) ? serverOffsetMs : undefined,
+		});
 			cleanupCache(trainCache);
 
 			return processedData;
