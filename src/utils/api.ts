@@ -690,7 +690,7 @@ export async function fetchTrains(
 /**
  * Normalise and filter raw API train data so downstream consumers only see valid journeys.
  */
-const DEPARTED_HYSTERESIS_MS = 10_000; // 10 seconds to avoid flicker when no actualTime
+const DEPARTED_HYSTERESIS_MS = 2_000; // 2 seconds to avoid flicker when no actualTime
 
 function processTrainData(
 	data: Train[],
