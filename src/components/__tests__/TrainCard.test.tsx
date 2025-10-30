@@ -1,4 +1,4 @@
-import { fireEvent, render } from "@testing-library/preact";
+import { fireEvent, render, waitFor } from "@testing-library/preact";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Train } from "../../types";
 import TrainCard from "../TrainCard";
@@ -135,7 +135,7 @@ describe("TrainCard", () => {
 		expect(getByText("5 min")).toBeInTheDocument();
 	});
 
-	it("calls onDepart when train departs", () => {
+	it("fades out departed train", async () => {
 		const futureTime = new Date("2024-03-20T10:01:00.000Z");
 		const departedTrain = {
 			...mockTrain,
@@ -156,14 +156,14 @@ describe("TrainCard", () => {
 			/>,
 		);
 
-		// RAF executes immediately in tests, so opacity should be 0
+		// RAF executes immediately in tests, so opacity should transition to 0
 		const card = container.firstChild as HTMLElement;
-		expect(card.style.opacity).toBe("0");
+		await waitFor(() => {
+			expect(card.style.opacity).toBe("0");
+		});
 
-		// Manually trigger the onTransitionEnd handler by calling onDepart directly
-		// since Preact synthetic events don't work well with fireEvent in tests
-		defaultProps.onDepart();
-		expect(defaultProps.onDepart).toHaveBeenCalled();
+		// Transition end events are unreliable in the current test environment,
+		// so we only verify that the opacity transition completes.
 	});
 
 	it("handles cancelled trains correctly", () => {
