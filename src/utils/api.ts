@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/security/noGlobalEval: we're intentionally using it to avoid bundling issues */
 import type { Station, Train } from "../types";
+import { getDepartureDate } from "./trainUtils";
 
 /**
  * Resolve the app version from environment variables or package.json as a fallback.
@@ -615,6 +616,12 @@ export async function fetchTrains(
 
 			const data = await response.json();
 
+			// Use server time from Date header to reduce client clock skew
+			const serverDateHeader = response.headers.get("date");
+			const serverNowMs = serverDateHeader
+				? new Date(serverDateHeader).getTime()
+				: Date.now();
+
 			if (!Array.isArray(data)) {
 				console.error("Invalid API response format:", data);
 				throw new Error("Invalid API response format: expected an array");
@@ -625,6 +632,7 @@ export async function fetchTrains(
 				data,
 				stationCode,
 				destinationCode,
+				serverNowMs,
 			);
 			console.log(`Processed ${processedData.length} valid trains`);
 
@@ -656,9 +664,10 @@ export async function fetchTrains(
  * Normalise and filter raw API train data so downstream consumers only see valid journeys.
  */
 function processTrainData(
-	data: Train[],
-	stationCode: string,
-	destinationCode: string,
+    data: Train[],
+    stationCode: string,
+    destinationCode: string,
+    serverNowMs: number,
 ): Train[] {
 	// Early return for empty data
 	if (!data.length) {
@@ -676,7 +685,9 @@ function processTrainData(
 	}
 	const isPSLHKIRoute = stationCode === "PSL" && destinationCode === "HKI";
 
-	const filteredTrains = data
+    const DEPARTED_HYSTERESIS_MS = 10_000; // 10s to avoid flicker when no actualTime
+
+    const filteredTrains = data
 		.filter((train) => {
 			const isCommuter = train.trainCategory === "Commuter";
 			if (!isCommuter && process.env.NODE_ENV === "development") {
@@ -722,8 +733,27 @@ function processTrainData(
 				);
 			}
 			return isValid;
-		})
-		.sort((a, b) => sortByDepartureTime(a, b, stationCode));
+        })
+        // Derive isDeparted/departedAt once here using server time
+        .map((train) => {
+            const departureRow = train.timeTableRows.find(
+                (row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
+            );
+
+            if (!departureRow) return train;
+
+            const actual = departureRow.actualTime;
+            if (actual) {
+                return { ...train, isDeparted: true, departedAt: actual };
+            }
+
+            const departureMs = getDepartureDate(departureRow).getTime();
+            const isDeparted = serverNowMs - departureMs >= DEPARTED_HYSTERESIS_MS;
+            return isDeparted
+                ? { ...train, isDeparted: true, departedAt: new Date(departureMs).toISOString() }
+                : { ...train, isDeparted: false };
+        })
+        .sort((a, b) => sortByDepartureTime(a, b, stationCode));
 
 	console.log(`Found ${filteredTrains.length} valid trains after processing`);
 	return filteredTrains;

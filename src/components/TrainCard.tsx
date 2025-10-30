@@ -218,10 +218,10 @@ export default function TrainCard({
 		getDurationSpeedType,
 	]);
 
-	// Handle depart/undepart transitions when estimate jumps forward
+	// Handle depart/undepart transitions based on derived isDeparted
 	useEffect(() => {
-		if (minutesToDeparture === null) return;
-		if (minutesToDeparture < 0 && !hasDeparted) {
+		const departed = Boolean(train.isDeparted);
+		if (departed && !hasDeparted) {
 			setHasDeparted(true);
 			setOpacity(1);
 			// Cancel any previous fade RAF just before scheduling a new one
@@ -232,9 +232,8 @@ export default function TrainCard({
 			fadeRafRef.current = requestAnimationFrame(() => {
 				setOpacity(0);
 			});
-			onDepart?.();
-		} else if (minutesToDeparture >= 0 && hasDeparted) {
-			// Estimation jumped forward; bring card back
+		} else if (!departed && hasDeparted) {
+			// Estimation or actual cleared; bring card back
 			setHasDeparted(false);
 			setOpacity(1);
 			// Ensure no stale RAF can flip opacity back to 0
@@ -251,7 +250,7 @@ export default function TrainCard({
 				fadeRafRef.current = null;
 			}
 		};
-	}, [minutesToDeparture, hasDeparted, onDepart, onReappear]);
+	}, [train.isDeparted, hasDeparted, onReappear]);
 
 	useEffect(() => {
 		// Load highlighted state safely (works even if localStorage is unavailable)
@@ -550,6 +549,11 @@ export default function TrainCard({
 				opacity: hasDeparted ? opacity : 1,
 				WebkitTouchCallout: "none",
 				WebkitTapHighlightColor: "transparent",
+			}}
+			onTransitionEnd={(e) => {
+				if (e.propertyName === "opacity" && hasDeparted && opacity === 0) {
+					onDepart?.();
+				}
 			}}
 			data-train-number={train.trainNumber}
 			data-train-cancelled={train.cancelled}
