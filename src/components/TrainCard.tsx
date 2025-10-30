@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
-import { calculateDuration, getDepartureDate } from "../utils/trainUtils";
+import { calculateDuration, getDepartureDate, formatTime } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
 
@@ -88,8 +88,7 @@ const getCardStyle = (
 		return `${baseStyles} bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-300 dark:border-red-800`;
 
 	// Priority 2: Departed trains
-	if (minutesToDeparture !== null && minutesToDeparture < 0)
-		return `${baseStyles} bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 border-gray-300 dark:border-gray-600 opacity-0`;
+	// Do not set opacity via class; fade is driven by inline style and transitionend
 
 	// Priority 3: Highlighted + Departing soon (< 5 min) - Purple highlight with blinking
 	if (
@@ -551,6 +550,7 @@ export default function TrainCard({
 				WebkitTapHighlightColor: "transparent",
 			}}
 			onTransitionEnd={(e) => {
+				if (e.target !== e.currentTarget) return;
 				if (e.propertyName === "opacity" && hasDeparted && opacity === 0) {
 					onDepart?.();
 				}
@@ -746,21 +746,27 @@ export default function TrainCard({
 										)}
 								</div>
 
-								{minutesToDeparture !== null &&
-									minutesToDeparture <= 30 &&
-									minutesToDeparture >= 0 && (
-										<div
-											class={
-												"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
-											}
-										>
-											<span>
-												{minutesToDeparture === 0
-													? "0 min"
-													: `${minutesToDeparture} min`}
-											</span>
-										</div>
-									)}
+					{train.isDeparted && departureRow && (
+						<div class={"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"}>
+							<time datetime={departureRow.actualTime ?? train.departedAt ?? departureRow.liveEstimateTime ?? departureRow.scheduledTime}>
+								{formatTime(
+									(departureRow.actualTime ?? train.departedAt ?? departureRow.liveEstimateTime ?? departureRow.scheduledTime) as string,
+								)}
+							</time>
+						</div>
+					)}
+					{!train.isDeparted &&
+						minutesToDeparture !== null &&
+						minutesToDeparture <= 30 &&
+						minutesToDeparture >= 0 && (
+							<div class={"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"}>
+								<span>
+									{minutesToDeparture === 0
+										? "0 min"
+										: `${minutesToDeparture} min`}
+								</span>
+							</div>
+						)}
 							</>
 						)}
 					</div>

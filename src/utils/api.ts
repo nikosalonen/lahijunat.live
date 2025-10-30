@@ -685,7 +685,7 @@ function processTrainData(
 	}
 	const isPSLHKIRoute = stationCode === "PSL" && destinationCode === "HKI";
 
-    const DEPARTED_HYSTERESIS_MS = 10_000; // 10s to avoid flicker when no actualTime
+    const DEPARTED_HYSTERESIS_MS = 10_000; // 2s to avoid flicker when no actualTime
 
     const filteredTrains = data
 		.filter((train) => {
