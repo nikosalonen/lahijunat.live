@@ -757,52 +757,55 @@ export default function TrainCard({
 											</div>
 										</div>
 									</button>
-									{/* Track change indicator - smart positioning */}
-									{isTrackChanged &&
-										((!isTrackFlipped &&
-											trackChangeInfo.changedSide === "departure") ||
-											(isTrackFlipped &&
-												trackChangeInfo.changedSide === "arrival")) && (
-											<span
-												class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
-												aria-hidden="true"
-											>
-												!
-											</span>
-										)}
-								</div>
-
-								{derivedActualDeparture && (
-									<div
-										class={
-											"badge badge-neutral badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
-										}
+							{/* Track change indicator - smart positioning */}
+							{isTrackChanged &&
+								((!isTrackFlipped &&
+									trackChangeInfo.changedSide === "departure") ||
+									(isTrackFlipped &&
+										trackChangeInfo.changedSide === "arrival")) && (
+									<span
+										class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
+										aria-hidden="true"
 									>
-										<time datetime={departureTimeForBadge}>
-											{formatTime(departureTimeForBadge, true)}
-										</time>
-									</div>
+										!
+									</span>
 								)}
-								{!derivedActualDeparture &&
-									minutesToDeparture !== null &&
-									minutesToDeparture <= 30 &&
-									minutesToDeparture >= 0 && (
-										<div
-											class={
-												"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
-											}
-										>
-											<span>
-												{minutesToDeparture === 0
-													? "0 min"
-													: `${minutesToDeparture} min`}
-											</span>
-										</div>
-									)}
+							</div>
+
+					{!hasDerivedActualDeparture &&
+						minutesToDeparture !== null &&
+						minutesToDeparture <= 30 &&
+						minutesToDeparture >= 0 && (
+							<div
+								class={
+									"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
+								}
+							>
+								<span>
+									{minutesToDeparture === 0
+										? "0 min"
+										: `${minutesToDeparture} min`}
+								</span>
+							</div>
+						)}
 							</>
 						)}
 					</div>
 				</div>
+		{showDebugInfo && debugState && (
+			<div class="mt-3 w-full overflow-hidden rounded border border-dashed border-base-300 bg-base-200/40 p-2 text-xs font-mono text-base-content/70">
+				{Object.entries(debugState).map(([label, value]) => (
+					<div key={label} class="flex items-center justify-between gap-3">
+						<span class="font-semibold uppercase tracking-wide">
+							{label}
+						</span>
+						<span class="text-right">
+							{formatDebugValue(value)}
+						</span>
+					</div>
+				))}
+			</div>
+		)}
 				<div aria-live="polite" class="sr-only">
 					{train.cancelled
 						? t("cancelled")
