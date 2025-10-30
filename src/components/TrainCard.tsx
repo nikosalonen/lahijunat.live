@@ -748,30 +748,31 @@ export default function TrainCard({
 										)}
 								</div>
 
-								{train.isDeparted && departureRow && (
+					{departureRow?.actualTime && (
 									<div
 										class={
-											"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
+											"badge badge-neutral badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
 										}
 									>
 										<time
 											datetime={
-												departureRow.actualTime ??
-												train.departedAt ??
-												departureRow.liveEstimateTime ??
-												departureRow.scheduledTime
+									departureRow.actualTime ??
+									train.departedAt ??
+									departureRow.liveEstimateTime ??
+									departureRow.scheduledTime
 											}
 										>
 											{formatTime(
-												(departureRow.actualTime ??
-													train.departedAt ??
-													departureRow.liveEstimateTime ??
-													departureRow.scheduledTime) as string,
+									(departureRow.actualTime ??
+										train.departedAt ??
+										departureRow.liveEstimateTime ??
+										departureRow.scheduledTime) as string,
+									true,
 											)}
 										</time>
 									</div>
 								)}
-								{!train.isDeparted &&
+					{!departureRow?.actualTime &&
 									minutesToDeparture !== null &&
 									minutesToDeparture <= 30 &&
 									minutesToDeparture >= 0 && (
