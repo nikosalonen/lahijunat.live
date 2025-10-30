@@ -754,7 +754,7 @@ export default function TrainCard({
 												class={`fa-solid text-lg ${
 													minutesToDeparture > 10
 														? "fa-hourglass-start"
-														: minutesToDeparture > 2
+														: minutesToDeparture > 5
 															? "fa-hourglass-half"
 															: "fa-hourglass-end"
 												}`}
