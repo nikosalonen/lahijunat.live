@@ -545,6 +545,13 @@ export default function TrainCard({
 
 	if (!departureRow) return null;
 
+	const derivedActualDeparture =
+		departureRow.actualTime ?? train.departedAt ?? null;
+	const departureTimeForBadge =
+		derivedActualDeparture ??
+		departureRow.liveEstimateTime ??
+		departureRow.scheduledTime;
+
 	return (
 		<div
 			class={`${cardStyle} w-full max-w-full text-left relative overflow-hidden select-none transition-opacity duration-700 ease-in-out`}
@@ -748,31 +755,18 @@ export default function TrainCard({
 										)}
 								</div>
 
-					{departureRow?.actualTime && (
+								{derivedActualDeparture && (
 									<div
 										class={
 											"badge badge-neutral badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
 										}
 									>
-										<time
-											datetime={
-									departureRow.actualTime ??
-									train.departedAt ??
-									departureRow.liveEstimateTime ??
-									departureRow.scheduledTime
-											}
-										>
-											{formatTime(
-									(departureRow.actualTime ??
-										train.departedAt ??
-										departureRow.liveEstimateTime ??
-										departureRow.scheduledTime) as string,
-									true,
-											)}
+										<time datetime={departureTimeForBadge}>
+											{formatTime(departureTimeForBadge, true)}
 										</time>
 									</div>
 								)}
-					{!departureRow?.actualTime &&
+								{!derivedActualDeparture &&
 									minutesToDeparture !== null &&
 									minutesToDeparture <= 30 &&
 									minutesToDeparture >= 0 && (
