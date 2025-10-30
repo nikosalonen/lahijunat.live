@@ -259,6 +259,28 @@ export default function TrainList({
 		});
 	}, []);
 
+	useEffect(() => {
+		if (!state.trains?.length) {
+			return;
+		}
+
+		setDepartedTrains((prev) => {
+			let updated: Set<string> | undefined;
+
+			for (const train of state.trains) {
+				const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
+				if (!train.isDeparted && prev.has(journeyKey)) {
+					if (!updated) {
+						updated = new Set(prev);
+					}
+					updated.delete(journeyKey);
+				}
+			}
+
+			return updated ?? prev;
+		});
+	}, [state.trains, stationCode, destinationCode]);
+
 // eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => {
 		let refreshTimeout: ReturnType<typeof setTimeout> | undefined;
@@ -381,17 +403,6 @@ export default function TrainList({
 	const displayedTrains = (state.trains || [])
 		.filter((train) => {
 			const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
-
-			// If API says train is not departed, remove it from departedTrains set
-			// This allows trains to reappear if the API corrects their departure status
-			if (!train.isDeparted && departedTrains.has(journeyKey)) {
-				setDepartedTrains((prev) => {
-					const next = new Set(prev);
-					next.delete(journeyKey);
-					return next;
-				});
-			}
-
 			// Hide trains that have been faded out via transitionend
 			if (departedTrains.has(journeyKey)) return false;
 
