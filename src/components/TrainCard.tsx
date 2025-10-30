@@ -750,16 +750,6 @@ export default function TrainCard({
 												"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
 											}
 										>
-											<i
-												class={`fa-solid text-lg ${
-													minutesToDeparture > 10
-														? "fa-hourglass-start"
-														: minutesToDeparture > 5
-															? "fa-hourglass-half"
-															: "fa-hourglass-end"
-												}`}
-												aria-hidden="true"
-											/>
 											<span>
 												{minutesToDeparture === 0
 													? "0 min"
