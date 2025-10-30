@@ -266,10 +266,11 @@ export default function TrainList({
 		let refreshTimeout: ReturnType<typeof setTimeout> | undefined;
 		let cancelled = false;
 		const getTimeUntilNextUpdate = () => {
-			const now = new Date();
-			const seconds = now.getSeconds();
-			const milliseconds = now.getMilliseconds();
-			return (30 - (seconds % 30)) * 1000 - milliseconds;
+			const intervalMs = currentRefreshIntervalRef.current || REFRESH_INTERVALS.MEDIUM;
+			const now = Date.now();
+			const msIntoInterval = now % intervalMs;
+			const msUntilNextInterval = intervalMs - msIntoInterval;
+			return msUntilNextInterval >= 0 ? msUntilNextInterval : intervalMs;
 		};
 
 		const scheduleRefresh = (delay: number) => {
