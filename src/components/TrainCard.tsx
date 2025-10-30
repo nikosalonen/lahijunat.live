@@ -5,7 +5,11 @@ import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
-import { calculateDuration, getDepartureDate, formatTime } from "../utils/trainUtils";
+import {
+	calculateDuration,
+	formatTime,
+	getDepartureDate,
+} from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
 
@@ -692,7 +696,6 @@ export default function TrainCard({
 															class="fa-solid fa-arrow-rotate-left ml-1.5 text-xs opacity-60"
 															aria-hidden="true"
 														/>
-
 													)}
 												</div>
 												{/* Back face - Arrival Track */}
@@ -713,20 +716,19 @@ export default function TrainCard({
 														right: 0,
 													}}
 												>
-									{arrivalRow ? (
-										<>
-											<i
-												class="fa-solid fa-arrow-right mr-1"
-												aria-hidden="true"
-											/>
-											{t("track")} {arrivalRow.commercialTrack}
-
-										</>
-									) : (
-										<>
-											{t("track")} {departureRow.commercialTrack}
-										</>
-									)}
+													{arrivalRow ? (
+														<>
+															<i
+																class="fa-solid fa-arrow-right mr-1"
+																aria-hidden="true"
+															/>
+															{t("track")} {arrivalRow.commercialTrack}
+														</>
+													) : (
+														<>
+															{t("track")} {departureRow.commercialTrack}
+														</>
+													)}
 												</div>
 											</div>
 										</div>
@@ -746,27 +748,45 @@ export default function TrainCard({
 										)}
 								</div>
 
-					{train.isDeparted && departureRow && (
-						<div class={"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"}>
-							<time datetime={departureRow.actualTime ?? train.departedAt ?? departureRow.liveEstimateTime ?? departureRow.scheduledTime}>
-								{formatTime(
-									(departureRow.actualTime ?? train.departedAt ?? departureRow.liveEstimateTime ?? departureRow.scheduledTime) as string,
+								{train.isDeparted && departureRow && (
+									<div
+										class={
+											"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
+										}
+									>
+										<time
+											datetime={
+												departureRow.actualTime ??
+												train.departedAt ??
+												departureRow.liveEstimateTime ??
+												departureRow.scheduledTime
+											}
+										>
+											{formatTime(
+												(departureRow.actualTime ??
+													train.departedAt ??
+													departureRow.liveEstimateTime ??
+													departureRow.scheduledTime) as string,
+											)}
+										</time>
+									</div>
 								)}
-							</time>
-						</div>
-					)}
-					{!train.isDeparted &&
-						minutesToDeparture !== null &&
-						minutesToDeparture <= 30 &&
-						minutesToDeparture >= 0 && (
-							<div class={"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"}>
-								<span>
-									{minutesToDeparture === 0
-										? "0 min"
-										: `${minutesToDeparture} min`}
-								</span>
-							</div>
-						)}
+								{!train.isDeparted &&
+									minutesToDeparture !== null &&
+									minutesToDeparture <= 30 &&
+									minutesToDeparture >= 0 && (
+										<div
+											class={
+												"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
+											}
+										>
+											<span>
+												{minutesToDeparture === 0
+													? "0 min"
+													: `${minutesToDeparture} min`}
+											</span>
+										</div>
+									)}
 							</>
 						)}
 					</div>
