@@ -632,16 +632,16 @@ export async function fetchTrains(
 
 			const data = await response.json();
 
-		// Use server time from Date header to reduce client clock skew
-		const serverDateHeader = response.headers.get("date");
-		let serverNowMs = Date.now();
-		if (serverDateHeader) {
-			const parsedDate = new Date(serverDateHeader);
-			const parsedMs = parsedDate.getTime();
-			if (Number.isFinite(parsedMs)) {
-				serverNowMs = parsedMs;
+			// Use server time from Date header to reduce client clock skew
+			const serverDateHeader = response.headers.get("date");
+			let serverNowMs = Date.now();
+			if (serverDateHeader) {
+				const parsedDate = new Date(serverDateHeader);
+				const parsedMs = parsedDate.getTime();
+				if (Number.isFinite(parsedMs)) {
+					serverNowMs = parsedMs;
+				}
 			}
-		}
 
 			if (!Array.isArray(data)) {
 				console.error("Invalid API response format:", data);
@@ -649,23 +649,25 @@ export async function fetchTrains(
 			}
 
 			console.log(`Received ${data.length} trains from API`);
-		const processedData = processTrainData(
-			data,
-			stationCode,
-			destinationCode,
-			serverNowMs,
-		);
-		console.log(`Processed ${processedData.length} valid trains`);
+			const processedData = processTrainData(
+				data,
+				stationCode,
+				destinationCode,
+				serverNowMs,
+			);
+			console.log(`Processed ${processedData.length} valid trains`);
 
-		const clientNowMs = Date.now();
-		const serverOffsetMs = serverNowMs - clientNowMs;
+			const clientNowMs = Date.now();
+			const serverOffsetMs = serverNowMs - clientNowMs;
 
-		// Cache the processed data
-		trainCache.set(`${stationCode}-${destinationCode}`, {
-			data: processedData,
-			timestamp: clientNowMs,
-			serverOffsetMs: Number.isFinite(serverOffsetMs) ? serverOffsetMs : undefined,
-		});
+			// Cache the processed data
+			trainCache.set(`${stationCode}-${destinationCode}`, {
+				data: processedData,
+				timestamp: clientNowMs,
+				serverOffsetMs: Number.isFinite(serverOffsetMs)
+					? serverOffsetMs
+					: undefined,
+			});
 			cleanupCache(trainCache);
 
 			return processedData;
@@ -691,10 +693,10 @@ export async function fetchTrains(
 const DEPARTED_HYSTERESIS_MS = 10_000; // 10 seconds to avoid flicker when no actualTime
 
 function processTrainData(
-    data: Train[],
-    stationCode: string,
-    destinationCode: string,
-    serverNowMs: number,
+	data: Train[],
+	stationCode: string,
+	destinationCode: string,
+	serverNowMs: number,
 ): Train[] {
 	// Early return for empty data
 	if (!data.length) {
@@ -760,9 +762,7 @@ function processTrainData(
 			return isValid;
 		})
 		// Derive isDeparted/departedAt once here using server time
-		.map((train) =>
-			deriveDepartureStatus(train, stationCode, serverNowMs),
-		)
+		.map((train) => deriveDepartureStatus(train, stationCode, serverNowMs))
 		.sort((a, b) => sortByDepartureTime(a, b, stationCode));
 
 	console.log(`Found ${filteredTrains.length} valid trains after processing`);

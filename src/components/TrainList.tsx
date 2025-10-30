@@ -281,12 +281,13 @@ export default function TrainList({
 		});
 	}, [state.trains, stationCode, destinationCode]);
 
-// eslint-disable-next-line react-hooks/exhaustive-deps
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => {
 		let refreshTimeout: ReturnType<typeof setTimeout> | undefined;
 		let cancelled = false;
 		const getTimeUntilNextUpdate = () => {
-			const intervalMs = currentRefreshIntervalRef.current || REFRESH_INTERVALS.MEDIUM;
+			const intervalMs =
+				currentRefreshIntervalRef.current || REFRESH_INTERVALS.MEDIUM;
 			const now = Date.now();
 			const msIntoInterval = now % intervalMs;
 			const msUntilNextInterval = intervalMs - msIntoInterval;
@@ -412,7 +413,8 @@ export default function TrainList({
 					? new Date(train.departedAt).getTime()
 					: undefined;
 				if (departedAt) {
-					const diffMinutes = (currentTime.getTime() - departedAt) / (1000 * 60);
+					const diffMinutes =
+						(currentTime.getTime() - departedAt) / (1000 * 60);
 					const graceMinutes = Math.abs(DEPARTED_GRACE_MINUTES);
 					return diffMinutes <= graceMinutes;
 				}
@@ -424,11 +426,11 @@ export default function TrainList({
 		})
 		.slice(0, displayedTrainCount);
 	const hasMoreTrains = (state.trains || []).length > displayedTrainCount;
-const animationPhase = useMemo(() => {
-	const phase =
-		(currentTime.getTime() % ANIMATION_DURATION_MS) / ANIMATION_DURATION_MS;
-	return Number.isFinite(phase) ? phase : 0;
-}, [currentTime]);
+	const animationPhase = useMemo(() => {
+		const phase =
+			(currentTime.getTime() % ANIMATION_DURATION_MS) / ANIMATION_DURATION_MS;
+		return Number.isFinite(phase) ? phase : 0;
+	}, [currentTime]);
 
 	const refreshProgress = useMemo(() => {
 		const interval = Math.max(currentRefreshInterval, 1);
@@ -471,33 +473,31 @@ const animationPhase = useMemo(() => {
 				<div
 					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"
 					style={{
-					"--animation-phase": animationPhase,
+						"--animation-phase": animationPhase,
 						"grid-template-rows": `repeat(${displayedTrains.length}, minmax(0, 1fr))`,
 					}}
 				>
 					{displayedTrains.map((train, index) => {
 						const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
 						return (
-						<div
+							<div
 								key={journeyKey}
-							class={
-									departedTrains.has(journeyKey) ? "" : "animate-scale-in"
-							}
-							style={{
-								"grid-row": `${index + 1}`,
-								animationDelay: `${index * 0.05}s`,
-							}}
-						>
-							<MemoizedTrainCard
-								train={train}
-								stationCode={stationCode}
-								destinationCode={destinationCode}
-								currentTime={currentTime}
+								class={departedTrains.has(journeyKey) ? "" : "animate-scale-in"}
+								style={{
+									"grid-row": `${index + 1}`,
+									animationDelay: `${index * 0.05}s`,
+								}}
+							>
+								<MemoizedTrainCard
+									train={train}
+									stationCode={stationCode}
+									destinationCode={destinationCode}
+									currentTime={currentTime}
 									onDepart={() => handleTrainDeparted(journeyKey)}
 									onReappear={() => handleTrainReappear(journeyKey)}
-								getDurationSpeedType={getDurationSpeedType}
-							/>
-						</div>
+									getDurationSpeedType={getDurationSpeedType}
+								/>
+							</div>
 						);
 					})}
 				</div>

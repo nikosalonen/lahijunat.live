@@ -273,7 +273,11 @@ describe("TrainCard", () => {
 			],
 		};
 		const { rerender, container } = render(
-			<TrainCard {...defaultProps} train={departedTrain} currentTime={pastTime} />,
+			<TrainCard
+				{...defaultProps}
+				train={departedTrain}
+				currentTime={pastTime}
+			/>,
 		);
 
 		// RAF executes immediately in tests, so opacity should be 0
