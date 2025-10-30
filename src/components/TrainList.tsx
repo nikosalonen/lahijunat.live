@@ -30,6 +30,8 @@ const MemoizedTrainCard = memo(TrainCard);
 const INITIAL_TRAIN_COUNT = 15;
 const FADE_DURATION = 300; // Align with card opacity transition
 const DEPARTED_GRACE_MINUTES = -2; // How long to keep showing a train after departure
+const TIME_UPDATE_INTERVAL = 1000; // Update current time every 1 seconds when visible
+const ANIMATION_DURATION_MS = 2500;
 
 // Adaptive refresh intervals
 const REFRESH_INTERVALS = {
@@ -125,10 +127,8 @@ export default function TrainList({
 			type: "network" | "api" | "notFound" | "rateLimit" | "generic";
 			message?: string;
 		} | null,
-		progress: 100,
 	});
 	const [currentTime, setCurrentTime] = useState(new Date());
-	const [animationPhase, setAnimationPhase] = useState(0);
 	const [displayedTrainCount, setDisplayedTrainCount] =
 		useState(INITIAL_TRAIN_COUNT);
 	const [departedTrains, setDepartedTrains] = useState<Set<string>>(new Set());
@@ -136,13 +136,34 @@ export default function TrainList({
 		REFRESH_INTERVALS.MEDIUM,
 	);
 	const currentRefreshIntervalRef = useRef<number>(REFRESH_INTERVALS.MEDIUM);
+	const [lastRefreshAt, setLastRefreshAt] = useState(() => Date.now());
+	const [isPageVisible, setIsPageVisible] = useState(() => {
+		if (typeof document === "undefined") {
+			return true;
+		}
+		return document.visibilityState === "visible";
+	});
+
+	useEffect(() => {
+		if (typeof document === "undefined") {
+			return;
+		}
+		const handleVisibilityChange = () => {
+			setIsPageVisible(document.visibilityState === "visible");
+		};
+		document.addEventListener("visibilitychange", handleVisibilityChange);
+		return () => {
+			document.removeEventListener("visibilitychange", handleVisibilityChange);
+		};
+	}, []);
 
 	const loadTrains = useCallback(async () => {
+		const startedAt = Date.now();
+		setLastRefreshAt(startedAt);
 		try {
 			if (state.initialLoad) {
 				setState((prev) => ({ ...prev, loading: true }));
 			}
-			setState((prev) => ({ ...prev, progress: 100 }));
 
 			const trainData = await fetchTrains(stationCode, destinationCode);
 			const now = new Date();
@@ -158,8 +179,6 @@ export default function TrainList({
 				);
 				setCurrentRefreshInterval(newRefreshInterval);
 				currentRefreshIntervalRef.current = newRefreshInterval;
-				// Reset progress to 100% when interval changes so it counts down over the new duration
-				setState((prev) => ({ ...prev, progress: 100 }));
 			}
 
 			setState((prev) => ({
@@ -243,67 +262,58 @@ export default function TrainList({
 		});
 	}, []);
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => {
-		let startTime: number;
-		let animationFrame: number;
-		let updateInterval: ReturnType<typeof setInterval> | undefined;
-
-		const animate = (timestamp: number) => {
-			if (!startTime) startTime = timestamp;
-			const elapsed = timestamp - startTime;
-			const progress = (elapsed % 2500) / 2500; // 2.5s animation duration
-			setAnimationPhase(progress);
-			animationFrame = requestAnimationFrame(animate);
-		};
-
-		animationFrame = requestAnimationFrame(animate);
-
-		// Function to calculate time until next even second (:00 or :30)
+		let refreshTimeout: ReturnType<typeof setTimeout> | undefined;
+		let cancelled = false;
 		const getTimeUntilNextUpdate = () => {
-			const now = new Date();
-			const seconds = now.getSeconds();
-			const milliseconds = now.getMilliseconds();
-			const timeUntilNextHalfMinute =
-				(30 - (seconds % 30)) * 1000 - milliseconds;
-			return timeUntilNextHalfMinute;
+			const intervalMs = currentRefreshIntervalRef.current || REFRESH_INTERVALS.MEDIUM;
+			const now = Date.now();
+			const msIntoInterval = now % intervalMs;
+			const msUntilNextInterval = intervalMs - msIntoInterval;
+			return msUntilNextInterval >= 0 ? msUntilNextInterval : intervalMs;
 		};
 
-		// Initial data load
-		loadTrains();
+		const scheduleRefresh = (delay: number) => {
+			refreshTimeout = setTimeout(async () => {
+				if (cancelled) {
+					return;
+				}
+				try {
+					await loadTrains();
+				} finally {
+					if (!cancelled) {
+						scheduleRefresh(currentRefreshIntervalRef.current);
+					}
+				}
+			}, delay);
+		};
 
-		// Update current time every second
-		const timeUpdateInterval = setInterval(() => {
-			setCurrentTime(new Date());
-		}, 1000);
-
-		// Schedule next update at the next even second
-		const updateTimeout = setTimeout(() => {
+		if (isPageVisible) {
 			loadTrains();
-			// Then set up adaptive interval based on train urgency
-			updateInterval = setInterval(() => {
-				loadTrains();
-			}, currentRefreshInterval);
-		}, getTimeUntilNextUpdate());
-
-		// Progress bar update interval
-		const progressInterval = setInterval(() => {
-			setState((prev) => ({
-				...prev,
-				progress: Math.max(
-					0,
-					prev.progress - 100 / (currentRefreshIntervalRef.current / 1000),
-				),
-			}));
-		}, 1000); // Update progress every second
+			scheduleRefresh(getTimeUntilNextUpdate());
+		}
 
 		return () => {
-			cancelAnimationFrame(animationFrame);
-			clearTimeout(updateTimeout);
-			if (updateInterval) clearInterval(updateInterval);
-			clearInterval(progressInterval);
-			clearInterval(timeUpdateInterval);
+			cancelled = true;
+			if (refreshTimeout) {
+				clearTimeout(refreshTimeout);
+			}
 		};
-	}, [loadTrains, currentRefreshInterval]);
+	}, [loadTrains, isPageVisible]);
+
+	useEffect(() => {
+		if (!isPageVisible) {
+			return;
+		}
+		setCurrentTime(new Date());
+		const interval = setInterval(() => {
+			setCurrentTime(new Date());
+		}, TIME_UPDATE_INTERVAL);
+		return () => {
+			clearInterval(interval);
+		};
+	}, [isPageVisible]);
 
 	if (state.loading && state.initialLoad) {
 		return <TrainListSkeleton />;
@@ -396,6 +406,18 @@ export default function TrainList({
 		})
 		.slice(0, displayedTrainCount);
 	const hasMoreTrains = (state.trains || []).length > displayedTrainCount;
+const animationPhase = useMemo(() => {
+	const phase =
+		(currentTime.getTime() % ANIMATION_DURATION_MS) / ANIMATION_DURATION_MS;
+	return Number.isFinite(phase) ? phase : 0;
+}, [currentTime]);
+
+	const refreshProgress = useMemo(() => {
+		const interval = Math.max(currentRefreshInterval, 1);
+		const elapsed = currentTime.getTime() - lastRefreshAt;
+		const remaining = 100 - (elapsed / interval) * 100;
+		return Math.max(0, Math.min(100, remaining));
+	}, [currentTime, lastRefreshAt, currentRefreshInterval]);
 
 	return (
 		<div>
@@ -415,14 +437,14 @@ export default function TrainList({
 						</span>
 					</h2>
 					<div class="self-end sm:self-auto order-1 sm:order-2">
-						<ProgressCircle progress={state.progress} size="w-8 h-8" />
+						<ProgressCircle progress={refreshProgress} size="w-8 h-8" />
 					</div>
 				</div>
 
 				{/* Mobile horizontal progress bar (left → right) */}
 				<div class="sm:hidden w-full mb-4">
 					<LinearProgress
-						progress={state.progress}
+						progress={refreshProgress}
 						heightClass="h-1.5"
 						widthClass="w-full"
 						direction="rtl"
@@ -431,7 +453,7 @@ export default function TrainList({
 				<div
 					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"
 					style={{
-						"--animation-phase": animationPhase,
+					"--animation-phase": animationPhase,
 						"grid-template-rows": `repeat(${displayedTrains.length}, minmax(0, 1fr))`,
 					}}
 				>

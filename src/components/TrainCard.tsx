@@ -649,7 +649,7 @@ export default function TrainCard({
 												: `${arrivalRow ? `${t("arrivalTrack")} ${arrivalRow.commercialTrack}` : `${t("track")} ${departureRow.commercialTrack}`}${trackChangeInfo.changedSide === "arrival" && isTrackChanged ? ` (${t("changed")})` : ""}. ${t("clickToSeeDepartureTrack")}`
 										}
 										aria-pressed={isTrackFlipped}
-										class="cursor-pointer focus-ring bg-transparent border-0 p-0"
+										class="group cursor-pointer focus-ring bg-transparent border-0 p-0"
 									>
 										<div
 											class="relative inline-block"
@@ -671,11 +671,11 @@ export default function TrainCard({
 											>
 												{/* Front face - Departure Track */}
 												<div
-													class={`badge badge-lg font-semibold ${
+													class={`badge badge-lg font-semibold transition-all duration-200 ${
 														trackChangeInfo.changedSide === "departure" &&
 														isTrackChanged
-															? "badge-error badge-outline"
-															: "badge-ghost"
+															? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
+															: "badge-ghost group-hover:bg-base-200 dark:group-hover:bg-base-300 group-hover:scale-105"
 													} whitespace-nowrap`}
 													style={{
 														backfaceVisibility: "hidden",
@@ -683,14 +683,21 @@ export default function TrainCard({
 													}}
 												>
 													{t("track")} {departureRow.commercialTrack}
+													{arrivalRow && (
+														<i
+															class="fa-solid fa-arrow-rotate-left ml-1.5 text-xs opacity-60"
+															aria-hidden="true"
+														/>
+
+													)}
 												</div>
 												{/* Back face - Arrival Track */}
 												<div
-													class={`badge badge-lg font-semibold ${
+													class={`badge badge-lg font-semibold transition-all duration-200 ${
 														trackChangeInfo.changedSide === "arrival" &&
 														isTrackChanged
-															? "badge-error badge-outline"
-															: "badge-ghost"
+															? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
+															: "badge-ghost group-hover:bg-base-200 dark:group-hover:bg-base-300 group-hover:scale-105"
 													} whitespace-nowrap`}
 													style={{
 														backfaceVisibility: "hidden",
@@ -709,6 +716,7 @@ export default function TrainCard({
 												aria-hidden="true"
 											/>
 											{t("track")} {arrivalRow.commercialTrack}
+
 										</>
 									) : (
 										<>
@@ -742,10 +750,6 @@ export default function TrainCard({
 												"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
 											}
 										>
-											<i
-												class="fa-solid fa-hourglass-half text-lg"
-												aria-hidden="true"
-											/>
 											<span>
 												{minutesToDeparture === 0
 													? "0 min"
