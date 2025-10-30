@@ -262,6 +262,7 @@ export default function TrainList({
 		});
 	}, []);
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => {
 		let refreshTimeout: ReturnType<typeof setTimeout> | undefined;
 		let cancelled = false;
@@ -299,7 +300,7 @@ export default function TrainList({
 				clearTimeout(refreshTimeout);
 			}
 		};
-	}, [loadTrains, currentRefreshInterval, isPageVisible]);
+	}, [loadTrains, isPageVisible]);
 
 	useEffect(() => {
 		if (!isPageVisible) {
