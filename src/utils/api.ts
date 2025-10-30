@@ -616,11 +616,16 @@ export async function fetchTrains(
 
 			const data = await response.json();
 
-			// Use server time from Date header to reduce client clock skew
-			const serverDateHeader = response.headers.get("date");
-			const serverNowMs = serverDateHeader
-				? new Date(serverDateHeader).getTime()
-				: Date.now();
+		// Use server time from Date header to reduce client clock skew
+		const serverDateHeader = response.headers.get("date");
+		let serverNowMs = Date.now();
+		if (serverDateHeader) {
+			const parsedDate = new Date(serverDateHeader);
+			const parsedMs = parsedDate.getTime();
+			if (Number.isFinite(parsedMs)) {
+				serverNowMs = parsedMs;
+			}
+		}
 
 			if (!Array.isArray(data)) {
 				console.error("Invalid API response format:", data);
