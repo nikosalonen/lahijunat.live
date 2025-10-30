@@ -217,39 +217,41 @@ export default function TrainCard({
 		getDurationSpeedType,
 	]);
 
-	// Handle depart/undepart transitions based on derived isDeparted
+	// Track depart/undepart transitions
 	useEffect(() => {
 		const departed = Boolean(train.isDeparted);
 		if (departed && !hasDeparted) {
 			setHasDeparted(true);
-			setOpacity(1);
-			// Cancel any previous fade RAF just before scheduling a new one
-			if (fadeRafRef.current !== null) {
-				cancelAnimationFrame(fadeRafRef.current);
-				fadeRafRef.current = null;
-			}
-			fadeRafRef.current = requestAnimationFrame(() => {
-				setOpacity(0);
-			});
 		} else if (!departed && hasDeparted) {
-			// Estimation or actual cleared; bring card back
 			setHasDeparted(false);
-			setOpacity(1);
-			// Ensure no stale RAF can flip opacity back to 0
-			if (fadeRafRef.current !== null) {
-				cancelAnimationFrame(fadeRafRef.current);
-				fadeRafRef.current = null;
-			}
 			onReappear?.();
 		}
+	}, [train.isDeparted, hasDeparted, onReappear]);
 
-		return () => {
+	// Drive fade animation based on hasDeparted state
+	useEffect(() => {
+		if (!hasDeparted) {
 			if (fadeRafRef.current !== null) {
 				cancelAnimationFrame(fadeRafRef.current);
+				fadeRafRef.current = null;
+			}
+			setOpacity(1);
+			return;
+		}
+
+		setOpacity(1);
+		const rafId = requestAnimationFrame(() => {
+			setOpacity(0);
+		});
+		fadeRafRef.current = rafId;
+
+		return () => {
+			cancelAnimationFrame(rafId);
+			if (fadeRafRef.current === rafId) {
 				fadeRafRef.current = null;
 			}
 		};
-	}, [train.isDeparted, hasDeparted, onReappear]);
+	}, [hasDeparted]);
 
 	useEffect(() => {
 		// Load highlighted state safely (works even if localStorage is unavailable)
