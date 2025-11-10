@@ -35,7 +35,7 @@
 		"@types/node": "^24.10.0",
 		"daisyui": "^5.4.7",
 		"jsdom": "^27.1.0",
-		"vitest": "^4.0.7",
+		"vitest": "^4.0.8",
 		"workbox-cli": "^7.3.0"
 	}
 }
