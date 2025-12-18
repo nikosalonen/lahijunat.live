@@ -67,6 +67,9 @@ const mySwPlugin = () => {
 // https://astro.build/config
 export default defineConfig({
 	site: "https://www.lahijunat.live",
+	image: {
+		service: { entrypoint: "astro/assets/services/noop" },
+	},
 	vite: {
 		plugins: [tailwindcss()],
 	},
