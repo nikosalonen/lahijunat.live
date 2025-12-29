@@ -35,7 +35,7 @@
 		"@testing-library/preact": "^3.2.4",
 		"@types/node": "^25.0.3",
 		"daisyui": "^5.5.14",
-		"jsdom": "^27.3.0",
+		"jsdom": "^27.4.0",
 		"vitest": "^4.0.16",
 		"workbox-cli": "^7.4.0"
 	}
