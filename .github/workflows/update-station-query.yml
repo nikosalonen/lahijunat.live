@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           # Use a personal access token to allow the workflow to push changes
           token: ${{ secrets.GITHUB_TOKEN }}
