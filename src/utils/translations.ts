@@ -66,6 +66,8 @@ export const translations = {
 		serviceDownTitle: "Digitraffic-palvelussa häiriö",
 		serviceDownMessage:
 			"Junaliikenteen tietopalvelussa on häiriö. Tiedot eivät välttämättä ole ajan tasalla.",
+		issueStarted: "Alkanut",
+		viewStatusPage: "Näytä tilannesivu",
 		// PWA Update Banner
 		pwaUpdateTitle: "🚀 Uusi versio sovelluksesta on saatavilla!",
 		pwaUpdateButton: "Päivitä nyt",
@@ -133,6 +135,8 @@ export const translations = {
 		serviceDownTitle: "Digitraffic service disruption",
 		serviceDownMessage:
 			"The train data service is experiencing issues. Data may not be up to date.",
+		issueStarted: "Started",
+		viewStatusPage: "View status page",
 		// PWA Update Banner
 		pwaUpdateTitle: "🚀 New version of the app is available!",
 		pwaUpdateButton: "Update now",
