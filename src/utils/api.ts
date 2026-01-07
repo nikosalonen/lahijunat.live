@@ -157,6 +157,7 @@ interface DigitrafficStatusIssue {
 	createdAt: string;
 	severity: string;
 	affected: string[];
+	permalink?: string;
 }
 
 interface DigitrafficStatusSystem {
@@ -172,23 +173,40 @@ interface DigitrafficStatusResponse {
 	systems: DigitrafficStatusSystem[];
 }
 
+export interface ServiceStatusIssueInfo {
+	title: string;
+	createdAt: string;
+	permalink?: string;
+	severity: string;
+}
+
 export interface ServiceStatusInfo {
 	isDown: boolean;
 	affectedSystems: string[];
-	issues: string[];
+	issues: ServiceStatusIssueInfo[];
+	statusPageUrl: string;
 }
+
+const STATUS_PAGE_URL = "https://status.digitraffic.fi";
 
 /**
  * Check Digitraffic service status for Rail systems.
  */
 export async function checkDigitrafficStatus(): Promise<ServiceStatusInfo> {
+	const defaultResult: ServiceStatusInfo = {
+		isDown: false,
+		affectedSystems: [],
+		issues: [],
+		statusPageUrl: STATUS_PAGE_URL,
+	};
+
 	try {
 		const response = await fetch(ENDPOINTS.STATUS, {
 			headers: { Accept: "application/json" },
 		});
 
 		if (!response.ok) {
-			return { isDown: false, affectedSystems: [], issues: [] };
+			return defaultResult;
 		}
 
 		const data: DigitrafficStatusResponse = await response.json();
@@ -200,25 +218,31 @@ export async function checkDigitrafficStatus(): Promise<ServiceStatusInfo> {
 		);
 
 		if (criticalDown.length === 0) {
-			return { isDown: false, affectedSystems: [], issues: [] };
+			return defaultResult;
 		}
 
 		const affectedSystems = criticalDown.map(
 			(system) => system.description || system.name,
 		);
-		const issues = criticalDown.flatMap((system) =>
-			system.unresolvedIssues.map((issue) => issue.title),
+		const issues: ServiceStatusIssueInfo[] = criticalDown.flatMap((system) =>
+			system.unresolvedIssues.map((issue) => ({
+				title: issue.title,
+				createdAt: issue.createdAt,
+				permalink: issue.permalink,
+				severity: issue.severity,
+			})),
 		);
 
 		return {
 			isDown: true,
 			affectedSystems,
 			issues,
+			statusPageUrl: STATUS_PAGE_URL,
 		};
 	} catch (error) {
 		console.error("Error checking Digitraffic status:", error);
 		// If we can't check status, don't block the user
-		return { isDown: false, affectedSystems: [], issues: [] };
+		return defaultResult;
 	}
 }
 
