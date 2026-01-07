@@ -2,20 +2,18 @@
 
 export default function StationListSkeleton() {
 	return (
-		<output class="p-4 text-center" aria-busy="true">
-			<div class="space-y-2">
+		<div class="p-1" aria-busy="true">
+			<div class="space-y-1">
 				{Array.from({ length: 5 }, (_, index) => (
 					<div
 						key={`station-skeleton-item-${index}`}
-						class="flex items-center justify-between p-2"
+						class="flex items-center justify-start px-4 min-h-[48px] rounded-lg"
 					>
-						<div class="flex items-center space-x-3">
-							<div class="skeleton h-4 w-32" aria-hidden="true" />
-							<div class="skeleton h-3 w-8" aria-hidden="true" />
-						</div>
+						{/* Station name (code) skeleton - matches StationOption button content */}
+						<div class="skeleton h-5 w-40 sm:w-36" aria-hidden="true" />
 					</div>
 				))}
 			</div>
-		</output>
+		</div>
 	);
 }
