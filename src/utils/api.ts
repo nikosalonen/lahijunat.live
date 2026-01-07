@@ -746,6 +746,18 @@ export async function fetchTrains(
 		},
 	).catch(async (error) => {
 		console.error("Error fetching trains:", error);
+
+		// Check Digitraffic service status
+		const status = await checkDigitrafficStatus();
+		if (status.isDown) {
+			console.log("Digitraffic service is down:", status);
+			const serviceError = new Error(
+				`Digitraffic service is experiencing issues: ${status.issues.join(", ") || "Service unavailable"}`,
+			) as Error & { serviceStatus?: ServiceStatusInfo };
+			serviceError.serviceStatus = status;
+			throw serviceError;
+		}
+
 		// If we have cached data, return it even if it's expired
 		const cachedFallback = getCachedTrainsEvenIfExpired(
 			stationCode,

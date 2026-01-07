@@ -10,7 +10,7 @@ import {
 } from "preact/hooks";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
-import { fetchTrains } from "../utils/api";
+import { fetchTrains, type ServiceStatusInfo } from "../utils/api";
 import { hapticLight } from "../utils/haptics";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
@@ -123,7 +123,13 @@ export default function TrainList({
 		loading: true,
 		initialLoad: true,
 		error: null as {
-			type: "network" | "api" | "notFound" | "rateLimit" | "generic";
+			type:
+				| "network"
+				| "api"
+				| "notFound"
+				| "rateLimit"
+				| "serviceDown"
+				| "generic";
 			message?: string;
 		} | null,
 	});
@@ -199,24 +205,40 @@ export default function TrainList({
 					| "api"
 					| "notFound"
 					| "rateLimit"
+					| "serviceDown"
 					| "generic" = "generic";
 				let errorMessage: string | undefined;
 
 				if (err instanceof Error) {
-					const message = err.message.toLowerCase();
-					if (message.includes("network") || message.includes("fetch")) {
-						errorType = "network";
-					} else if (
-						message.includes("rate limit") ||
-						message.includes("too many")
-					) {
-						errorType = "rateLimit";
-					} else if (message.includes("not found") || message.includes("404")) {
-						errorType = "notFound";
-					} else if (message.includes("api") || message.includes("server")) {
-						errorType = "api";
+					// Check for service status info (Digitraffic down)
+					const serviceStatus = (
+						err as Error & { serviceStatus?: ServiceStatusInfo }
+					).serviceStatus;
+					if (serviceStatus?.isDown) {
+						errorType = "serviceDown";
+						errorMessage =
+							serviceStatus.issues.length > 0
+								? serviceStatus.issues[0]
+								: undefined;
+					} else {
+						const message = err.message.toLowerCase();
+						if (message.includes("network") || message.includes("fetch")) {
+							errorType = "network";
+						} else if (
+							message.includes("rate limit") ||
+							message.includes("too many")
+						) {
+							errorType = "rateLimit";
+						} else if (
+							message.includes("not found") ||
+							message.includes("404")
+						) {
+							errorType = "notFound";
+						} else if (message.includes("api") || message.includes("server")) {
+							errorType = "api";
+						}
+						errorMessage = err.message;
 					}
-					errorMessage = err.message;
 				}
 
 				setState((prev) => ({
