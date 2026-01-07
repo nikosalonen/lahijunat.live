@@ -651,10 +651,20 @@ export default function StationManager({
 							data-tip={t("swapDirection")}
 							aria-label={t("swapDirection")}
 						>
-							<i
-								className="fa-solid fa-right-left text-2xl"
+							<svg
+								className="w-6 h-6"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
 								aria-hidden="true"
-							/>
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="2"
+									d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+								/>
+							</svg>
 						</button>
 					)}
 				</div>
@@ -693,10 +703,14 @@ export default function StationManager({
 										aria-label={t("locate")}
 										data-tip={t("locate")}
 									>
-										<i
-											className="fa-solid fa-location-arrow text-3xl"
+										<svg
+											className="w-7 h-7"
+											fill="currentColor"
+											viewBox="0 0 24 24"
 											aria-hidden="true"
-										/>
+										>
+											<path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z" />
+										</svg>
 									</button>
 									{/* Divider */}
 									<div className="hidden sm:block w-px h-12 bg-white/20" />
@@ -714,10 +728,20 @@ export default function StationManager({
 										data-tip={t("swapDirection")}
 										aria-label={t("swapDirection")}
 									>
-										<i
-											className="fa-solid fa-right-left text-2xl"
+										<svg
+											className="w-6 h-6"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
 											aria-hidden="true"
-										/>
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth="2"
+												d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+											/>
+										</svg>
 									</button>
 								</div>
 								<div className="flex-grow">
