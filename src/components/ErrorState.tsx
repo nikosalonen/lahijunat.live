@@ -1,5 +1,6 @@
 /** @format */
 
+import type { ServiceStatusInfo } from "../utils/api";
 import { hapticLight } from "../utils/haptics";
 import { t } from "../utils/translations";
 
@@ -15,6 +16,7 @@ export type ErrorType =
 interface Props {
 	type: ErrorType;
 	message?: string;
+	serviceStatus?: ServiceStatusInfo;
 	onRetry?: () => void;
 	onDismiss?: () => void;
 	showRetry?: boolean;
@@ -187,9 +189,20 @@ const getErrorConfig = (type: ErrorType) => {
 	}
 };
 
+// Format date string for display
+const formatIssueDate = (dateStr: string): string => {
+	try {
+		const date = new Date(dateStr.replace(" +0000 UTC", "Z"));
+		return date.toLocaleString();
+	} catch {
+		return dateStr;
+	}
+};
+
 export default function ErrorState({
 	type,
 	message,
+	serviceStatus,
 	onRetry,
 	onDismiss,
 	showRetry = true,
@@ -229,6 +242,50 @@ export default function ErrorState({
 				<div class="flex-1">
 					<h3 class="font-bold text-lg">{config.title}</h3>
 					<p class="text-sm opacity-80">{displayMessage}</p>
+
+					{/* Service status details */}
+					{type === "serviceDown" && serviceStatus && (
+						<div class="mt-3 space-y-2 text-sm">
+							{serviceStatus.issues.length > 0 && (
+								<div class="space-y-1">
+									{serviceStatus.issues.map((issue) => (
+										<div
+											key={issue.title}
+											class="bg-base-200/50 rounded-lg p-2"
+										>
+											<div class="font-medium">{issue.title}</div>
+											<div class="text-xs opacity-70">
+												{t("issueStarted")}: {formatIssueDate(issue.createdAt)}
+											</div>
+										</div>
+									))}
+								</div>
+							)}
+							<a
+								href={serviceStatus.statusPageUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="link link-primary inline-flex items-center gap-1 text-sm"
+							>
+								{t("viewStatusPage")}
+								<svg
+									class="w-3 h-3"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+									aria-hidden="true"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+									/>
+								</svg>
+							</a>
+						</div>
+					)}
+
 					<div class="flex flex-col sm:flex-row gap-2 mt-3">
 						{showRetry && onRetry && (
 							<button
