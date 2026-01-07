@@ -721,7 +721,7 @@ export default function StationManager({
 										disabled={
 											!selectedOrigin || !selectedDestination || isSwapping
 										}
-										className="hidden sm:block btn w-12 h-12 p-1 bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
+										className="hidden sm:flex btn w-12 h-12 p-1 items-center justify-center bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86]
 						disabled:opacity-50 disabled:cursor-not-allowed
 						touch-manipulation select-none tooltip tooltip-bottom sm:tooltip-top
 						shadow-brand-medium hover:shadow-brand-strong transition-[background-color,box-shadow] duration-200 rounded-l-none"

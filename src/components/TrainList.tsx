@@ -10,7 +10,7 @@ import {
 } from "preact/hooks";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
-import { fetchTrains } from "../utils/api";
+import { fetchTrains, type ServiceStatusInfo } from "../utils/api";
 import { hapticLight } from "../utils/haptics";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
@@ -123,8 +123,15 @@ export default function TrainList({
 		loading: true,
 		initialLoad: true,
 		error: null as {
-			type: "network" | "api" | "notFound" | "rateLimit" | "generic";
+			type:
+				| "network"
+				| "api"
+				| "notFound"
+				| "rateLimit"
+				| "serviceDown"
+				| "generic";
 			message?: string;
+			serviceStatus?: ServiceStatusInfo;
 		} | null,
 	});
 	const [currentTime, setCurrentTime] = useState(new Date());
@@ -159,10 +166,58 @@ export default function TrainList({
 	const loadTrains = useCallback(async () => {
 		const startedAt = Date.now();
 		setLastRefreshAt(startedAt);
-		try {
-			if (state.initialLoad) {
-				setState((prev) => ({ ...prev, loading: true }));
+
+		// Determine error type based on error message or properties
+		const getErrorInfo = (err: unknown) => {
+			let errorType:
+				| "network"
+				| "api"
+				| "notFound"
+				| "rateLimit"
+				| "serviceDown"
+				| "generic" = "generic";
+			let errorMessage: string | undefined;
+			let serviceStatus: ServiceStatusInfo | undefined;
+
+			if (err instanceof Error) {
+				// Check for service status info (Digitraffic down)
+				const status = (err as Error & { serviceStatus?: ServiceStatusInfo })
+					.serviceStatus;
+				if (status?.isDown) {
+					errorType = "serviceDown";
+					serviceStatus = status;
+					errorMessage =
+						status.issues.length > 0 ? status.issues[0].title : undefined;
+				} else {
+					const message = err.message.toLowerCase();
+					if (message.includes("network") || message.includes("fetch")) {
+						errorType = "network";
+					} else if (
+						message.includes("rate limit") ||
+						message.includes("too many")
+					) {
+						errorType = "rateLimit";
+					} else if (
+						message.includes("not found") ||
+						message.includes("404")
+					) {
+						errorType = "notFound";
+					} else if (message.includes("api") || message.includes("server")) {
+						errorType = "api";
+					}
+					errorMessage = err.message;
+				}
 			}
+			return { errorType, errorMessage, serviceStatus };
+		};
+
+		try {
+			setState((prev) => {
+				if (prev.initialLoad) {
+					return { ...prev, loading: true };
+				}
+				return prev;
+			});
 
 			const trainData = await fetchTrains(stationCode, destinationCode);
 			const now = new Date();
@@ -190,51 +245,28 @@ export default function TrainList({
 		} catch (err) {
 			console.error("Error loading trains:", err);
 
-			// Only show errors during initial load or user-triggered refreshes
-			// For background updates, silently continue with existing data
-			if (state.initialLoad) {
-				// Determine error type based on error message or properties
-				let errorType:
-					| "network"
-					| "api"
-					| "notFound"
-					| "rateLimit"
-					| "generic" = "generic";
-				let errorMessage: string | undefined;
-
-				if (err instanceof Error) {
-					const message = err.message.toLowerCase();
-					if (message.includes("network") || message.includes("fetch")) {
-						errorType = "network";
-					} else if (
-						message.includes("rate limit") ||
-						message.includes("too many")
-					) {
-						errorType = "rateLimit";
-					} else if (message.includes("not found") || message.includes("404")) {
-						errorType = "notFound";
-					} else if (message.includes("api") || message.includes("server")) {
-						errorType = "api";
-					}
-					errorMessage = err.message;
+			// Use functional setState to check the actual current initialLoad state
+			// This avoids stale closure issues
+			setState((prev) => {
+				if (prev.initialLoad) {
+					// Initial load failed - show error
+					const { errorType, errorMessage, serviceStatus } = getErrorInfo(err);
+					return {
+						...prev,
+						error: { type: errorType, message: errorMessage, serviceStatus },
+						loading: false,
+						initialLoad: false,
+					};
 				}
-
-				setState((prev) => ({
-					...prev,
-					error: { type: errorType, message: errorMessage },
-					loading: false,
-					initialLoad: false,
-				}));
-			} else {
 				// Background update failed - just clear loading state and continue with existing data
 				console.log("Background update failed, continuing with existing data");
-				setState((prev) => ({
+				return {
 					...prev,
 					loading: false,
-				}));
-			}
+				};
+			});
 		}
-	}, [stationCode, destinationCode, state.initialLoad]);
+	}, [stationCode, destinationCode]);
 
 	// Reset displayed count and departed trains when stations change
 	useEffect(() => {
@@ -345,6 +377,7 @@ export default function TrainList({
 				<ErrorState
 					type={state.error.type}
 					message={state.error.message}
+					serviceStatus={state.error.serviceStatus}
 					onRetry={loadTrains}
 					className="min-h-[300px] flex items-center justify-center"
 				/>

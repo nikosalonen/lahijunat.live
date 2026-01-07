@@ -32,6 +32,7 @@ const ENDPOINTS = {
 	GRAPHQL: `${BASE_URL}/v2/graphql/graphql`,
 	STATIONS: `${BASE_URL}/v1/metadata/stations`,
 	LIVE_TRAINS: `${BASE_URL}/v1/live-trains/station`,
+	STATUS: "https://status.digitraffic.fi/index.json",
 } as const;
 
 const DEFAULT_HEADERS = {
@@ -148,6 +149,101 @@ async function makeRequestWithBackoff(
 interface CacheEntry<T> {
 	data: T;
 	timestamp: number;
+}
+
+// Digitraffic status types
+interface DigitrafficStatusIssue {
+	title: string;
+	createdAt: string;
+	severity: string;
+	affected: string[];
+	permalink?: string;
+}
+
+interface DigitrafficStatusSystem {
+	name: string;
+	description?: string;
+	category: string;
+	status: "ok" | "down" | "disrupted";
+	unresolvedIssues: DigitrafficStatusIssue[];
+}
+
+interface DigitrafficStatusResponse {
+	summaryStatus: "ok" | "down" | "disrupted";
+	systems: DigitrafficStatusSystem[];
+}
+
+export interface ServiceStatusIssueInfo {
+	title: string;
+	createdAt: string;
+	permalink?: string;
+	severity: string;
+}
+
+export interface ServiceStatusInfo {
+	isDown: boolean;
+	affectedSystems: string[];
+	issues: ServiceStatusIssueInfo[];
+	statusPageUrl: string;
+}
+
+const STATUS_PAGE_URL = "https://status.digitraffic.fi";
+
+/**
+ * Check Digitraffic service status for Rail systems.
+ */
+export async function checkDigitrafficStatus(): Promise<ServiceStatusInfo> {
+	const defaultResult: ServiceStatusInfo = {
+		isDown: false,
+		affectedSystems: [],
+		issues: [],
+		statusPageUrl: STATUS_PAGE_URL,
+	};
+
+	try {
+		const response = await fetch(ENDPOINTS.STATUS, {
+			headers: { Accept: "application/json" },
+		});
+
+		if (!response.ok) {
+			return defaultResult;
+		}
+
+		const data: DigitrafficStatusResponse = await response.json();
+
+		// Only check the exact services we use
+		const ourServices = ["rail/api/v1/live-trains", "rail/graphql"];
+		const criticalDown = data.systems.filter(
+			(system) => ourServices.includes(system.name) && system.status === "down",
+		);
+
+		if (criticalDown.length === 0) {
+			return defaultResult;
+		}
+
+		const affectedSystems = criticalDown.map(
+			(system) => system.description || system.name,
+		);
+		const issues: ServiceStatusIssueInfo[] = criticalDown.flatMap((system) =>
+			system.unresolvedIssues.map((issue) => ({
+				title: issue.title,
+				createdAt: issue.createdAt,
+				permalink: issue.permalink,
+				severity: issue.severity,
+			})),
+		);
+
+		return {
+			isDown: true,
+			affectedSystems,
+			issues,
+			statusPageUrl: STATUS_PAGE_URL,
+		};
+	} catch (error) {
+		console.error("Error checking Digitraffic status:", error);
+		// If we can't check status, don't block the user
+		return defaultResult;
+	}
 }
 
 interface TrainCacheEntry extends CacheEntry<Train[]> {
@@ -674,6 +770,21 @@ export async function fetchTrains(
 		},
 	).catch(async (error) => {
 		console.error("Error fetching trains:", error);
+
+		// Check Digitraffic service status
+		const status = await checkDigitrafficStatus();
+		if (status.isDown) {
+			console.log("Digitraffic service is down:", status);
+			const issueMessages = status.issues
+				.map((i) => i.title || JSON.stringify(i))
+				.join(", ");
+			const serviceError = new Error(
+				`Digitraffic service is experiencing issues: ${issueMessages || "Service unavailable"}`,
+			) as Error & { serviceStatus?: ServiceStatusInfo };
+			serviceError.serviceStatus = status;
+			throw serviceError;
+		}
+
 		// If we have cached data, return it even if it's expired
 		const cachedFallback = getCachedTrainsEvenIfExpired(
 			stationCode,
