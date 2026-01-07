@@ -63,6 +63,9 @@ export const translations = {
 		notFoundMessage: "Hakuehdoillasi ei löytynyt junia.",
 		rateLimitTitle: "Liikaa pyyntöjä",
 		rateLimitMessage: "Odota hetki ennen seuraavaa hakua.",
+		serviceDownTitle: "Digitraffic-palvelussa häiriö",
+		serviceDownMessage:
+			"Junaliikenteen tietopalvelussa on häiriö. Tiedot eivät välttämättä ole ajan tasalla.",
 		// PWA Update Banner
 		pwaUpdateTitle: "🚀 Uusi versio sovelluksesta on saatavilla!",
 		pwaUpdateButton: "Päivitä nyt",
@@ -127,6 +130,9 @@ export const translations = {
 		notFoundMessage: "No trains found matching your search criteria.",
 		rateLimitTitle: "Too many requests",
 		rateLimitMessage: "Please wait a moment before searching again.",
+		serviceDownTitle: "Digitraffic service disruption",
+		serviceDownMessage:
+			"The train data service is experiencing issues. Data may not be up to date.",
 		// PWA Update Banner
 		pwaUpdateTitle: "🚀 New version of the app is available!",
 		pwaUpdateButton: "Update now",
