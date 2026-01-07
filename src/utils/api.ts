@@ -32,6 +32,7 @@ const ENDPOINTS = {
 	GRAPHQL: `${BASE_URL}/v2/graphql/graphql`,
 	STATIONS: `${BASE_URL}/v1/metadata/stations`,
 	LIVE_TRAINS: `${BASE_URL}/v1/live-trains/station`,
+	STATUS: "https://status.digitraffic.fi/index.json",
 } as const;
 
 const DEFAULT_HEADERS = {
@@ -148,6 +149,77 @@ async function makeRequestWithBackoff(
 interface CacheEntry<T> {
 	data: T;
 	timestamp: number;
+}
+
+// Digitraffic status types
+interface DigitrafficStatusIssue {
+	title: string;
+	createdAt: string;
+	severity: string;
+	affected: string[];
+}
+
+interface DigitrafficStatusSystem {
+	name: string;
+	description?: string;
+	category: string;
+	status: "ok" | "down" | "disrupted";
+	unresolvedIssues: DigitrafficStatusIssue[];
+}
+
+interface DigitrafficStatusResponse {
+	summaryStatus: "ok" | "down" | "disrupted";
+	systems: DigitrafficStatusSystem[];
+}
+
+export interface ServiceStatusInfo {
+	isDown: boolean;
+	affectedSystems: string[];
+	issues: string[];
+}
+
+/**
+ * Check Digitraffic service status for Rail systems.
+ */
+export async function checkDigitrafficStatus(): Promise<ServiceStatusInfo> {
+	try {
+		const response = await fetch(ENDPOINTS.STATUS, {
+			headers: { Accept: "application/json" },
+		});
+
+		if (!response.ok) {
+			return { isDown: false, affectedSystems: [], issues: [] };
+		}
+
+		const data: DigitrafficStatusResponse = await response.json();
+
+		// Only check the exact services we use
+		const ourServices = ["rail/api/v1/live-trains", "rail/graphql"];
+		const criticalDown = data.systems.filter(
+			(system) => ourServices.includes(system.name) && system.status === "down",
+		);
+
+		if (criticalDown.length === 0) {
+			return { isDown: false, affectedSystems: [], issues: [] };
+		}
+
+		const affectedSystems = criticalDown.map(
+			(system) => system.description || system.name,
+		);
+		const issues = criticalDown.flatMap((system) =>
+			system.unresolvedIssues.map((issue) => issue.title),
+		);
+
+		return {
+			isDown: true,
+			affectedSystems,
+			issues,
+		};
+	} catch (error) {
+		console.error("Error checking Digitraffic status:", error);
+		// If we can't check status, don't block the user
+		return { isDown: false, affectedSystems: [], issues: [] };
+	}
 }
 
 interface TrainCacheEntry extends CacheEntry<Train[]> {
