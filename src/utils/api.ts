@@ -775,8 +775,11 @@ export async function fetchTrains(
 		const status = await checkDigitrafficStatus();
 		if (status.isDown) {
 			console.log("Digitraffic service is down:", status);
+			const issueMessages = status.issues
+				.map((i) => i.title || JSON.stringify(i))
+				.join(", ");
 			const serviceError = new Error(
-				`Digitraffic service is experiencing issues: ${status.issues.join(", ") || "Service unavailable"}`,
+				`Digitraffic service is experiencing issues: ${issueMessages || "Service unavailable"}`,
 			) as Error & { serviceStatus?: ServiceStatusInfo };
 			serviceError.serviceStatus = status;
 			throw serviceError;
