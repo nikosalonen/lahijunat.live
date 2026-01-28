@@ -488,6 +488,12 @@ export default function TrainList({
 		[allTrainDurations, stationCode, destinationCode],
 	);
 
+	// Check if there are any slow trains to show the filter option
+	const hasSlowTrains = useMemo(() => {
+		if (allTrainDurations.length < 2) return false;
+		return (state.trains || []).some((train) => isTrainSlow(train));
+	}, [state.trains, isTrainSlow, allTrainDurations.length]);
+
 	const displayedTrains = (state.trains || [])
 		.filter((train) => {
 			const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
@@ -547,17 +553,19 @@ export default function TrainList({
 						</span>
 					</h2>
 					<div class="flex items-center gap-4 self-end sm:self-auto order-1 sm:order-2">
-						<label class="flex items-center gap-2 cursor-pointer select-none">
-							<input
-								type="checkbox"
-								checked={hideSlowTrains}
-								onChange={toggleHideSlowTrains}
-								class="checkbox checkbox-sm checkbox-primary"
-							/>
-							<span class="text-sm text-gray-600 dark:text-gray-400">
-								{t("hideSlowTrains")}
-							</span>
-						</label>
+						{hasSlowTrains && (
+							<label class="flex items-center gap-2 cursor-pointer select-none">
+								<input
+									type="checkbox"
+									checked={hideSlowTrains}
+									onChange={toggleHideSlowTrains}
+									class="checkbox checkbox-sm checkbox-primary"
+								/>
+								<span class="text-sm text-gray-600 dark:text-gray-400">
+									{t("hideSlowTrains")}
+								</span>
+							</label>
+						)}
 						<ProgressCircle progress={refreshProgress} size="w-8 h-8" />
 					</div>
 				</div>
@@ -570,26 +578,28 @@ export default function TrainList({
 						widthClass="w-full"
 						direction="rtl"
 					/>
-					<label
-						class="flex items-center gap-1.5 cursor-pointer select-none flex-shrink-0 text-xs text-gray-500 dark:text-gray-400"
-						title={t("hideSlowTrains")}
-					>
-						<input
-							type="checkbox"
-							checked={hideSlowTrains}
-							onChange={toggleHideSlowTrains}
-							class="checkbox checkbox-xs checkbox-primary"
-						/>
-						<span class="sr-only">{t("hideSlowTrains")}</span>
-						<svg
-							class="w-3.5 h-3.5"
-							viewBox="0 0 24 24"
-							fill="currentColor"
-							aria-hidden="true"
+					{hasSlowTrains && (
+						<label
+							class="flex items-center gap-1.5 cursor-pointer select-none flex-shrink-0 text-xs text-gray-500 dark:text-gray-400"
+							title={t("hideSlowTrains")}
 						>
-							<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-						</svg>
-					</label>
+							<input
+								type="checkbox"
+								checked={hideSlowTrains}
+								onChange={toggleHideSlowTrains}
+								class="checkbox checkbox-xs checkbox-primary"
+							/>
+							<span class="sr-only">{t("hideSlowTrains")}</span>
+							<svg
+								class="w-3.5 h-3.5"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+							</svg>
+						</label>
+					)}
 				</div>
 				<div
 					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"
