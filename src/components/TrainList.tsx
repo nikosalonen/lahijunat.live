@@ -150,10 +150,14 @@ export default function TrainList({
 		return document.visibilityState === "visible";
 	});
 	const [hideSlowTrains, setHideSlowTrains] = useState(() => {
-		if (typeof localStorage === "undefined") {
+		try {
+			if (typeof localStorage === "undefined") {
+				return false;
+			}
+			return localStorage.getItem("hideSlowTrains") === "true";
+		} catch {
 			return false;
 		}
-		return localStorage.getItem("hideSlowTrains") === "true";
 	});
 
 	useEffect(() => {
@@ -576,6 +580,7 @@ export default function TrainList({
 							onChange={toggleHideSlowTrains}
 							class="checkbox checkbox-xs checkbox-primary"
 						/>
+						<span class="sr-only">{t("hideSlowTrains")}</span>
 						<svg
 							class="w-3.5 h-3.5"
 							viewBox="0 0 24 24"
