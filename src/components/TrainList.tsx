@@ -4,10 +4,12 @@ import { memo } from "preact/compat";
 import {
 	useCallback,
 	useEffect,
+	useLayoutEffect,
 	useMemo,
 	useRef,
 	useState,
 } from "preact/hooks";
+import { getFavoritesSync, initStorage } from "@/utils/storage";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import { fetchTrains, type ServiceStatusInfo } from "../utils/api";
@@ -159,6 +161,107 @@ export default function TrainList({
 			return false;
 		}
 	});
+	// Track favorites version to trigger re-sort when favorites change
+	const [favoritesVersion, setFavoritesVersion] = useState(0);
+
+	// FLIP animation refs
+	const listContainerRef = useRef<HTMLDivElement>(null);
+	const cardPositionsRef = useRef<Map<string, DOMRect>>(new Map());
+	const isAnimatingRef = useRef(false);
+
+	// Initialize storage on mount and trigger re-sort after cache is populated
+	useEffect(() => {
+		let isMounted = true;
+		initStorage().then(() => {
+			if (isMounted) {
+				setFavoritesVersion((prev) => prev + 1);
+			}
+		});
+		return () => {
+			isMounted = false;
+		};
+	}, []);
+
+	// Capture card positions before favorites change triggers re-render
+	const captureCardPositions = useCallback(() => {
+		if (!listContainerRef.current) return;
+		const cards =
+			listContainerRef.current.querySelectorAll("[data-journey-key]");
+		const positions = new Map<string, DOMRect>();
+		cards.forEach((card) => {
+			const key = card.getAttribute("data-journey-key");
+			if (key) {
+				positions.set(key, card.getBoundingClientRect());
+			}
+		});
+		cardPositionsRef.current = positions;
+	}, []);
+
+	// Listen for favorites changes
+	useEffect(() => {
+		const handler = () => {
+			// Capture positions BEFORE the state update causes re-render
+			captureCardPositions();
+			setFavoritesVersion((v) => v + 1);
+		};
+		window.addEventListener("favorites-changed", handler);
+		return () => window.removeEventListener("favorites-changed", handler);
+	}, [captureCardPositions]);
+
+	// FLIP animation: after render, animate cards from old to new positions
+	useLayoutEffect(() => {
+		if (
+			favoritesVersion === 0 ||
+			!listContainerRef.current ||
+			isAnimatingRef.current
+		)
+			return;
+
+		const oldPositions = cardPositionsRef.current;
+		if (oldPositions.size === 0) return;
+
+		const cards =
+			listContainerRef.current.querySelectorAll("[data-journey-key]");
+		const animations: Animation[] = [];
+
+		cards.forEach((card) => {
+			const key = card.getAttribute("data-journey-key");
+			if (!key) return;
+
+			const oldRect = oldPositions.get(key);
+			if (!oldRect) return;
+
+			const newRect = card.getBoundingClientRect();
+			const deltaY = oldRect.top - newRect.top;
+
+			// Only animate if there's a significant position change
+			if (Math.abs(deltaY) > 5) {
+				isAnimatingRef.current = true;
+				const animation = card.animate(
+					[
+						{ transform: `translateY(${deltaY}px)` },
+						{ transform: "translateY(0)" },
+					],
+					{
+						duration: 300,
+						easing: "ease-out",
+					},
+				);
+				animations.push(animation);
+			}
+		});
+
+		// Clear old positions and reset animating flag when all animations complete
+		// Use .finally() to ensure flag is reset even if animations reject
+		if (animations.length > 0) {
+			Promise.all(animations.map((a) => a.finished)).finally(() => {
+				isAnimatingRef.current = false;
+			});
+		}
+
+		cardPositionsRef.current = new Map();
+	}, [favoritesVersion]);
+
 	useEffect(() => {
 		if (typeof document === "undefined") {
 			return;
@@ -495,6 +598,12 @@ export default function TrainList({
 
 	// Filter trains first, then slice for display
 	const filteredTrains = (state.trains || []).filter((train) => {
+		// Ensure train has valid departure row for selected station
+		const hasDepartureRow = train.timeTableRows.some(
+			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
+		);
+		if (!hasDepartureRow) return false;
+
 		const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
 		// Hide trains that have been faded out via transitionend
 		if (departedTrains.has(journeyKey)) return false;
@@ -518,8 +627,40 @@ export default function TrainList({
 
 		return true;
 	});
-	const displayedTrains = filteredTrains.slice(0, displayedTrainCount);
-	const hasMoreTrains = filteredTrains.length > displayedTrainCount;
+
+	// Sort trains with favorites pinned to top
+	const sortedTrains = useMemo(() => {
+		const favorites = getFavoritesSync();
+
+		return [...filteredTrains].sort((a, b) => {
+			const aFav = !!favorites[a.trainNumber]?.highlighted;
+			const bFav = !!favorites[b.trainNumber]?.highlighted;
+
+			// Favorites come first
+			if (aFav && !bFav) return -1;
+			if (!aFav && bFav) return 1;
+
+			// Within same group, sort by departure time
+			const aDepartureRow = a.timeTableRows.find(
+				(row) =>
+					row.stationShortCode === stationCode && row.type === "DEPARTURE",
+			);
+			const bDepartureRow = b.timeTableRows.find(
+				(row) =>
+					row.stationShortCode === stationCode && row.type === "DEPARTURE",
+			);
+
+			if (!aDepartureRow || !bDepartureRow) return 0;
+
+			const aTime = getDepartureDate(aDepartureRow).getTime();
+			const bTime = getDepartureDate(bDepartureRow).getTime();
+
+			return aTime - bTime;
+		});
+	}, [filteredTrains, stationCode, favoritesVersion]);
+
+	const displayedTrains = sortedTrains.slice(0, displayedTrainCount);
+	const hasMoreTrains = sortedTrains.length > displayedTrainCount;
 	const refreshProgress = useMemo(() => {
 		const interval = Math.max(currentRefreshInterval, 1);
 		const elapsed = currentTime.getTime() - lastRefreshAt;
@@ -608,7 +749,8 @@ export default function TrainList({
 					)}
 				</div>
 				<div
-					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"
+					ref={listContainerRef}
+					class="grid auto-rows-fr gap-4"
 					style={{
 						"grid-template-rows": `repeat(${displayedTrains.length}, minmax(0, 1fr))`,
 					}}
@@ -618,6 +760,7 @@ export default function TrainList({
 						return (
 							<div
 								key={journeyKey}
+								data-journey-key={journeyKey}
 								class={departedTrains.has(journeyKey) ? "" : "animate-scale-in"}
 								style={{
 									"grid-row": `${index + 1}`,
