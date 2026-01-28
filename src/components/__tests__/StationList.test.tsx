@@ -1,7 +1,7 @@
 /** @format */
 
 import { fireEvent, render, screen } from "@testing-library/preact";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import type { Station } from "../../types";
 import StationList from "../StationList";
 
@@ -43,10 +43,10 @@ describe("StationList", () => {
 
 	let defaultProps: {
 		stations: Station[];
-		onStationSelect: ReturnType<typeof vi.fn>;
+		onStationSelect: Mock<(station: Station) => void>;
 		selectedValue: string | null;
 		isOpen: boolean;
-		onOpenChange: ReturnType<typeof vi.fn>;
+		onOpenChange: Mock<(isOpen: boolean) => void>;
 	};
 
 	beforeEach(() => {
