@@ -77,6 +77,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Double quotes for strings
 - Strict TypeScript configuration
 - Component files use `.tsx` extension
+- Use DaisyUI components when possible
+- Use conventional commits (feat:, fix:, chore:, etc.)
 
 ### API Integration
 - Rate limiting awareness with 429 status handling
@@ -89,3 +91,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Heavy use of localStorage for persistence
 - URL as single source of truth for routing
 - Component-level state with props drilling
+
+## Data Attribution
+
+Train data is provided by Fintraffic's digitraffic.fi service under the CC 4.0 BY license.
