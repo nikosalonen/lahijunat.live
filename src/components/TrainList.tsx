@@ -4,16 +4,17 @@ import { memo } from "preact/compat";
 import {
 	useCallback,
 	useEffect,
+	useLayoutEffect,
 	useMemo,
 	useRef,
 	useState,
 } from "preact/hooks";
+import { getFavoritesSync, initStorage } from "@/utils/storage";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import { fetchTrains, type ServiceStatusInfo } from "../utils/api";
 import { hapticLight } from "../utils/haptics";
 import { getLocalizedStationName } from "../utils/stationNames";
-import { getFavoritesSync, initStorage } from "../utils/storage";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
