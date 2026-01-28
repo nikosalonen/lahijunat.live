@@ -12,6 +12,7 @@ import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import { fetchTrains, type ServiceStatusInfo } from "../utils/api";
 import { hapticLight } from "../utils/haptics";
+import { getLocalizedStationName } from "../utils/stationNames";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
@@ -547,9 +548,20 @@ export default function TrainList({
 							<span>{destinationCode}</span>
 						</span>
 						<span class="hidden sm:inline-flex sm:items-center sm:gap-2">
-							<span>{fromStation?.name}</span>
+							<span>
+								{fromStation
+									? getLocalizedStationName(
+											fromStation.name,
+											fromStation.shortCode,
+										)
+									: ""}
+							</span>
 							<i class="fa-solid fa-arrow-right" aria-hidden="true" />
-							<span>{toStation?.name}</span>
+							<span>
+								{toStation
+									? getLocalizedStationName(toStation.name, toStation.shortCode)
+									: ""}
+							</span>
 						</span>
 					</h2>
 					<div class="flex items-center gap-4 self-end sm:self-auto order-1 sm:order-2">

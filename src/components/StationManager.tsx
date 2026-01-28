@@ -11,6 +11,7 @@ import {
 	hapticNotification,
 } from "../utils/haptics";
 import { calculateDistance, isInFinland } from "../utils/location";
+import { getLocalizedStationName } from "../utils/stationNames";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
 import StationList from "./StationList";
@@ -585,7 +586,12 @@ export default function StationManager({
 											{selectedOrigin}
 										</div>
 										<div className="text-sm opacity-70 leading-tight truncate">
-											{selectedOriginStation?.name}
+											{selectedOriginStation
+												? getLocalizedStationName(
+														selectedOriginStation.name,
+														selectedOriginStation.shortCode,
+													)
+												: ""}
 										</div>
 									</div>
 									<svg
@@ -607,7 +613,12 @@ export default function StationManager({
 											{selectedDestination}
 										</div>
 										<div className="text-sm opacity-70 leading-tight truncate">
-											{selectedDestinationStation?.name}
+											{selectedDestinationStation
+												? getLocalizedStationName(
+														selectedDestinationStation.name,
+														selectedDestinationStation.shortCode,
+													)
+												: ""}
 										</div>
 									</div>
 								</div>

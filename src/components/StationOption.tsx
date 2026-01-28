@@ -2,6 +2,7 @@
 
 import type { Station } from "../types";
 import { hapticSelection } from "../utils/haptics";
+import { getLocalizedStationName } from "../utils/stationNames";
 
 function StationOption({
 	station,
@@ -33,7 +34,8 @@ function StationOption({
 				isHighlighted ? "bg-blue-100 animate-scale-in" : ""
 			}`}
 		>
-			{station.name} ({station.shortCode})
+			{getLocalizedStationName(station.name, station.shortCode)} (
+			{station.shortCode})
 		</button>
 	);
 }

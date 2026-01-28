@@ -12,6 +12,7 @@ import {
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station } from "../types";
 import { hapticSelection } from "../utils/haptics";
+import { getLocalizedStationName } from "../utils/stationNames";
 import { t } from "../utils/translations";
 import StationListSkeleton from "./StationListSkeleton";
 import StationOption from "./StationOption";
@@ -98,11 +99,13 @@ export default function StationList({
 	const stationIndex = useMemo(
 		() =>
 			stations.map((s) => {
-				const name = s.name.toLowerCase();
-				const combined = `${s.name} (${s.shortCode})`.toLowerCase();
+				const localizedName = getLocalizedStationName(s.name, s.shortCode);
+				const name = localizedName.toLowerCase();
+				const combined = `${localizedName} (${s.shortCode})`.toLowerCase();
 				return {
 					ref: s,
 					name,
+					localizedName,
 					codeNorm: normalizeKey(s.shortCode),
 					combined,
 					combinedNorm: normalizeKey(combined),
@@ -208,7 +211,7 @@ export default function StationList({
 					isOpen
 						? searchTerm
 						: selectedStation
-							? `${selectedStation.name} (${selectedStation.shortCode})`
+							? `${getLocalizedStationName(selectedStation.name, selectedStation.shortCode)} (${selectedStation.shortCode})`
 							: ""
 				}
 				onClick={handleInputClick}
