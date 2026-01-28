@@ -14,15 +14,6 @@ export type HapticType =
 	| "notification";
 
 /**
- * Extended Window interface for iOS DeviceMotionEvent
- */
-interface WindowWithDeviceMotion extends Window {
-	DeviceMotionEvent: {
-		requestPermission?: () => Promise<"granted" | "denied">;
-	};
-}
-
-/**
  * Type guard to check if navigator has vibrate support
  */
 const hasVibrateSupport = (navigator: Navigator): boolean => {
@@ -30,17 +21,6 @@ const hasVibrateSupport = (navigator: Navigator): boolean => {
 		"vibrate" in navigator &&
 		typeof (navigator as Navigator & { vibrate?: unknown }).vibrate ===
 			"function"
-	);
-};
-
-/**
- * Type guard to check if window has DeviceMotionEvent support
- */
-const _hasDeviceMotionSupport = (
-	window: Window,
-): window is WindowWithDeviceMotion => {
-	return (
-		"DeviceMotionEvent" in window && window.DeviceMotionEvent !== undefined
 	);
 };
 
