@@ -169,9 +169,11 @@ export default function TrainList({
 	const cardPositionsRef = useRef<Map<string, DOMRect>>(new Map());
 	const isAnimatingRef = useRef(false);
 
-	// Initialize storage on mount
+	// Initialize storage on mount and trigger re-sort after cache is populated
 	useEffect(() => {
-		initStorage();
+		initStorage().then(() => {
+			setFavoritesVersion((prev) => prev + 1);
+		});
 	}, []);
 
 	// Capture card positions before favorites change triggers re-render
