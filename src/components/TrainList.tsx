@@ -13,6 +13,7 @@ import type { Station, Train } from "../types";
 import { fetchTrains, type ServiceStatusInfo } from "../utils/api";
 import { hapticLight } from "../utils/haptics";
 import { getLocalizedStationName } from "../utils/stationNames";
+import { getFavoritesSync, initStorage } from "../utils/storage";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
@@ -159,6 +160,21 @@ export default function TrainList({
 			return false;
 		}
 	});
+	// Track favorites version to trigger re-sort when favorites change
+	const [favoritesVersion, setFavoritesVersion] = useState(0);
+
+	// Initialize storage on mount
+	useEffect(() => {
+		initStorage();
+	}, []);
+
+	// Listen for favorites changes
+	useEffect(() => {
+		const handler = () => setFavoritesVersion((v) => v + 1);
+		window.addEventListener("favorites-changed", handler);
+		return () => window.removeEventListener("favorites-changed", handler);
+	}, []);
+
 	useEffect(() => {
 		if (typeof document === "undefined") {
 			return;
@@ -518,8 +534,40 @@ export default function TrainList({
 
 		return true;
 	});
-	const displayedTrains = filteredTrains.slice(0, displayedTrainCount);
-	const hasMoreTrains = filteredTrains.length > displayedTrainCount;
+
+	// Sort trains with favorites pinned to top
+	const sortedTrains = useMemo(() => {
+		const favorites = getFavoritesSync();
+
+		return [...filteredTrains].sort((a, b) => {
+			const aFav = !!favorites[a.trainNumber]?.highlighted;
+			const bFav = !!favorites[b.trainNumber]?.highlighted;
+
+			// Favorites come first
+			if (aFav && !bFav) return -1;
+			if (!aFav && bFav) return 1;
+
+			// Within same group, sort by departure time
+			const aDepartureRow = a.timeTableRows.find(
+				(row) =>
+					row.stationShortCode === stationCode && row.type === "DEPARTURE",
+			);
+			const bDepartureRow = b.timeTableRows.find(
+				(row) =>
+					row.stationShortCode === stationCode && row.type === "DEPARTURE",
+			);
+
+			if (!aDepartureRow || !bDepartureRow) return 0;
+
+			const aTime = getDepartureDate(aDepartureRow).getTime();
+			const bTime = getDepartureDate(bDepartureRow).getTime();
+
+			return aTime - bTime;
+		});
+	}, [filteredTrains, stationCode, favoritesVersion]);
+
+	const displayedTrains = sortedTrains.slice(0, displayedTrainCount);
+	const hasMoreTrains = sortedTrains.length > displayedTrainCount;
 	const refreshProgress = useMemo(() => {
 		const interval = Math.max(currentRefreshInterval, 1);
 		const elapsed = currentTime.getTime() - lastRefreshAt;
