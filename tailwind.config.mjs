@@ -25,22 +25,7 @@ export default {
 					"50%": { opacity: "0.5" },
 					"100%": { opacity: "0" },
 				},
-				"soft-blink": {
-					"0%, 100%": { opacity: "1" },
-					"50%": { opacity: "0.8" },
-				},
-				"soft-blink-dark": {
-					"0%, 100%": { opacity: "1" },
-					"50%": { opacity: "0.9" },
-				},
-				"soft-blink-highlight": {
-					"0%, 100%": { opacity: "1" },
-					"50%": { opacity: "0.9" },
-				},
-				"soft-blink-highlight-dark": {
-					"0%, 100%": { opacity: "1" },
-					"50%": { opacity: "0.95" },
-				},
+				// soft-blink animations are defined in global.css with gradient effects
 				"slide-up": {
 					"0%": { transform: "translateY(20px)", opacity: "0" },
 					"100%": { transform: "translateY(0)", opacity: "1" },
@@ -73,11 +58,7 @@ export default {
 			},
 			animation: {
 				"fade-out": "fade-out 3s linear forwards",
-				"soft-blink": "soft-blink 2s ease-in-out infinite",
-				"soft-blink-dark": "soft-blink-dark 2s ease-in-out infinite",
-				"soft-blink-highlight": "soft-blink-highlight 2s ease-in-out infinite",
-				"soft-blink-highlight-dark":
-					"soft-blink-highlight-dark 2s ease-in-out infinite",
+				// soft-blink animations are defined in global.css
 				"slide-up": "slide-up 0.4s ease-out",
 				"slide-down": "slide-down 0.3s ease-out",
 				"scale-in": "scale-in 0.2s ease-out",
