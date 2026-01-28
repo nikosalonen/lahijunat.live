@@ -1,54 +1,54 @@
 {
-  "name": "lahijunat-live",
-  "type": "module",
-  "version": "1.13.0-beta.1",
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build && cp src/sw-utils.js dist/ && workbox generateSW workbox-config.cjs",
-    "preview": "astro preview",
-    "astro": "astro",
-    "lint": "biome check --write src",
-    "lint:check": "biome check src",
-    "format": "biome format --write src",
-    "typecheck": "astro check",
-    "check-stations": "npx tsx scripts/findStationsWithoutDestinations.ts",
-    "update-station-query": "npx tsx scripts/updateStationQuery.ts",
-    "test-station-query": "npx tsx scripts/testStationQuery.ts",
-    "test": "vitest run",
-    "test:watch": "vitest watch",
-    "prepare": "husky"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,css}": [
-      "biome check --write"
-    ]
-  },
-  "dependencies": {
-    "@astrojs/preact": "^4.1.3",
-    "@tailwindcss/vite": "^4.1.18",
-    "astro": "^5.16.15",
-    "preact": "^10.28.2",
-    "tailwindcss": "^4.1.18",
-    "workbox-cacheable-response": "^7.4.0",
-    "workbox-core": "^7.4.0",
-    "workbox-expiration": "^7.4.0",
-    "workbox-precaching": "^7.4.0",
-    "workbox-routing": "^7.4.0",
-    "workbox-strategies": "^7.4.0"
-  },
-  "devDependencies": {
-    "@astrojs/check": "^0.9.6",
-    "@babel/plugin-bugfix-firefox-class-in-computed-class-key": "^7.28.5",
-    "@biomejs/biome": "2.3.13",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/preact": "^3.2.4",
-    "@types/node": "^25.0.10",
-    "daisyui": "^5.5.14",
-    "husky": "^9.1.7",
-    "jsdom": "^27.4.0",
-    "lint-staged": "^16.2.7",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.18",
-    "workbox-cli": "^7.4.0"
-  }
+	"name": "lahijunat-live",
+	"type": "module",
+	"version": "1.13.0",
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build && cp src/sw-utils.js dist/ && workbox generateSW workbox-config.cjs",
+		"preview": "astro preview",
+		"astro": "astro",
+		"lint": "biome check --write src",
+		"lint:check": "biome check src",
+		"format": "biome format --write src",
+		"typecheck": "astro check",
+		"check-stations": "npx tsx scripts/findStationsWithoutDestinations.ts",
+		"update-station-query": "npx tsx scripts/updateStationQuery.ts",
+		"test-station-query": "npx tsx scripts/testStationQuery.ts",
+		"test": "vitest run",
+		"test:watch": "vitest watch",
+		"prepare": "husky"
+	},
+	"lint-staged": {
+		"*.{js,jsx,ts,tsx,json,css}": [
+			"biome check --write"
+		]
+	},
+	"dependencies": {
+		"@astrojs/preact": "^4.1.3",
+		"@tailwindcss/vite": "^4.1.18",
+		"astro": "^5.16.15",
+		"preact": "^10.28.2",
+		"tailwindcss": "^4.1.18",
+		"workbox-cacheable-response": "^7.4.0",
+		"workbox-core": "^7.4.0",
+		"workbox-expiration": "^7.4.0",
+		"workbox-precaching": "^7.4.0",
+		"workbox-routing": "^7.4.0",
+		"workbox-strategies": "^7.4.0"
+	},
+	"devDependencies": {
+		"@astrojs/check": "^0.9.6",
+		"@babel/plugin-bugfix-firefox-class-in-computed-class-key": "^7.28.5",
+		"@biomejs/biome": "2.3.13",
+		"@testing-library/jest-dom": "^6.9.1",
+		"@testing-library/preact": "^3.2.4",
+		"@types/node": "^25.0.10",
+		"daisyui": "^5.5.14",
+		"husky": "^9.1.7",
+		"jsdom": "^27.4.0",
+		"lint-staged": "^16.2.7",
+		"typescript": "^5.9.3",
+		"vitest": "^4.0.18",
+		"workbox-cli": "^7.4.0"
+	}
 }

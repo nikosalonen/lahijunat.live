@@ -558,8 +558,10 @@ export default function TrainList({
 							<i class="fa-solid fa-arrow-right" aria-hidden="true" />
 							<span>
 								{toStation
-									? getLocalizedStationName(toStation.name, toStation.shortCode) ||
-										toStation.shortCode
+									? getLocalizedStationName(
+											toStation.name,
+											toStation.shortCode,
+										) || toStation.shortCode
 									: destinationCode}
 							</span>
 						</span>
