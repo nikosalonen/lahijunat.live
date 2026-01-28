@@ -74,6 +74,11 @@ export const translations = {
 		pwaUpdateTitle: "🚀 Uusi versio sovelluksesta on saatavilla!",
 		pwaUpdateButton: "Päivitä nyt",
 		pwaUpdateDismiss: "Myöhemmin",
+		// Feature announcement
+		newFeaturesTitle: "Uutta sovelluksessa",
+		newFeaturesSwedish: "Sovellus nyt myös ruotsiksi",
+		newFeaturesHideSlowTrains: "Piilota hitaat junat -asetus",
+		newFeaturesDismiss: "Selvä!",
 	},
 	en: {
 		title: "Local Trains Live | Real-time schedules for local trains",
@@ -145,6 +150,11 @@ export const translations = {
 		pwaUpdateTitle: "🚀 New version of the app is available!",
 		pwaUpdateButton: "Update now",
 		pwaUpdateDismiss: "Later",
+		// Feature announcement
+		newFeaturesTitle: "What's new",
+		newFeaturesSwedish: "App now available in Swedish",
+		newFeaturesHideSlowTrains: "Hide slow trains option",
+		newFeaturesDismiss: "Got it!",
 	},
 	sv: {
 		title: "Lokaltåg Live | Tidtabeller för lokaltåg i realtid",
@@ -216,6 +226,11 @@ export const translations = {
 		pwaUpdateTitle: "🚀 En ny version av appen är tillgänglig!",
 		pwaUpdateButton: "Uppdatera nu",
 		pwaUpdateDismiss: "Senare",
+		// Feature announcement
+		newFeaturesTitle: "Nyheter",
+		newFeaturesSwedish: "Appen nu på svenska",
+		newFeaturesHideSlowTrains: "Dölj långsamma tåg-inställning",
+		newFeaturesDismiss: "Uppfattat!",
 	},
 };
 
