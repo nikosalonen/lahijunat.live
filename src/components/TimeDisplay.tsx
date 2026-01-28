@@ -19,38 +19,41 @@ const TimeDisplay = ({
 	const rowIsCancelled = Boolean(isCancelled ?? departureRow.cancelled);
 	const hasUnknownDelay = Boolean(departureRow.unknownDelay);
 
+	// Show delay badge conditions
+	const showUnknownDelay = hasUnknownDelay && !rowIsCancelled;
+	const showSpecificDelay =
+		departureRow.liveEstimateTime &&
+		timeDifferenceMinutes > 0 &&
+		!rowIsCancelled &&
+		!hasUnknownDelay;
+
 	return (
 		<span
-			class={`text-xl sm:text-2xl font-medium ${rowIsCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} min-w-0 relative pt-8 sm:pt-6`}
+			class={`text-xl sm:text-2xl font-medium ${rowIsCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} min-w-0 flex items-center gap-2 flex-wrap`}
 		>
-			{/* Show unknown delay badge if set */}
-			{hasUnknownDelay && !rowIsCancelled && (
-				<output
-					aria-label={t("unknownDelay")}
-					aria-live="polite"
-					class="absolute top-0 left-0 badge badge-warning badge-lg font-semibold shadow-lg"
-				>
-					{t("unknownDelay")}
-				</output>
-			)}
-			{/* Show specific delay badge if available and not unknown delay */}
-			{departureRow.liveEstimateTime &&
-				timeDifferenceMinutes > 0 &&
-				!rowIsCancelled &&
-				!hasUnknownDelay && (
-					<output
-						aria-label={`${t("late")} ${timeDifferenceMinutes} ${t("minutes")}`}
-						aria-live="polite"
-						class="absolute top-0 left-0 badge badge-warning badge-lg font-semibold shadow-lg"
-					>
-						{`+${timeDifferenceMinutes} min`}
-					</output>
-				)}
 			<TimeRow
 				departureRow={departureRow}
 				arrivalRow={arrivalRow}
 				isCancelled={rowIsCancelled}
 			/>
+			{showUnknownDelay && (
+				<output
+					aria-label={t("unknownDelay")}
+					aria-live="polite"
+					class="badge badge-warning badge-sm font-semibold"
+				>
+					{t("unknownDelay")}
+				</output>
+			)}
+			{showSpecificDelay && (
+				<output
+					aria-label={`${t("late")} ${timeDifferenceMinutes} ${t("minutes")}`}
+					aria-live="polite"
+					class="badge badge-warning badge-sm font-semibold"
+				>
+					{`+${timeDifferenceMinutes} min`}
+				</output>
+			)}
 		</span>
 	);
 };
