@@ -244,8 +244,9 @@ export default function TrainList({
 		});
 
 		// Clear old positions and reset animating flag when all animations complete
+		// Use .finally() to ensure flag is reset even if animations reject
 		if (animations.length > 0) {
-			Promise.all(animations.map((a) => a.finished)).then(() => {
+			Promise.all(animations.map((a) => a.finished)).finally(() => {
 				isAnimatingRef.current = false;
 			});
 		}
