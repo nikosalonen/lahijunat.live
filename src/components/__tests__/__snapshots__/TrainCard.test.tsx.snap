@@ -2,7 +2,7 @@
 
 exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
 <div
-  class="relative overflow-hidden rounded-2xl"
+  class="relative overflow-hidden rounded-2xl transition-opacity duration-700 ease-in-out"
   style="opacity: 1;"
 >
   <div
@@ -46,7 +46,7 @@ exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
     </svg>
   </div>
   <div
-    class="card bg-base-100 shadow-xl border border-base-300 rounded-xl relative transform-gpu -translate-y-0.5 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-300 dark:border-red-800 w-full max-w-full text-left relative select-none transition-opacity duration-700 ease-in-out "
+    class="card bg-base-100 shadow-xl border border-base-300 rounded-xl relative transform-gpu -translate-y-0.5 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-300 dark:border-red-800 w-full max-w-full text-left relative select-none "
     data-train-cancelled="true"
     data-train-line="A"
     data-train-number="123"
@@ -272,7 +272,7 @@ exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
 
 exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
 <div
-  class="relative overflow-hidden rounded-2xl"
+  class="relative overflow-hidden rounded-2xl transition-opacity duration-700 ease-in-out"
   style="opacity: 1;"
 >
   <div
@@ -316,7 +316,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
     </svg>
   </div>
   <div
-    class="card bg-base-100 shadow-xl border border-base-300 rounded-xl relative transform-gpu -translate-y-0.5 border-base-300 dark:border-base-300/40 dark:bg-base-200 animate-soft-blink dark:animate-soft-blink-dark w-full max-w-full text-left relative select-none transition-opacity duration-700 ease-in-out "
+    class="card bg-base-100 shadow-xl border border-base-300 rounded-xl relative transform-gpu -translate-y-0.5 border-base-300 dark:border-base-300/40 dark:bg-base-200 animate-soft-blink dark:animate-soft-blink-dark w-full max-w-full text-left relative select-none "
     data-train-cancelled="false"
     data-train-line="A"
     data-train-number="123"
@@ -588,7 +588,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
 
 exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
 <div
-  class="relative overflow-hidden rounded-2xl"
+  class="relative overflow-hidden rounded-2xl transition-opacity duration-700 ease-in-out"
   style="opacity: 1;"
 >
   <div
@@ -632,7 +632,7 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
     </svg>
   </div>
   <div
-    class="card bg-base-100 shadow-xl border border-base-300 rounded-xl relative transform-gpu -translate-y-0.5 border-base-300 dark:border-base-300/40 dark:bg-base-200 animate-soft-blink dark:animate-soft-blink-dark w-full max-w-full text-left relative select-none transition-opacity duration-700 ease-in-out "
+    class="card bg-base-100 shadow-xl border border-base-300 rounded-xl relative transform-gpu -translate-y-0.5 border-base-300 dark:border-base-300/40 dark:bg-base-200 animate-soft-blink dark:animate-soft-blink-dark w-full max-w-full text-left relative select-none "
     data-train-cancelled="false"
     data-train-line="A"
     data-train-number="123"
