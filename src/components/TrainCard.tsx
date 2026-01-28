@@ -7,16 +7,16 @@ import {
 	useRef,
 	useState,
 } from "preact/hooks";
-import type { Train } from "../types";
-import { getRelevantTrackInfo } from "../utils/api";
-import { hapticImpact } from "../utils/haptics";
 import {
 	getFavoritesSync,
 	initStorage,
 	removeFavorite,
 	setFavorite,
 	updateFavorite,
-} from "../utils/storage";
+} from "@/utils/storage";
+import type { Train } from "../types";
+import { getRelevantTrackInfo } from "../utils/api";
+import { hapticImpact } from "../utils/haptics";
 import { calculateDuration, getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
