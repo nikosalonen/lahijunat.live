@@ -34,7 +34,7 @@ function LinearProgress({
 		: progress === Number.POSITIVE_INFINITY
 			? 100
 			: 0;
-	const style: JSX.CSSProperties = {
+	const style = {
 		width: `${clamped}%`,
 		...(prefersReducedMotion && { transition: "none" }),
 	};

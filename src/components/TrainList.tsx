@@ -197,10 +197,7 @@ export default function TrainList({
 						message.includes("too many")
 					) {
 						errorType = "rateLimit";
-					} else if (
-						message.includes("not found") ||
-						message.includes("404")
-					) {
+					} else if (message.includes("not found") || message.includes("404")) {
 						errorType = "notFound";
 					} else if (message.includes("api") || message.includes("server")) {
 						errorType = "api";
