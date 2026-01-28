@@ -31,7 +31,6 @@ const MemoizedTrainCard = memo(TrainCard);
 const INITIAL_TRAIN_COUNT = 15;
 const DEPARTED_GRACE_MINUTES = -2; // How long to keep showing a train after departure
 const TIME_UPDATE_INTERVAL = 1000; // Update current time every 1 seconds when visible
-const ANIMATION_DURATION_MS = 2500;
 
 // Adaptive refresh intervals
 const REFRESH_INTERVALS = {
@@ -160,7 +159,6 @@ export default function TrainList({
 			return false;
 		}
 	});
-
 	useEffect(() => {
 		if (typeof document === "undefined") {
 			return;
@@ -522,12 +520,6 @@ export default function TrainList({
 	});
 	const displayedTrains = filteredTrains.slice(0, displayedTrainCount);
 	const hasMoreTrains = filteredTrains.length > displayedTrainCount;
-	const animationPhase = useMemo(() => {
-		const phase =
-			(currentTime.getTime() % ANIMATION_DURATION_MS) / ANIMATION_DURATION_MS;
-		return Number.isFinite(phase) ? phase : 0;
-	}, [currentTime]);
-
 	const refreshProgress = useMemo(() => {
 		const interval = Math.max(currentRefreshInterval, 1);
 		const elapsed = currentTime.getTime() - lastRefreshAt;
@@ -618,7 +610,6 @@ export default function TrainList({
 				<div
 					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"
 					style={{
-						"--animation-phase": animationPhase,
 						"grid-template-rows": `repeat(${displayedTrains.length}, minmax(0, 1fr))`,
 					}}
 				>

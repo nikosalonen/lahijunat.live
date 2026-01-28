@@ -129,38 +129,21 @@
 
 .animate-soft-blink {
 	animation: soft-blink 2.5s ease-in-out infinite;
-	animation-play-state: running;
-	animation-delay: calc(var(--animation-phase, 0) * -2.5s);
 }
 
 .dark .animate-soft-blink {
 	animation: soft-blink-dark 2.5s ease-in-out infinite;
-	animation-play-state: running;
-	animation-delay: calc(var(--animation-phase, 0) * -2.5s);
 }
 
 .animate-soft-blink-highlight {
 	animation: soft-blink-highlight 2.5s ease-in-out infinite;
-	animation-play-state: running;
-	animation-delay: calc(var(--animation-phase, 0) * -2.5s);
 }
 
 .dark .animate-soft-blink-highlight {
 	animation: soft-blink-highlight-dark 2.5s ease-in-out infinite;
-	animation-play-state: running;
-	animation-delay: calc(var(--animation-phase, 0) * -2.5s);
 }
 
-/* Synchronize animation with parent state */
-[style*="--animation-phase: 0"] .animate-soft-blink,
-[style*="--animation-phase: 0"] .animate-soft-blink-highlight {
-	animation-play-state: paused;
-}
-
-[style*="--animation-phase: 1"] .animate-soft-blink,
-[style*="--animation-phase: 1"] .animate-soft-blink-highlight {
-	animation-play-state: running;
-}
+/* Animation play state is controlled by the base class - no conditional selectors needed */
 
 @keyframes pulse {
 	0%,
