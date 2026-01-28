@@ -39,9 +39,11 @@ const LanguageSwitcher = () => {
 		setIsOpen(true);
 	};
 
-	const handleBlur = (event: JSX.TargetedFocusEvent<HTMLElement>) => {
+	const handleBlur = (event: globalThis.FocusEvent) => {
 		// Check if the new focus target is within the dropdown
-		const dropdown = event.currentTarget.closest(".dropdown");
+		const target = event.currentTarget;
+		if (!(target instanceof Element)) return;
+		const dropdown = target.closest(".dropdown");
 		if (!dropdown) return;
 
 		if (event.relatedTarget) {

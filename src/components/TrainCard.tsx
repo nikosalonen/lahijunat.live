@@ -488,9 +488,7 @@ export default function TrainCard({
 	};
 
 	// Keyboard handler for accessibility
-	const handleTrackKeyDown = (
-		e: JSX.TargetedKeyboardEvent<HTMLButtonElement>,
-	) => {
+	const handleTrackKeyDown = (e: globalThis.KeyboardEvent) => {
 		if (e.key === "Enter" || e.key === " ") {
 			e.preventDefault();
 			handleTrackFlip();
