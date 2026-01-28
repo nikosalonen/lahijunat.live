@@ -149,6 +149,12 @@ export default function TrainList({
 		}
 		return document.visibilityState === "visible";
 	});
+	const [hideSlowTrains, setHideSlowTrains] = useState(() => {
+		if (typeof localStorage === "undefined") {
+			return false;
+		}
+		return localStorage.getItem("hideSlowTrains") === "true";
+	});
 
 	useEffect(() => {
 		if (typeof document === "undefined") {
@@ -285,6 +291,19 @@ export default function TrainList({
 			const next = new Set(prev);
 			next.delete(journeyKey);
 			return next;
+		});
+	}, []);
+
+	const toggleHideSlowTrains = useCallback(() => {
+		setHideSlowTrains((prev) => {
+			const newValue = !prev;
+			try {
+				localStorage.setItem("hideSlowTrains", String(newValue));
+			} catch {
+				// Ignore localStorage errors
+			}
+			hapticLight();
+			return newValue;
 		});
 	}, []);
 
@@ -431,11 +450,48 @@ export default function TrainList({
 		[allTrainDurations],
 	);
 
+	// Helper to check if a train is slow
+	const isTrainSlow = useCallback(
+		(train: Train) => {
+			if (allTrainDurations.length < 2) return false;
+
+			const departureRow = train.timeTableRows.find(
+				(row) =>
+					row.stationShortCode === stationCode && row.type === "DEPARTURE",
+			);
+			const arrivalRow = train.timeTableRows.find(
+				(row) =>
+					row.stationShortCode === destinationCode && row.type === "ARRIVAL",
+			);
+
+			if (!departureRow || !arrivalRow) return false;
+
+			const arrivalTime =
+				arrivalRow.liveEstimateTime ?? arrivalRow.scheduledTime;
+			const departureTime =
+				departureRow.actualTime ?? departureRow.scheduledTime;
+			const durationMinutes = Math.round(
+				(new Date(arrivalTime).getTime() - new Date(departureTime).getTime()) /
+					(1000 * 60),
+			);
+
+			const median =
+				allTrainDurations[Math.floor(allTrainDurations.length / 2)];
+			const slowThreshold = median * 1.15;
+
+			return durationMinutes >= slowThreshold;
+		},
+		[allTrainDurations, stationCode, destinationCode],
+	);
+
 	const displayedTrains = (state.trains || [])
 		.filter((train) => {
 			const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
 			// Hide trains that have been faded out via transitionend
 			if (departedTrains.has(journeyKey)) return false;
+
+			// Hide slow trains if the option is enabled
+			if (hideSlowTrains && isTrainSlow(train)) return false;
 
 			// If API-derived departure says it's departed, apply grace window
 			if (train.isDeparted) {
