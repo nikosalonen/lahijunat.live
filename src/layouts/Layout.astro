@@ -107,7 +107,7 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
 
     <title>{title}</title>
 
-    <script type="application/ld+json">
+    <script is:inline type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -132,6 +132,7 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
 	</script>
 
 	<script
+		is:inline
 		defer
 		src="https://kit.fontawesome.com/810fdf07b7.js"
 		crossorigin="anonymous"
@@ -169,6 +170,7 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
          Astro.site &&
          new URL(Astro.site).hostname.endsWith("lahijunat.live") && (
            <script
+             is:inline
              defer
              src="https://cdn.counter.dev/script.js"
              data-id="da3ed73f-eedb-4dd0-acac-8e7366f8508e"
