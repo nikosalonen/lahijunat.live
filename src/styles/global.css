@@ -209,34 +209,6 @@
 	.dark .station-option:active {
 		background-color: rgb(75 85 99); /* gray-600 */
 	}
-
-	.location-button {
-		background-color: rgb(239 246 255); /* blue-50 */
-	}
-
-	.dark .location-button {
-		background-color: rgb(30 58 138); /* blue-900 */
-	}
-
-	.location-button:hover:not(:disabled) {
-		background-color: rgb(219 234 254); /* blue-100 */
-		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-		transform: translateY(-0.5px);
-	}
-
-	.dark .location-button:hover:not(:disabled) {
-		background-color: rgb(30 64 175); /* blue-800 */
-	}
-
-	.location-button:active:not(:disabled) {
-		background-color: rgb(191 219 254); /* blue-200 */
-		transform: scale(0.98);
-		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-	}
-
-	.dark .location-button:active:not(:disabled) {
-		background-color: rgb(29 78 216); /* blue-700 */
-	}
 }
 
 /* Rely on DaisyUI's btn/btn-primary styling */
