@@ -648,11 +648,10 @@ export default function TrainCard({
 													: undefined
 											}
 										>
-											<i
-												class="fa-solid fa-clock inline-block mr-1 -mt-1"
-												aria-hidden="true"
-											/>
-											{duration.hours}h {duration.minutes}m
+											<i class="fa-solid fa-clock mr-1" aria-hidden="true" />
+											<span>
+												{duration.hours}h {duration.minutes}m
+											</span>
 										</output>
 									)}
 								</div>
