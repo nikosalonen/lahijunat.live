@@ -272,35 +272,3 @@ body {
 		width: 100%;
 	}
 }
-
-@keyframes glow-pulse {
-	0%,
-	100% {
-		box-shadow:
-			0 0 0 4px rgba(140, 71, 153, 0.3),
-			0 8px 32px rgba(140, 71, 153, 0.2);
-	}
-	50% {
-		box-shadow:
-			0 0 0 6px rgba(140, 71, 153, 0.4),
-			0 12px 48px rgba(140, 71, 153, 0.3);
-	}
-}
-
-.dark .glow-pulse {
-	animation: glow-pulse-dark 2s ease-in-out infinite;
-}
-
-@keyframes glow-pulse-dark {
-	0%,
-	100% {
-		box-shadow:
-			0 0 0 4px rgba(179, 136, 255, 0.3),
-			0 8px 32px rgba(179, 136, 255, 0.2);
-	}
-	50% {
-		box-shadow:
-			0 0 0 6px rgba(179, 136, 255, 0.4),
-			0 12px 48px rgba(179, 136, 255, 0.3);
-	}
-}
