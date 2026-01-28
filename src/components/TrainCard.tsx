@@ -616,6 +616,28 @@ export default function TrainCard({
 		isSwipingRef.current = false;
 	}, [swipeOffset, handleFavorite]);
 
+	// Handle touch cancel (OS interruption) - reset state without triggering action
+	const handleTouchCancel = useCallback(() => {
+		// Animate back to center
+		setIsTransitioning(true);
+		setSwipeOffset(0);
+
+		// Clear any existing timeout before setting a new one
+		if (swipeTimeoutRef.current) {
+			clearTimeout(swipeTimeoutRef.current);
+		}
+
+		// Reset state after transition
+		swipeTimeoutRef.current = setTimeout(() => {
+			setIsTransitioning(false);
+			swipeTimeoutRef.current = null;
+		}, 300);
+
+		touchStartRef.current = null;
+		isSwipingRef.current = false;
+		hasTriggeredRef.current = false;
+	}, []);
+
 	if (!departureRow) return null;
 
 	const hasDerivedActualDeparture = Boolean(
@@ -731,6 +753,7 @@ export default function TrainCard({
 				onTouchStart={handleTouchStart}
 				onTouchMove={handleTouchMove}
 				onTouchEnd={handleTouchEnd}
+				onTouchCancel={handleTouchCancel}
 				data-train-number={train.trainNumber}
 				data-train-cancelled={train.cancelled}
 				data-train-line={train.commuterLineID}
