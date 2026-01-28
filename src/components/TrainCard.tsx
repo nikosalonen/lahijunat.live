@@ -123,6 +123,16 @@ export default function TrainCard({
 	const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 	const isSwipingRef = useRef(false);
 	const hasTriggeredRef = useRef(false);
+	const swipeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	// Clear swipe timeout on unmount
+	useEffect(() => {
+		return () => {
+			if (swipeTimeoutRef.current) {
+				clearTimeout(swipeTimeoutRef.current);
+			}
+		};
+	}, []);
 
 	// Memoize all time-dependent calculations
 	const {
@@ -258,7 +268,9 @@ export default function TrainCard({
 				new Date(trainData.removeAfter) < currentTime
 			) {
 				// Remove expired highlight
-				removeFavorite(train.trainNumber);
+				removeFavorite(train.trainNumber).catch(() => {
+					// Silently ignore storage errors for cleanup operations
+				});
 				setIsHighlighted(false);
 			} else {
 				setIsHighlighted(trainData.highlighted);
@@ -284,6 +296,8 @@ export default function TrainCard({
 					if (driftMinutes > 1) {
 						updateFavorite(train.trainNumber, {
 							removeAfter: desiredRemoveAfter.toISOString(),
+						}).catch(() => {
+							// Silently ignore storage errors for sync operations
 						});
 					}
 				}
@@ -297,11 +311,15 @@ export default function TrainCard({
 					updateFavorite(train.trainNumber, {
 						track: departureRow.commercialTrack,
 						trackChanged: true,
+					}).catch(() => {
+						// Silently ignore storage errors for track updates
 					});
 				} else if (departureRow && !trainData.track) {
 					// First time storing track
 					updateFavorite(train.trainNumber, {
 						track: departureRow.commercialTrack,
+					}).catch(() => {
+						// Silently ignore storage errors for track updates
 					});
 				}
 			}
@@ -513,10 +531,16 @@ export default function TrainCard({
 					removeAfter: removeAfter.toISOString(),
 					journeyKey,
 					track: departureRow.commercialTrack,
+				}).catch(() => {
+					// Revert UI state if storage fails
+					setIsHighlighted(false);
 				});
 			}
 		} else {
-			removeFavorite(train.trainNumber);
+			removeFavorite(train.trainNumber).catch(() => {
+				// Revert UI state if storage fails
+				setIsHighlighted(true);
+			});
 		}
 	}, [isHighlighted, train, stationCode, destinationCode]);
 
@@ -577,9 +601,15 @@ export default function TrainCard({
 		setIsTransitioning(true);
 		setSwipeOffset(0);
 
+		// Clear any existing timeout before setting a new one
+		if (swipeTimeoutRef.current) {
+			clearTimeout(swipeTimeoutRef.current);
+		}
+
 		// Reset state after transition
-		setTimeout(() => {
+		swipeTimeoutRef.current = setTimeout(() => {
 			setIsTransitioning(false);
+			swipeTimeoutRef.current = null;
 		}, 300);
 
 		touchStartRef.current = null;
