@@ -82,6 +82,8 @@ export const translations = {
 		newFeaturesTitle: "Uutta sovelluksessa",
 		newFeaturesSwedish: "Sovellus nyt myös ruotsiksi",
 		newFeaturesHideSlowTrains: "Piilota hitaat junat -asetus",
+		newFeaturesSwipeToFavorite: "Pyyhkäise lisätäksesi suosikiksi",
+		newFeaturesFavoritesPinned: "Suosikit näytetään listan kärjessä",
 		newFeaturesDismiss: "Selvä!",
 	},
 	en: {
@@ -162,6 +164,8 @@ export const translations = {
 		newFeaturesTitle: "What's new",
 		newFeaturesSwedish: "App now available in Swedish",
 		newFeaturesHideSlowTrains: "Hide slow trains option",
+		newFeaturesSwipeToFavorite: "Swipe to add favorites",
+		newFeaturesFavoritesPinned: "Favorites pinned to top of list",
 		newFeaturesDismiss: "Got it!",
 	},
 	sv: {
@@ -242,6 +246,8 @@ export const translations = {
 		newFeaturesTitle: "Nyheter",
 		newFeaturesSwedish: "Appen nu på svenska",
 		newFeaturesHideSlowTrains: "Dölj långsamma tåg-inställning",
+		newFeaturesSwipeToFavorite: "Svep för att lägga till favoriter",
+		newFeaturesFavoritesPinned: "Favoriter fästa högst upp i listan",
 		newFeaturesDismiss: "Uppfattat!",
 	},
 };
