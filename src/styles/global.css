@@ -176,46 +176,6 @@
 	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Enhanced shimmer effect for loading states */
-.shimmer-bg {
-	background: linear-gradient(
-		90deg,
-		rgba(140, 71, 153, 0) 0%,
-		rgba(140, 71, 153, 0.15) 50%,
-		rgba(140, 71, 153, 0) 100%
-	);
-	background-size: 200% 100%;
-}
-
-.dark .shimmer-bg {
-	background: linear-gradient(
-		90deg,
-		rgba(179, 136, 255, 0) 0%,
-		rgba(179, 136, 255, 0.1) 50%,
-		rgba(179, 136, 255, 0) 100%
-	);
-	background-size: 200% 100%;
-}
-
-/* Prefer DaisyUI card/glass components over custom helpers */
-
-/* Staggered animation delays for lists */
-.stagger-1 {
-	animation-delay: 0.1s;
-}
-.stagger-2 {
-	animation-delay: 0.2s;
-}
-.stagger-3 {
-	animation-delay: 0.3s;
-}
-.stagger-4 {
-	animation-delay: 0.4s;
-}
-.stagger-5 {
-	animation-delay: 0.5s;
-}
-
 /* Smooth height transitions */
 .height-transition {
 	transition:
@@ -230,30 +190,8 @@
 	}
 }
 
-/* Enhanced Micro-interactions */
-.hover-lift {
-	transition: all 0.2s ease;
-}
-
 /* Only apply hover effects on devices that support proper hover */
 @media (hover: hover) {
-	.hover-lift:hover {
-		transform: translateY(-2px) scale(1.01);
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-	}
-
-	.dark .hover-lift:hover {
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-	}
-
-	.train-button-hover:hover {
-		transform: scale(1.02);
-	}
-
-	.train-span-hover:hover {
-		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-	}
-
 	.station-option:hover {
 		background-color: rgb(243 244 246); /* gray-100 */
 		transform: translateY(-0.5px);
