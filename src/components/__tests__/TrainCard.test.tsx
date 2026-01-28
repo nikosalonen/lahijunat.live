@@ -314,4 +314,36 @@ describe("TrainCard", () => {
 		// Card should be visible again
 		expect(container.firstChild).toHaveStyle("opacity: 1");
 	});
+
+	describe("snapshots", () => {
+		it("matches snapshot for normal train", () => {
+			const { container } = render(<TrainCard {...defaultProps} />);
+			expect(container.firstChild).toMatchSnapshot();
+		});
+
+		it("matches snapshot for cancelled train", () => {
+			const cancelledTrain = { ...mockTrain, cancelled: true };
+			const { container } = render(
+				<TrainCard {...defaultProps} train={cancelledTrain} />,
+			);
+			expect(container.firstChild).toMatchSnapshot();
+		});
+
+		it("matches snapshot for highlighted train", () => {
+			// Set up highlighted state in localStorage
+			localStorageMock.setItem(
+				"highlightedTrains",
+				JSON.stringify({
+					"123": {
+						highlighted: true,
+						removeAfter: new Date("2024-03-20T10:10:00.000Z").toISOString(),
+						journeyKey: "123-HKI-TPE",
+					},
+				}),
+			);
+
+			const { container } = render(<TrainCard {...defaultProps} />);
+			expect(container.firstChild).toMatchSnapshot();
+		});
+	});
 });
