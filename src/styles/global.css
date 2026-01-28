@@ -351,9 +351,6 @@ html {
 }
 
 body {
-	/* Enable hardware acceleration for smoother scrolling */
-	-webkit-transform: translate3d(0, 0, 0);
-	transform: translate3d(0, 0, 0);
 	/* Optimize touch scrolling on mobile */
 	-webkit-overflow-scrolling: touch;
 	/* Allow native scroll chaining */
