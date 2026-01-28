@@ -495,34 +495,33 @@ export default function TrainList({
 		return (state.trains || []).some((train) => isTrainSlow(train));
 	}, [state.trains, isTrainSlow, allTrainDurations.length]);
 
-	const displayedTrains = (state.trains || [])
-		.filter((train) => {
-			const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
-			// Hide trains that have been faded out via transitionend
-			if (departedTrains.has(journeyKey)) return false;
+	// Filter trains first, then slice for display
+	const filteredTrains = (state.trains || []).filter((train) => {
+		const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
+		// Hide trains that have been faded out via transitionend
+		if (departedTrains.has(journeyKey)) return false;
 
-			// Hide slow trains if the option is enabled
-			if (hideSlowTrains && isTrainSlow(train)) return false;
+		// Hide slow trains if the option is enabled
+		if (hideSlowTrains && isTrainSlow(train)) return false;
 
-			// If API-derived departure says it's departed, apply grace window
-			if (train.isDeparted) {
-				const departedAt = train.departedAt
-					? new Date(train.departedAt).getTime()
-					: undefined;
-				if (departedAt) {
-					const diffMinutes =
-						(currentTime.getTime() - departedAt) / (1000 * 60);
-					const graceMinutes = Math.abs(DEPARTED_GRACE_MINUTES);
-					return diffMinutes <= graceMinutes;
-				}
-				// No timestamp? Keep it for a single cycle until UI fades it
-				return true;
+		// If API-derived departure says it's departed, apply grace window
+		if (train.isDeparted) {
+			const departedAt = train.departedAt
+				? new Date(train.departedAt).getTime()
+				: undefined;
+			if (departedAt) {
+				const diffMinutes = (currentTime.getTime() - departedAt) / (1000 * 60);
+				const graceMinutes = Math.abs(DEPARTED_GRACE_MINUTES);
+				return diffMinutes <= graceMinutes;
 			}
-
+			// No timestamp? Keep it for a single cycle until UI fades it
 			return true;
-		})
-		.slice(0, displayedTrainCount);
-	const hasMoreTrains = (state.trains || []).length > displayedTrainCount;
+		}
+
+		return true;
+	});
+	const displayedTrains = filteredTrains.slice(0, displayedTrainCount);
+	const hasMoreTrains = filteredTrains.length > displayedTrainCount;
 	const animationPhase = useMemo(() => {
 		const phase =
 			(currentTime.getTime() % ANIMATION_DURATION_MS) / ANIMATION_DURATION_MS;
