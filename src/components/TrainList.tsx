@@ -589,6 +589,12 @@ export default function TrainList({
 
 	// Filter trains first, then slice for display
 	const filteredTrains = (state.trains || []).filter((train) => {
+		// Ensure train has valid departure row for selected station
+		const hasDepartureRow = train.timeTableRows.some(
+			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
+		);
+		if (!hasDepartureRow) return false;
+
 		const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
 		// Hide trains that have been faded out via transitionend
 		if (departedTrains.has(journeyKey)) return false;
