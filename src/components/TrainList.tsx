@@ -542,19 +542,42 @@ export default function TrainList({
 							<span>{toStation?.name}</span>
 						</span>
 					</h2>
-					<div class="self-end sm:self-auto order-1 sm:order-2">
+					<div class="flex items-center gap-4 self-end sm:self-auto order-1 sm:order-2">
+						<label class="flex items-center gap-2 cursor-pointer select-none">
+							<input
+								type="checkbox"
+								checked={hideSlowTrains}
+								onChange={toggleHideSlowTrains}
+								class="checkbox checkbox-sm checkbox-primary"
+							/>
+							<span class="text-sm text-gray-600 dark:text-gray-400">
+								{t("hideSlowTrains")}
+							</span>
+						</label>
 						<ProgressCircle progress={refreshProgress} size="w-8 h-8" />
 					</div>
 				</div>
 
-				{/* Mobile horizontal progress bar (left → right) */}
-				<div class="sm:hidden w-full mb-4">
+				{/* Mobile horizontal progress bar and filter toggle */}
+				<div class="sm:hidden w-full mb-4 flex items-center gap-3">
 					<LinearProgress
 						progress={refreshProgress}
 						heightClass="h-1.5"
 						widthClass="w-full"
 						direction="rtl"
 					/>
+					<label
+						class="flex items-center gap-1.5 cursor-pointer select-none flex-shrink-0 text-xs text-gray-500 dark:text-gray-400"
+						title={t("hideSlowTrains")}
+					>
+						<input
+							type="checkbox"
+							checked={hideSlowTrains}
+							onChange={toggleHideSlowTrains}
+							class="checkbox checkbox-xs checkbox-primary"
+						/>
+						<i class="fa-solid fa-bolt" aria-hidden="true" />
+					</label>
 				</div>
 				<div
 					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"
