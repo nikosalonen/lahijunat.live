@@ -11,7 +11,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run format` - Format code with Biome
 - `npm run test` - Run tests with Vitest
 - `npm run test:watch` - Run tests in watch mode
-- `npm run check-stations` - Check for stations without destinations using the script
+- `npm run test -- src/components/__tests__/TrainCard.test.tsx` - Run a single test file
+- `npm run check-stations` - Check for stations without destinations
+- `npm run update-station-query` - Update the GraphQL station query filter list
+- `npm run test-station-query` - Test the station query against the API
 
 ## Project Architecture
 
@@ -51,8 +54,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Automatic geolocation with Finland boundary checking
 
 ### Internationalization
-- i18n system in `src/i18n/` with Finnish (fi) and English (en) support
-- Translation utility in `src/utils/translations.ts`
+- Translations in `src/utils/translations.ts` with Finnish (fi) and English (en) support
+- Language utilities in `src/utils/language.ts` for switching and persistence
 - URL and localStorage language persistence
 
 ### Testing
