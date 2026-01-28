@@ -1,7 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 import { getCurrentLanguage, switchLanguage } from "../utils/language";
 
-type Lang = "fi" | "en";
+type Lang = "fi" | "en" | "sv";
 
 const LanguageSwitcher = () => {
 	// Initialize with null to avoid hydration mismatch
@@ -65,7 +65,11 @@ const LanguageSwitcher = () => {
 	// Don't render until we have the language
 	if (!currentLang) return null;
 
-	const labels: Record<Lang, string> = { fi: "🇫🇮 Suomi", en: "🇬🇧 English" };
+	const labels: Record<Lang, string> = {
+		fi: "🇫🇮 Suomi",
+		en: "🇬🇧 English",
+		sv: "🇸🇪 Svenska",
+	};
 	const currentLanguageDisplay = labels[currentLang];
 
 	return (
@@ -130,6 +134,17 @@ const LanguageSwitcher = () => {
 						onClick={() => handleLanguageSelect("en")}
 					>
 						🇬🇧 English
+					</button>
+				</li>
+				<li>
+					<button
+						type="button"
+						role="menuitemradio"
+						aria-checked={currentLang === "sv"}
+						className={`text-base-content hover:bg-base-200 ${currentLang === "sv" ? "active" : ""}`}
+						onClick={() => handleLanguageSelect("sv")}
+					>
+						🇸🇪 Svenska
 					</button>
 				</li>
 			</ul>
