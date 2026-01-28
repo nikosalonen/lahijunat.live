@@ -135,7 +135,7 @@ export default function StationList({
 		setHighlightedIndex(-1);
 	}, [filteredStations]);
 
-	const handleKeyDown = (e: KeyboardEvent) => {
+	const handleKeyDown = (e: globalThis.KeyboardEvent) => {
 		if (!isOpen) {
 			if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") {
 				e.preventDefault();
