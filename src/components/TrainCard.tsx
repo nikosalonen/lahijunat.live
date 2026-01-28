@@ -652,7 +652,7 @@ export default function TrainCard({
 
 	return (
 		<div
-			class="relative overflow-hidden rounded-2xl"
+			class="relative overflow-hidden rounded-2xl transition-opacity duration-700 ease-in-out"
 			style={{
 				opacity: hasDeparted ? opacity : 1,
 			}}
@@ -717,7 +717,7 @@ export default function TrainCard({
 
 			{/* Card content with transform */}
 			<div
-				class={`${cardStyle} w-full max-w-full text-left relative select-none transition-opacity duration-700 ease-in-out ${
+				class={`${cardStyle} w-full max-w-full text-left relative select-none ${
 					isTransitioning ? "transition-transform duration-300 ease-out" : ""
 				}`}
 				style={{
