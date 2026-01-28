@@ -171,9 +171,15 @@ export default function TrainList({
 
 	// Initialize storage on mount and trigger re-sort after cache is populated
 	useEffect(() => {
+		let isMounted = true;
 		initStorage().then(() => {
-			setFavoritesVersion((prev) => prev + 1);
+			if (isMounted) {
+				setFavoritesVersion((prev) => prev + 1);
+			}
 		});
+		return () => {
+			isMounted = false;
+		};
 	}, []);
 
 	// Capture card positions before favorites change triggers re-render
