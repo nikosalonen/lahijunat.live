@@ -46,6 +46,8 @@ export const translations = {
 		trainIcon: "Juna-ikoni lainattu",
 		showMore: "Näytä lisää",
 		starIcon: "Tähti-ikoni",
+		hideSlowTrains: "Piilota hitaat junat",
+		slowTrainsHidden: "hitaat piilotettu",
 		// Error states
 		errorTitle: "Jotain meni pieleen",
 		errorMessage: "Tapahtui odottamaton virhe. Yritä päivittää sivu.",
@@ -116,6 +118,8 @@ export const translations = {
 		trainIcon: "Train icon from",
 		showMore: "Show more",
 		starIcon: "Star icon",
+		hideSlowTrains: "Hide slow trains",
+		slowTrainsHidden: "slow trains hidden",
 		// Error states
 		errorTitle: "Something went wrong",
 		errorMessage: "An unexpected error occurred. Try refreshing the page.",
