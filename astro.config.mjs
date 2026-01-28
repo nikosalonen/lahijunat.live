@@ -71,7 +71,13 @@ export default defineConfig({
 		service: { entrypoint: "astro/assets/services/noop" },
 	},
 	vite: {
+		// @ts-expect-error - Type mismatch between Vite versions in @tailwindcss/vite and astro
 		plugins: [tailwindcss()],
+		resolve: {
+			alias: {
+				"@": "/src",
+			},
+		},
 	},
 
 	integrations: [preact(), mySwPlugin()],
