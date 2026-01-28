@@ -164,17 +164,94 @@ export default function TrainList({
 	// Track favorites version to trigger re-sort when favorites change
 	const [favoritesVersion, setFavoritesVersion] = useState(0);
 
+	// FLIP animation refs
+	const listContainerRef = useRef<HTMLDivElement>(null);
+	const cardPositionsRef = useRef<Map<string, DOMRect>>(new Map());
+	const isAnimatingRef = useRef(false);
+
 	// Initialize storage on mount
 	useEffect(() => {
 		initStorage();
 	}, []);
 
+	// Capture card positions before favorites change triggers re-render
+	const captureCardPositions = useCallback(() => {
+		if (!listContainerRef.current) return;
+		const cards =
+			listContainerRef.current.querySelectorAll("[data-journey-key]");
+		const positions = new Map<string, DOMRect>();
+		cards.forEach((card) => {
+			const key = card.getAttribute("data-journey-key");
+			if (key) {
+				positions.set(key, card.getBoundingClientRect());
+			}
+		});
+		cardPositionsRef.current = positions;
+	}, []);
+
 	// Listen for favorites changes
 	useEffect(() => {
-		const handler = () => setFavoritesVersion((v) => v + 1);
+		const handler = () => {
+			// Capture positions BEFORE the state update causes re-render
+			captureCardPositions();
+			setFavoritesVersion((v) => v + 1);
+		};
 		window.addEventListener("favorites-changed", handler);
 		return () => window.removeEventListener("favorites-changed", handler);
-	}, []);
+	}, [captureCardPositions]);
+
+	// FLIP animation: after render, animate cards from old to new positions
+	useLayoutEffect(() => {
+		if (
+			favoritesVersion === 0 ||
+			!listContainerRef.current ||
+			isAnimatingRef.current
+		)
+			return;
+
+		const oldPositions = cardPositionsRef.current;
+		if (oldPositions.size === 0) return;
+
+		const cards =
+			listContainerRef.current.querySelectorAll("[data-journey-key]");
+		const animations: Animation[] = [];
+
+		cards.forEach((card) => {
+			const key = card.getAttribute("data-journey-key");
+			if (!key) return;
+
+			const oldRect = oldPositions.get(key);
+			if (!oldRect) return;
+
+			const newRect = card.getBoundingClientRect();
+			const deltaY = oldRect.top - newRect.top;
+
+			// Only animate if there's a significant position change
+			if (Math.abs(deltaY) > 5) {
+				isAnimatingRef.current = true;
+				const animation = card.animate(
+					[
+						{ transform: `translateY(${deltaY}px)` },
+						{ transform: "translateY(0)" },
+					],
+					{
+						duration: 300,
+						easing: "ease-out",
+					},
+				);
+				animations.push(animation);
+			}
+		});
+
+		// Clear old positions and reset animating flag when all animations complete
+		if (animations.length > 0) {
+			Promise.all(animations.map((a) => a.finished)).then(() => {
+				isAnimatingRef.current = false;
+			});
+		}
+
+		cardPositionsRef.current = new Map();
+	}, [favoritesVersion]);
 
 	useEffect(() => {
 		if (typeof document === "undefined") {
@@ -657,7 +734,8 @@ export default function TrainList({
 					)}
 				</div>
 				<div
-					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"
+					ref={listContainerRef}
+					class="grid auto-rows-fr gap-4"
 					style={{
 						"grid-template-rows": `repeat(${displayedTrains.length}, minmax(0, 1fr))`,
 					}}
@@ -667,6 +745,7 @@ export default function TrainList({
 						return (
 							<div
 								key={journeyKey}
+								data-journey-key={journeyKey}
 								class={departedTrains.has(journeyKey) ? "" : "animate-scale-in"}
 								style={{
 									"grid-row": `${index + 1}`,
