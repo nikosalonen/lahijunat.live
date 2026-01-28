@@ -8,7 +8,7 @@ import {
 	describe,
 	expect,
 	it,
-	type MockedFunction,
+	type Mock,
 	vi,
 } from "vitest";
 import type { Station } from "../../types";
@@ -107,7 +107,7 @@ describe("StationManager", () => {
 		localStorageMock.clear();
 		vi.clearAllMocks();
 		(
-			fetchTrainsLeavingFromStation as MockedFunction<
+			fetchTrainsLeavingFromStation as Mock<
 				typeof fetchTrainsLeavingFromStation
 			>
 		).mockResolvedValue(mockDestinations);
@@ -200,7 +200,7 @@ describe("StationManager", () => {
 
 	it("handles error when fetching destinations", async () => {
 		(
-			fetchTrainsLeavingFromStation as MockedFunction<
+			fetchTrainsLeavingFromStation as Mock<
 				typeof fetchTrainsLeavingFromStation
 			>
 		).mockRejectedValue(new Error("Failed to fetch"));

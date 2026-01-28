@@ -12,6 +12,7 @@ import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import { fetchTrains, type ServiceStatusInfo } from "../utils/api";
 import { hapticLight } from "../utils/haptics";
+import { getLocalizedStationName } from "../utils/stationNames";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
@@ -149,6 +150,16 @@ export default function TrainList({
 		}
 		return document.visibilityState === "visible";
 	});
+	const [hideSlowTrains, setHideSlowTrains] = useState(() => {
+		try {
+			if (typeof localStorage === "undefined") {
+				return false;
+			}
+			return localStorage.getItem("hideSlowTrains") === "true";
+		} catch {
+			return false;
+		}
+	});
 
 	useEffect(() => {
 		if (typeof document === "undefined") {
@@ -197,10 +208,7 @@ export default function TrainList({
 						message.includes("too many")
 					) {
 						errorType = "rateLimit";
-					} else if (
-						message.includes("not found") ||
-						message.includes("404")
-					) {
+					} else if (message.includes("not found") || message.includes("404")) {
 						errorType = "notFound";
 					} else if (message.includes("api") || message.includes("server")) {
 						errorType = "api";
@@ -288,6 +296,19 @@ export default function TrainList({
 			const next = new Set(prev);
 			next.delete(journeyKey);
 			return next;
+		});
+	}, []);
+
+	const toggleHideSlowTrains = useCallback(() => {
+		setHideSlowTrains((prev) => {
+			const newValue = !prev;
+			try {
+				localStorage.setItem("hideSlowTrains", String(newValue));
+			} catch {
+				// Ignore localStorage errors
+			}
+			hapticLight();
+			return newValue;
 		});
 	}, []);
 
@@ -434,31 +455,73 @@ export default function TrainList({
 		[allTrainDurations],
 	);
 
-	const displayedTrains = (state.trains || [])
-		.filter((train) => {
-			const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
-			// Hide trains that have been faded out via transitionend
-			if (departedTrains.has(journeyKey)) return false;
+	// Helper to check if a train is slow
+	const isTrainSlow = useCallback(
+		(train: Train) => {
+			if (allTrainDurations.length < 2) return false;
 
-			// If API-derived departure says it's departed, apply grace window
-			if (train.isDeparted) {
-				const departedAt = train.departedAt
-					? new Date(train.departedAt).getTime()
-					: undefined;
-				if (departedAt) {
-					const diffMinutes =
-						(currentTime.getTime() - departedAt) / (1000 * 60);
-					const graceMinutes = Math.abs(DEPARTED_GRACE_MINUTES);
-					return diffMinutes <= graceMinutes;
-				}
-				// No timestamp? Keep it for a single cycle until UI fades it
-				return true;
+			const departureRow = train.timeTableRows.find(
+				(row) =>
+					row.stationShortCode === stationCode && row.type === "DEPARTURE",
+			);
+			const arrivalRow = train.timeTableRows.find(
+				(row) =>
+					row.stationShortCode === destinationCode && row.type === "ARRIVAL",
+			);
+
+			if (!departureRow || !arrivalRow) return false;
+
+			const arrivalTime =
+				arrivalRow.liveEstimateTime ?? arrivalRow.scheduledTime;
+			const departureTime =
+				departureRow.actualTime ?? departureRow.scheduledTime;
+			const durationMinutes = Math.round(
+				(new Date(arrivalTime).getTime() - new Date(departureTime).getTime()) /
+					(1000 * 60),
+			);
+
+			const median =
+				allTrainDurations[Math.floor(allTrainDurations.length / 2)];
+			const slowThreshold = median * 1.15;
+
+			return durationMinutes >= slowThreshold;
+		},
+		[allTrainDurations, stationCode, destinationCode],
+	);
+
+	// Check if there are any slow trains to show the filter option
+	const hasSlowTrains = useMemo(() => {
+		if (allTrainDurations.length < 2) return false;
+		return (state.trains || []).some((train) => isTrainSlow(train));
+	}, [state.trains, isTrainSlow, allTrainDurations.length]);
+
+	// Filter trains first, then slice for display
+	const filteredTrains = (state.trains || []).filter((train) => {
+		const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
+		// Hide trains that have been faded out via transitionend
+		if (departedTrains.has(journeyKey)) return false;
+
+		// Hide slow trains if the option is enabled
+		if (hideSlowTrains && isTrainSlow(train)) return false;
+
+		// If API-derived departure says it's departed, apply grace window
+		if (train.isDeparted) {
+			const departedAt = train.departedAt
+				? new Date(train.departedAt).getTime()
+				: undefined;
+			if (departedAt) {
+				const diffMinutes = (currentTime.getTime() - departedAt) / (1000 * 60);
+				const graceMinutes = Math.abs(DEPARTED_GRACE_MINUTES);
+				return diffMinutes <= graceMinutes;
 			}
-
+			// No timestamp? Keep it for a single cycle until UI fades it
 			return true;
-		})
-		.slice(0, displayedTrainCount);
-	const hasMoreTrains = (state.trains || []).length > displayedTrainCount;
+		}
+
+		return true;
+	});
+	const displayedTrains = filteredTrains.slice(0, displayedTrainCount);
+	const hasMoreTrains = filteredTrains.length > displayedTrainCount;
 	const animationPhase = useMemo(() => {
 		const phase =
 			(currentTime.getTime() % ANIMATION_DURATION_MS) / ANIMATION_DURATION_MS;
@@ -484,24 +547,73 @@ export default function TrainList({
 							<span>{destinationCode}</span>
 						</span>
 						<span class="hidden sm:inline-flex sm:items-center sm:gap-2">
-							<span>{fromStation?.name}</span>
+							<span>
+								{fromStation
+									? getLocalizedStationName(
+											fromStation.name,
+											fromStation.shortCode,
+										) || fromStation.shortCode
+									: stationCode}
+							</span>
 							<i class="fa-solid fa-arrow-right" aria-hidden="true" />
-							<span>{toStation?.name}</span>
+							<span>
+								{toStation
+									? getLocalizedStationName(
+											toStation.name,
+											toStation.shortCode,
+										) || toStation.shortCode
+									: destinationCode}
+							</span>
 						</span>
 					</h2>
-					<div class="self-end sm:self-auto order-1 sm:order-2">
+					<div class="flex items-center gap-4 self-end sm:self-auto order-1 sm:order-2">
+						{hasSlowTrains && (
+							<label class="flex items-center gap-2 cursor-pointer select-none">
+								<input
+									type="checkbox"
+									checked={hideSlowTrains}
+									onChange={toggleHideSlowTrains}
+									class="checkbox checkbox-sm checkbox-primary"
+								/>
+								<span class="text-sm text-gray-600 dark:text-gray-400">
+									{t("hideSlowTrains")}
+								</span>
+							</label>
+						)}
 						<ProgressCircle progress={refreshProgress} size="w-8 h-8" />
 					</div>
 				</div>
 
-				{/* Mobile horizontal progress bar (left → right) */}
-				<div class="sm:hidden w-full mb-4">
+				{/* Mobile horizontal progress bar and filter toggle */}
+				<div class="sm:hidden w-full mb-4 flex items-center gap-3">
 					<LinearProgress
 						progress={refreshProgress}
 						heightClass="h-1.5"
 						widthClass="w-full"
 						direction="rtl"
 					/>
+					{hasSlowTrains && (
+						<label
+							class="flex items-center gap-1.5 cursor-pointer select-none flex-shrink-0 text-xs text-gray-500 dark:text-gray-400"
+							title={t("hideSlowTrains")}
+						>
+							<input
+								type="checkbox"
+								checked={hideSlowTrains}
+								onChange={toggleHideSlowTrains}
+								class="checkbox checkbox-xs checkbox-primary"
+							/>
+							<span class="sr-only">{t("hideSlowTrains")}</span>
+							<svg
+								class="w-3.5 h-3.5"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+							</svg>
+						</label>
+					)}
 				</div>
 				<div
 					class="grid auto-rows-fr gap-4 transition-[grid-row,transform] duration-700 ease-in-out"

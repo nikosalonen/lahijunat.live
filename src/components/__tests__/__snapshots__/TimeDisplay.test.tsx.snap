@@ -3,10 +3,10 @@
 exports[`TimeDisplay > renders without arrival row 1`] = `
 <div>
   <span
-    class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-100 min-w-0 relative pt-8 sm:pt-6"
+    class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-100 min-w-0 flex items-center gap-2 flex-wrap"
   >
     <span
-      class="block w-full text-base-content/70 text-base sm:text-lg"
+      class="text-base-content/70 text-base sm:text-lg"
     >
       <time
         datetime="2024-03-20T10:00:00.000Z"

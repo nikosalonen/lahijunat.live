@@ -1,6 +1,5 @@
 /** @format */
 
-import type { JSX } from "preact";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
@@ -489,9 +488,7 @@ export default function TrainCard({
 	};
 
 	// Keyboard handler for accessibility
-	const handleTrackKeyDown = (
-		e: JSX.TargetedKeyboardEvent<HTMLButtonElement>,
-	) => {
+	const handleTrackKeyDown = (e: globalThis.KeyboardEvent) => {
 		if (e.key === "Enter" || e.key === " ") {
 			e.preventDefault();
 			handleTrackFlip();
@@ -651,11 +648,10 @@ export default function TrainCard({
 													: undefined
 											}
 										>
-											<i
-												class="fa-solid fa-clock inline-block mr-1 -mt-1"
-												aria-hidden="true"
-											/>
-											{duration.hours}h {duration.minutes}m
+											<i class="fa-solid fa-clock mr-1" aria-hidden="true" />
+											<span>
+												{duration.hours}h {duration.minutes}m
+											</span>
 										</output>
 									)}
 								</div>

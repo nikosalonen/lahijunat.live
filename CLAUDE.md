@@ -8,7 +8,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` - Build for production (includes Workbox service worker generation)
 - `npm run preview` - Preview production build
 - `npm run lint` - Run Biome linter and format code
+- `npm run lint:check` - Run Biome linter without auto-fix (used in CI)
 - `npm run format` - Format code with Biome
+- `npm run typecheck` - Run TypeScript type checking with Astro
 - `npm run test` - Run tests with Vitest
 - `npm run test:watch` - Run tests in watch mode
 - `npm run test -- src/components/__tests__/TrainCard.test.tsx` - Run a single test file
@@ -26,6 +28,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Biome** - Linting and formatting
 - **Vitest** - Testing framework
 - **Workbox** - Service worker for PWA functionality
+- **Husky** - Git hooks for pre-commit checks
+- **lint-staged** - Run linters on staged files
+
+### Path Aliases
+The project uses `@/*` as a path alias for `src/*`. For example:
+```typescript
+import { Train } from "@/types";
+import { fetchTrains } from "@/utils/api";
+```
+
+### CI/CD
+GitHub Actions workflow (`.github/workflows/ci.yml`) runs on push/PR to main:
+- **Lint** - Runs `npm run lint:check`
+- **Type Check** - Runs `npm run typecheck`
+- **Test** - Runs `npm run test`
+- **Build** - Runs `npm run build` (only after lint, typecheck, and test pass)
+
+### Pre-commit Hooks
+Husky runs lint-staged on commit, which automatically formats staged files with Biome.
 
 ### Core Data Flow
 1. **Data Source**: Fintraffic's Railway Traffic API (`rata.digitraffic.fi`)

@@ -1,4 +1,3 @@
-import type { JSX } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 
@@ -26,16 +25,8 @@ function LinearProgress({
 			setPrefersReducedMotion(e.matches);
 		};
 
-		// Modern browsers
-		if (mediaQuery.addEventListener) {
-			mediaQuery.addEventListener("change", handleChange);
-			return () => mediaQuery.removeEventListener("change", handleChange);
-		}
-		// Fallback for older browsers
-		if (mediaQuery.addListener) {
-			mediaQuery.addListener(handleChange);
-			return () => mediaQuery.removeListener(handleChange);
-		}
+		mediaQuery.addEventListener("change", handleChange);
+		return () => mediaQuery.removeEventListener("change", handleChange);
 	}, []);
 
 	const clamped = Number.isFinite(progress)
@@ -43,7 +34,7 @@ function LinearProgress({
 		: progress === Number.POSITIVE_INFINITY
 			? 100
 			: 0;
-	const style: JSX.CSSProperties = {
+	const style = {
 		width: `${clamped}%`,
 		...(prefersReducedMotion && { transition: "none" }),
 	};

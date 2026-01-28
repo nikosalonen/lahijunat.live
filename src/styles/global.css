@@ -36,15 +36,9 @@
 	/* Glass Effects */
 	--glass-bg: rgba(255, 255, 255, 0.85);
 	--glass-border: rgba(255, 255, 255, 0.2);
-	--glass-backdrop: blur(12px);
 
 	/* Gradients */
 	--gradient-primary: linear-gradient(135deg, #8c4799 0%, #6b2c75 100%);
-	--gradient-primary-soft: linear-gradient(
-		135deg,
-		rgba(140, 71, 153, 0.1) 0%,
-		rgba(107, 44, 117, 0.05) 100%
-	);
 	--gradient-surface: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
 }
 
@@ -182,46 +176,6 @@
 	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Enhanced shimmer effect for loading states */
-.shimmer-bg {
-	background: linear-gradient(
-		90deg,
-		rgba(140, 71, 153, 0) 0%,
-		rgba(140, 71, 153, 0.15) 50%,
-		rgba(140, 71, 153, 0) 100%
-	);
-	background-size: 200% 100%;
-}
-
-.dark .shimmer-bg {
-	background: linear-gradient(
-		90deg,
-		rgba(179, 136, 255, 0) 0%,
-		rgba(179, 136, 255, 0.1) 50%,
-		rgba(179, 136, 255, 0) 100%
-	);
-	background-size: 200% 100%;
-}
-
-/* Prefer DaisyUI card/glass components over custom helpers */
-
-/* Staggered animation delays for lists */
-.stagger-1 {
-	animation-delay: 0.1s;
-}
-.stagger-2 {
-	animation-delay: 0.2s;
-}
-.stagger-3 {
-	animation-delay: 0.3s;
-}
-.stagger-4 {
-	animation-delay: 0.4s;
-}
-.stagger-5 {
-	animation-delay: 0.5s;
-}
-
 /* Smooth height transitions */
 .height-transition {
 	transition:
@@ -236,30 +190,8 @@
 	}
 }
 
-/* Enhanced Micro-interactions */
-.hover-lift {
-	transition: all 0.2s ease;
-}
-
 /* Only apply hover effects on devices that support proper hover */
 @media (hover: hover) {
-	.hover-lift:hover {
-		transform: translateY(-2px) scale(1.01);
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-	}
-
-	.dark .hover-lift:hover {
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-	}
-
-	.train-button-hover:hover {
-		transform: scale(1.02);
-	}
-
-	.train-span-hover:hover {
-		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-	}
-
 	.station-option:hover {
 		background-color: rgb(243 244 246); /* gray-100 */
 		transform: translateY(-0.5px);
@@ -276,34 +208,6 @@
 
 	.dark .station-option:active {
 		background-color: rgb(75 85 99); /* gray-600 */
-	}
-
-	.location-button {
-		background-color: rgb(239 246 255); /* blue-50 */
-	}
-
-	.dark .location-button {
-		background-color: rgb(30 58 138); /* blue-900 */
-	}
-
-	.location-button:hover:not(:disabled) {
-		background-color: rgb(219 234 254); /* blue-100 */
-		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-		transform: translateY(-0.5px);
-	}
-
-	.dark .location-button:hover:not(:disabled) {
-		background-color: rgb(30 64 175); /* blue-800 */
-	}
-
-	.location-button:active:not(:disabled) {
-		background-color: rgb(191 219 254); /* blue-200 */
-		transform: scale(0.98);
-		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-	}
-
-	.dark .location-button:active:not(:disabled) {
-		background-color: rgb(29 78 216); /* blue-700 */
 	}
 }
 
@@ -335,37 +239,26 @@ iframe {
 	max-width: 100%;
 }
 
-/* Mobile Scroll Optimization */
+/* Scroll Optimization */
 html {
-	/* Enable smooth scrolling */
 	scroll-behavior: smooth;
-	/* Optimize for mobile touch scrolling */
-	-webkit-overflow-scrolling: touch;
 	/* Prevent bouncing above the header while keeping normal body scroll */
 	overscroll-behavior-y: none;
-	/* Improve scroll performance */
+	/* Scroll padding for anchor links */
 	scroll-padding-top: 1rem;
-
-	/* Prevent horizontal overflow at root to avoid side-scroll */
+	/* Prevent horizontal overflow */
 	overflow-x: hidden;
 }
 
 body {
-	/* Enable hardware acceleration for smoother scrolling */
-	-webkit-transform: translate3d(0, 0, 0);
-	transform: translate3d(0, 0, 0);
-	/* Optimize touch scrolling on mobile */
-	-webkit-overflow-scrolling: touch;
 	/* Allow native scroll chaining */
 	overscroll-behavior: auto;
 	/* Prevent horizontal scroll on mobile */
 	overflow-x: hidden;
-	/* Ensure width is constrained to viewport */
 }
 
-/* Optimize scrollable containers */
+/* Scrollable containers */
 .scroll-smooth {
-	-webkit-overflow-scrolling: touch;
 	overscroll-behavior: contain;
 	scroll-behavior: smooth;
 }
@@ -377,37 +270,5 @@ body {
 		overflow: hidden;
 		position: fixed;
 		width: 100%;
-	}
-}
-
-@keyframes glow-pulse {
-	0%,
-	100% {
-		box-shadow:
-			0 0 0 4px rgba(140, 71, 153, 0.3),
-			0 8px 32px rgba(140, 71, 153, 0.2);
-	}
-	50% {
-		box-shadow:
-			0 0 0 6px rgba(140, 71, 153, 0.4),
-			0 12px 48px rgba(140, 71, 153, 0.3);
-	}
-}
-
-.dark .glow-pulse {
-	animation: glow-pulse-dark 2s ease-in-out infinite;
-}
-
-@keyframes glow-pulse-dark {
-	0%,
-	100% {
-		box-shadow:
-			0 0 0 4px rgba(179, 136, 255, 0.3),
-			0 8px 32px rgba(179, 136, 255, 0.2);
-	}
-	50% {
-		box-shadow:
-			0 0 0 6px rgba(179, 136, 255, 0.4),
-			0 12px 48px rgba(179, 136, 255, 0.3);
 	}
 }

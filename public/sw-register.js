@@ -12,9 +12,14 @@ if ("serviceWorker" in navigator) {
 			dismissButton: "Myöhemmin",
 		},
 		en: {
-      			title: "🚀 New version of the app is available!",
+			title: "🚀 New version of the app is available!",
 			updateButton: "Update now",
 			dismissButton: "Later",
+		},
+		sv: {
+			title: "🚀 En ny version av appen är tillgänglig!",
+			updateButton: "Uppdatera nu",
+			dismissButton: "Senare",
 		},
 	};
 
@@ -73,7 +78,8 @@ if ("serviceWorker" in navigator) {
 						// Capture original marginTop before changing it
 						if (!nav.dataset.originalMarginTop) {
 							const computedStyle = getComputedStyle(nav);
-							nav.dataset.originalMarginTop = nav.style.marginTop || computedStyle.marginTop || "0px";
+							nav.dataset.originalMarginTop =
+								nav.style.marginTop || computedStyle.marginTop || "0px";
 						}
 						nav.style.marginTop = `${bannerHeight}px`;
 						nav.style.transition = "margin-top 0.3s ease-in-out";
@@ -115,21 +121,26 @@ if ("serviceWorker" in navigator) {
 				}
 
 				// Show again in 30 minutes with fresh worker reference
-				dismissTimeoutId = setTimeout(async () => {
-					try {
-						// Get fresh registration and worker references
-						const currentRegistration = await navigator.serviceWorker.getRegistration();
-						const currentWorker = currentRegistration?.waiting || currentRegistration?.installing;
+				dismissTimeoutId = setTimeout(
+					async () => {
+						try {
+							// Get fresh registration and worker references
+							const currentRegistration =
+								await navigator.serviceWorker.getRegistration();
+							const currentWorker =
+								currentRegistration?.waiting || currentRegistration?.installing;
 
-						if (currentWorker && currentRegistration) {
-							showUpdateBanner(currentWorker, currentRegistration);
+							if (currentWorker && currentRegistration) {
+								showUpdateBanner(currentWorker, currentRegistration);
+							}
+						} catch (error) {
+							console.warn("Failed to re-show update banner:", error);
+						} finally {
+							dismissTimeoutId = null;
 						}
-					} catch (error) {
-						console.warn("Failed to re-show update banner:", error);
-					} finally {
-						dismissTimeoutId = null;
-					}
-				}, 30 * 60 * 1000);
+					},
+					30 * 60 * 1000,
+				);
 			});
 
 			// Mark that listeners have been bound to prevent duplicates
@@ -138,7 +149,10 @@ if ("serviceWorker" in navigator) {
 
 		// Remove any existing language change listener to prevent duplicates
 		if (banner._languageChangeHandler) {
-			window.removeEventListener("languagechange", banner._languageChangeHandler);
+			window.removeEventListener(
+				"languagechange",
+				banner._languageChangeHandler,
+			);
 		}
 
 		// Listen for language changes and update banner text

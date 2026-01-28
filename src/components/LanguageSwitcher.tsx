@@ -1,8 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
-import type { JSX } from "preact/jsx-runtime";
 import { getCurrentLanguage, switchLanguage } from "../utils/language";
 
-type Lang = "fi" | "en";
+type Lang = "fi" | "en" | "sv";
 
 const LanguageSwitcher = () => {
 	// Initialize with null to avoid hydration mismatch
@@ -40,9 +39,11 @@ const LanguageSwitcher = () => {
 		setIsOpen(true);
 	};
 
-	const handleBlur = (event: JSX.TargetedFocusEvent<HTMLElement>) => {
+	const handleBlur = (event: globalThis.FocusEvent) => {
 		// Check if the new focus target is within the dropdown
-		const dropdown = event.currentTarget.closest(".dropdown");
+		const target = event.currentTarget;
+		if (!(target instanceof Element)) return;
+		const dropdown = target.closest(".dropdown");
 		if (!dropdown) return;
 
 		if (event.relatedTarget) {
@@ -64,7 +65,11 @@ const LanguageSwitcher = () => {
 	// Don't render until we have the language
 	if (!currentLang) return null;
 
-	const labels: Record<Lang, string> = { fi: "🇫🇮 Suomi", en: "🇬🇧 English" };
+	const labels: Record<Lang, string> = {
+		fi: "🇫🇮 Suomi",
+		en: "🇬🇧 English",
+		sv: "🇸🇪 Svenska",
+	};
 	const currentLanguageDisplay = labels[currentLang];
 
 	return (
@@ -129,6 +134,17 @@ const LanguageSwitcher = () => {
 						onClick={() => handleLanguageSelect("en")}
 					>
 						🇬🇧 English
+					</button>
+				</li>
+				<li>
+					<button
+						type="button"
+						role="menuitemradio"
+						aria-checked={currentLang === "sv"}
+						className={`text-base-content hover:bg-base-200 ${currentLang === "sv" ? "active" : ""}`}
+						onClick={() => handleLanguageSelect("sv")}
+					>
+						🇸🇪 Svenska
 					</button>
 				</li>
 			</ul>

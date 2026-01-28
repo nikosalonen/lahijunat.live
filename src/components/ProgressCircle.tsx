@@ -1,4 +1,3 @@
-import type { JSX } from "preact";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import { t } from "../utils/translations";
 
@@ -11,7 +10,7 @@ function ProgressCircle({
 }) {
 	useLanguageChange();
 	const clamped = Math.max(0, Math.min(100, progress));
-	const style: JSX.CSSProperties & Record<`--${string}`, string | number> = {
+	const style: Record<string, string | number> = {
 		"--value": clamped,
 		"--thickness": "2px",
 		"--size": "2rem",

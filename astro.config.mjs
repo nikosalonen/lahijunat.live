@@ -2,9 +2,12 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import preact from "@astrojs/preact";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const mySwPlugin = () => {
 	return {
@@ -71,7 +74,15 @@ export default defineConfig({
 		service: { entrypoint: "astro/assets/services/noop" },
 	},
 	vite: {
+		// @ts-expect-error - Suppresses Vite plugin type mismatch caused by different Vite
+		// versions in the dependency tree (Astro's bundled Vite vs @tailwindcss/vite's Vite).
+		// This is a known issue and not a bug in Tailwind itself.
 		plugins: [tailwindcss()],
+		resolve: {
+			alias: {
+				"@": path.resolve(__dirname, "./src"),
+			},
+		},
 	},
 
 	integrations: [preact(), mySwPlugin()],
