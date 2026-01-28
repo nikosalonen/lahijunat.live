@@ -49,6 +49,9 @@ export const translations = {
 		starIcon: "Tähti-ikoni",
 		hideSlowTrains: "Piilota hitaat junat",
 		slowTrainsHidden: "hitaat piilotettu",
+		favorite: "Lisää suosikiksi",
+		unfavorite: "Poista suosikeista",
+		swipeToFavorite: "Pyyhkäise suosikiksi",
 		// Error states
 		errorTitle: "Jotain meni pieleen",
 		errorMessage: "Tapahtui odottamaton virhe. Yritä päivittää sivu.",
@@ -127,6 +130,9 @@ export const translations = {
 		starIcon: "Star icon",
 		hideSlowTrains: "Hide slow trains",
 		slowTrainsHidden: "slow trains hidden",
+		favorite: "Add to favorites",
+		unfavorite: "Remove from favorites",
+		swipeToFavorite: "Swipe to favorite",
 		// Error states
 		errorTitle: "Something went wrong",
 		errorMessage: "An unexpected error occurred. Try refreshing the page.",
@@ -204,6 +210,9 @@ export const translations = {
 		starIcon: "Stjärnikon",
 		hideSlowTrains: "Dölj långsamma tåg",
 		slowTrainsHidden: "långsamma tåg dolda",
+		favorite: "Lägg till som favorit",
+		unfavorite: "Ta bort från favoriter",
+		swipeToFavorite: "Svep för att favoritmarkera",
 		// Error states
 		errorTitle: "Något gick fel",
 		errorMessage: "Ett oväntat fel inträffade. Försök att uppdatera sidan.",
