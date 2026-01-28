@@ -51,7 +51,7 @@ const TimeDisplay = ({
 					aria-live="polite"
 					class="badge badge-warning badge-sm font-semibold"
 				>
-					{`+${timeDifferenceMinutes} min`}
+					{`+${timeDifferenceMinutes} ${t("minutesShort")}`}
 				</output>
 			)}
 		</span>
