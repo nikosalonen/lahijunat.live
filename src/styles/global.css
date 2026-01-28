@@ -239,34 +239,26 @@ iframe {
 	max-width: 100%;
 }
 
-/* Mobile Scroll Optimization */
+/* Scroll Optimization */
 html {
-	/* Enable smooth scrolling */
 	scroll-behavior: smooth;
-	/* Optimize for mobile touch scrolling */
-	-webkit-overflow-scrolling: touch;
 	/* Prevent bouncing above the header while keeping normal body scroll */
 	overscroll-behavior-y: none;
-	/* Improve scroll performance */
+	/* Scroll padding for anchor links */
 	scroll-padding-top: 1rem;
-
-	/* Prevent horizontal overflow at root to avoid side-scroll */
+	/* Prevent horizontal overflow */
 	overflow-x: hidden;
 }
 
 body {
-	/* Optimize touch scrolling on mobile */
-	-webkit-overflow-scrolling: touch;
 	/* Allow native scroll chaining */
 	overscroll-behavior: auto;
 	/* Prevent horizontal scroll on mobile */
 	overflow-x: hidden;
-	/* Ensure width is constrained to viewport */
 }
 
-/* Optimize scrollable containers */
+/* Scrollable containers */
 .scroll-smooth {
-	-webkit-overflow-scrolling: touch;
 	overscroll-behavior: contain;
 	scroll-behavior: smooth;
 }
