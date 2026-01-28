@@ -1,9 +1,22 @@
 /** @format */
 
-import { useEffect, useMemo, useRef, useState } from "preact/hooks";
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "preact/hooks";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
+import {
+	getFavoritesSync,
+	initStorage,
+	removeFavorite,
+	setFavorite,
+	updateFavorite,
+} from "../utils/storage";
 import { calculateDuration, getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import TimeDisplay from "./TimeDisplay";
@@ -24,40 +37,9 @@ interface Props {
 	) => "fast" | "slow" | "normal";
 }
 
-type HighlightedTrainData = {
-	highlighted?: boolean;
-	removeAfter?: string;
-	track?: string;
-	trackChanged?: boolean;
-};
-
-// Safe storage helpers to avoid iOS Safari private mode/localStorage quota issues
-const HIGHLIGHT_STORAGE_KEY = "highlightedTrains";
-let inMemoryHighlightStore: Record<string, HighlightedTrainData> = {};
-
-function safeReadHighlights(): Record<string, HighlightedTrainData> {
-	try {
-		const raw = localStorage.getItem(HIGHLIGHT_STORAGE_KEY);
-		if (!raw) return inMemoryHighlightStore;
-		const parsed = JSON.parse(raw);
-		// Ensure object shape
-		return parsed && typeof parsed === "object" ? parsed : {};
-	} catch {
-		return inMemoryHighlightStore;
-	}
-}
-
-function safeWriteHighlights(
-	value: Record<string, HighlightedTrainData>,
-): void {
-	try {
-		localStorage.setItem(HIGHLIGHT_STORAGE_KEY, JSON.stringify(value));
-		inMemoryHighlightStore = value;
-	} catch {
-		// Fallback to in-memory store when localStorage is unavailable or throws
-		inMemoryHighlightStore = value;
-	}
-}
+// Swipe gesture constants
+const SWIPE_THRESHOLD = 60; // px required to trigger action
+const SWIPE_RESISTANCE = 0.4; // Resistance factor for visual feedback
 
 const formatMinutesToDeparture = (departure: Date, currentTime: Date) => {
 	const diffMs = departure.getTime() - currentTime.getTime();
@@ -252,11 +234,15 @@ export default function TrainCard({
 		};
 	}, [hasDeparted]);
 
+	// Initialize storage on mount
 	useEffect(() => {
-		// Load highlighted state safely (works even if localStorage is unavailable)
-		const highlightedTrains: Record<string, HighlightedTrainData> =
-			safeReadHighlights();
-		const trainData = highlightedTrains[train.trainNumber];
+		initStorage();
+	}, []);
+
+	useEffect(() => {
+		// Load highlighted state from storage (sync read from cache)
+		const favorites = getFavoritesSync();
+		const trainData = favorites[train.trainNumber];
 
 		if (trainData) {
 			// Check if the highlight has expired
@@ -265,11 +251,10 @@ export default function TrainCard({
 				new Date(trainData.removeAfter) < currentTime
 			) {
 				// Remove expired highlight
-				delete highlightedTrains[train.trainNumber];
-				safeWriteHighlights(highlightedTrains);
+				removeFavorite(train.trainNumber);
 				setIsHighlighted(false);
 			} else {
-				setIsHighlighted(true);
+				setIsHighlighted(trainData.highlighted);
 
 				// Check for track changes
 				const departureRow = train.timeTableRows.find(
@@ -290,11 +275,9 @@ export default function TrainCard({
 						) /
 						(1000 * 60);
 					if (driftMinutes > 1) {
-						highlightedTrains[train.trainNumber] = {
-							...trainData,
+						updateFavorite(train.trainNumber, {
 							removeAfter: desiredRemoveAfter.toISOString(),
-						};
-						safeWriteHighlights(highlightedTrains);
+						});
 					}
 				}
 
@@ -304,19 +287,15 @@ export default function TrainCard({
 					departureRow.commercialTrack !== trainData.track
 				) {
 					// Track has changed, update the stored track
-					highlightedTrains[train.trainNumber] = {
-						...trainData,
+					updateFavorite(train.trainNumber, {
 						track: departureRow.commercialTrack,
 						trackChanged: true,
-					};
-					safeWriteHighlights(highlightedTrains);
+					});
 				} else if (departureRow && !trainData.track) {
 					// First time storing track
-					highlightedTrains[train.trainNumber] = {
-						...trainData,
+					updateFavorite(train.trainNumber, {
 						track: departureRow.commercialTrack,
-					};
-					safeWriteHighlights(highlightedTrains);
+					});
 				}
 			}
 		} else {
@@ -505,14 +484,10 @@ export default function TrainCard({
 			window.removeEventListener("languagechange", handleLanguageChange);
 	}, []);
 
-	const handleFavorite = () => {
+	const handleFavorite = useCallback(() => {
 		const newHighlighted = !isHighlighted;
 		hapticImpact();
 		setIsHighlighted(newHighlighted);
-
-		// Update highlights using safe storage wrapper
-		const highlightedTrains: Record<string, HighlightedTrainData> =
-			safeReadHighlights();
 
 		if (newHighlighted) {
 			// When highlighting, set removal time to 10 minutes after departure
