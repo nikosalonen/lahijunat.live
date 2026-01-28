@@ -1,5 +1,4 @@
 import { useEffect, useState } from "preact/hooks";
-import type { JSX } from "preact/jsx-runtime";
 import { getCurrentLanguage, switchLanguage } from "../utils/language";
 
 type Lang = "fi" | "en";

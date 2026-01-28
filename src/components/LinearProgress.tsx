@@ -1,4 +1,3 @@
-import type { JSX } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 

@@ -1,4 +1,3 @@
-import type { JSX } from "preact";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import { t } from "../utils/translations";
 
