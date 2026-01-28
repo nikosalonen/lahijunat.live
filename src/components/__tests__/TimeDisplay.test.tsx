@@ -9,6 +9,7 @@ vi.mock("../../utils/translations", () => ({
 		const translations: Record<string, string> = {
 			late: "Myöhässä",
 			minutes: "minuuttia",
+			minutesShort: "min",
 			departure: "Lähtöaika",
 			cancelled: "Peruttu",
 		};
