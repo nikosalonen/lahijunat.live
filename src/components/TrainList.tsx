@@ -576,7 +576,14 @@ export default function TrainList({
 							onChange={toggleHideSlowTrains}
 							class="checkbox checkbox-xs checkbox-primary"
 						/>
-						<i class="fa-solid fa-bolt" aria-hidden="true" />
+						<svg
+							class="w-3.5 h-3.5"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+						</svg>
 					</label>
 				</div>
 				<div
