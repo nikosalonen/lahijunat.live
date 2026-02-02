@@ -53,7 +53,7 @@ exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
       data-train-line="A"
       data-train-number="123"
       data-train-unknown-delay="false"
-      style="animation-delay: -0ms; -webkit-tap-highlight-color: transparent;"
+      style="-webkit-tap-highlight-color: transparent;"
     >
       <div
         class="card-body p-3 sm:p-4"
@@ -211,7 +211,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
       data-train-line="A"
       data-train-number="123"
       data-train-unknown-delay="false"
-      style="animation-delay: -0ms; -webkit-tap-highlight-color: transparent;"
+      style="-webkit-tap-highlight-color: transparent;"
     >
       <div
         class="card-body p-3 sm:p-4"
@@ -408,7 +408,7 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
       data-train-line="A"
       data-train-number="123"
       data-train-unknown-delay="false"
-      style="animation-delay: -0ms; -webkit-tap-highlight-color: transparent;"
+      style="-webkit-tap-highlight-color: transparent;"
     >
       <div
         class="card-body p-3 sm:p-4"
