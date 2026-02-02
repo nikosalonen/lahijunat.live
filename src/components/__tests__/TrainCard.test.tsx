@@ -1,5 +1,5 @@
 import { fireEvent, render, waitFor } from "@testing-library/preact";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Train } from "../../types";
 import TrainCard from "../TrainCard";
 
@@ -128,6 +128,14 @@ describe("TrainCard", () => {
 				return 0;
 			}),
 		);
+		// Mock Date.now() for stable animation-delay in snapshots
+		vi.spyOn(Date, "now").mockReturnValue(
+			new Date("2024-03-20T09:55:00.000Z").getTime(),
+		);
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
 	});
 
 	it("renders train information correctly", () => {
