@@ -5,6 +5,7 @@ interface Props {
 
 import { Image } from "astro:assets";
 import "../styles/global.css";
+import DebugToggle from "../components/DebugToggle";
 import FeatureAnnouncement from "../components/FeatureAnnouncement";
 import Footer from "../components/Footer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
@@ -204,6 +205,7 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
               </div>
             </a>
             <div class="flex items-center gap-2 sm:gap-4">
+              <DebugToggle client:load />
               <div class="relative z-10">
                 <LanguageSwitcher client:load />
               </div>
