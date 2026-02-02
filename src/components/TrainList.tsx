@@ -525,10 +525,10 @@ export default function TrainList({
 
 				if (!departureRow || !arrivalRow) return null;
 
-				const arrivalTime =
-					arrivalRow.liveEstimateTime ?? arrivalRow.scheduledTime;
-				const departureTime =
-					departureRow.actualTime ?? departureRow.scheduledTime;
+				// Use scheduled times for duration comparison (route speed),
+				// not live estimates which include delays
+				const arrivalTime = arrivalRow.scheduledTime;
+				const departureTime = departureRow.scheduledTime;
 
 				return Math.round(
 					(new Date(arrivalTime).getTime() -
@@ -572,10 +572,10 @@ export default function TrainList({
 
 			if (!departureRow || !arrivalRow) return false;
 
-			const arrivalTime =
-				arrivalRow.liveEstimateTime ?? arrivalRow.scheduledTime;
-			const departureTime =
-				departureRow.actualTime ?? departureRow.scheduledTime;
+			// Use scheduled times to determine if a train is slow (route speed),
+			// not live estimates which include delays
+			const arrivalTime = arrivalRow.scheduledTime;
+			const departureTime = departureRow.scheduledTime;
 			const durationMinutes = Math.round(
 				(new Date(arrivalTime).getTime() - new Date(departureTime).getTime()) /
 					(1000 * 60),
