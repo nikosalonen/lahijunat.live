@@ -1,6 +1,13 @@
 ---
+interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
 interface Props {
   title: string;
+  description?: string;
+  breadcrumbs?: BreadcrumbItem[];
 }
 
 import { Image } from "astro:assets";
@@ -10,13 +17,22 @@ import FeatureAnnouncement from "../components/FeatureAnnouncement";
 import Footer from "../components/Footer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 
-const { title } = Astro.props as Props;
+const { title, description, breadcrumbs } = Astro.props as Props;
+
+// Default descriptions by language
+const defaultDescriptions = {
+  fi: "Reaaliaikaiset lähtöajat Suomen lähijunille. Saat ajantasaista tietoa lähijunien aikatauluista ja laitureista.",
+  en: "Real-time departure times for Finnish local trains. Get up-to-date information on train schedules and platforms.",
+};
 
 // Determine locale from route path
 const currentPath = Astro.url.pathname;
 const isEnglish = currentPath.startsWith("/en");
 const locale = isEnglish ? "en" : "fi";
 const ogLocale = isEnglish ? "en_US" : "fi_FI";
+
+// Use provided description or fall back to default
+const metaDescription = description || defaultDescriptions[locale];
 ---
 
 <!doctype html>
@@ -29,7 +45,7 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
     />
     <meta
       name="description"
-      content="Reaaliaikaiset lähtöajat Suomen lähijunille. Saat ajantasaista tietoa lähijunien aikatauluista ja laitureista."
+      content={metaDescription}
     />
     <meta
       name="keywords"
@@ -43,7 +59,7 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
     <meta property="og:title" content={title} />
     <meta
       property="og:description"
-      content="Reaaliaikaiset lähtöajat Suomen lähijunille"
+      content={metaDescription}
     />
     <meta property="og:site_name" content="Lähijunat Live" />
     <meta
@@ -64,7 +80,7 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
     <meta name="twitter:title" content={title} />
     <meta
       name="twitter:description"
-      content="Reaaliaikaiset lähtöajat Suomen lähijunille"
+      content={metaDescription}
     />
     <meta name="twitter:image:width" content="1200" />
     <meta name="twitter:image:height" content="600" />
@@ -132,6 +148,19 @@ const ogLocale = isEnglish ? "en_US" : "fi_FI";
         }
       }
 	</script>
+
+    {breadcrumbs && breadcrumbs.length > 0 && (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": breadcrumbs.map((item, index) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "name": item.name,
+          "item": item.url
+        }))
+      })} />
+    )}
 
 	<script
 		is:inline
