@@ -2,8 +2,7 @@
 
 exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
 <div
-  class="rounded-xl transition-opacity duration-700 ease-in-out "
-  style="opacity: 1;"
+  class="rounded-xl transition-all duration-700 ease-in-out  "
 >
   <div
     class="relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
@@ -161,8 +160,7 @@ exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
 
 exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
 <div
-  class="rounded-xl transition-opacity duration-700 ease-in-out "
-  style="opacity: 1;"
+  class="rounded-xl transition-all duration-700 ease-in-out  "
 >
   <div
     class="relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
@@ -359,8 +357,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
 
 exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
 <div
-  class="rounded-xl transition-opacity duration-700 ease-in-out "
-  style="opacity: 1;"
+  class="rounded-xl transition-all duration-700 ease-in-out  "
 >
   <div
     class="relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
