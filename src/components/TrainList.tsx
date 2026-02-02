@@ -597,6 +597,7 @@ export default function TrainList({
 	}, [state.trains, isTrainSlow, allTrainDurations.length]);
 
 	// Filter trains first, then slice for display
+	// Note: slow trains are kept in list but animated out, not filtered
 	const filteredTrains = (state.trains || []).filter((train) => {
 		// Ensure train has valid departure row for selected station
 		const hasDepartureRow = train.timeTableRows.some(
@@ -608,8 +609,7 @@ export default function TrainList({
 		// Hide trains that have been faded out via transitionend
 		if (departedTrains.has(journeyKey)) return false;
 
-		// Hide slow trains if the option is enabled
-		if (hideSlowTrains && isTrainSlow(train)) return false;
+		// Don't filter slow trains here - they'll be animated instead
 
 		// If API-derived departure says it's departed, apply grace window
 		if (train.isDeparted) {
@@ -748,23 +748,27 @@ export default function TrainList({
 						</label>
 					)}
 				</div>
-				<div
-					ref={listContainerRef}
-					class="grid auto-rows-fr gap-4"
-					style={{
-						"grid-template-rows": `repeat(${displayedTrains.length}, minmax(0, 1fr))`,
-					}}
-				>
+				<div ref={listContainerRef} class="flex flex-col gap-4">
 					{displayedTrains.map((train, index) => {
 						const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
+						const isSlow = isTrainSlow(train);
+						const isHiddenByFilter = hideSlowTrains && isSlow;
 						return (
 							<div
 								key={journeyKey}
 								data-journey-key={journeyKey}
-								class={departedTrains.has(journeyKey) ? "" : "animate-scale-in"}
+								class={`transition-all duration-300 ease-in-out ${
+									departedTrains.has(journeyKey)
+										? ""
+										: isHiddenByFilter
+											? "opacity-0 max-h-0 overflow-hidden scale-95 pointer-events-none -mt-4"
+											: "animate-scale-in opacity-100 max-h-[200px]"
+								}`}
 								style={{
-									"grid-row": `${index + 1}`,
-									animationDelay: `${index * 0.05}s`,
+									animationDelay:
+										departedTrains.has(journeyKey) || isHiddenByFilter
+											? "0s"
+											: `${index * 0.05}s`,
 								}}
 							>
 								<MemoizedTrainCard
