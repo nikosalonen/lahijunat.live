@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import preact from "@astrojs/preact";
+import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
@@ -85,5 +86,5 @@ export default defineConfig({
 		},
 	},
 
-	integrations: [preact(), mySwPlugin()],
+	integrations: [preact(), sitemap(), mySwPlugin()],
 });
