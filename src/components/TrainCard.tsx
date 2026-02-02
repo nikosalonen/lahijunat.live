@@ -711,9 +711,27 @@ export default function TrainCard({
 	const visualOffset = swipeOffset * SWIPE_RESISTANCE;
 	const isSwipeActive = Math.abs(swipeOffset) > 0;
 
+	// Calculate animation delay to sync all blinking cards
+	// Animation duration is 4s = 4000ms
+	// Capture offset once when entering departing soon state to prevent stutter
+	const ANIMATION_DURATION_MS = 4000;
+
+	// Set sync offset when first entering departing soon state
+	if (departingSoon && animationSyncRef.current === null) {
+		animationSyncRef.current = Date.now() % ANIMATION_DURATION_MS;
+	} else if (!departingSoon) {
+		// Reset when leaving departing soon state
+		animationSyncRef.current = null;
+	}
+
+	const syncedAnimationDelay =
+		departingSoon && animationSyncRef.current !== null
+			? `-${animationSyncRef.current}ms`
+			: undefined;
+
 	return (
 		<div
-			class="relative overflow-hidden rounded-2xl transition-opacity duration-700 ease-in-out"
+			class={`rounded-xl transition-opacity duration-700 ease-in-out ${wrapperHighlightStyle}`}
 			style={{
 				opacity: hasDeparted ? opacity : 1,
 			}}
