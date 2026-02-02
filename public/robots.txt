@@ -1,0 +1,7 @@
+# Robots.txt for lahijunat.live
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.lahijunat.live/sitemap-index.xml
