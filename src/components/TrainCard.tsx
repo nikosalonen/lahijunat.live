@@ -19,6 +19,7 @@ import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
 import { calculateDuration, getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
+import { getDebugMode, subscribeToDebugMode } from "./DebugToggle";
 import TimeDisplay from "./TimeDisplay";
 
 interface Props {
@@ -140,6 +141,7 @@ export default function TrainCard({
 		Record<string, { track: string; timestamp: number }>
 	>({});
 	const [isTrackFlipped, setIsTrackFlipped] = useState(false);
+	const [showDebugPanel, setShowDebugPanel] = useState(() => getDebugMode());
 	const fadeRafRef = useRef<number | null>(null);
 	const animationSyncRef = useRef<number | null>(null);
 
@@ -158,6 +160,11 @@ export default function TrainCard({
 				clearTimeout(swipeTimeoutRef.current);
 			}
 		};
+	}, []);
+
+	// Subscribe to global debug mode changes
+	useEffect(() => {
+		return subscribeToDebugMode(setShowDebugPanel);
 	}, []);
 
 	// Memoize all time-dependent calculations
@@ -682,8 +689,8 @@ export default function TrainCard({
 	const hasDerivedActualDeparture = Boolean(
 		departureRow.actualTime ?? train.departedAt,
 	);
-	const showDebugInfo = import.meta.env.DEV;
-	const debugState = showDebugInfo
+	const isDevMode = import.meta.env.DEV;
+	const debugState = isDevMode
 		? {
 				trainIsDeparted: Boolean(train.isDeparted),
 				hasDeparted,
@@ -730,6 +737,7 @@ export default function TrainCard({
 			: undefined;
 
 	return (
+		<>
 		<div
 			class={`rounded-xl transition-opacity duration-700 ease-in-out ${wrapperHighlightStyle}`}
 			style={{
@@ -822,7 +830,7 @@ export default function TrainCard({
 					}
 				>
 					<div class="card-body p-3 sm:p-4">
-						<div class="flex items-start justify-between gap-2 sm:gap-4">
+						<div class="flex items-start justify-between gap-2 sm:gap-4 min-h-[76px] sm:min-h-20">
 							<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
 								{/* Train identifier */}
 								{train.commuterLineID && (
@@ -897,11 +905,20 @@ export default function TrainCard({
 							</div>
 
 							{/* Track info and departure countdown */}
-							<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0">
+							<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0 min-h-[76px] sm:min-h-20 justify-start">
 								{train.cancelled ? (
-									<span class="badge badge-error badge-lg text-white">
-										{t("cancelled")}
-									</span>
+									<>
+										<span class="badge badge-error badge-lg text-white">
+											{t("cancelled")}
+										</span>
+										{/* Invisible placeholder to maintain consistent height */}
+										<div
+											class="badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4 invisible"
+											aria-hidden="true"
+										>
+											<span>0 min</span>
+										</div>
+									</>
 								) : (
 									<>
 										{/* Interactive Flippable Track Badge */}
@@ -1007,41 +1024,35 @@ export default function TrainCard({
 												)}
 										</div>
 
-										{!hasDerivedActualDeparture &&
-											minutesToDeparture !== null &&
-											minutesToDeparture <= 30 &&
-											minutesToDeparture >= 0 && (
-												<div
-													class={
-														"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
-													}
-												>
-													<span>
-														{minutesToDeparture === 0
-															? "0 min"
-															: `${minutesToDeparture} min`}
-													</span>
-												</div>
-											)}
+										{/* Always reserve space for minutes badge to maintain consistent card height */}
+										<div
+											class={`badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4 ${
+												!hasDerivedActualDeparture &&
+												minutesToDeparture !== null &&
+												minutesToDeparture <= 30 &&
+												minutesToDeparture >= 0
+													? ""
+													: "invisible"
+											}`}
+											aria-hidden={
+												hasDerivedActualDeparture ||
+												minutesToDeparture === null ||
+												minutesToDeparture > 30 ||
+												minutesToDeparture < 0
+											}
+										>
+											<span>
+												{minutesToDeparture !== null && minutesToDeparture >= 0
+													? minutesToDeparture === 0
+														? "0 min"
+														: `${minutesToDeparture} min`
+													: "0 min"}
+											</span>
+										</div>
 									</>
 								)}
 							</div>
 						</div>
-						{showDebugInfo && debugState && (
-							<div class="mt-3 w-full overflow-hidden rounded border border-dashed border-base-300 bg-base-200/40 p-2 text-xs font-mono text-base-content/70">
-								{Object.entries(debugState).map(([label, value]) => (
-									<div
-										key={label}
-										class="flex items-center justify-between gap-3"
-									>
-										<span class="font-semibold uppercase tracking-wide">
-											{label}
-										</span>
-										<span class="text-right">{formatDebugValue(value)}</span>
-									</div>
-								))}
-							</div>
-						)}
 						<div aria-live="polite" class="sr-only">
 							{train.cancelled
 								? t("cancelled")
@@ -1053,5 +1064,22 @@ export default function TrainCard({
 				</div>
 			</div>
 		</div>
+		{/* Debug panel - rendered outside card to not affect height */}
+		{showDebugPanel && debugState && (
+			<div class="mt-1 w-full overflow-hidden rounded border border-dashed border-base-300 bg-base-200/40 p-2 text-xs font-mono text-base-content/70">
+				{Object.entries(debugState).map(([label, value]) => (
+					<div
+						key={label}
+						class="flex items-center justify-between gap-3"
+					>
+						<span class="font-semibold uppercase tracking-wide">
+							{label}
+						</span>
+						<span class="text-right">{formatDebugValue(value)}</span>
+					</div>
+				))}
+			</div>
+		)}
+	</>
 	);
 }
