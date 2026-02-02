@@ -22,6 +22,9 @@ import { t } from "../utils/translations";
 import { getDebugMode, subscribeToDebugMode } from "./DebugToggle";
 import TimeDisplay from "./TimeDisplay";
 
+// Fixed reference point for animation sync - captured once at module load
+const ANIMATION_SYNC_BASELINE = Date.now();
+
 interface Props {
 	train: Train;
 	stationCode: string;
@@ -735,13 +738,15 @@ export default function TrainCard({
 	const isSwipeActive = Math.abs(swipeOffset) > 0;
 
 	// Calculate animation delay to sync all blinking cards
-	// Animation duration is 4s = 4000ms
-	// Capture offset once when entering departing soon state to prevent stutter
+	// Capture offset once when entering departing soon state to prevent animation jumps on re-render.
+	// All cards calculate offset from the shared module-level baseline,
+	// ensuring they're always in phase regardless of when they enter departing soon state.
 	const ANIMATION_DURATION_MS = 4000;
 
-	// Set sync offset when first entering departing soon state
 	if (departingSoon && animationSyncRef.current === null) {
-		animationSyncRef.current = Date.now() % ANIMATION_DURATION_MS;
+		// Capture once: offset from shared baseline ensures all cards are in phase
+		animationSyncRef.current =
+			(Date.now() - ANIMATION_SYNC_BASELINE) % ANIMATION_DURATION_MS;
 	} else if (!departingSoon) {
 		// Reset when leaving departing soon state
 		animationSyncRef.current = null;
