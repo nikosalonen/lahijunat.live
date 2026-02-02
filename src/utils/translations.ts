@@ -80,10 +80,8 @@ export const translations = {
 		pwaUpdateDismiss: "Myöhemmin",
 		// Feature announcement
 		newFeaturesTitle: "Uutta sovelluksessa",
-		newFeaturesSwedish: "Sovellus nyt myös ruotsiksi",
-		newFeaturesHideSlowTrains: "Piilota hitaat junat -asetus",
-		newFeaturesSwipeToFavorite: "Pyyhkäise lisätäksesi suosikiksi",
-		newFeaturesFavoritesPinned: "Suosikit näytetään listan kärjessä",
+		newFeaturesImprovedCardDesign: "Viilattu korttien ulkoasua",
+		newFeaturesSmoothAnimations: "Pehmeämmät animaatiot",
 		newFeaturesDismiss: "Selvä!",
 	},
 	en: {
@@ -162,10 +160,8 @@ export const translations = {
 		pwaUpdateDismiss: "Later",
 		// Feature announcement
 		newFeaturesTitle: "What's new",
-		newFeaturesSwedish: "App now available in Swedish",
-		newFeaturesHideSlowTrains: "Hide slow trains option",
-		newFeaturesSwipeToFavorite: "Swipe to add favorites",
-		newFeaturesFavoritesPinned: "Favorites pinned to top of list",
+		newFeaturesImprovedCardDesign: "Refreshed card design",
+		newFeaturesSmoothAnimations: "Smoother animations",
 		newFeaturesDismiss: "Got it!",
 	},
 	sv: {
@@ -244,10 +240,8 @@ export const translations = {
 		pwaUpdateDismiss: "Senare",
 		// Feature announcement
 		newFeaturesTitle: "Nyheter",
-		newFeaturesSwedish: "Appen nu på svenska",
-		newFeaturesHideSlowTrains: "Dölj långsamma tåg-inställning",
-		newFeaturesSwipeToFavorite: "Svep för att lägga till favoriter",
-		newFeaturesFavoritesPinned: "Favoriter fästa högst upp i listan",
+		newFeaturesImprovedCardDesign: "Förnyad kortdesign",
+		newFeaturesSmoothAnimations: "Mjukare animationer",
 		newFeaturesDismiss: "Uppfattat!",
 	},
 };

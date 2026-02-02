@@ -87,8 +87,11 @@ export default function FeatureAnnouncement() {
 						✨
 					</span>
 					<div className="flex-grow min-w-0">
-						<h3 className="font-bold text-base mb-2">
+						<h3 className="font-bold text-base mb-2 flex items-center gap-2">
 							{t("newFeaturesTitle")}
+							<span className="text-xs font-normal bg-white/20 px-1.5 py-0.5 rounded">
+								v{version}
+							</span>
 						</h3>
 						<ul className="text-sm text-purple-100 space-y-1 mb-3">
 							{features.map((feature) => (

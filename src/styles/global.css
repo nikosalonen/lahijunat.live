@@ -51,96 +51,111 @@
 
 @keyframes soft-blink {
 	0% {
-		background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+		background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+		box-shadow:
+			0 1px 3px rgba(0, 0, 0, 0.08),
+			0 4px 16px rgba(0, 0, 0, 0.1);
 	}
 	50% {
-		background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
-		box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
+		background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+		box-shadow:
+			0 2px 6px rgba(59, 130, 246, 0.15),
+			0 8px 24px rgba(0, 0, 0, 0.12);
 	}
 	100% {
-		background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+		background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+		box-shadow:
+			0 1px 3px rgba(0, 0, 0, 0.08),
+			0 4px 16px rgba(0, 0, 0, 0.1);
 	}
 }
 
 @keyframes soft-blink-dark {
 	0% {
-		background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+		background: linear-gradient(135deg, #1f2937 0%, #1a202c 100%);
+		border-color: rgba(255, 255, 255, 0.1);
+		box-shadow:
+			0 0 0 1px rgba(255, 255, 255, 0.06),
+			0 4px 16px rgba(0, 0, 0, 0.4);
 	}
 	50% {
-		background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-		box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+		background: linear-gradient(135deg, #1e3a5a 0%, #1e3a8a 100%);
+		border-color: rgba(96, 165, 250, 0.3);
+		box-shadow:
+			0 0 0 1px rgba(96, 165, 250, 0.2),
+			0 8px 24px rgba(0, 0, 0, 0.5);
 	}
 	100% {
-		background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+		background: linear-gradient(135deg, #1f2937 0%, #1a202c 100%);
+		border-color: rgba(255, 255, 255, 0.1);
+		box-shadow:
+			0 0 0 1px rgba(255, 255, 255, 0.06),
+			0 4px 16px rgba(0, 0, 0, 0.4);
 	}
 }
 
 @keyframes soft-blink-highlight {
 	0% {
-		background: linear-gradient(135deg, #faf7ff 0%, #f3e8ff 100%);
+		background: linear-gradient(135deg, #faf7ff 0%, #f5f0ff 100%);
 		border-color: #8c4799;
 		box-shadow:
 			0 0 0 1px #8c4799,
-			0 8px 32px rgba(0, 0, 0, 0.15);
+			0 4px 16px rgba(140, 71, 153, 0.1);
 	}
 	50% {
-		background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
-		border-color: #7a3f86;
-		box-shadow:
-			0 0 0 1px #7a3f86,
-			0 12px 48px rgba(0, 0, 0, 0.25);
-	}
-	100% {
-		background: linear-gradient(135deg, #faf7ff 0%, #f3e8ff 100%);
+		background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%);
 		border-color: #8c4799;
 		box-shadow:
 			0 0 0 1px #8c4799,
-			0 8px 32px rgba(0, 0, 0, 0.15);
+			0 8px 24px rgba(140, 71, 153, 0.2);
+	}
+	100% {
+		background: linear-gradient(135deg, #faf7ff 0%, #f5f0ff 100%);
+		border-color: #8c4799;
+		box-shadow:
+			0 0 0 1px #8c4799,
+			0 4px 16px rgba(140, 71, 153, 0.1);
 	}
 }
 
 @keyframes soft-blink-highlight-dark {
 	0% {
-		background: linear-gradient(135deg, #2d1a33 0%, #1f1726 100%);
+		background: linear-gradient(135deg, #2d1a33 0%, #251528 100%);
 		border-color: #b388ff;
 		box-shadow:
 			0 0 0 1px #b388ff,
-			0 8px 32px rgba(0, 0, 0, 0.4);
+			0 4px 16px rgba(179, 136, 255, 0.15);
 	}
 	50% {
-		background: linear-gradient(135deg, #3730a3 0%, #4338ca 100%);
-		border-color: #7c4dff;
+		background: linear-gradient(135deg, #4c1d95 0%, #5b21b6 100%);
+		border-color: #c4b5fd;
 		box-shadow:
-			0 0 0 1px #7c4dff,
-			0 12px 48px rgba(0, 0, 0, 0.6);
+			0 0 0 1px #c4b5fd,
+			0 8px 24px rgba(179, 136, 255, 0.3);
 	}
 	100% {
-		background: linear-gradient(135deg, #2d1a33 0%, #1f1726 100%);
+		background: linear-gradient(135deg, #2d1a33 0%, #251528 100%);
 		border-color: #b388ff;
 		box-shadow:
 			0 0 0 1px #b388ff,
-			0 8px 32px rgba(0, 0, 0, 0.4);
+			0 4px 16px rgba(179, 136, 255, 0.15);
 	}
 }
 
 .animate-soft-blink {
-	animation: soft-blink 2.5s ease-in-out infinite;
+	animation: soft-blink 4s ease-in-out infinite;
 }
 
 .dark .animate-soft-blink {
-	animation: soft-blink-dark 2.5s ease-in-out infinite;
+	animation: soft-blink-dark 4s ease-in-out infinite;
 }
 
 .animate-soft-blink-highlight {
-	animation: soft-blink-highlight 2.5s ease-in-out infinite;
+	animation: soft-blink-highlight 4s ease-in-out infinite;
 }
 
 .dark .animate-soft-blink-highlight {
-	animation: soft-blink-highlight-dark 2.5s ease-in-out infinite;
+	animation: soft-blink-highlight-dark 4s ease-in-out infinite;
 }
 
 /* Animation play state is controlled by the base class - no conditional selectors needed */
