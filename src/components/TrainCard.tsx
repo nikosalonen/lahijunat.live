@@ -273,25 +273,41 @@ export default function TrainCard({
 	}, [train.isDeparted, hasDeparted, onReappear]);
 
 	// Drive fade animation based on hasDeparted state
+	// First show grayed-out state, then fade out after a delay
+	const fadeDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 	useEffect(() => {
 		if (!hasDeparted) {
 			if (fadeRafRef.current !== null) {
 				cancelAnimationFrame(fadeRafRef.current);
 				fadeRafRef.current = null;
 			}
+			if (fadeDelayRef.current !== null) {
+				clearTimeout(fadeDelayRef.current);
+				fadeDelayRef.current = null;
+			}
 			setOpacity(1);
 			return;
 		}
 
+		// Keep opacity at 1 initially to show grayed-out state
 		setOpacity(1);
-		const rafId = requestAnimationFrame(() => {
-			setOpacity(0);
-		});
-		fadeRafRef.current = rafId;
+
+		// After delay, start the fade-out animation
+		fadeDelayRef.current = setTimeout(() => {
+			const rafId = requestAnimationFrame(() => {
+				setOpacity(0);
+			});
+			fadeRafRef.current = rafId;
+		}, 2000); // 2 second delay to show grayed-out state
 
 		return () => {
-			cancelAnimationFrame(rafId);
-			if (fadeRafRef.current === rafId) {
+			if (fadeDelayRef.current !== null) {
+				clearTimeout(fadeDelayRef.current);
+				fadeDelayRef.current = null;
+			}
+			if (fadeRafRef.current !== null) {
+				cancelAnimationFrame(fadeRafRef.current);
 				fadeRafRef.current = null;
 			}
 		};
@@ -739,9 +755,10 @@ export default function TrainCard({
 	return (
 		<>
 			<div
-				class={`rounded-xl transition-opacity duration-700 ease-in-out ${wrapperHighlightStyle}`}
+				class={`rounded-xl transition-all duration-700 ease-in-out ${wrapperHighlightStyle} ${hasDeparted ? "grayscale opacity-50" : ""}`}
 				style={{
-					opacity: hasDeparted ? opacity : 1,
+					// Only use inline opacity when actively fading (overrides the opacity-50 class)
+					opacity: hasDeparted && opacity < 1 ? opacity : undefined,
 				}}
 				onTransitionEnd={(e) => {
 					if (e.target !== e.currentTarget) return;
