@@ -61,8 +61,9 @@ const getCardStyle = (
 	isDepartingSoon: boolean,
 	isHighlighted: boolean,
 ) => {
+	// Note: shadow/border are on the overflow wrapper, card just handles background
 	const baseStyles =
-		"card bg-base-100 shadow-xl border border-base-300 rounded-xl relative transform-gpu -translate-y-0.5";
+		"card rounded-xl relative bg-gradient-to-br from-white to-gray-50 dark:bg-none dark:bg-gray-800";
 
 	// Priority 1: Cancelled trains
 	if (isCancelled)
@@ -72,18 +73,20 @@ const getCardStyle = (
 	// Do not set opacity via class; fade is driven by inline style and transitionend
 
 	// Priority 3: Highlighted + Departing soon (< 5 min) - Purple highlight with blinking
+	// Note: Border styling moved to wrapper div to avoid clipping issues
 	if (
 		isHighlighted &&
 		isDepartingSoon &&
 		minutesToDeparture !== null &&
 		minutesToDeparture >= 0
 	) {
-		return `${baseStyles} !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring ring-[#8c4799]/30 dark:ring-[#b388ff]/30 animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark`;
+		return `${baseStyles} animate-soft-blink-highlight dark:animate-soft-blink-highlight-dark`;
 	}
 
 	// Priority 4: Highlighted (not departing soon) - Static purple highlight
+	// Note: Border styling moved to wrapper div to avoid clipping issues
 	if (isHighlighted)
-		return `${baseStyles} bg-primary/5 dark:bg-primary/10 !border-4 !border-[#8c4799] dark:!border-[#b388ff] ring ring-[#8c4799]/30 dark:ring-[#b388ff]/30`;
+		return `${baseStyles} bg-primary/5 dark:bg-primary/10 dark:border-primary/30`;
 
 	// Priority 5: Departing soon (not highlighted) - Regular blinking
 	if (
@@ -91,11 +94,33 @@ const getCardStyle = (
 		minutesToDeparture !== null &&
 		minutesToDeparture >= 0
 	) {
-		return `${baseStyles} border-base-300 dark:border-base-300/40 dark:bg-base-200 animate-soft-blink dark:animate-soft-blink-dark`;
+		return `${baseStyles} animate-soft-blink dark:animate-soft-blink-dark`;
 	}
 
 	// Default case
 	return `${baseStyles}`;
+};
+
+// Get wrapper styles for highlighted state (applied to outer div to avoid overflow clipping)
+const getWrapperHighlightStyle = (
+	isHighlighted: boolean,
+	isDepartingSoon: boolean,
+	minutesToDeparture: number | null,
+) => {
+	if (!isHighlighted) return "";
+
+	const highlightBorder =
+		"ring-4 ring-[#8c4799] dark:ring-[#b388ff] shadow-[0_0_12px_rgba(140,71,153,0.3)] dark:shadow-[0_0_12px_rgba(179,136,255,0.3)]";
+
+	if (
+		isDepartingSoon &&
+		minutesToDeparture !== null &&
+		minutesToDeparture >= 0
+	) {
+		return highlightBorder;
+	}
+
+	return highlightBorder;
 };
 
 export default function TrainCard({
@@ -116,6 +141,7 @@ export default function TrainCard({
 	>({});
 	const [isTrackFlipped, setIsTrackFlipped] = useState(false);
 	const fadeRafRef = useRef<number | null>(null);
+	const animationSyncRef = useRef<number | null>(null);
 
 	// Swipe gesture state
 	const [swipeOffset, setSwipeOffset] = useState(0);
@@ -144,6 +170,7 @@ export default function TrainCard({
 		duration,
 		durationSpeedType,
 		cardStyle,
+		wrapperHighlightStyle,
 	} = useMemo(() => {
 		const departureRow = train.timeTableRows.find(
 			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
@@ -163,6 +190,11 @@ export default function TrainCard({
 				timeDifferenceMinutes: 0,
 				duration: null,
 				cardStyle: getCardStyle(train.cancelled, null, false, isHighlighted),
+				wrapperHighlightStyle: getWrapperHighlightStyle(
+					isHighlighted,
+					false,
+					null,
+				),
 			};
 		}
 
@@ -196,6 +228,12 @@ export default function TrainCard({
 			isHighlighted,
 		);
 
+		const wrapperHighlightStyle = getWrapperHighlightStyle(
+			isHighlighted,
+			departingSoon,
+			minutesToDeparture,
+		);
+
 		return {
 			departureRow,
 			arrivalRow,
@@ -205,6 +243,7 @@ export default function TrainCard({
 			duration,
 			durationSpeedType,
 			cardStyle,
+			wrapperHighlightStyle,
 		};
 	}, [
 		train,
@@ -685,304 +724,313 @@ export default function TrainCard({
 				}
 			}}
 		>
-			{/* Left reveal - shown when swiping right */}
-			<div
-				class={`absolute inset-y-0 left-0 w-16 flex items-center justify-center transition-opacity duration-150 ${
-					isHighlighted
-						? "bg-gray-400 dark:bg-gray-600"
-						: "bg-pink-500 dark:bg-pink-600"
-				} ${swipeOffset > 20 ? "opacity-100" : "opacity-0"}`}
-				aria-hidden="true"
-			>
-				<svg
-					class="w-6 h-6 text-white"
-					fill={isHighlighted ? "none" : "currentColor"}
-					stroke="currentColor"
-					strokeWidth={isHighlighted ? 2 : 0}
-					viewBox="0 0 20 20"
-					role="img"
-					aria-label="Heart"
+			{/* Inner wrapper for overflow clipping (swipe reveals) - shadow/border applied here */}
+			<div class="relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]">
+				{/* Left reveal - shown when swiping right */}
+				<div
+					class={`absolute inset-y-0 left-0 w-16 flex items-center justify-center transition-opacity duration-150 ${
+						isHighlighted
+							? "bg-gray-400 dark:bg-gray-600"
+							: "bg-pink-500 dark:bg-pink-600"
+					} ${swipeOffset > 20 ? "opacity-100" : "opacity-0"}`}
+					aria-hidden="true"
 				>
-					<path
-						fillRule="evenodd"
-						d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-						clipRule="evenodd"
-					/>
-				</svg>
-			</div>
+					<svg
+						class="w-6 h-6 text-white"
+						fill={isHighlighted ? "none" : "currentColor"}
+						stroke="currentColor"
+						strokeWidth={isHighlighted ? 2 : 0}
+						viewBox="0 0 20 20"
+						role="img"
+						aria-label="Heart"
+					>
+						<path
+							fillRule="evenodd"
+							d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+							clipRule="evenodd"
+						/>
+					</svg>
+				</div>
 
-			{/* Right reveal - shown when swiping left */}
-			<div
-				class={`absolute inset-y-0 right-0 w-16 flex items-center justify-center transition-opacity duration-150 ${
-					isHighlighted
-						? "bg-gray-400 dark:bg-gray-600"
-						: "bg-pink-500 dark:bg-pink-600"
-				} ${swipeOffset < -20 ? "opacity-100" : "opacity-0"}`}
-				aria-hidden="true"
-			>
-				<svg
-					class="w-6 h-6 text-white"
-					fill={isHighlighted ? "none" : "currentColor"}
-					stroke="currentColor"
-					strokeWidth={isHighlighted ? 2 : 0}
-					viewBox="0 0 20 20"
-					role="img"
-					aria-label="Heart"
+				{/* Right reveal - shown when swiping left */}
+				<div
+					class={`absolute inset-y-0 right-0 w-16 flex items-center justify-center transition-opacity duration-150 ${
+						isHighlighted
+							? "bg-gray-400 dark:bg-gray-600"
+							: "bg-pink-500 dark:bg-pink-600"
+					} ${swipeOffset < -20 ? "opacity-100" : "opacity-0"}`}
+					aria-hidden="true"
 				>
-					<path
-						fillRule="evenodd"
-						d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-						clipRule="evenodd"
-					/>
-				</svg>
-			</div>
+					<svg
+						class="w-6 h-6 text-white"
+						fill={isHighlighted ? "none" : "currentColor"}
+						stroke="currentColor"
+						strokeWidth={isHighlighted ? 2 : 0}
+						viewBox="0 0 20 20"
+						role="img"
+						aria-label="Heart"
+					>
+						<path
+							fillRule="evenodd"
+							d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+							clipRule="evenodd"
+						/>
+					</svg>
+				</div>
 
-			{/* Card content with transform */}
-			<div
-				class={`${cardStyle} w-full max-w-full text-left relative select-none ${
-					isTransitioning ? "transition-transform duration-300 ease-out" : ""
-				}`}
-				style={{
-					transform:
-						isSwipeActive || isTransitioning
-							? `translateX(${visualOffset}px)`
-							: undefined,
-					WebkitTouchCallout: "none",
-					WebkitTapHighlightColor: "transparent",
-				}}
-				onTouchStart={handleTouchStart}
-				onTouchMove={handleTouchMove}
-				onTouchEnd={handleTouchEnd}
-				onTouchCancel={handleTouchCancel}
-				data-train-number={train.trainNumber}
-				data-train-cancelled={train.cancelled}
-				data-train-line={train.commuterLineID}
-				data-train-unknown-delay={departureRow?.unknownDelay ? "true" : "false"}
-			>
-				<div class="card-body p-3 sm:p-4">
-					<div class="flex items-start justify-between gap-2 sm:gap-4">
-						<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
-							{/* Train identifier */}
-							{train.commuterLineID && (
-								<button
-									onClick={handleFavorite}
-									aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
-									type="button"
-									class={`flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold rounded-2xl shadow-brand-medium transition-transform duration-300 relative group touch-manipulation select-none focus:outline-none border-none ring-0 ${
-										train.cancelled
-											? "bg-gradient-to-br from-red-500 to-red-600 text-white"
-											: "bg-[#8c4799] text-white"
-									}`}
-								>
-									{train.commuterLineID}
-									{isHighlighted && (
-										<div class="absolute -top-0.5 -right-0.5 bg-error rounded-full p-1 shadow">
-											<svg
-												class="w-2.5 h-2.5 text-white"
-												fill="currentColor"
-												viewBox="0 0 20 20"
-												aria-hidden="true"
-											>
-												<title>Favorite</title>
-												<path
-													fillRule="evenodd"
-													d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-													clipRule="evenodd"
-												/>
-											</svg>
-										</div>
-									)}
-								</button>
-							)}
-
-							{/* Main train info - Using card-title semantic structure */}
-							<div class="space-y-2 sm:space-y-1 min-w-0 flex-1 overflow-hidden">
-								<div class="card-title p-0 flex-col items-start gap-1">
-									<div class="flex flex-col gap-2 sm:gap-1 w-full">
-										<TimeDisplay
-											departureRow={departureRow}
-											arrivalRow={arrivalRow}
-											timeDifferenceMinutes={timeDifferenceMinutes}
-										/>
-										{duration && (
-											<output
-												class={`text-sm sm:text-base font-medium flex items-center truncate ${
-													durationSpeedType === "fast"
-														? "text-success"
-														: durationSpeedType === "slow"
-															? "text-warning"
-															: "text-base-content/60"
-												} ${train.cancelled ? "opacity-0 pointer-events-none select-none" : ""}`}
-												aria-hidden={train.cancelled ? "true" : undefined}
-												aria-label={
-													!train.cancelled
-														? `${t("duration")} ${duration.hours} ${t("hours")} ${duration.minutes} ${t("minutes")}`
-														: undefined
-												}
-											>
-												<i class="fa-solid fa-clock mr-1" aria-hidden="true" />
-												<span>
-													{duration.hours}h {duration.minutes}m
-												</span>
-											</output>
+				{/* Card content with transform */}
+				<div
+					class={`${cardStyle} w-full max-w-full text-left relative select-none ${
+						isTransitioning ? "transition-transform duration-300 ease-out" : ""
+					}`}
+					style={{
+						transform:
+							isSwipeActive || isTransitioning
+								? `translateX(${visualOffset}px)`
+								: undefined,
+						animationDelay: syncedAnimationDelay,
+						WebkitTouchCallout: "none",
+						WebkitTapHighlightColor: "transparent",
+					}}
+					onTouchStart={handleTouchStart}
+					onTouchMove={handleTouchMove}
+					onTouchEnd={handleTouchEnd}
+					onTouchCancel={handleTouchCancel}
+					data-train-number={train.trainNumber}
+					data-train-cancelled={train.cancelled}
+					data-train-line={train.commuterLineID}
+					data-train-unknown-delay={
+						departureRow?.unknownDelay ? "true" : "false"
+					}
+				>
+					<div class="card-body p-3 sm:p-4">
+						<div class="flex items-start justify-between gap-2 sm:gap-4">
+							<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
+								{/* Train identifier */}
+								{train.commuterLineID && (
+									<button
+										onClick={handleFavorite}
+										aria-label={isHighlighted ? t("unfavorite") : t("favorite")}
+										type="button"
+										class={`flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold rounded-2xl shadow-brand-medium transition-transform duration-300 relative group touch-manipulation select-none focus:outline-none border-none ring-0 ${
+											train.cancelled
+												? "bg-gradient-to-br from-red-500 to-red-600 text-white"
+												: "bg-[#8c4799] text-white"
+										}`}
+									>
+										{train.commuterLineID}
+										{isHighlighted && (
+											<div class="absolute -top-0.5 -right-0.5 bg-error rounded-full p-1 shadow">
+												<svg
+													class="w-2.5 h-2.5 text-white"
+													fill="currentColor"
+													viewBox="0 0 20 20"
+													aria-hidden="true"
+												>
+													<title>Favorite</title>
+													<path
+														fillRule="evenodd"
+														d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+														clipRule="evenodd"
+													/>
+												</svg>
+											</div>
 										)}
+									</button>
+								)}
+
+								{/* Main train info - Using card-title semantic structure */}
+								<div class="space-y-2 sm:space-y-1 min-w-0 flex-1 overflow-hidden">
+									<div class="card-title p-0 flex-col items-start gap-1">
+										<div class="flex flex-col gap-2 sm:gap-1 w-full">
+											<TimeDisplay
+												departureRow={departureRow}
+												arrivalRow={arrivalRow}
+												timeDifferenceMinutes={timeDifferenceMinutes}
+											/>
+											{duration && (
+												<output
+													class={`text-sm sm:text-base font-medium flex items-center truncate ${
+														durationSpeedType === "fast"
+															? "text-success"
+															: durationSpeedType === "slow"
+																? "text-warning"
+																: "text-base-content/60"
+													} ${train.cancelled ? "opacity-0 pointer-events-none select-none" : ""}`}
+													aria-hidden={train.cancelled ? "true" : undefined}
+													aria-label={
+														!train.cancelled
+															? `${t("duration")} ${duration.hours} ${t("hours")} ${duration.minutes} ${t("minutes")}`
+															: undefined
+													}
+												>
+													<i
+														class="fa-solid fa-clock mr-1"
+														aria-hidden="true"
+													/>
+													<span>
+														{duration.hours}h {duration.minutes}m
+													</span>
+												</output>
+											)}
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
 
-						{/* Track info and departure countdown */}
-						<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0">
-							{train.cancelled ? (
-								<span class="badge badge-error badge-lg text-white">
-									{t("cancelled")}
-								</span>
-							) : (
-								<>
-									{/* Interactive Flippable Track Badge */}
-									<div class="indicator">
-										<button
-											type="button"
-											onClick={handleTrackFlip}
-											onKeyDown={handleTrackKeyDown}
-											aria-label={
-												!isTrackFlipped
-													? `${t("track")} ${departureRow.commercialTrack}${trackChangeInfo.changedSide === "departure" && isTrackChanged ? ` (${t("changed")})` : ""}. ${arrivalRow ? t("clickToSeeArrivalTrack") : ""}`
-													: `${arrivalRow ? `${t("arrivalTrack")} ${arrivalRow.commercialTrack}` : `${t("track")} ${departureRow.commercialTrack}`}${trackChangeInfo.changedSide === "arrival" && isTrackChanged ? ` (${t("changed")})` : ""}. ${t("clickToSeeDepartureTrack")}`
-											}
-											aria-pressed={isTrackFlipped}
-											class="group cursor-pointer focus-ring bg-transparent border-0 p-0"
-										>
-											<div
-												class="relative inline-block"
-												style={{
-													perspective: "1000px",
-													minHeight: "32px",
-												}}
+							{/* Track info and departure countdown */}
+							<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0">
+								{train.cancelled ? (
+									<span class="badge badge-error badge-lg text-white">
+										{t("cancelled")}
+									</span>
+								) : (
+									<>
+										{/* Interactive Flippable Track Badge */}
+										<div class="indicator">
+											<button
+												type="button"
+												onClick={handleTrackFlip}
+												onKeyDown={handleTrackKeyDown}
+												aria-label={
+													!isTrackFlipped
+														? `${t("track")} ${departureRow.commercialTrack}${trackChangeInfo.changedSide === "departure" && isTrackChanged ? ` (${t("changed")})` : ""}. ${arrivalRow ? t("clickToSeeArrivalTrack") : ""}`
+														: `${arrivalRow ? `${t("arrivalTrack")} ${arrivalRow.commercialTrack}` : `${t("track")} ${departureRow.commercialTrack}`}${trackChangeInfo.changedSide === "arrival" && isTrackChanged ? ` (${t("changed")})` : ""}. ${t("clickToSeeDepartureTrack")}`
+												}
+												aria-pressed={isTrackFlipped}
+												class="group cursor-pointer focus-ring bg-transparent border-0 p-0"
 											>
 												<div
+													class="relative inline-block"
 													style={{
-														transformStyle: "preserve-3d",
-														transform: isTrackFlipped
-															? "rotateY(180deg)"
-															: "rotateY(0deg)",
-														transition: "transform 0.4s ease-out",
-														position: "relative",
+														perspective: "1000px",
 														minHeight: "32px",
 													}}
 												>
-													{/* Front face - Departure Track */}
 													<div
-														class={`badge badge-lg font-semibold transition-all duration-200 ${
-															trackChangeInfo.changedSide === "departure" &&
-															isTrackChanged
-																? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
-																: "badge-ghost group-hover:bg-base-200 dark:group-hover:bg-base-300 group-hover:scale-105"
-														} whitespace-nowrap`}
 														style={{
-															backfaceVisibility: "hidden",
-															WebkitBackfaceVisibility: "hidden",
+															transformStyle: "preserve-3d",
+															transform: isTrackFlipped
+																? "rotateY(180deg)"
+																: "rotateY(0deg)",
+															transition: "transform 0.4s ease-out",
+															position: "relative",
+															minHeight: "32px",
 														}}
 													>
-														{t("track")} {departureRow.commercialTrack}
-														{arrivalRow && (
-															<i
-																class="fa-solid fa-arrow-rotate-left ml-1.5 text-xs opacity-60"
-																aria-hidden="true"
-															/>
-														)}
-													</div>
-													{/* Back face - Arrival Track */}
-													<div
-														class={`badge badge-lg font-semibold transition-all duration-200 ${
-															trackChangeInfo.changedSide === "arrival" &&
-															isTrackChanged
-																? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
-																: "badge-ghost group-hover:bg-base-200 dark:group-hover:bg-base-300 group-hover:scale-105"
-														} whitespace-nowrap`}
-														style={{
-															backfaceVisibility: "hidden",
-															WebkitBackfaceVisibility: "hidden",
-															transform: "rotateY(180deg)",
-															position: "absolute",
-															top: 0,
-															left: 0,
-															right: 0,
-														}}
-													>
-														{arrivalRow ? (
-															<>
+														{/* Front face - Departure Track */}
+														<div
+															class={`badge badge-lg font-semibold transition-all duration-200 ${
+																trackChangeInfo.changedSide === "departure" &&
+																isTrackChanged
+																	? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
+																	: "bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105"
+															} whitespace-nowrap`}
+															style={{
+																backfaceVisibility: "hidden",
+																WebkitBackfaceVisibility: "hidden",
+															}}
+														>
+															{t("track")} {departureRow.commercialTrack}
+															{arrivalRow && (
 																<i
-																	class="fa-solid fa-arrow-right mr-1"
+																	class="fa-solid fa-arrow-rotate-left ml-1.5 text-xs opacity-60"
 																	aria-hidden="true"
 																/>
-																{t("track")} {arrivalRow.commercialTrack}
-															</>
-														) : (
-															<>
-																{t("track")} {departureRow.commercialTrack}
-															</>
-														)}
+															)}
+														</div>
+														{/* Back face - Arrival Track */}
+														<div
+															class={`badge badge-lg font-semibold transition-all duration-200 ${
+																trackChangeInfo.changedSide === "arrival" &&
+																isTrackChanged
+																	? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
+																	: "bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105"
+															} whitespace-nowrap`}
+															style={{
+																backfaceVisibility: "hidden",
+																WebkitBackfaceVisibility: "hidden",
+																transform: "rotateY(180deg)",
+																position: "absolute",
+																top: 0,
+																left: 0,
+																right: 0,
+															}}
+														>
+															{arrivalRow ? (
+																<>
+																	<i
+																		class="fa-solid fa-arrow-right mr-1"
+																		aria-hidden="true"
+																	/>
+																	{t("track")} {arrivalRow.commercialTrack}
+																</>
+															) : (
+																<>
+																	{t("track")} {departureRow.commercialTrack}
+																</>
+															)}
+														</div>
 													</div>
 												</div>
-											</div>
-										</button>
-										{/* Track change indicator - smart positioning */}
-										{isTrackChanged &&
-											((!isTrackFlipped &&
-												trackChangeInfo.changedSide === "departure") ||
-												(isTrackFlipped &&
-													trackChangeInfo.changedSide === "arrival")) && (
-												<span
-													class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
-													aria-hidden="true"
-												>
-													!
-												</span>
-											)}
-									</div>
+											</button>
+											{/* Track change indicator - smart positioning */}
+											{isTrackChanged &&
+												((!isTrackFlipped &&
+													trackChangeInfo.changedSide === "departure") ||
+													(isTrackFlipped &&
+														trackChangeInfo.changedSide === "arrival")) && (
+													<span
+														class="indicator-item indicator-top indicator-end badge badge-error badge-xs h-3 w-3 p-0 text-xs border-0 -translate-y-0.5 translate-x-0.5"
+														aria-hidden="true"
+													>
+														!
+													</span>
+												)}
+										</div>
 
-									{!hasDerivedActualDeparture &&
-										minutesToDeparture !== null &&
-										minutesToDeparture <= 30 &&
-										minutesToDeparture >= 0 && (
-											<div
-												class={
-													"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
-												}
-											>
-												<span>
-													{minutesToDeparture === 0
-														? "0 min"
-														: `${minutesToDeparture} min`}
-												</span>
-											</div>
-										)}
-								</>
-							)}
+										{!hasDerivedActualDeparture &&
+											minutesToDeparture !== null &&
+											minutesToDeparture <= 30 &&
+											minutesToDeparture >= 0 && (
+												<div
+													class={
+														"badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4"
+													}
+												>
+													<span>
+														{minutesToDeparture === 0
+															? "0 min"
+															: `${minutesToDeparture} min`}
+													</span>
+												</div>
+											)}
+									</>
+								)}
+							</div>
 						</div>
-					</div>
-					{showDebugInfo && debugState && (
-						<div class="mt-3 w-full overflow-hidden rounded border border-dashed border-base-300 bg-base-200/40 p-2 text-xs font-mono text-base-content/70">
-							{Object.entries(debugState).map(([label, value]) => (
-								<div
-									key={label}
-									class="flex items-center justify-between gap-3"
-								>
-									<span class="font-semibold uppercase tracking-wide">
-										{label}
-									</span>
-									<span class="text-right">{formatDebugValue(value)}</span>
-								</div>
-							))}
+						{showDebugInfo && debugState && (
+							<div class="mt-3 w-full overflow-hidden rounded border border-dashed border-base-300 bg-base-200/40 p-2 text-xs font-mono text-base-content/70">
+								{Object.entries(debugState).map(([label, value]) => (
+									<div
+										key={label}
+										class="flex items-center justify-between gap-3"
+									>
+										<span class="font-semibold uppercase tracking-wide">
+											{label}
+										</span>
+										<span class="text-right">{formatDebugValue(value)}</span>
+									</div>
+								))}
+							</div>
+						)}
+						<div aria-live="polite" class="sr-only">
+							{train.cancelled
+								? t("cancelled")
+								: departingSoon
+									? t("departingSoon")
+									: ""}
 						</div>
-					)}
-					<div aria-live="polite" class="sr-only">
-						{train.cancelled
-							? t("cancelled")
-							: departingSoon
-								? t("departingSoon")
-								: ""}
 					</div>
 				</div>
 			</div>
