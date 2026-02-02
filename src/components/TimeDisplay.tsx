@@ -29,31 +29,30 @@ const TimeDisplay = ({
 
 	return (
 		<span
-			class={`text-xl sm:text-2xl font-medium ${rowIsCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} min-w-0 flex items-center gap-2 flex-wrap`}
+			class={`text-xl sm:text-2xl font-medium ${rowIsCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} min-w-0 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2 sm:flex-wrap`}
 		>
 			<TimeRow
 				departureRow={departureRow}
 				arrivalRow={arrivalRow}
 				isCancelled={rowIsCancelled}
 			/>
-			{showUnknownDelay && (
-				<output
-					aria-label={t("unknownDelay")}
-					aria-live="polite"
-					class="badge badge-warning badge-sm font-semibold"
-				>
-					{t("unknownDelay")}
-				</output>
-			)}
-			{showSpecificDelay && (
-				<output
-					aria-label={`${t("late")} ${timeDifferenceMinutes} ${t("minutes")}`}
-					aria-live="polite"
-					class="badge badge-warning badge-sm font-semibold"
-				>
-					{`+${timeDifferenceMinutes} ${t("minutesShort")}`}
-				</output>
-			)}
+			{/* Always reserve space for delay badge to maintain consistent card height */}
+			<output
+				aria-label={
+					showUnknownDelay
+						? t("unknownDelay")
+						: showSpecificDelay
+							? `${t("late")} ${timeDifferenceMinutes} ${t("minutes")}`
+							: undefined
+				}
+				aria-live="polite"
+				aria-hidden={!showUnknownDelay && !showSpecificDelay}
+				class={`badge badge-warning badge-sm font-semibold ${!showUnknownDelay && !showSpecificDelay ? "invisible" : ""}`}
+			>
+				{showUnknownDelay
+					? t("unknownDelay")
+					: `+${timeDifferenceMinutes || 0} ${t("minutesShort")}`}
+			</output>
 		</span>
 	);
 };
