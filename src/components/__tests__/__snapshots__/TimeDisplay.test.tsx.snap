@@ -3,10 +3,10 @@
 exports[`TimeDisplay > renders without arrival row 1`] = `
 <div>
   <span
-    class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-100 min-w-0 flex items-center gap-2 flex-wrap"
+    class="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-100 min-w-0 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2 sm:flex-wrap"
   >
     <span
-      class="text-base-content/70 text-base sm:text-lg"
+      class="text-base-content/70 text-sm sm:text-xl whitespace-nowrap"
     >
       <time
         datetime="2024-03-20T10:00:00.000Z"
@@ -14,6 +14,13 @@ exports[`TimeDisplay > renders without arrival row 1`] = `
         12.00
       </time>
     </span>
+    <output
+      aria-hidden="true"
+      aria-live="polite"
+      class="badge badge-warning badge-sm font-semibold invisible"
+    >
+      +0 min
+    </output>
   </span>
 </div>
 `;
