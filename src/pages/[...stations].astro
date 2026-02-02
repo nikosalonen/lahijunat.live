@@ -42,9 +42,69 @@ const isValidStation = (code: string | null) =>
 
 const validFromStation = isValidStation(fromStation) ? fromStation : null;
 const validToStation = isValidStation(toStation) ? toStation : null;
+
+// Get station names for SEO
+const getStationName = (code: string | null) => {
+	if (!code) return null;
+	const station = stations.find((s) => s.shortCode === code);
+	return station?.name || null;
+};
+
+const fromStationName = getStationName(validFromStation);
+const toStationName = getStationName(validToStation);
+
+// Generate dynamic title based on selected stations
+const generateTitle = () => {
+	if (fromStationName && toStationName) {
+		return `${fromStationName} → ${toStationName} | Lähijunat Live`;
+	}
+	if (fromStationName) {
+		return `${fromStationName} | Lähijunat Live`;
+	}
+	return "Lähijunat Live | Lähijunien aikataulut reaaliaikaisesti";
+};
+
+// Generate dynamic description based on selected stations
+const generateDescription = () => {
+	if (fromStationName && toStationName) {
+		return `Reaaliaikaiset junat ${fromStationName} → ${toStationName}. Lähtöajat, raiteet ja viiveet.`;
+	}
+	if (fromStationName) {
+		return `Reaaliaikaiset lähtevät junat asemalta ${fromStationName}. Lähtöajat, raiteet ja viiveet.`;
+	}
+	return "Reaaliaikaiset lähtöajat Suomen lähijunille. Saat ajantasaista tietoa lähijunien aikatauluista ja laitureista.";
+};
+
+// Generate breadcrumbs for structured data
+const generateBreadcrumbs = () => {
+	const siteUrl = Astro.site?.toString() || "https://www.lahijunat.live";
+	const breadcrumbs = [
+		{ name: "Etusivu", url: siteUrl }
+	];
+
+	if (fromStationName && validFromStation) {
+		breadcrumbs.push({
+			name: fromStationName,
+			url: `${siteUrl}${validFromStation}`
+		});
+	}
+
+	if (toStationName && validFromStation && validToStation) {
+		breadcrumbs.push({
+			name: toStationName,
+			url: `${siteUrl}${validFromStation}/${validToStation}`
+		});
+	}
+
+	return breadcrumbs;
+};
+
+const pageTitle = generateTitle();
+const pageDescription = generateDescription();
+const breadcrumbs = generateBreadcrumbs();
 ---
 
-<Layout title="lahijunat.live | Lähijunien aikataulut reaaliaikaisesti">
+<Layout title={pageTitle} description={pageDescription} breadcrumbs={breadcrumbs}>
 	<div class="py-4 sm:py-8">
 		<StationManager
 			client:load
