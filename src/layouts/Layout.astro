@@ -19,30 +19,23 @@ import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const { title, description, breadcrumbs } = Astro.props as Props;
 
-// Default descriptions by language
-const defaultDescriptions = {
-  fi: "Reaaliaikaiset lähtöajat Suomen lähijunille. Saat ajantasaista tietoa lähijunien aikatauluista ja laitureista.",
-  en: "Real-time departure times for Finnish local trains. Get up-to-date information on train schedules and platforms.",
-};
-
-// Determine locale from route path
-const currentPath = Astro.url.pathname;
-const isEnglish = currentPath.startsWith("/en");
-const locale = isEnglish ? "en" : "fi";
-const ogLocale = isEnglish ? "en_US" : "fi_FI";
-
-// Use provided description or fall back to default
-const metaDescription = description || defaultDescriptions[locale];
+const defaultDescription = "Reaaliaikaiset lähtöajat Suomen lähijunille. Saat ajantasaista tietoa lähijunien aikatauluista ja laitureista.";
+const metaDescription = description || defaultDescription;
 ---
 
 <!doctype html>
-<html lang={locale} class="light" data-theme="light">
+<html lang="fi" class="light" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover"
     />
+
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin />
+    <link rel="preconnect" href="https://rata.digitraffic.fi" crossorigin />
+
     <meta
       name="description"
       content={metaDescription}
@@ -73,7 +66,7 @@ const metaDescription = description || defaultDescriptions[locale];
       content={new URL("/Juna-meta-header.png", Astro.site).toString()}
     />
     <meta property="og:image:alt" content="Lähijunat Live logo" />
-    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale" content="fi_FI" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -82,8 +75,6 @@ const metaDescription = description || defaultDescriptions[locale];
       name="twitter:description"
       content={metaDescription}
     />
-    <meta name="twitter:image:width" content="1200" />
-    <meta name="twitter:image:height" content="600" />
     <meta
       name="twitter:image"
       content={new URL("/Juna-twitter-header.png", Astro.site).toString()}
@@ -99,7 +90,7 @@ const metaDescription = description || defaultDescriptions[locale];
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
-    <meta name="apple-mobile-web-app-title" content={title} />
+    <meta name="apple-mobile-web-app-title" content="Lähijunat Live" />
     <link rel="apple-touch-icon" href="/Juna.png" />
 
     <!-- Android meta tags -->
@@ -109,18 +100,6 @@ const metaDescription = description || defaultDescriptions[locale];
     <link
       rel="canonical"
       href={new URL(Astro.url.pathname, Astro.site).toString()}
-    />
-
-    <link
-      rel="alternate"
-      hreflang="fi"
-      href={new URL(Astro.url.pathname, Astro.site).toString()}
-    />
-
-    <link
-      rel="alternate"
-      hreflang="en"
-      href={new URL(`/en${Astro.url.pathname}`, Astro.site).toString()}
     />
 
     <title>{title}</title>
@@ -138,7 +117,6 @@ const metaDescription = description || defaultDescriptions[locale];
         "author": {
           "@type": "Person",
           "name": "Niko Salonen",
-
           "url": "https://bsky.app/profile/niko.torttu.fi",
           "sameAs": [
             "https://bsky.app/profile/niko.torttu.fi",
