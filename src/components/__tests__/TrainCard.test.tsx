@@ -120,6 +120,7 @@ describe("TrainCard", () => {
 	beforeEach(() => {
 		localStorageMock.clear();
 		vi.clearAllMocks();
+		vi.useFakeTimers();
 		// Mock requestAnimationFrame to execute immediately
 		vi.stubGlobal(
 			"requestAnimationFrame",
@@ -135,6 +136,7 @@ describe("TrainCard", () => {
 	});
 
 	afterEach(() => {
+		vi.useRealTimers();
 		vi.restoreAllMocks();
 	});
 
@@ -168,14 +170,21 @@ describe("TrainCard", () => {
 			/>,
 		);
 
-		// RAF executes immediately in tests, so opacity should transition to 0
 		const card = container.firstChild as HTMLElement;
+
+		// First, card should show grayed-out state (grayscale + opacity-50 classes)
+		expect(card).toHaveClass("grayscale");
+		expect(card).toHaveClass("opacity-50");
+		// Inline opacity should not be set yet (using class opacity)
+		expect(card.style.opacity).toBe("");
+
+		// Advance timers past the 2 second delay
+		await vi.advanceTimersByTimeAsync(2100);
+
+		// Now opacity should transition to 0
 		await waitFor(() => {
 			expect(card.style.opacity).toBe("0");
 		});
-
-		// Transition end events are unreliable in the current test environment,
-		// so we only verify that the opacity transition completes.
 	});
 
 	it("handles cancelled trains correctly", () => {
@@ -284,7 +293,7 @@ describe("TrainCard", () => {
 		expect(getByText("+15 min")).toBeInTheDocument();
 	});
 
-	it("restores card when estimate jumps forward after being negative", () => {
+	it("restores card when estimate jumps forward after being negative", async () => {
 		const pastTime = new Date("2024-03-20T10:01:00.000Z");
 		const departedTrain = {
 			...mockTrain,
@@ -305,8 +314,14 @@ describe("TrainCard", () => {
 			/>,
 		);
 
-		// RAF executes immediately in tests, so opacity should be 0
 		const card = container.firstChild as HTMLElement;
+
+		// First check grayed-out state
+		expect(card).toHaveClass("grayscale");
+		expect(card).toHaveClass("opacity-50");
+
+		// Advance timers past the delay to trigger fade
+		await vi.advanceTimersByTimeAsync(2100);
 		expect(card.style.opacity).toBe("0");
 
 		// Estimate jumps forward: train is no longer departed
@@ -322,8 +337,11 @@ describe("TrainCard", () => {
 			/>,
 		);
 
-		// Card should be visible again
-		expect(container.firstChild).toHaveStyle("opacity: 1");
+		// Card should be visible again and not grayed out
+		const cardAfter = container.firstChild as HTMLElement;
+		expect(cardAfter).not.toHaveClass("grayscale");
+		expect(cardAfter).not.toHaveClass("opacity-50");
+		expect(cardAfter.style.opacity).toBe("");
 	});
 
 	describe("snapshots", () => {
