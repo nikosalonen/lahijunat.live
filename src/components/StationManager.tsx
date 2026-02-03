@@ -595,7 +595,7 @@ export default function StationManager({
 										</div>
 									</div>
 									<svg
-										className="w-4 h-4 flex-shrink-0 opacity-60"
+										className="w-10 h-10 flex-shrink-0 opacity-60"
 										fill="none"
 										stroke="currentColor"
 										viewBox="0 0 24 24"
