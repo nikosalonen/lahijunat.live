@@ -1,0 +1,36 @@
+# llms.txt for lahijunat.live
+
+> lahijunat.live is a Finnish commuter train schedule application providing real-time train departure information for stations in the Helsinki metropolitan area and across Finland.
+
+## About
+
+This is a Progressive Web App (PWA) built with Astro and Preact that displays live train schedules between Finnish railway stations. Users can select departure and destination stations to see upcoming trains, delays, track numbers, and journey times.
+
+## Data Source
+
+All train data is provided by Fintraffic's digitraffic.fi service (rata.digitraffic.fi) under the CC 4.0 BY license.
+
+## Features
+
+- Real-time train departures with automatic refresh
+- Delay information and track changes
+- Geolocation to find nearest station
+- Bilingual support (Finnish and English)
+- Offline functionality via service worker
+- Installable as a mobile app
+
+## Technical Stack
+
+- Astro (static site generator)
+- Preact (UI components)
+- TailwindCSS with DaisyUI
+- TypeScript
+- Workbox (PWA/service worker)
+
+## Source Code
+
+The source code is available at: https://github.com/nikosalonen/lahijunat.live
+
+## Contact
+
+Website: https://www.lahijunat.live
