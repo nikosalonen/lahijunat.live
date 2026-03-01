@@ -373,6 +373,8 @@ export default function TrainList({
 		} catch (err) {
 			console.error("Error loading trains:", err);
 
+			const wasInitialLoad = initialLoadRef.current;
+
 			setState((prev) => {
 				if (prev.initialLoad) {
 					initialLoadRef.current = false;
@@ -387,8 +389,8 @@ export default function TrainList({
 				return { ...prev, loading: false };
 			});
 
-			// Side effects outside setState, using ref to avoid stale closure
-			if (!initialLoadRef.current) {
+			// Only show background-failure toast for non-initial-load errors
+			if (!wasInitialLoad) {
 				const now = Date.now();
 				if (now - lastBgFailureToastRef.current >= 60_000) {
 					showToast(t("connectionIssue"), "warning");
