@@ -1,0 +1,122 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Toast > caps at 4 visible toasts 1`] = `
+<div>
+  <div
+    class="toast toast-bottom toast-center z-[100] pb-safe mb-4"
+  >
+    <div
+      class="alert alert-info shadow-lg animate-slide-up text-sm py-2 px-4 min-h-0"
+      role="alert"
+    >
+      <span>
+        Toast 3
+      </span>
+      <button
+        aria-label="Close"
+        class="btn btn-ghost btn-xs"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="w-3.5 h-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M6 18L18 6M6 6l12 12"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="alert alert-info shadow-lg animate-slide-up text-sm py-2 px-4 min-h-0"
+      role="alert"
+    >
+      <span>
+        Toast 4
+      </span>
+      <button
+        aria-label="Close"
+        class="btn btn-ghost btn-xs"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="w-3.5 h-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M6 18L18 6M6 6l12 12"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="alert alert-info shadow-lg animate-slide-up text-sm py-2 px-4 min-h-0"
+      role="alert"
+    >
+      <span>
+        Toast 5
+      </span>
+      <button
+        aria-label="Close"
+        class="btn btn-ghost btn-xs"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="w-3.5 h-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M6 18L18 6M6 6l12 12"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="alert alert-info shadow-lg animate-slide-up text-sm py-2 px-4 min-h-0"
+      role="alert"
+    >
+      <span>
+        Toast 6
+      </span>
+      <button
+        aria-label="Close"
+        class="btn btn-ghost btn-xs"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="w-3.5 h-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M6 18L18 6M6 6l12 12"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+`;

@@ -80,9 +80,28 @@ export const translations = {
 		pwaUpdateDismiss: "Myöhemmin",
 		// Feature announcement
 		newFeaturesTitle: "Uutta sovelluksessa",
-		newFeaturesImprovedCardDesign: "Viilattu korttien ulkoasua",
-		newFeaturesSmoothAnimations: "Pehmeämmät animaatiot",
+		newFeaturesTrackChangeAlerts: "Sovelluksen sisäiset raidemuutosilmoitukset",
+		newFeaturesAccessibility: "Parannettu saavutettavuus",
+		newFeaturesFasterLoading: "Nopeampi lataus",
 		newFeaturesDismiss: "Selvä!",
+		// Accessibility
+		skipToContent: "Siirry sisältöön",
+		// Empty state
+		emptyStateTitle: "Valitse lähtöasema",
+		emptyStateDescription: "Valitse lähtö- ja määräasema nähdäksesi junavuorot",
+		emptyStateLocate: "Käytä sijaintiani",
+		emptyStateSelectDestination: "Valitse määräasema",
+		// Station search results
+		stationsFound: "asemaa löytyi",
+		noStationsFound: "Asemia ei löytynyt",
+		// Mobile refresh
+		justNow: "Juuri nyt",
+		secondsAgo: "s sitten",
+		tapToRefresh: "Päivitä napauttamalla",
+		// Toast
+		trackChangedNotification: "Raide muuttunut",
+		connectionIssue: "Yhteysongelma, näytetään viimeisin tieto",
+		close: "Sulje",
 	},
 	en: {
 		title: "Local Trains Live | Real-time schedules for local trains",
@@ -160,9 +179,29 @@ export const translations = {
 		pwaUpdateDismiss: "Later",
 		// Feature announcement
 		newFeaturesTitle: "What's new",
-		newFeaturesImprovedCardDesign: "Refreshed card design",
-		newFeaturesSmoothAnimations: "Smoother animations",
+		newFeaturesTrackChangeAlerts: "In-app track change alerts",
+		newFeaturesAccessibility: "Improved accessibility",
+		newFeaturesFasterLoading: "Faster loading",
 		newFeaturesDismiss: "Got it!",
+		// Accessibility
+		skipToContent: "Skip to content",
+		// Empty state
+		emptyStateTitle: "Select a departure station",
+		emptyStateDescription:
+			"Choose departure and destination stations to see train departures",
+		emptyStateLocate: "Use my location",
+		emptyStateSelectDestination: "Select a destination",
+		// Station search results
+		stationsFound: "stations found",
+		noStationsFound: "No stations found",
+		// Mobile refresh
+		justNow: "Just now",
+		secondsAgo: "s ago",
+		tapToRefresh: "Tap to refresh",
+		// Toast
+		trackChangedNotification: "Track changed",
+		connectionIssue: "Connection issue, showing last known data",
+		close: "Close",
 	},
 	sv: {
 		title: "Lokaltåg Live | Tidtabeller för lokaltåg i realtid",
@@ -240,9 +279,29 @@ export const translations = {
 		pwaUpdateDismiss: "Senare",
 		// Feature announcement
 		newFeaturesTitle: "Nyheter",
-		newFeaturesImprovedCardDesign: "Förnyad kortdesign",
-		newFeaturesSmoothAnimations: "Mjukare animationer",
+		newFeaturesTrackChangeAlerts: "Spårändringsaviseringar i appen",
+		newFeaturesAccessibility: "Förbättrad tillgänglighet",
+		newFeaturesFasterLoading: "Snabbare laddning",
 		newFeaturesDismiss: "Uppfattat!",
+		// Accessibility
+		skipToContent: "Hoppa till innehåll",
+		// Empty state
+		emptyStateTitle: "Välj avgångsstation",
+		emptyStateDescription:
+			"Välj avgångs- och destinationsstation för att se tågavgångar",
+		emptyStateLocate: "Använd min plats",
+		emptyStateSelectDestination: "Välj destination",
+		// Station search results
+		stationsFound: "stationer hittades",
+		noStationsFound: "Inga stationer hittades",
+		// Mobile refresh
+		justNow: "Just nu",
+		secondsAgo: "s sedan",
+		tapToRefresh: "Tryck för att uppdatera",
+		// Toast
+		trackChangedNotification: "Spår ändrat",
+		connectionIssue: "Anslutningsproblem, visar senast kända data",
+		close: "Stäng",
 	},
 };
 

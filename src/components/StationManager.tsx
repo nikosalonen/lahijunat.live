@@ -1,7 +1,7 @@
 /** @format */
 
-// src/components/StationManager.tsx
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import EmptyState from "@/components/EmptyState";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station } from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
@@ -698,7 +698,10 @@ export default function StationManager({
 				<div id="station-selector" className="collapse-content px-0">
 					<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
 						<div className="space-y-2">
-							<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
+							<h3
+								id="label-from"
+								className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100"
+							>
 								{t("from")}
 							</h3>
 							<div className="flex flex-row-reverse items-center gap-2">
@@ -766,6 +769,7 @@ export default function StationManager({
 												setOpenList(isOpen ? "from" : null);
 											}}
 											onFocus={() => handleInputFocus("from")}
+											labelId="label-from"
 										/>
 									</div>
 								</div>
@@ -773,7 +777,10 @@ export default function StationManager({
 						</div>
 
 						<div className="space-y-2">
-							<h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100">
+							<h3
+								id="label-to"
+								className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100"
+							>
 								{t("to")}
 							</h3>
 							<div className="flex items-center gap-2">
@@ -790,6 +797,7 @@ export default function StationManager({
 											inputRef={toInputRef}
 											onFocus={() => handleInputFocus("to")}
 											isLoading={isLoadingDestinations && !isSwapping}
+											labelId="label-to"
 										/>
 									</div>
 								</div>
@@ -883,7 +891,7 @@ export default function StationManager({
 				</div>
 			</div>
 
-			{selectedOrigin && selectedDestination && (
+			{selectedOrigin && selectedDestination ? (
 				<div className="mt-6">
 					<TrainList
 						stationCode={selectedOrigin}
@@ -892,6 +900,12 @@ export default function StationManager({
 						key={`${selectedOrigin}-${selectedDestination}`}
 					/>
 				</div>
+			) : (
+				<EmptyState
+					hasOrigin={!!selectedOrigin}
+					onLocate={handleLocationRequest}
+					isLocating={!!isLocating}
+				/>
 			)}
 		</div>
 	);

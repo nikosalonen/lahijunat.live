@@ -1,0 +1,83 @@
+import { useCallback, useEffect, useState } from "preact/hooks";
+import { TOAST_EVENT, type ToastEvent, type ToastType } from "@/utils/toast";
+import { t } from "@/utils/translations";
+
+interface ToastItem {
+	id: number;
+	message: string;
+	type: ToastType;
+}
+
+let nextId = 0;
+
+const alertClass: Record<ToastType, string> = {
+	info: "alert-info",
+	warning: "alert-warning",
+	error: "alert-error",
+	success: "alert-success",
+};
+
+export default function Toast() {
+	const [toasts, setToasts] = useState<ToastItem[]>([]);
+
+	const removeToast = useCallback((id: number) => {
+		setToasts((prev) => prev.filter((toast) => toast.id !== id));
+	}, []);
+
+	useEffect(() => {
+		const handler = (e: Event) => {
+			const detail = (e as CustomEvent<ToastEvent>).detail;
+			const id = nextId++;
+			const duration = detail.duration ?? 4000;
+			// Keep at most 4 visible toasts (3 existing + 1 new)
+			setToasts((prev) => [
+				...prev.slice(-3),
+				{ id, message: detail.message, type: detail.type },
+			]);
+
+			setTimeout(() => {
+				removeToast(id);
+			}, duration);
+		};
+
+		window.addEventListener(TOAST_EVENT, handler);
+		return () => window.removeEventListener(TOAST_EVENT, handler);
+	}, [removeToast]);
+
+	if (toasts.length === 0) return null;
+
+	return (
+		<div class="toast toast-bottom toast-center z-[100] pb-safe mb-4">
+			{toasts.map((toast) => (
+				<div
+					key={toast.id}
+					class={`alert ${alertClass[toast.type]} shadow-lg animate-slide-up text-sm py-2 px-4 min-h-0`}
+					role="alert"
+				>
+					<span>{toast.message}</span>
+					<button
+						type="button"
+						class="btn btn-ghost btn-xs"
+						onClick={() => removeToast(toast.id)}
+						aria-label={t("close")}
+					>
+						<svg
+							class="w-3.5 h-3.5"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							aria-hidden="true"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M6 18L18 6M6 6l12 12"
+							/>
+						</svg>
+					</button>
+				</div>
+			))}
+		</div>
+	);
+}

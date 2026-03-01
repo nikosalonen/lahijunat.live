@@ -16,6 +16,8 @@ import DebugToggle from "../components/DebugToggle";
 import FeatureAnnouncement from "../components/FeatureAnnouncement";
 import Footer from "../components/Footer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import Toast from "../components/Toast";
+import { t } from "../utils/translations";
 
 const { title, description, breadcrumbs } = Astro.props as Props;
 
@@ -33,7 +35,6 @@ const metaDescription = description || defaultDescription;
     />
 
     <!-- Preconnect to external resources -->
-    <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin />
     <link rel="preconnect" href="https://rata.digitraffic.fi" crossorigin />
 
     <meta
@@ -140,13 +141,6 @@ const metaDescription = description || defaultDescription;
       })} />
     )}
 
-	<script
-		is:inline
-		defer
-		src="https://kit.fontawesome.com/810fdf07b7.js"
-		crossorigin="anonymous"
-	></script>
-
 	<script is:inline>
       // Check for saved theme preference or use system preference
       const theme = (() => {
@@ -189,6 +183,12 @@ const metaDescription = description || defaultDescription;
      }
   </head>
   <body class="min-h-screen bg-base-100">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-[#8c4799] focus:text-white focus:rounded-lg focus:shadow-lg focus:text-sm focus:font-medium"
+    >
+      {t("skipToContent")}
+    </a>
     <div class="min-h-screen flex flex-col">
       <nav class="py-3 sm:py-4 bg-[#8c4799] text-white w-full shadow-lg">
         <div class="container mx-auto px-3 sm:px-4">
@@ -264,13 +264,14 @@ const metaDescription = description || defaultDescription;
         </div>
       </nav>
       <div class="flex-grow w-full">
-        <main>
+        <main id="main-content">
           <slot />
         </main>
       </div>
       <Footer client:load />
     </div>
     <FeatureAnnouncement client:load />
+    <Toast client:load />
 
     <script>
       const themeToggleBtn = document.getElementById("theme-toggle");

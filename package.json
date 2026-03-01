@@ -1,8 +1,11 @@
 {
 	"name": "lahijunat-live",
 	"type": "module",
-	"version": "1.13.3",
+	"version": "1.14.0",
 	"packageManager": "pnpm@10.30.3",
+	"engines": {
+		"node": ">=24"
+	},
 	"scripts": {
 		"dev": "astro dev",
 		"build": "astro build && cp src/sw-utils.js dist/ && workbox generateSW workbox-config.cjs",

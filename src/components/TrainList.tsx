@@ -10,6 +10,7 @@ import {
 	useState,
 } from "preact/hooks";
 import { getFavoritesSync, initStorage } from "@/utils/storage";
+import { showToast } from "@/utils/toast";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import { fetchTrains, type ServiceStatusInfo } from "../utils/api";
@@ -164,19 +165,38 @@ export default function TrainList({
 	// Track favorites version to trigger re-sort when favorites change
 	const [favoritesVersion, setFavoritesVersion] = useState(0);
 
+	// Reentrancy guard for loadTrains
+	const isRefreshingRef = useRef(false);
+	// Toast cooldown for background failures
+	const lastBgFailureToastRef = useRef(0);
+	// Mirror of state.initialLoad for use outside setState
+	const initialLoadRef = useRef(true);
+	// Guard against post-unmount side effects (e.g. showToast from stale fetches)
+	const isMountedRef = useRef(true);
+
 	// FLIP animation refs
 	const listContainerRef = useRef<HTMLDivElement>(null);
 	const cardPositionsRef = useRef<Map<string, DOMRect>>(new Map());
 	const isAnimatingRef = useRef(false);
 
+	useEffect(() => {
+		return () => {
+			isMountedRef.current = false;
+		};
+	}, []);
+
 	// Initialize storage on mount and trigger re-sort after cache is populated
 	useEffect(() => {
 		let isMounted = true;
-		initStorage().then(() => {
-			if (isMounted) {
-				setFavoritesVersion((prev) => prev + 1);
-			}
-		});
+		initStorage()
+			.then(() => {
+				if (isMounted) {
+					setFavoritesVersion((prev) => prev + 1);
+				}
+			})
+			.catch((err) => {
+				console.warn("[TrainList] Storage initialization failed:", err);
+			});
 		return () => {
 			isMounted = false;
 		};
@@ -276,6 +296,12 @@ export default function TrainList({
 	}, []);
 
 	const loadTrains = useCallback(async () => {
+		if (isRefreshingRef.current) {
+			console.debug("[TrainList] Skipping overlapping refresh");
+			return;
+		}
+		isRefreshingRef.current = true;
+
 		const startedAt = Date.now();
 		setLastRefreshAt(startedAt);
 
@@ -329,6 +355,9 @@ export default function TrainList({
 			});
 
 			const trainData = await fetchTrains(stationCode, destinationCode);
+
+			if (!isMountedRef.current) return;
+
 			const now = new Date();
 			setCurrentTime(now);
 
@@ -344,6 +373,7 @@ export default function TrainList({
 				currentRefreshIntervalRef.current = newRefreshInterval;
 			}
 
+			initialLoadRef.current = false;
 			setState((prev) => ({
 				...prev,
 				trains: trainData,
@@ -354,11 +384,11 @@ export default function TrainList({
 		} catch (err) {
 			console.error("Error loading trains:", err);
 
-			// Use functional setState to check the actual current initialLoad state
-			// This avoids stale closure issues
+			const wasInitialLoad = initialLoadRef.current;
+
 			setState((prev) => {
 				if (prev.initialLoad) {
-					// Initial load failed - show error
+					initialLoadRef.current = false;
 					const { errorType, errorMessage, serviceStatus } = getErrorInfo(err);
 					return {
 						...prev,
@@ -367,13 +397,19 @@ export default function TrainList({
 						initialLoad: false,
 					};
 				}
-				// Background update failed - just clear loading state and continue with existing data
-				console.log("Background update failed, continuing with existing data");
-				return {
-					...prev,
-					loading: false,
-				};
+				return { ...prev, loading: false };
 			});
+
+			// Only show background-failure toast for non-initial-load errors
+			if (!wasInitialLoad && isMountedRef.current) {
+				const now = Date.now();
+				if (now - lastBgFailureToastRef.current >= 60_000) {
+					showToast(t("connectionIssue"), "warning");
+					lastBgFailureToastRef.current = now;
+				}
+			}
+		} finally {
+			isRefreshingRef.current = false;
 		}
 	}, [stationCode, destinationCode]);
 
@@ -435,7 +471,6 @@ export default function TrainList({
 		});
 	}, [state.trains, stationCode, destinationCode]);
 
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => {
 		let refreshTimeout: ReturnType<typeof setTimeout> | undefined;
 		let cancelled = false;
@@ -464,7 +499,7 @@ export default function TrainList({
 		};
 
 		if (isPageVisible) {
-			loadTrains();
+			void loadTrains();
 			scheduleRefresh(getTimeUntilNextUpdate());
 		}
 
@@ -495,7 +530,7 @@ export default function TrainList({
 
 	if (state.error) {
 		return (
-			<div className="max-w-4xl mx-auto">
+			<div class="max-w-4xl mx-auto">
 				<ErrorState
 					type={state.error.type}
 					message={state.error.message}
@@ -668,6 +703,10 @@ export default function TrainList({
 		return Math.max(0, Math.min(100, remaining));
 	}, [currentTime, lastRefreshAt, currentRefreshInterval]);
 
+	const elapsedSeconds = Math.floor(
+		(currentTime.getTime() - lastRefreshAt) / 1000,
+	);
+
 	return (
 		<div>
 			<div class="max-w-4xl mx-auto space-y-6 px-2 sm:px-4">
@@ -676,7 +715,14 @@ export default function TrainList({
 					<h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 order-2 sm:order-1">
 						<span class="sm:hidden inline-flex items-center gap-2">
 							<span>{stationCode}</span>
-							<i class="fa-solid fa-arrow-right" aria-hidden="true" />
+							<svg
+								class="inline-block w-4 h-4"
+								fill="currentColor"
+								viewBox="0 0 448 512"
+								aria-hidden="true"
+							>
+								<path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h306.7L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+							</svg>
 							<span>{destinationCode}</span>
 						</span>
 						<span class="hidden sm:inline-flex sm:items-center sm:gap-2">
@@ -688,7 +734,14 @@ export default function TrainList({
 										) || fromStation.shortCode
 									: stationCode}
 							</span>
-							<i class="fa-solid fa-arrow-right" aria-hidden="true" />
+							<svg
+								class="inline-block w-4 h-4"
+								fill="currentColor"
+								viewBox="0 0 448 512"
+								aria-hidden="true"
+							>
+								<path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h306.7L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+							</svg>
 							<span>
 								{toStation
 									? getLocalizedStationName(
@@ -719,12 +772,24 @@ export default function TrainList({
 
 				{/* Mobile horizontal progress bar and filter toggle */}
 				<div class="sm:hidden w-full mb-4 flex items-center gap-3">
-					<LinearProgress
-						progress={refreshProgress}
-						heightClass="h-1.5"
-						widthClass="w-full"
-						direction="rtl"
-					/>
+					<button
+						type="button"
+						onClick={() => void loadTrains()}
+						class="flex-grow flex flex-col gap-1 cursor-pointer bg-transparent border-0 p-0 text-left touch-manipulation"
+						aria-label={t("tapToRefresh")}
+					>
+						<LinearProgress
+							progress={refreshProgress}
+							heightClass="h-1.5"
+							widthClass="w-full"
+							direction="rtl"
+						/>
+						<span class="text-xs text-base-content/40">
+							{elapsedSeconds < 5
+								? t("justNow")
+								: `${elapsedSeconds}${t("secondsAgo")}`}
+						</span>
+					</button>
 					{hasSlowTrains && (
 						<label
 							class="flex items-center gap-1.5 cursor-pointer select-none flex-shrink-0 text-xs text-gray-500 dark:text-gray-400"

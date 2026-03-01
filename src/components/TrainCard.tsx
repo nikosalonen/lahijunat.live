@@ -14,6 +14,7 @@ import {
 	setFavorite,
 	updateFavorite,
 } from "@/utils/storage";
+import { showToast } from "@/utils/toast";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
@@ -106,25 +107,9 @@ const getCardStyle = (
 };
 
 // Get wrapper styles for highlighted state (applied to outer div to avoid overflow clipping)
-const getWrapperHighlightStyle = (
-	isHighlighted: boolean,
-	isDepartingSoon: boolean,
-	minutesToDeparture: number | null,
-) => {
+const getWrapperHighlightStyle = (isHighlighted: boolean) => {
 	if (!isHighlighted) return "";
-
-	const highlightBorder =
-		"ring-4 ring-[#8c4799] dark:ring-[#b388ff] shadow-[0_0_12px_rgba(140,71,153,0.3)] dark:shadow-[0_0_12px_rgba(179,136,255,0.3)]";
-
-	if (
-		isDepartingSoon &&
-		minutesToDeparture !== null &&
-		minutesToDeparture >= 0
-	) {
-		return highlightBorder;
-	}
-
-	return highlightBorder;
+	return "ring-4 ring-[#8c4799] dark:ring-[#b388ff] shadow-[0_0_12px_rgba(140,71,153,0.3)] dark:shadow-[0_0_12px_rgba(179,136,255,0.3)]";
 };
 
 export default function TrainCard({
@@ -200,11 +185,7 @@ export default function TrainCard({
 				timeDifferenceMinutes: 0,
 				duration: null,
 				cardStyle: getCardStyle(train.cancelled, null, false, isHighlighted),
-				wrapperHighlightStyle: getWrapperHighlightStyle(
-					isHighlighted,
-					false,
-					null,
-				),
+				wrapperHighlightStyle: getWrapperHighlightStyle(isHighlighted),
 			};
 		}
 
@@ -238,11 +219,7 @@ export default function TrainCard({
 			isHighlighted,
 		);
 
-		const wrapperHighlightStyle = getWrapperHighlightStyle(
-			isHighlighted,
-			departingSoon,
-			minutesToDeparture,
-		);
+		const wrapperHighlightStyle = getWrapperHighlightStyle(isHighlighted);
 
 		return {
 			departureRow,
@@ -333,8 +310,8 @@ export default function TrainCard({
 				new Date(trainData.removeAfter) < currentTime
 			) {
 				// Remove expired highlight
-				removeFavorite(train.trainNumber).catch(() => {
-					// Silently ignore storage errors for cleanup operations
+				removeFavorite(train.trainNumber).catch((err) => {
+					console.warn("[TrainCard] Failed to remove expired favorite:", err);
 				});
 				setIsHighlighted(false);
 			} else {
@@ -361,8 +338,11 @@ export default function TrainCard({
 					if (driftMinutes > 1) {
 						updateFavorite(train.trainNumber, {
 							removeAfter: desiredRemoveAfter.toISOString(),
-						}).catch(() => {
-							// Silently ignore storage errors for sync operations
+						}).catch((err) => {
+							console.warn(
+								"[TrainCard] Failed to update favorite removeAfter:",
+								err,
+							);
 						});
 					}
 				}
@@ -376,15 +356,15 @@ export default function TrainCard({
 					updateFavorite(train.trainNumber, {
 						track: departureRow.commercialTrack,
 						trackChanged: true,
-					}).catch(() => {
-						// Silently ignore storage errors for track updates
+					}).catch((err) => {
+						console.warn("[TrainCard] Failed to update track change:", err);
 					});
 				} else if (departureRow && !trainData.track) {
 					// First time storing track
 					updateFavorite(train.trainNumber, {
 						track: departureRow.commercialTrack,
-					}).catch(() => {
-						// Silently ignore storage errors for track updates
+					}).catch((err) => {
+						console.warn("[TrainCard] Failed to update track info:", err);
 					});
 				}
 			}
@@ -538,8 +518,6 @@ export default function TrainCard({
 		}
 
 		return { changed: trackChanged, changedSide };
-		// // TEMPORARY: Force track change indicator for testing
-		// return { changed: true, changedSide: "departure" };
 	}, [
 		train.trainNumber,
 		train.timeTableRows,
@@ -549,6 +527,31 @@ export default function TrainCard({
 	]);
 
 	const isTrackChanged = trackChangeInfo.changed;
+
+	const getTrackBadgeClass = (side: "departure" | "arrival") =>
+		trackChangeInfo.changedSide === side && isTrackChanged
+			? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
+			: "bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105";
+
+	// Notify via toast when a highlighted train's track changes
+	const prevTrackChangedRef = useRef(false);
+	useEffect(() => {
+		if (isHighlighted && isTrackChanged && !prevTrackChangedRef.current) {
+			const trackInfo = getRelevantTrackInfo(
+				train,
+				stationCode,
+				destinationCode,
+			);
+			if (trackInfo) {
+				showToast(
+					`${t("trackChangedNotification")}: ${train.commuterLineID} → ${t("track")} ${trackInfo.track}`,
+					"warning",
+					6000,
+				);
+			}
+		}
+		prevTrackChangedRef.current = !!isTrackChanged;
+	}, [isTrackChanged, isHighlighted, train, stationCode, destinationCode]);
 
 	// Handler for flipping the track badge
 	const handleTrackFlip = () => {
@@ -596,14 +599,14 @@ export default function TrainCard({
 					removeAfter: removeAfter.toISOString(),
 					journeyKey,
 					track: departureRow.commercialTrack,
-				}).catch(() => {
-					// Revert UI state if storage fails
+				}).catch((err) => {
+					console.warn("[TrainCard] Failed to save favorite, reverting:", err);
 					setIsHighlighted(false);
 				});
 			}
 		} else {
-			removeFavorite(train.trainNumber).catch(() => {
-				// Revert UI state if storage fails
+			removeFavorite(train.trainNumber).catch((err) => {
+				console.warn("[TrainCard] Failed to remove favorite, reverting:", err);
 				setIsHighlighted(true);
 			});
 		}
@@ -916,10 +919,14 @@ export default function TrainCard({
 																: undefined
 														}
 													>
-														<i
-															class="fa-solid fa-clock mr-1"
+														<svg
+															class="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1"
+															fill="currentColor"
+															viewBox="0 0 512 512"
 															aria-hidden="true"
-														/>
+														>
+															<path d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+														</svg>
 														<span>
 															{duration.hours}h {duration.minutes}m
 														</span>
@@ -981,12 +988,9 @@ export default function TrainCard({
 														>
 															{/* Front face - Departure Track */}
 															<div
-																class={`badge badge-lg font-semibold transition-all duration-200 ${
-																	trackChangeInfo.changedSide === "departure" &&
-																	isTrackChanged
-																		? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
-																		: "bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105"
-																} whitespace-nowrap`}
+																class={`badge badge-lg font-semibold transition-all duration-200 ${getTrackBadgeClass(
+																	"departure",
+																)} whitespace-nowrap`}
 																style={{
 																	backfaceVisibility: "hidden",
 																	WebkitBackfaceVisibility: "hidden",
@@ -994,20 +998,21 @@ export default function TrainCard({
 															>
 																{t("track")} {departureRow.commercialTrack}
 																{arrivalRow && (
-																	<i
-																		class="fa-solid fa-arrow-rotate-left ml-1.5 text-xs opacity-60"
+																	<svg
+																		class="inline-block w-3 h-3 ml-1.5 opacity-60"
+																		fill="currentColor"
+																		viewBox="0 0 512 512"
 																		aria-hidden="true"
-																	/>
+																	>
+																		<path d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3-163.8-62.5-226.3 0L125.7 160z" />
+																	</svg>
 																)}
 															</div>
 															{/* Back face - Arrival Track */}
 															<div
-																class={`badge badge-lg font-semibold transition-all duration-200 ${
-																	trackChangeInfo.changedSide === "arrival" &&
-																	isTrackChanged
-																		? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
-																		: "bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105"
-																} whitespace-nowrap`}
+																class={`badge badge-lg font-semibold transition-all duration-200 ${getTrackBadgeClass(
+																	"arrival",
+																)} whitespace-nowrap`}
 																style={{
 																	backfaceVisibility: "hidden",
 																	WebkitBackfaceVisibility: "hidden",
@@ -1020,10 +1025,14 @@ export default function TrainCard({
 															>
 																{arrivalRow ? (
 																	<>
-																		<i
-																			class="fa-solid fa-arrow-right mr-1"
+																		<svg
+																			class="inline-block w-3 h-3 mr-1"
+																			fill="currentColor"
+																			viewBox="0 0 448 512"
 																			aria-hidden="true"
-																		/>
+																		>
+																			<path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h306.7L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+																		</svg>
 																		{t("track")} {arrivalRow.commercialTrack}
 																	</>
 																) : (

@@ -22,6 +22,21 @@ updates:
           - "preact"
           - "tailwindcss"
           - "@tailwindcss/*"
+          - "daisyui"
+        update-types:
+          - "minor"
+          - "patch"
+      workbox:
+        patterns:
+          - "workbox-*"
+        update-types:
+          - "minor"
+          - "patch"
+      testing:
+        patterns:
+          - "vitest"
+          - "@testing-library/*"
+          - "jsdom"
         update-types:
           - "minor"
           - "patch"
@@ -29,7 +44,9 @@ updates:
         patterns:
           - "@biomejs/*"
           - "@types/*"
-          - "workbox-cli"
+          - "typescript"
+          - "husky"
+          - "lint-staged"
         update-types:
           - "minor"
           - "patch"
