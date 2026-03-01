@@ -80,8 +80,9 @@ export const translations = {
 		pwaUpdateDismiss: "Myöhemmin",
 		// Feature announcement
 		newFeaturesTitle: "Uutta sovelluksessa",
-		newFeaturesImprovedCardDesign: "Viilattu korttien ulkoasua",
-		newFeaturesSmoothAnimations: "Pehmeämmät animaatiot",
+		newFeaturesTrackChangeAlerts: "Sovelluksen sisäiset raidemuutosilmoitukset",
+		newFeaturesAccessibility: "Parannettu saavutettavuus",
+		newFeaturesFasterLoading: "Nopeampi lataus",
 		newFeaturesDismiss: "Selvä!",
 		// Accessibility
 		skipToContent: "Siirry sisältöön",
@@ -177,8 +178,9 @@ export const translations = {
 		pwaUpdateDismiss: "Later",
 		// Feature announcement
 		newFeaturesTitle: "What's new",
-		newFeaturesImprovedCardDesign: "Refreshed card design",
-		newFeaturesSmoothAnimations: "Smoother animations",
+		newFeaturesTrackChangeAlerts: "In-app track change alerts",
+		newFeaturesAccessibility: "Improved accessibility",
+		newFeaturesFasterLoading: "Faster loading",
 		newFeaturesDismiss: "Got it!",
 		// Accessibility
 		skipToContent: "Skip to content",
@@ -275,8 +277,9 @@ export const translations = {
 		pwaUpdateDismiss: "Senare",
 		// Feature announcement
 		newFeaturesTitle: "Nyheter",
-		newFeaturesImprovedCardDesign: "Förnyad kortdesign",
-		newFeaturesSmoothAnimations: "Mjukare animationer",
+		newFeaturesTrackChangeAlerts: "Spårändringsaviseringar i appen",
+		newFeaturesAccessibility: "Förbättrad tillgänglighet",
+		newFeaturesFasterLoading: "Snabbare laddning",
 		newFeaturesDismiss: "Uppfattat!",
 		// Accessibility
 		skipToContent: "Hoppa till innehåll",
