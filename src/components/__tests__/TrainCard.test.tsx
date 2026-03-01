@@ -1,6 +1,8 @@
 import { fireEvent, render, waitFor } from "@testing-library/preact";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Train } from "../../types";
+import { getRelevantTrackInfo } from "../../utils/api";
+import { showToast } from "../../utils/toast";
 import TrainCard from "../TrainCard";
 
 // Mock translations
@@ -38,6 +40,27 @@ vi.mock("../../utils/api", () => ({
 		timestamp: "2024-03-20T10:00:00.000Z",
 		journeyKey: "123-HKI-TPE",
 	})),
+}));
+
+// Mock toast utility
+vi.mock("../../utils/toast", () => ({
+	showToast: vi.fn(),
+	TOAST_EVENT: "show-toast",
+}));
+
+// Mock storage module to read favorites from localStorage mock
+vi.mock("../../utils/storage", () => ({
+	initStorage: vi.fn(() => Promise.resolve()),
+	getFavoritesSync: vi.fn(() => {
+		try {
+			return JSON.parse(localStorage.getItem("highlightedTrains") || "{}");
+		} catch {
+			return {};
+		}
+	}),
+	setFavorite: vi.fn(() => Promise.resolve()),
+	removeFavorite: vi.fn(() => Promise.resolve()),
+	updateFavorite: vi.fn(() => Promise.resolve()),
 }));
 
 // Mock localStorage
@@ -342,6 +365,119 @@ describe("TrainCard", () => {
 		expect(cardAfter).not.toHaveClass("grayscale");
 		expect(cardAfter).not.toHaveClass("opacity-50");
 		expect(cardAfter.style.opacity).toBe("");
+	});
+
+	describe("track change toast", () => {
+		const mockedShowToast = vi.mocked(showToast);
+		const mockedGetRelevantTrackInfo = vi.mocked(getRelevantTrackInfo);
+
+		it("fires toast when highlighted train's track changes", () => {
+			// Set up highlighted state in localStorage
+			localStorageMock.setItem(
+				"highlightedTrains",
+				JSON.stringify({
+					"123": {
+						highlighted: true,
+						removeAfter: new Date("2024-03-20T10:10:00.000Z").toISOString(),
+						journeyKey: "123-HKI-TPE",
+						track: "1",
+					},
+				}),
+			);
+
+			// Initial render with track "1"
+			mockedGetRelevantTrackInfo.mockReturnValue({
+				track: "1",
+				timestamp: "2024-03-20T10:00:00.000Z",
+				journeyKey: "123-HKI-TPE",
+			});
+
+			// Seed trackMemory so there's a baseline to detect changes
+			localStorageMock.setItem(
+				"trackMemory",
+				JSON.stringify({
+					"123-HKI-TPE": { track: "1", timestamp: Date.now() },
+				}),
+			);
+
+			const { rerender } = render(<TrainCard {...defaultProps} />);
+
+			// Now the track changes to "3"
+			mockedGetRelevantTrackInfo.mockReturnValue({
+				track: "3",
+				timestamp: "2024-03-20T10:00:00.000Z",
+				journeyKey: "123-HKI-TPE",
+			});
+
+			const trainWithNewTrack = {
+				...defaultProps.train,
+				timeTableRows: [
+					{
+						...defaultProps.train.timeTableRows[0],
+						commercialTrack: "3",
+					},
+					defaultProps.train.timeTableRows[1],
+				],
+			};
+
+			rerender(
+				<TrainCard
+					{...defaultProps}
+					train={trainWithNewTrack}
+					currentTime={new Date("2024-03-20T09:56:00.000Z")}
+				/>,
+			);
+
+			expect(mockedShowToast).toHaveBeenCalledWith(
+				expect.stringContaining("A"),
+				"warning",
+				6000,
+			);
+		});
+
+		it("does NOT fire toast when train is not highlighted", () => {
+			mockedGetRelevantTrackInfo.mockReturnValue({
+				track: "1",
+				timestamp: "2024-03-20T10:00:00.000Z",
+				journeyKey: "123-HKI-TPE",
+			});
+
+			localStorageMock.setItem(
+				"trackMemory",
+				JSON.stringify({
+					"123-HKI-TPE": { track: "1", timestamp: Date.now() },
+				}),
+			);
+
+			const { rerender } = render(<TrainCard {...defaultProps} />);
+
+			mockedGetRelevantTrackInfo.mockReturnValue({
+				track: "3",
+				timestamp: "2024-03-20T10:00:00.000Z",
+				journeyKey: "123-HKI-TPE",
+			});
+
+			const trainWithNewTrack = {
+				...defaultProps.train,
+				timeTableRows: [
+					{
+						...defaultProps.train.timeTableRows[0],
+						commercialTrack: "3",
+					},
+					defaultProps.train.timeTableRows[1],
+				],
+			};
+
+			rerender(
+				<TrainCard
+					{...defaultProps}
+					train={trainWithNewTrack}
+					currentTime={new Date("2024-03-20T09:56:00.000Z")}
+				/>,
+			);
+
+			expect(mockedShowToast).not.toHaveBeenCalled();
+		});
 	});
 
 	describe("snapshots", () => {
