@@ -178,11 +178,15 @@ export default function TrainList({
 	// Initialize storage on mount and trigger re-sort after cache is populated
 	useEffect(() => {
 		let isMounted = true;
-		initStorage().then(() => {
-			if (isMounted) {
-				setFavoritesVersion((prev) => prev + 1);
-			}
-		});
+		initStorage()
+			.then(() => {
+				if (isMounted) {
+					setFavoritesVersion((prev) => prev + 1);
+				}
+			})
+			.catch((err) => {
+				console.warn("[TrainList] Storage initialization failed:", err);
+			});
 		return () => {
 			isMounted = false;
 		};
@@ -282,7 +286,10 @@ export default function TrainList({
 	}, []);
 
 	const loadTrains = useCallback(async () => {
-		if (isRefreshingRef.current) return;
+		if (isRefreshingRef.current) {
+			console.debug("[TrainList] Skipping overlapping refresh");
+			return;
+		}
 		isRefreshingRef.current = true;
 
 		const startedAt = Date.now();
@@ -363,11 +370,9 @@ export default function TrainList({
 		} catch (err) {
 			console.error("Error loading trains:", err);
 
-			// Use functional setState to check the actual current initialLoad state
-			// This avoids stale closure issues
 			setState((prev) => {
 				if (prev.initialLoad) {
-					// Initial load failed - show error
+					initialLoadRef.current = false;
 					const { errorType, errorMessage, serviceStatus } = getErrorInfo(err);
 					return {
 						...prev,
@@ -376,18 +381,17 @@ export default function TrainList({
 						initialLoad: false,
 					};
 				}
-				// Background update failed - show toast and continue with existing data
-				console.log("Background update failed, continuing with existing data");
+				return { ...prev, loading: false };
+			});
+
+			// Side effects outside setState, using ref to avoid stale closure
+			if (!initialLoadRef.current) {
 				const now = Date.now();
 				if (now - lastBgFailureToastRef.current >= 60_000) {
 					showToast(t("connectionIssue"), "warning");
 					lastBgFailureToastRef.current = now;
 				}
-				return {
-					...prev,
-					loading: false,
-				};
-			});
+			}
 		} finally {
 			isRefreshingRef.current = false;
 		}

@@ -310,8 +310,8 @@ export default function TrainCard({
 				new Date(trainData.removeAfter) < currentTime
 			) {
 				// Remove expired highlight
-				removeFavorite(train.trainNumber).catch(() => {
-					// Silently ignore storage errors for cleanup operations
+				removeFavorite(train.trainNumber).catch((err) => {
+					console.warn("[TrainCard] Failed to remove expired favorite:", err);
 				});
 				setIsHighlighted(false);
 			} else {
@@ -338,8 +338,11 @@ export default function TrainCard({
 					if (driftMinutes > 1) {
 						updateFavorite(train.trainNumber, {
 							removeAfter: desiredRemoveAfter.toISOString(),
-						}).catch(() => {
-							// Silently ignore storage errors for sync operations
+						}).catch((err) => {
+							console.warn(
+								"[TrainCard] Failed to update favorite removeAfter:",
+								err,
+							);
 						});
 					}
 				}
@@ -353,15 +356,15 @@ export default function TrainCard({
 					updateFavorite(train.trainNumber, {
 						track: departureRow.commercialTrack,
 						trackChanged: true,
-					}).catch(() => {
-						// Silently ignore storage errors for track updates
+					}).catch((err) => {
+						console.warn("[TrainCard] Failed to update track change:", err);
 					});
 				} else if (departureRow && !trainData.track) {
 					// First time storing track
 					updateFavorite(train.trainNumber, {
 						track: departureRow.commercialTrack,
-					}).catch(() => {
-						// Silently ignore storage errors for track updates
+					}).catch((err) => {
+						console.warn("[TrainCard] Failed to update track info:", err);
 					});
 				}
 			}
@@ -596,14 +599,14 @@ export default function TrainCard({
 					removeAfter: removeAfter.toISOString(),
 					journeyKey,
 					track: departureRow.commercialTrack,
-				}).catch(() => {
-					// Revert UI state if storage fails
+				}).catch((err) => {
+					console.warn("[TrainCard] Failed to save favorite, reverting:", err);
 					setIsHighlighted(false);
 				});
 			}
 		} else {
-			removeFavorite(train.trainNumber).catch(() => {
-				// Revert UI state if storage fails
+			removeFavorite(train.trainNumber).catch((err) => {
+				console.warn("[TrainCard] Failed to remove favorite, reverting:", err);
 				setIsHighlighted(true);
 			});
 		}
