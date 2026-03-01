@@ -6,7 +6,6 @@ interface ToastItem {
 	id: number;
 	message: string;
 	type: ToastType;
-	duration: number;
 }
 
 let nextId = 0;
@@ -22,7 +21,7 @@ export default function Toast() {
 	const [toasts, setToasts] = useState<ToastItem[]>([]);
 
 	const removeToast = useCallback((id: number) => {
-		setToasts((prev) => prev.filter((t) => t.id !== id));
+		setToasts((prev) => prev.filter((toast) => toast.id !== id));
 	}, []);
 
 	useEffect(() => {
@@ -30,9 +29,10 @@ export default function Toast() {
 			const detail = (e as CustomEvent<ToastEvent>).detail;
 			const id = nextId++;
 			const duration = detail.duration ?? 4000;
+			// Keep at most 4 visible toasts (3 existing + 1 new)
 			setToasts((prev) => [
 				...prev.slice(-3),
-				{ id, message: detail.message, type: detail.type, duration },
+				{ id, message: detail.message, type: detail.type },
 			]);
 
 			setTimeout(() => {
