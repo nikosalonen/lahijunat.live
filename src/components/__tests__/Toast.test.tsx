@@ -99,13 +99,14 @@ describe("Toast", () => {
 	});
 
 	it("caps at 4 visible toasts", () => {
-		const { queryAllByRole } = render(<Toast />);
+		const { queryAllByRole, container } = render(<Toast />);
 
 		for (let i = 1; i <= 6; i++) {
 			dispatchToast(`Toast ${i}`);
 		}
 
 		expect(queryAllByRole("alert")).toHaveLength(4);
+		expect(container).toMatchSnapshot();
 	});
 
 	it("returns null when no toasts", () => {
