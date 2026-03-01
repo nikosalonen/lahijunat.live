@@ -107,25 +107,9 @@ const getCardStyle = (
 };
 
 // Get wrapper styles for highlighted state (applied to outer div to avoid overflow clipping)
-const getWrapperHighlightStyle = (
-	isHighlighted: boolean,
-	isDepartingSoon: boolean,
-	minutesToDeparture: number | null,
-) => {
+const getWrapperHighlightStyle = (isHighlighted: boolean) => {
 	if (!isHighlighted) return "";
-
-	const highlightBorder =
-		"ring-4 ring-[#8c4799] dark:ring-[#b388ff] shadow-[0_0_12px_rgba(140,71,153,0.3)] dark:shadow-[0_0_12px_rgba(179,136,255,0.3)]";
-
-	if (
-		isDepartingSoon &&
-		minutesToDeparture !== null &&
-		minutesToDeparture >= 0
-	) {
-		return highlightBorder;
-	}
-
-	return highlightBorder;
+	return "ring-4 ring-[#8c4799] dark:ring-[#b388ff] shadow-[0_0_12px_rgba(140,71,153,0.3)] dark:shadow-[0_0_12px_rgba(179,136,255,0.3)]";
 };
 
 export default function TrainCard({
@@ -201,11 +185,7 @@ export default function TrainCard({
 				timeDifferenceMinutes: 0,
 				duration: null,
 				cardStyle: getCardStyle(train.cancelled, null, false, isHighlighted),
-				wrapperHighlightStyle: getWrapperHighlightStyle(
-					isHighlighted,
-					false,
-					null,
-				),
+				wrapperHighlightStyle: getWrapperHighlightStyle(isHighlighted),
 			};
 		}
 
@@ -239,11 +219,7 @@ export default function TrainCard({
 			isHighlighted,
 		);
 
-		const wrapperHighlightStyle = getWrapperHighlightStyle(
-			isHighlighted,
-			departingSoon,
-			minutesToDeparture,
-		);
+		const wrapperHighlightStyle = getWrapperHighlightStyle(isHighlighted);
 
 		return {
 			departureRow,
@@ -539,8 +515,6 @@ export default function TrainCard({
 		}
 
 		return { changed: trackChanged, changedSide };
-		// // TEMPORARY: Force track change indicator for testing
-		// return { changed: true, changedSide: "departure" };
 	}, [
 		train.trainNumber,
 		train.timeTableRows,
@@ -550,6 +524,11 @@ export default function TrainCard({
 	]);
 
 	const isTrackChanged = trackChangeInfo.changed;
+
+	const getTrackBadgeClass = (side: "departure" | "arrival") =>
+		trackChangeInfo.changedSide === side && isTrackChanged
+			? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
+			: "bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105";
 
 	// Notify via toast when a highlighted train's track changes
 	const prevTrackChangedRef = useRef(false);
@@ -1006,12 +985,9 @@ export default function TrainCard({
 														>
 															{/* Front face - Departure Track */}
 															<div
-																class={`badge badge-lg font-semibold transition-all duration-200 ${
-																	trackChangeInfo.changedSide === "departure" &&
-																	isTrackChanged
-																		? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
-																		: "bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105"
-																} whitespace-nowrap`}
+																class={`badge badge-lg font-semibold transition-all duration-200 ${getTrackBadgeClass(
+																	"departure",
+																)} whitespace-nowrap`}
 																style={{
 																	backfaceVisibility: "hidden",
 																	WebkitBackfaceVisibility: "hidden",
@@ -1031,12 +1007,9 @@ export default function TrainCard({
 															</div>
 															{/* Back face - Arrival Track */}
 															<div
-																class={`badge badge-lg font-semibold transition-all duration-200 ${
-																	trackChangeInfo.changedSide === "arrival" &&
-																	isTrackChanged
-																		? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
-																		: "bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105"
-																} whitespace-nowrap`}
+																class={`badge badge-lg font-semibold transition-all duration-200 ${getTrackBadgeClass(
+																	"arrival",
+																)} whitespace-nowrap`}
 																style={{
 																	backfaceVisibility: "hidden",
 																	WebkitBackfaceVisibility: "hidden",
