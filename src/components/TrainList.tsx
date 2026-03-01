@@ -171,11 +171,19 @@ export default function TrainList({
 	const lastBgFailureToastRef = useRef(0);
 	// Mirror of state.initialLoad for use outside setState
 	const initialLoadRef = useRef(true);
+	// Guard against post-unmount side effects (e.g. showToast from stale fetches)
+	const isMountedRef = useRef(true);
 
 	// FLIP animation refs
 	const listContainerRef = useRef<HTMLDivElement>(null);
 	const cardPositionsRef = useRef<Map<string, DOMRect>>(new Map());
 	const isAnimatingRef = useRef(false);
+
+	useEffect(() => {
+		return () => {
+			isMountedRef.current = false;
+		};
+	}, []);
 
 	// Initialize storage on mount and trigger re-sort after cache is populated
 	useEffect(() => {
@@ -347,6 +355,9 @@ export default function TrainList({
 			});
 
 			const trainData = await fetchTrains(stationCode, destinationCode);
+
+			if (!isMountedRef.current) return;
+
 			const now = new Date();
 			setCurrentTime(now);
 
@@ -390,7 +401,7 @@ export default function TrainList({
 			});
 
 			// Only show background-failure toast for non-initial-load errors
-			if (!wasInitialLoad) {
+			if (!wasInitialLoad && isMountedRef.current) {
 				const now = Date.now();
 				if (now - lastBgFailureToastRef.current >= 60_000) {
 					showToast(t("connectionIssue"), "warning");
