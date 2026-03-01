@@ -12,7 +12,7 @@ import {
 import { calculateDistance, isInFinland } from "../utils/location";
 import { getLocalizedStationName } from "../utils/stationNames";
 import { t } from "../utils/translations";
-import EmptyState from "./EmptyState";
+import EmptyState from "@/components/EmptyState";
 import ErrorState from "./ErrorState";
 import StationList from "./StationList";
 import TrainList from "./TrainList";

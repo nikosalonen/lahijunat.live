@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { showToast, TOAST_EVENT } from "../toast";
+import { showToast, TOAST_EVENT } from "@/utils/toast";
 
 describe("showToast", () => {
 	let dispatchSpy: ReturnType<typeof vi.spyOn>;

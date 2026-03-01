@@ -1,8 +1,8 @@
 import { fireEvent, render, waitFor } from "@testing-library/preact";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Train } from "../../types";
-import { getRelevantTrackInfo } from "../../utils/api";
-import { showToast } from "../../utils/toast";
+import { getRelevantTrackInfo } from "@/utils/api";
+import { showToast } from "@/utils/toast";
 import TrainCard from "../TrainCard";
 
 // Mock translations

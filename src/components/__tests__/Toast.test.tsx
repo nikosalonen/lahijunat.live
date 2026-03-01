@@ -1,10 +1,10 @@
 import { act, cleanup, render } from "@testing-library/preact";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { TOAST_EVENT, type ToastEvent } from "../../utils/toast";
-import Toast from "../Toast";
+import { TOAST_EVENT, type ToastEvent } from "@/utils/toast";
+import Toast from "@/components/Toast";
 
 // Mock translations
-vi.mock("../../utils/translations", () => ({
+vi.mock("@/utils/translations", () => ({
 	t: (key: string) => {
 		const translations: Record<string, string> = {
 			close: "Close",
