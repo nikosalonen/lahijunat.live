@@ -1,3 +1,5 @@
+export const TOAST_EVENT = "show-toast";
+
 export type ToastType = "info" | "warning" | "error" | "success";
 
 export interface ToastEvent {
@@ -12,7 +14,7 @@ export function showToast(
 	duration = 4000,
 ) {
 	window.dispatchEvent(
-		new CustomEvent<ToastEvent>("show-toast", {
+		new CustomEvent<ToastEvent>(TOAST_EVENT, {
 			detail: { message, type, duration },
 		}),
 	);

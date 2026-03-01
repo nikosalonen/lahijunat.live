@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "preact/hooks";
-import type { ToastEvent, ToastType } from "../utils/toast";
+import { TOAST_EVENT, type ToastEvent, type ToastType } from "@/utils/toast";
 
 interface ToastItem {
 	id: number;
@@ -39,8 +39,8 @@ export default function Toast() {
 			}, duration);
 		};
 
-		window.addEventListener("show-toast", handler);
-		return () => window.removeEventListener("show-toast", handler);
+		window.addEventListener(TOAST_EVENT, handler);
+		return () => window.removeEventListener(TOAST_EVENT, handler);
 	}, [removeToast]);
 
 	if (toasts.length === 0) return null;
