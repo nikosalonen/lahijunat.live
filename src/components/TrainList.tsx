@@ -10,12 +10,12 @@ import {
 	useState,
 } from "preact/hooks";
 import { getFavoritesSync, initStorage } from "@/utils/storage";
+import { showToast } from "@/utils/toast";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import { fetchTrains, type ServiceStatusInfo } from "../utils/api";
 import { hapticLight } from "../utils/haptics";
 import { getLocalizedStationName } from "../utils/stationNames";
-import { showToast } from "../utils/toast";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";

@@ -14,10 +14,10 @@ import {
 	setFavorite,
 	updateFavorite,
 } from "@/utils/storage";
+import { showToast } from "@/utils/toast";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
-import { showToast } from "../utils/toast";
 import { calculateDuration, getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import { getDebugMode, subscribeToDebugMode } from "./DebugToggle";

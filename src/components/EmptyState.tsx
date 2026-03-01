@@ -1,4 +1,4 @@
-import { t } from "../utils/translations";
+import { t } from "@/utils/translations";
 
 interface Props {
 	hasOrigin: boolean;
