@@ -206,7 +206,7 @@ export default function StationList({
 			);
 		}, 300);
 		return () => clearTimeout(timer);
-	}, [filteredStations.length, isOpen, searchTerm]);
+	}, [filteredStations.length, isOpen, searchTerm, langToken]);
 
 	// Dynamic min-height so the container shortens when there are few results
 	const filteredCount = filteredStations.length;
