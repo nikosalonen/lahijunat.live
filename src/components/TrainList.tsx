@@ -169,6 +169,8 @@ export default function TrainList({
 	const isRefreshingRef = useRef(false);
 	// Toast cooldown for background failures
 	const lastBgFailureToastRef = useRef(0);
+	// Mirror of state.initialLoad for use outside setState
+	const initialLoadRef = useRef(true);
 
 	// FLIP animation refs
 	const listContainerRef = useRef<HTMLDivElement>(null);
@@ -360,6 +362,7 @@ export default function TrainList({
 				currentRefreshIntervalRef.current = newRefreshInterval;
 			}
 
+			initialLoadRef.current = false;
 			setState((prev) => ({
 				...prev,
 				trains: trainData,
@@ -455,7 +458,6 @@ export default function TrainList({
 		});
 	}, [state.trains, stationCode, destinationCode]);
 
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => {
 		let refreshTimeout: ReturnType<typeof setTimeout> | undefined;
 		let cancelled = false;
@@ -484,7 +486,7 @@ export default function TrainList({
 		};
 
 		if (isPageVisible) {
-			loadTrains();
+			void loadTrains();
 			scheduleRefresh(getTimeUntilNextUpdate());
 		}
 
@@ -515,7 +517,7 @@ export default function TrainList({
 
 	if (state.error) {
 		return (
-			<div className="max-w-4xl mx-auto">
+			<div class="max-w-4xl mx-auto">
 				<ErrorState
 					type={state.error.type}
 					message={state.error.message}
@@ -688,6 +690,10 @@ export default function TrainList({
 		return Math.max(0, Math.min(100, remaining));
 	}, [currentTime, lastRefreshAt, currentRefreshInterval]);
 
+	const elapsedSeconds = Math.floor(
+		(currentTime.getTime() - lastRefreshAt) / 1000,
+	);
+
 	return (
 		<div>
 			<div class="max-w-4xl mx-auto space-y-6 px-2 sm:px-4">
@@ -756,7 +762,7 @@ export default function TrainList({
 					<button
 						type="button"
 						onClick={() => void loadTrains()}
-						className="flex-grow flex flex-col gap-1 cursor-pointer bg-transparent border-0 p-0 text-left touch-manipulation"
+						class="flex-grow flex flex-col gap-1 cursor-pointer bg-transparent border-0 p-0 text-left touch-manipulation"
 						aria-label={t("tapToRefresh")}
 					>
 						<LinearProgress
@@ -765,15 +771,10 @@ export default function TrainList({
 							widthClass="w-full"
 							direction="rtl"
 						/>
-						<span className="text-xs text-base-content/40">
-							{(() => {
-								const elapsed = Math.floor(
-									(currentTime.getTime() - lastRefreshAt) / 1000,
-								);
-								return elapsed < 5
-									? t("justNow")
-									: `${elapsed}${t("secondsAgo")}`;
-							})()}
+						<span class="text-xs text-base-content/40">
+							{elapsedSeconds < 5
+								? t("justNow")
+								: `${elapsedSeconds}${t("secondsAgo")}`}
 						</span>
 					</button>
 					{hasSlowTrains && (
