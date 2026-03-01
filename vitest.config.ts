@@ -13,6 +13,11 @@ export default defineConfig({
 		env: {
 			TZ: "Europe/Helsinki",
 		},
+		coverage: {
+			provider: "v8",
+			include: ["src/**/*.{ts,tsx}"],
+			exclude: ["src/__tests__/**", "src/**/*.d.ts"],
+		},
 	},
 	resolve: {
 		alias: {
