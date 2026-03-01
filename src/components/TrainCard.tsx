@@ -937,10 +937,14 @@ export default function TrainCard({
 																: undefined
 														}
 													>
-														<i
-															class="fa-solid fa-clock mr-1"
+														<svg
+															class="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1"
+															fill="currentColor"
+															viewBox="0 0 512 512"
 															aria-hidden="true"
-														/>
+														>
+															<path d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+														</svg>
 														<span>
 															{duration.hours}h {duration.minutes}m
 														</span>
@@ -1015,10 +1019,14 @@ export default function TrainCard({
 															>
 																{t("track")} {departureRow.commercialTrack}
 																{arrivalRow && (
-																	<i
-																		class="fa-solid fa-arrow-rotate-left ml-1.5 text-xs opacity-60"
+																	<svg
+																		class="inline-block w-3 h-3 ml-1.5 opacity-60"
+																		fill="currentColor"
+																		viewBox="0 0 512 512"
 																		aria-hidden="true"
-																	/>
+																	>
+																		<path d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3-163.8-62.5-226.3 0L125.7 160z" />
+																	</svg>
 																)}
 															</div>
 															{/* Back face - Arrival Track */}
@@ -1041,10 +1049,14 @@ export default function TrainCard({
 															>
 																{arrivalRow ? (
 																	<>
-																		<i
-																			class="fa-solid fa-arrow-right mr-1"
+																		<svg
+																			class="inline-block w-3 h-3 mr-1"
+																			fill="currentColor"
+																			viewBox="0 0 448 512"
 																			aria-hidden="true"
-																		/>
+																		>
+																			<path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h306.7L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+																		</svg>
 																		{t("track")} {arrivalRow.commercialTrack}
 																	</>
 																) : (
