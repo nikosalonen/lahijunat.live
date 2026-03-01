@@ -4,6 +4,7 @@
  */
 
 import daisyui from "daisyui";
+import daisyuiThemes from "daisyui/theme/object";
 
 export default {
 	content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
@@ -75,14 +76,14 @@ export default {
 		themes: [
 			{
 				light: {
-					...require("daisyui/src/theming/themes").light,
+					...daisyuiThemes.light,
 					primary: "#8c4799",
 					"primary-content": "#ffffff",
 				},
 			},
 			{
 				dark: {
-					...require("daisyui/src/theming/themes").dark,
+					...daisyuiThemes.dark,
 					primary: "#8c4799",
 					"primary-content": "#ffffff",
 				},
