@@ -721,12 +721,29 @@ export default function TrainList({
 
 				{/* Mobile horizontal progress bar and filter toggle */}
 				<div class="sm:hidden w-full mb-4 flex items-center gap-3">
-					<LinearProgress
-						progress={refreshProgress}
-						heightClass="h-1.5"
-						widthClass="w-full"
-						direction="rtl"
-					/>
+					<button
+						type="button"
+						onClick={() => loadTrains()}
+						className="flex-grow flex flex-col gap-1 cursor-pointer bg-transparent border-0 p-0 text-left touch-manipulation"
+						aria-label={t("tapToRefresh")}
+					>
+						<LinearProgress
+							progress={refreshProgress}
+							heightClass="h-1.5"
+							widthClass="w-full"
+							direction="rtl"
+						/>
+						<span className="text-xs text-base-content/40">
+							{(() => {
+								const elapsed = Math.floor(
+									(currentTime.getTime() - lastRefreshAt) / 1000,
+								);
+								return elapsed < 5
+									? t("justNow")
+									: `${elapsed}${t("secondsAgo")}`;
+							})()}
+						</span>
+					</button>
 					{hasSlowTrains && (
 						<label
 							class="flex items-center gap-1.5 cursor-pointer select-none flex-shrink-0 text-xs text-gray-500 dark:text-gray-400"
