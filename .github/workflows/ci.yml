@@ -16,13 +16,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: "npm"
+          cache: "pnpm"
 
-      - run: npm ci
-      - run: npm run lint:check
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint:check
 
   typecheck:
     name: Type Check
@@ -30,13 +32,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: "npm"
+          cache: "pnpm"
 
-      - run: npm ci
-      - run: npm run typecheck
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
 
   test:
     name: Test
@@ -44,13 +48,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: "npm"
+          cache: "pnpm"
 
-      - run: npm ci
-      - run: npm run test
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run test
 
   build:
     name: Build
@@ -59,10 +65,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: "npm"
+          cache: "pnpm"
 
-      - run: npm ci
-      - run: npm run build
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build

@@ -4,19 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production (includes Workbox service worker generation)
-- `npm run preview` - Preview production build
-- `npm run lint` - Run Biome linter and format code
-- `npm run lint:check` - Run Biome linter without auto-fix (used in CI)
-- `npm run format` - Format code with Biome
-- `npm run typecheck` - Run TypeScript type checking with Astro
-- `npm run test` - Run tests with Vitest
-- `npm run test:watch` - Run tests in watch mode
-- `npm run test -- src/components/__tests__/TrainCard.test.tsx` - Run a single test file
-- `npm run check-stations` - Check for stations without destinations
-- `npm run update-station-query` - Update the GraphQL station query filter list
-- `npm run test-station-query` - Test the station query against the API
+- `pnpm run dev` - Start development server
+- `pnpm run build` - Build for production (includes Workbox service worker generation)
+- `pnpm run preview` - Preview production build
+- `pnpm run lint` - Run Biome linter and format code
+- `pnpm run lint:check` - Run Biome linter without auto-fix (used in CI)
+- `pnpm run format` - Format code with Biome
+- `pnpm run typecheck` - Run TypeScript type checking with Astro
+- `pnpm run test` - Run tests with Vitest
+- `pnpm run test:watch` - Run tests in watch mode
+- `pnpm run test -- src/components/__tests__/TrainCard.test.tsx` - Run a single test file
+- `pnpm run check-stations` - Check for stations without destinations
+- `pnpm run update-station-query` - Update the GraphQL station query filter list
+- `pnpm run test-station-query` - Test the station query against the API
 
 ## Project Architecture
 
@@ -40,10 +40,10 @@ import { fetchTrains } from "@/utils/api";
 
 ### CI/CD
 GitHub Actions workflow (`.github/workflows/ci.yml`) runs on push/PR to main:
-- **Lint** - Runs `npm run lint:check`
-- **Type Check** - Runs `npm run typecheck`
-- **Test** - Runs `npm run test`
-- **Build** - Runs `npm run build` (only after lint, typecheck, and test pass)
+- **Lint** - Runs `pnpm run lint:check`
+- **Type Check** - Runs `pnpm run typecheck`
+- **Test** - Runs `pnpm run test`
+- **Build** - Runs `pnpm run build` (only after lint, typecheck, and test pass)
 
 ### Pre-commit Hooks
 Husky runs lint-staged on commit, which automatically formats staged files with Biome.

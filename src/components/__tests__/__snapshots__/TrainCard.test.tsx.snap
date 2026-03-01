@@ -53,7 +53,6 @@ exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
       data-train-line="A"
       data-train-number="123"
       data-train-unknown-delay="false"
-      style="-webkit-tap-highlight-color: transparent;"
     >
       <div
         class="card-body p-3 sm:p-4"
@@ -211,7 +210,6 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
       data-train-line="A"
       data-train-number="123"
       data-train-unknown-delay="false"
-      style="-webkit-tap-highlight-color: transparent;"
     >
       <div
         class="card-body p-3 sm:p-4"
@@ -307,7 +305,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
                   >
                     <div
                       class="badge badge-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105 whitespace-nowrap"
-                      style="backface-visibility: hidden;"
+                      style="backface-visibility: hidden; -webkit-backface-visibility: hidden;"
                     >
                       Raide
                        
@@ -319,7 +317,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
                     </div>
                     <div
                       class="badge badge-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105 whitespace-nowrap"
-                      style="backface-visibility: hidden; transform: rotateY(180deg); position: absolute; top: 0px; left: 0px; right: 0px;"
+                      style="backface-visibility: hidden; -webkit-backface-visibility: hidden; transform: rotateY(180deg); position: absolute; top: 0px; left: 0px; right: 0px;"
                     >
                       <i
                         aria-hidden="true"
@@ -408,7 +406,6 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
       data-train-line="A"
       data-train-number="123"
       data-train-unknown-delay="false"
-      style="-webkit-tap-highlight-color: transparent;"
     >
       <div
         class="card-body p-3 sm:p-4"
@@ -504,7 +501,7 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
                   >
                     <div
                       class="badge badge-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105 whitespace-nowrap"
-                      style="backface-visibility: hidden;"
+                      style="backface-visibility: hidden; -webkit-backface-visibility: hidden;"
                     >
                       Raide
                        
@@ -516,7 +513,7 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
                     </div>
                     <div
                       class="badge badge-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105 whitespace-nowrap"
-                      style="backface-visibility: hidden; transform: rotateY(180deg); position: absolute; top: 0px; left: 0px; right: 0px;"
+                      style="backface-visibility: hidden; -webkit-backface-visibility: hidden; transform: rotateY(180deg); position: absolute; top: 0px; left: 0px; right: 0px;"
                     >
                       <i
                         aria-hidden="true"
