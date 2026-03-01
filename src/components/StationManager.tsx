@@ -1,6 +1,5 @@
 /** @format */
 
-// src/components/StationManager.tsx
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station } from "../types";

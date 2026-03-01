@@ -9,7 +9,6 @@ interface Props {
 export default function EmptyState({ hasOrigin, onLocate, isLocating }: Props) {
 	return (
 		<div class="flex flex-col items-center justify-center py-12 px-4 text-center">
-			{/* Train icon */}
 			<svg
 				class="w-16 h-16 text-[#8c4799] opacity-40 mb-4"
 				fill="none"
