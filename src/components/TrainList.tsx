@@ -165,6 +165,11 @@ export default function TrainList({
 	// Track favorites version to trigger re-sort when favorites change
 	const [favoritesVersion, setFavoritesVersion] = useState(0);
 
+	// Reentrancy guard for loadTrains
+	const isRefreshingRef = useRef(false);
+	// Toast cooldown for background failures
+	const lastBgFailureToastRef = useRef(0);
+
 	// FLIP animation refs
 	const listContainerRef = useRef<HTMLDivElement>(null);
 	const cardPositionsRef = useRef<Map<string, DOMRect>>(new Map());
@@ -277,6 +282,9 @@ export default function TrainList({
 	}, []);
 
 	const loadTrains = useCallback(async () => {
+		if (isRefreshingRef.current) return;
+		isRefreshingRef.current = true;
+
 		const startedAt = Date.now();
 		setLastRefreshAt(startedAt);
 
@@ -370,12 +378,18 @@ export default function TrainList({
 				}
 				// Background update failed - show toast and continue with existing data
 				console.log("Background update failed, continuing with existing data");
-				showToast(t("connectionIssue"), "warning");
+				const now = Date.now();
+				if (now - lastBgFailureToastRef.current >= 60_000) {
+					showToast(t("connectionIssue"), "warning");
+					lastBgFailureToastRef.current = now;
+				}
 				return {
 					...prev,
 					loading: false,
 				};
 			});
+		} finally {
+			isRefreshingRef.current = false;
 		}
 	}, [stationCode, destinationCode]);
 
