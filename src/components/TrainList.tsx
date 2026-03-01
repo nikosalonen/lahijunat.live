@@ -751,7 +751,7 @@ export default function TrainList({
 				<div class="sm:hidden w-full mb-4 flex items-center gap-3">
 					<button
 						type="button"
-						onClick={() => loadTrains()}
+						onClick={() => void loadTrains()}
 						className="flex-grow flex flex-col gap-1 cursor-pointer bg-transparent border-0 p-0 text-left touch-manipulation"
 						aria-label={t("tapToRefresh")}
 					>
