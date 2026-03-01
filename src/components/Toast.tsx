@@ -30,7 +30,7 @@ export default function Toast() {
 			const id = nextId++;
 			const duration = detail.duration ?? 4000;
 			setToasts((prev) => [
-				...prev.slice(-4),
+				...prev.slice(-3),
 				{ id, message: detail.message, type: detail.type, duration },
 			]);
 
