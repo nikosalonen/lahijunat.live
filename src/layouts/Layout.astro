@@ -17,6 +17,7 @@ import FeatureAnnouncement from "../components/FeatureAnnouncement";
 import Footer from "../components/Footer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import Toast from "../components/Toast";
+import { t } from "../utils/translations";
 
 const { title, description, breadcrumbs } = Astro.props as Props;
 
@@ -186,7 +187,7 @@ const metaDescription = description || defaultDescription;
       href="#main-content"
       class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-[#8c4799] focus:text-white focus:rounded-lg focus:shadow-lg focus:text-sm focus:font-medium"
     >
-      Skip to content
+      {t("skipToContent")}
     </a>
     <div class="min-h-screen flex flex-col">
       <nav class="py-3 sm:py-4 bg-[#8c4799] text-white w-full shadow-lg">
