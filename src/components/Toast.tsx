@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "preact/hooks";
 import { TOAST_EVENT, type ToastEvent, type ToastType } from "@/utils/toast";
+import { t } from "@/utils/translations";
 
 interface ToastItem {
 	id: number;

@@ -101,6 +101,7 @@ export const translations = {
 		// Toast
 		trackChangedNotification: "Raide muuttunut",
 		connectionIssue: "Yhteysongelma, näytetään viimeisin tieto",
+		close: "Sulje",
 	},
 	en: {
 		title: "Local Trains Live | Real-time schedules for local trains",
@@ -200,6 +201,7 @@ export const translations = {
 		// Toast
 		trackChangedNotification: "Track changed",
 		connectionIssue: "Connection issue, showing last known data",
+		close: "Close",
 	},
 	sv: {
 		title: "Lokaltåg Live | Tidtabeller för lokaltåg i realtid",
@@ -299,6 +301,7 @@ export const translations = {
 		// Toast
 		trackChangedNotification: "Spår ändrat",
 		connectionIssue: "Anslutningsproblem, visar senast kända data",
+		close: "Stäng",
 	},
 };
 
