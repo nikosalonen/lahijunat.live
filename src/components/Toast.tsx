@@ -46,22 +46,22 @@ export default function Toast() {
 	if (toasts.length === 0) return null;
 
 	return (
-		<div className="toast toast-bottom toast-center z-[100] pb-safe mb-4">
+		<div class="toast toast-bottom toast-center z-[100] pb-safe mb-4">
 			{toasts.map((toast) => (
 				<div
 					key={toast.id}
-					className={`alert ${alertClass[toast.type]} shadow-lg animate-slide-up text-sm py-2 px-4 min-h-0`}
+					class={`alert ${alertClass[toast.type]} shadow-lg animate-slide-up text-sm py-2 px-4 min-h-0`}
 					role="alert"
 				>
 					<span>{toast.message}</span>
 					<button
 						type="button"
-						className="btn btn-ghost btn-xs"
+						class="btn btn-ghost btn-xs"
 						onClick={() => removeToast(toast.id)}
-						aria-label="Close"
+						aria-label={t("close")}
 					>
 						<svg
-							className="w-3.5 h-3.5"
+							class="w-3.5 h-3.5"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"

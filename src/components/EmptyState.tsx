@@ -8,10 +8,10 @@ interface Props {
 
 export default function EmptyState({ hasOrigin, onLocate, isLocating }: Props) {
 	return (
-		<div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+		<div class="flex flex-col items-center justify-center py-12 px-4 text-center">
 			{/* Train icon */}
 			<svg
-				className="w-16 h-16 text-[#8c4799] opacity-40 mb-4"
+				class="w-16 h-16 text-[#8c4799] opacity-40 mb-4"
 				fill="none"
 				stroke="currentColor"
 				strokeWidth="1.5"
@@ -28,10 +28,10 @@ export default function EmptyState({ hasOrigin, onLocate, isLocating }: Props) {
 				<line x1="15" y1="3" x2="15" y2="7" />
 			</svg>
 
-			<h3 className="text-lg font-semibold text-base-content/70 mb-2">
+			<h3 class="text-lg font-semibold text-base-content/70 mb-2">
 				{hasOrigin ? t("emptyStateSelectDestination") : t("emptyStateTitle")}
 			</h3>
-			<p className="text-sm text-base-content/50 mb-6 max-w-xs">
+			<p class="text-sm text-base-content/50 mb-6 max-w-xs">
 				{t("emptyStateDescription")}
 			</p>
 
@@ -40,10 +40,10 @@ export default function EmptyState({ hasOrigin, onLocate, isLocating }: Props) {
 					type="button"
 					onClick={onLocate}
 					disabled={isLocating}
-					className={`btn bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86] shadow-brand-medium hover:shadow-brand-strong transition-all duration-200 gap-2 ${isLocating ? "animate-pulse" : ""}`}
+					class={`btn bg-[#8c4799] hover:bg-[#7a3f86] text-white border-[#8c4799] hover:border-[#7a3f86] shadow-brand-medium hover:shadow-brand-strong transition-all duration-200 gap-2 ${isLocating ? "animate-pulse" : ""}`}
 				>
 					<svg
-						className="w-5 h-5"
+						class="w-5 h-5"
 						fill="currentColor"
 						viewBox="0 0 24 24"
 						aria-hidden="true"
