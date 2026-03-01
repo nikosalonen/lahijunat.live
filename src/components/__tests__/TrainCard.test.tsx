@@ -34,7 +34,7 @@ vi.mock("../../hooks/useLanguageChange", () => ({
 }));
 
 // Mock api functions
-vi.mock("../../utils/api", () => ({
+vi.mock("@/utils/api", () => ({
 	getRelevantTrackInfo: vi.fn(() => ({
 		track: "1",
 		timestamp: "2024-03-20T10:00:00.000Z",
@@ -43,7 +43,7 @@ vi.mock("../../utils/api", () => ({
 }));
 
 // Mock toast utility
-vi.mock("../../utils/toast", () => ({
+vi.mock("@/utils/toast", () => ({
 	showToast: vi.fn(),
 	TOAST_EVENT: "show-toast",
 }));
