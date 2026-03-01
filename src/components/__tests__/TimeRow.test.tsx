@@ -69,7 +69,7 @@ describe("TimeRow", () => {
 
 		expect(getByText("12.00")).toBeInTheDocument();
 		expect(getByText("13.00")).toBeInTheDocument();
-		const arrowIcon = container.querySelector(".fa-arrow-right");
+		const arrowIcon = container.querySelector("svg");
 		expect(arrowIcon).not.toBeNull();
 	});
 
