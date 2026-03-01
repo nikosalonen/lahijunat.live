@@ -1,7 +1,7 @@
 import { act, cleanup, render } from "@testing-library/preact";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { TOAST_EVENT, type ToastEvent } from "@/utils/toast";
 import Toast from "@/components/Toast";
+import { TOAST_EVENT, type ToastEvent } from "@/utils/toast";
 
 // Mock translations
 vi.mock("@/utils/translations", () => ({

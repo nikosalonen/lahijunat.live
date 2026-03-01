@@ -1,6 +1,7 @@
 /** @format */
 
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import EmptyState from "@/components/EmptyState";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station } from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
@@ -12,7 +13,6 @@ import {
 import { calculateDistance, isInFinland } from "../utils/location";
 import { getLocalizedStationName } from "../utils/stationNames";
 import { t } from "../utils/translations";
-import EmptyState from "@/components/EmptyState";
 import ErrorState from "./ErrorState";
 import StationList from "./StationList";
 import TrainList from "./TrainList";
