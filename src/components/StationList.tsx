@@ -34,6 +34,7 @@ interface Props {
 	inputRef?: MutableRef<HTMLInputElement | null>;
 	isLoading?: boolean;
 	onFocus?: () => void;
+	labelId?: string;
 }
 
 const CONTAINER_CLASS = "station-list-container";
@@ -47,6 +48,7 @@ export default function StationList({
 	inputRef,
 	isLoading = false,
 	onFocus,
+	labelId,
 }: Props) {
 	const listboxId = useId();
 	const [searchTerm, setSearchTerm] = useState("");
@@ -190,6 +192,22 @@ export default function StationList({
 			? filteredStations[highlightedIndex]
 			: null;
 
+	// Debounced screen reader announcement for search results
+	const [announcement, setAnnouncement] = useState("");
+	useEffect(() => {
+		if (!isOpen || !searchTerm) {
+			setAnnouncement("");
+			return;
+		}
+		const timer = setTimeout(() => {
+			const count = filteredStations.length;
+			setAnnouncement(
+				count === 0 ? t("noStationsFound") : `${count} ${t("stationsFound")}`,
+			);
+		}, 300);
+		return () => clearTimeout(timer);
+	}, [filteredStations.length, isOpen, searchTerm]);
+
 	// Dynamic min-height so the container shortens when there are few results
 	const filteredCount = filteredStations.length;
 	const rootMinHeightClass =
@@ -203,6 +221,7 @@ export default function StationList({
 				role="combobox"
 				aria-expanded={isOpen}
 				aria-autocomplete="list"
+				aria-labelledby={labelId}
 				aria-activedescendant={
 					highlightedStation ? `option-${highlightedIndex}` : undefined
 				}
@@ -231,6 +250,9 @@ export default function StationList({
 				placeholder={t("placeholder")}
 				className="input input-bordered w-full h-12 dark:text-white touch-manipulation shadow-lg text-base"
 			/>
+			<output className="sr-only" aria-live="polite">
+				{announcement}
+			</output>
 			{(isOpen || isLoading) && (
 				<div
 					ref={listboxRef}
