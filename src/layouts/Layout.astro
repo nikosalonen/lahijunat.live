@@ -16,6 +16,7 @@ import DebugToggle from "../components/DebugToggle";
 import FeatureAnnouncement from "../components/FeatureAnnouncement";
 import Footer from "../components/Footer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import Toast from "../components/Toast";
 
 const { title, description, breadcrumbs } = Astro.props as Props;
 
@@ -270,13 +271,14 @@ const metaDescription = description || defaultDescription;
         </div>
       </nav>
       <div class="flex-grow w-full">
-        <main>
+        <main id="main-content">
           <slot />
         </main>
       </div>
       <Footer client:load />
     </div>
     <FeatureAnnouncement client:load />
+    <Toast client:load />
 
     <script>
       const themeToggleBtn = document.getElementById("theme-toggle");

@@ -15,6 +15,7 @@ import type { Station, Train } from "../types";
 import { fetchTrains, type ServiceStatusInfo } from "../utils/api";
 import { hapticLight } from "../utils/haptics";
 import { getLocalizedStationName } from "../utils/stationNames";
+import { showToast } from "../utils/toast";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
@@ -367,8 +368,9 @@ export default function TrainList({
 						initialLoad: false,
 					};
 				}
-				// Background update failed - just clear loading state and continue with existing data
+				// Background update failed - show toast and continue with existing data
 				console.log("Background update failed, continuing with existing data");
+				showToast(t("connectionIssue"), "warning");
 				return {
 					...prev,
 					loading: false,

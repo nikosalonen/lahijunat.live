@@ -13,6 +13,7 @@ import {
 import { calculateDistance, isInFinland } from "../utils/location";
 import { getLocalizedStationName } from "../utils/stationNames";
 import { t } from "../utils/translations";
+import EmptyState from "./EmptyState";
 import ErrorState from "./ErrorState";
 import StationList from "./StationList";
 import TrainList from "./TrainList";
@@ -891,7 +892,7 @@ export default function StationManager({
 				</div>
 			</div>
 
-			{selectedOrigin && selectedDestination && (
+			{selectedOrigin && selectedDestination ? (
 				<div className="mt-6">
 					<TrainList
 						stationCode={selectedOrigin}
@@ -900,6 +901,12 @@ export default function StationManager({
 						key={`${selectedOrigin}-${selectedDestination}`}
 					/>
 				</div>
+			) : (
+				<EmptyState
+					hasOrigin={!!selectedOrigin}
+					onLocate={handleLocationRequest}
+					isLocating={!!isLocating}
+				/>
 			)}
 		</div>
 	);

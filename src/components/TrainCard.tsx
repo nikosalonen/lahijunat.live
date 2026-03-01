@@ -17,6 +17,7 @@ import {
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
+import { showToast } from "../utils/toast";
 import { calculateDuration, getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import { getDebugMode, subscribeToDebugMode } from "./DebugToggle";
@@ -549,6 +550,26 @@ export default function TrainCard({
 	]);
 
 	const isTrackChanged = trackChangeInfo.changed;
+
+	// Notify via toast when a highlighted train's track changes
+	const prevTrackChangedRef = useRef(false);
+	useEffect(() => {
+		if (isHighlighted && isTrackChanged && !prevTrackChangedRef.current) {
+			const trackInfo = getRelevantTrackInfo(
+				train,
+				stationCode,
+				destinationCode,
+			);
+			if (trackInfo) {
+				showToast(
+					`${t("trackChangedNotification")}: ${train.commuterLineID} → ${t("track")} ${trackInfo.track}`,
+					"warning",
+					6000,
+				);
+			}
+		}
+		prevTrackChangedRef.current = !!isTrackChanged;
+	}, [isTrackChanged, isHighlighted, train, stationCode, destinationCode]);
 
 	// Handler for flipping the track badge
 	const handleTrackFlip = () => {
