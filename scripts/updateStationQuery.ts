@@ -24,6 +24,7 @@ const DELAY_BETWEEN_REQUESTS = 2000; // 2 seconds to be respectful to the API
 const MAX_RETRIES = 2;
 const CONCURRENCY = 3;
 const SANITY_THRESHOLD = 0.3; // abort if >30% of stations change status
+const MAX_ABSOLUTE_CHANGES = 10;
 
 // GraphQL query to fetch ALL stations with passenger traffic (no exclusions)
 const ALL_STATIONS_QUERY = `query GetAllStations {
@@ -102,6 +103,12 @@ async function fetchAllStations(): Promise<Station[]> {
 		}),
 	);
 
+	if (stations.length === 0) {
+		throw new Error(
+			"GraphQL API returned zero stations. This likely indicates an API issue.",
+		);
+	}
+
 	console.log(
 		`✅ Fetched ${stations.length} total stations with passenger traffic`,
 	);
@@ -178,10 +185,19 @@ async function findStationsWithoutDestinations(
 			await delay(DELAY_BETWEEN_REQUESTS);
 		}
 
-		const task = fetchWithRetry(station).then((result) => {
-			results.push(result);
-		});
-		const tracked = task.finally(() => pending.delete(tracked));
+		const task = fetchWithRetry(station)
+			.then((result) => {
+				results.push(result);
+			})
+			.catch((error) => {
+				console.error(
+					`💥 Unexpected error processing ${station.shortCode}:`,
+					error,
+				);
+				results.push({ shortCode: station.shortCode, hasDestinations: null });
+			});
+		let tracked: Promise<void>;
+		tracked = task.finally(() => pending.delete(tracked));
 		pending.add(tracked);
 
 		// Wait for a slot when concurrency limit is reached
@@ -193,9 +209,16 @@ async function findStationsWithoutDestinations(
 	// Wait for all remaining
 	await Promise.all(pending);
 
+	if (results.length !== allStations.length) {
+		throw new Error(
+			`Results mismatch: got ${results.length} results for ${allStations.length} stations. Some stations may have been silently dropped.`,
+		);
+	}
+
 	// Abort if too many stations errored — likely an API outage
 	const errorCount = results.filter((r) => r.hasDestinations === null).length;
-	const errorRate = errorCount / allStations.length;
+	const errorRate =
+		allStations.length > 0 ? errorCount / allStations.length : 1;
 	console.log(
 		`\n📊 Check results: ${results.length} checked, ${errorCount} errors (${Math.round(errorRate * 100)}%)`,
 	);
@@ -279,88 +302,80 @@ function getCurrentExcludedStations(): string[] {
 }
 
 async function main(): Promise<void> {
-	try {
-		console.log("🚀 Starting automated station query update...");
-		console.log(`📅 Started at: ${new Date().toISOString()}`);
+	console.log("🚀 Starting automated station query update...");
+	console.log(`📅 Started at: ${new Date().toISOString()}`);
 
-		// Get current exclusions
-		const currentExcluded = getCurrentExcludedStations();
-		console.log(`\n📋 Currently excluded stations: ${currentExcluded.length}`);
-		console.log(`Current: ${currentExcluded.join(", ")}`);
+	// Get current exclusions
+	const currentExcluded = getCurrentExcludedStations();
+	console.log(`\n📋 Currently excluded stations: ${currentExcluded.length}`);
+	console.log(`Current: ${currentExcluded.join(", ")}`);
 
-		// Find stations without destinations
-		const newExcluded = await findStationsWithoutDestinations(currentExcluded);
+	// Find stations without destinations
+	const newExcluded = await findStationsWithoutDestinations(currentExcluded);
 
-		// Calculate differences
-		const toAdd = newExcluded.filter((code) => !currentExcluded.includes(code));
-		const toRemove = currentExcluded.filter(
-			(code) => !newExcluded.includes(code),
-		);
+	// Calculate differences
+	const toAdd = newExcluded.filter((code) => !currentExcluded.includes(code));
+	const toRemove = currentExcluded.filter(
+		(code) => !newExcluded.includes(code),
+	);
 
-		console.log("\n📊 Summary:");
-		console.log(
-			`✅ Stations with commuter traffic: ${toRemove.length} (will be re-included)`,
-		);
-		console.log(
-			`❌ Stations without commuter traffic: ${newExcluded.length} (will be excluded)`,
-		);
-		console.log(`📈 New exclusions: ${toAdd.length} stations`);
-		console.log(`📉 Removed exclusions: ${toRemove.length} stations`);
+	console.log("\n📊 Summary:");
+	console.log(
+		`✅ Stations with commuter traffic: ${toRemove.length} (will be re-included)`,
+	);
+	console.log(
+		`❌ Stations without commuter traffic: ${newExcluded.length} (will be excluded)`,
+	);
+	console.log(`📈 New exclusions: ${toAdd.length} stations`);
+	console.log(`📉 Removed exclusions: ${toRemove.length} stations`);
 
-		if (toAdd.length > 0) {
-			console.log(`🔴 Adding exclusions: ${toAdd.join(", ")}`);
-		}
-		if (toRemove.length > 0) {
-			console.log(`🟢 Removing exclusions: ${toRemove.join(", ")}`);
-		}
-
-		// Only update if there are changes
-		if (toAdd.length === 0 && toRemove.length === 0) {
-			console.log("\n✨ No changes needed - all stations have the same status");
-			return;
-		}
-
-		// Sanity check: abort if too many stations would change status
-		const sanityChecks = [
-			{ count: toAdd.length, label: "new exclusions would be added" },
-			{ count: toRemove.length, label: "exclusions would be removed" },
-		];
-		for (const { count, label } of sanityChecks) {
-			if (
-				currentExcluded.length > 0 &&
-				count / currentExcluded.length > SANITY_THRESHOLD
-			) {
-				throw new Error(
-					`🚨 Sanity check failed: ${count} ${label} (>${Math.round(SANITY_THRESHOLD * 100)}% of ${currentExcluded.length} current exclusions). This likely indicates an API issue. Aborting.`,
-				);
-			}
-		}
-
-		// Absolute threshold fallback for when currentExcluded is empty
-		const MAX_ABSOLUTE_CHANGES = 10;
-		if (
-			currentExcluded.length === 0 &&
-			(toAdd.length > MAX_ABSOLUTE_CHANGES ||
-				toRemove.length > MAX_ABSOLUTE_CHANGES)
-		) {
-			throw new Error(
-				`🚨 Sanity check failed: ${Math.max(toAdd.length, toRemove.length)} stations would change status (absolute limit: ${MAX_ABSOLUTE_CHANGES}). This likely indicates an API issue. Aborting.`,
-			);
-		}
-
-		// Generate new query
-		const newQuery = generateStationQuery(newExcluded);
-
-		// Update the file
-		updateApiFile(newQuery);
-
-		console.log("\n🎉 Station query update completed successfully!");
-		console.log(`📝 Final exclusions: ${newExcluded.length} stations`);
-		console.log(`⏰ Finished at: ${new Date().toISOString()}`);
-	} catch (error) {
-		console.error("💥 Error during station query update:", error);
-		process.exit(1);
+	if (toAdd.length > 0) {
+		console.log(`🔴 Adding exclusions: ${toAdd.join(", ")}`);
 	}
+	if (toRemove.length > 0) {
+		console.log(`🟢 Removing exclusions: ${toRemove.join(", ")}`);
+	}
+
+	// Only update if there are changes
+	if (toAdd.length === 0 && toRemove.length === 0) {
+		console.log("\n✨ No changes needed - all stations have the same status");
+		return;
+	}
+
+	// Sanity check: abort if too many stations would change status
+	if (
+		currentExcluded.length > 0 &&
+		toAdd.length / currentExcluded.length > SANITY_THRESHOLD
+	) {
+		throw new Error(
+			`🚨 Sanity check failed: ${toAdd.length} new exclusions would be added (>${Math.round(SANITY_THRESHOLD * 100)}% of ${currentExcluded.length} current exclusions). This likely indicates an API issue. Aborting.`,
+		);
+	}
+	if (
+		currentExcluded.length > 0 &&
+		toRemove.length / currentExcluded.length > SANITY_THRESHOLD
+	) {
+		throw new Error(
+			`🚨 Sanity check failed: ${toRemove.length} exclusions would be removed (>${Math.round(SANITY_THRESHOLD * 100)}% of ${currentExcluded.length} current exclusions). This likely indicates an API issue. Aborting.`,
+		);
+	}
+
+	// Absolute threshold fallback for when currentExcluded is empty
+	if (currentExcluded.length === 0 && toAdd.length > MAX_ABSOLUTE_CHANGES) {
+		throw new Error(
+			`🚨 Sanity check failed: ${toAdd.length} stations would be excluded (absolute limit: ${MAX_ABSOLUTE_CHANGES}). This likely indicates an API issue. Aborting.`,
+		);
+	}
+
+	// Generate new query
+	const newQuery = generateStationQuery(newExcluded);
+
+	// Update the file
+	updateApiFile(newQuery);
+
+	console.log("\n🎉 Station query update completed successfully!");
+	console.log(`📝 Final exclusions: ${newExcluded.length} stations`);
+	console.log(`⏰ Finished at: ${new Date().toISOString()}`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
