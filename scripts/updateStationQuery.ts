@@ -140,6 +140,10 @@ async function fetchWithRetry(
 				`💥 Error checking station ${station.name} (attempt ${attempt + 1}/${MAX_RETRIES + 1}):`,
 				error,
 			);
+			// Don't retry on programming/parse errors — they won't recover
+			if (error instanceof TypeError || error instanceof SyntaxError) {
+				break;
+			}
 		}
 	}
 
@@ -162,11 +166,9 @@ async function findStationsWithoutDestinations(
 	);
 
 	// Process stations with limited concurrency
-	let launched = 0;
-	const pending: Promise<void>[] = [];
+	const pending = new Set<Promise<void>>();
 
-	for (const station of allStations) {
-		const index = launched++;
+	for (const [index, station] of allStations.entries()) {
 		console.log(
 			`[${index + 1}/${allStations.length}] Checking ${station.name} (${station.shortCode})...`,
 		);
@@ -179,24 +181,29 @@ async function findStationsWithoutDestinations(
 		const task = fetchWithRetry(station).then((result) => {
 			results.push(result);
 		});
-		pending.push(task);
+		const tracked = task.finally(() => pending.delete(tracked));
+		pending.add(tracked);
 
 		// Wait for a slot when concurrency limit is reached
-		if (pending.length >= CONCURRENCY) {
+		if (pending.size >= CONCURRENCY) {
 			await Promise.race(pending);
-			// Remove settled promises
-			for (let i = pending.length - 1; i >= 0; i--) {
-				const settled = await Promise.race([
-					pending[i].then(() => true),
-					Promise.resolve(false),
-				]);
-				if (settled) pending.splice(i, 1);
-			}
 		}
 	}
 
 	// Wait for all remaining
 	await Promise.all(pending);
+
+	// Abort if too many stations errored — likely an API outage
+	const errorCount = results.filter((r) => r.hasDestinations === null).length;
+	const errorRate = errorCount / allStations.length;
+	console.log(
+		`\n📊 Check results: ${results.length} checked, ${errorCount} errors (${Math.round(errorRate * 100)}%)`,
+	);
+	if (errorRate > SANITY_THRESHOLD) {
+		throw new Error(
+			`🚨 Too many stations failed to check: ${errorCount}/${allStations.length} (${Math.round(errorRate * 100)}%). This likely indicates an API issue. Aborting.`,
+		);
+	}
 
 	// Build exclusion list: exclude stations with no destinations,
 	// keep current status for stations that errored (null)
@@ -314,21 +321,30 @@ async function main(): Promise<void> {
 		}
 
 		// Sanity check: abort if too many stations would change status
-		if (
-			currentExcluded.length > 0 &&
-			toAdd.length / currentExcluded.length > SANITY_THRESHOLD
-		) {
-			throw new Error(
-				`🚨 Sanity check failed: ${toAdd.length} new exclusions would be added (>${Math.round(SANITY_THRESHOLD * 100)}% of ${currentExcluded.length} current exclusions). This likely indicates an API issue. Aborting.`,
-			);
+		const sanityChecks = [
+			{ count: toAdd.length, label: "new exclusions would be added" },
+			{ count: toRemove.length, label: "exclusions would be removed" },
+		];
+		for (const { count, label } of sanityChecks) {
+			if (
+				currentExcluded.length > 0 &&
+				count / currentExcluded.length > SANITY_THRESHOLD
+			) {
+				throw new Error(
+					`🚨 Sanity check failed: ${count} ${label} (>${Math.round(SANITY_THRESHOLD * 100)}% of ${currentExcluded.length} current exclusions). This likely indicates an API issue. Aborting.`,
+				);
+			}
 		}
 
+		// Absolute threshold fallback for when currentExcluded is empty
+		const MAX_ABSOLUTE_CHANGES = 10;
 		if (
-			currentExcluded.length > 0 &&
-			toRemove.length / currentExcluded.length > SANITY_THRESHOLD
+			currentExcluded.length === 0 &&
+			(toAdd.length > MAX_ABSOLUTE_CHANGES ||
+				toRemove.length > MAX_ABSOLUTE_CHANGES)
 		) {
 			throw new Error(
-				`🚨 Sanity check failed: ${toRemove.length} exclusions would be removed (>${Math.round(SANITY_THRESHOLD * 100)}% of ${currentExcluded.length} current exclusions). This likely indicates an API issue. Aborting.`,
+				`🚨 Sanity check failed: ${Math.max(toAdd.length, toRemove.length)} stations would change status (absolute limit: ${MAX_ABSOLUTE_CHANGES}). This likely indicates an API issue. Aborting.`,
 			);
 		}
 
@@ -348,7 +364,10 @@ async function main(): Promise<void> {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-	main();
+	main().catch((error) => {
+		console.error("💥 Unhandled error in main:", error);
+		process.exit(1);
+	});
 }
 
 export { main as updateStationQuery };
