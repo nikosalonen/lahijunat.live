@@ -105,7 +105,7 @@ async function fetchAllStations(): Promise<Station[]> {
 
 async function hasCommuterTrains(stationCode: string): Promise<boolean | null> {
 	try {
-		const url = `https://rata.digitraffic.fi/api/v1/live-trains/station/${stationCode}?minutes_before_departure=120&minutes_after_departure=0&minutes_before_arrival=0&minutes_after_arrival=0&train_categories=Commuter`;
+		const url = `https://rata.digitraffic.fi/api/v1/live-trains/station/${stationCode}?minutes_before_departure=360&minutes_after_departure=0&minutes_before_arrival=0&minutes_after_arrival=0&train_categories=Commuter`;
 		const response = await fetch(url, {
 			headers: {
 				"Accept-Encoding": "gzip",
