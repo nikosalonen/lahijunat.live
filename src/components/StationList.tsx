@@ -259,10 +259,14 @@ export default function StationList({
 					id={listboxId}
 					data-testid="station-listbox"
 					role="listbox"
-					className={`dropdown-content menu bg-base-100 rounded-box w-full mt-2 ${
+					className={`menu bg-base-100 rounded-box w-full mt-2 ${
 						isLoading || filteredCount >= 5 ? "min-h-[12rem]" : ""
-					} max-h-60 overflow-y-auto shadow-xl z-50 animate-slide-down`}
-					style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
+					} max-h-[50vh] sm:max-h-60 overflow-y-auto flex-nowrap shadow-xl z-50 animate-slide-down`}
+					style={{
+						touchAction: "pan-y",
+						WebkitOverflowScrolling: "touch",
+						overscrollBehavior: "contain",
+					}}
 				>
 					{isLoading ? (
 						<StationListSkeleton />
