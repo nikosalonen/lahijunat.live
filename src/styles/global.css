@@ -270,6 +270,14 @@ body {
 	overflow-x: hidden;
 }
 
+/* Allow scrollable dropdowns inside DaisyUI collapse */
+.collapse-open {
+	overflow: visible;
+}
+.collapse-open > .collapse-content {
+	overflow: visible;
+}
+
 /* Scrollable containers */
 .scroll-smooth {
 	overscroll-behavior: contain;

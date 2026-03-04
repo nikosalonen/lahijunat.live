@@ -128,7 +128,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .dropdown-content",
+					'[data-testid="station-listbox"]',
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -162,7 +162,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .dropdown-content",
+					'[data-testid="station-listbox"]',
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -187,7 +187,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .dropdown-content",
+					'[data-testid="station-listbox"]',
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -222,7 +222,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .dropdown-content",
+					'[data-testid="station-listbox"]',
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -247,7 +247,7 @@ describe("StationManager", () => {
 			// Wait for the dropdown to appear
 			await waitFor(() => {
 				const dropdown = container.querySelector(
-					".station-list-container .dropdown-content",
+					'[data-testid="station-listbox"]',
 				);
 				expect(dropdown).toBeInTheDocument();
 			});
@@ -630,7 +630,7 @@ describe("StationManager", () => {
 				// Wait for the dropdown to appear
 				await waitFor(() => {
 					const dropdown = container.querySelector(
-						".station-list-container .dropdown-content",
+						'[data-testid="station-listbox"]',
 					);
 					expect(dropdown).toBeInTheDocument();
 				});
@@ -660,7 +660,7 @@ describe("StationManager", () => {
 
 				await waitFor(() => {
 					const dropdown = container.querySelector(
-						".station-list-container .dropdown-content",
+						'[data-testid="station-listbox"]',
 					);
 					expect(dropdown).toBeInTheDocument();
 				});
@@ -683,7 +683,7 @@ describe("StationManager", () => {
 
 				await waitFor(() => {
 					const dropdown = container.querySelector(
-						".station-list-container .dropdown-content",
+						'[data-testid="station-listbox"]',
 					);
 					expect(dropdown).toBeInTheDocument();
 				});
@@ -744,7 +744,7 @@ describe("StationManager", () => {
 
 				await waitFor(() => {
 					const dropdown = container.querySelector(
-						".station-list-container .dropdown-content",
+						'[data-testid="station-listbox"]',
 					);
 					expect(dropdown).toBeInTheDocument();
 				});
