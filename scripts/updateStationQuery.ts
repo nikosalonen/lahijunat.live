@@ -2,16 +2,17 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 // Read package.json dynamically for version
-const getVersion = (): string => {
+function getVersion(): string {
 	try {
 		const packagePath = join(process.cwd(), "package.json");
 		const packageContent = readFileSync(packagePath, "utf-8");
 		const packageJson = JSON.parse(packageContent);
 		return packageJson.version;
-	} catch {
+	} catch (error) {
+		console.warn("Could not read version from package.json:", error);
 		return "unknown";
 	}
-};
+}
 
 /**
  * Automated script to find stations without commuter traffic and update STATION_QUERY.
@@ -20,7 +21,9 @@ const getVersion = (): string => {
 
 const API_FILE_PATH = join(process.cwd(), "src/utils/api.ts");
 const DELAY_BETWEEN_REQUESTS = 2000;
-const SANITY_THRESHOLD = 0.3; // abort if >30% of stations change status
+const SANITY_THRESHOLD = 0.3; // abort if >30% of stations change status or fail
+const STATION_QUERY_REGEX =
+	/const STATION_QUERY = `query GetStations \{[\s\S]*?\}`;/;
 
 const USER_AGENT = `lahijunat.live/${getVersion()}`;
 
@@ -33,19 +36,12 @@ const ALL_STATIONS_QUERY = `query GetAllStations {
 	}){
 		name
 		shortCode
-		location
 	}
 }`;
 
 interface Station {
 	name: string;
 	shortCode: string;
-}
-
-interface GraphQLStation {
-	name: string;
-	shortCode: string;
-	location: [number, number];
 }
 
 function delay(ms: number): Promise<void> {
@@ -72,7 +68,15 @@ async function fetchAllStations(): Promise<Station[]> {
 		throw new Error(`Failed to fetch all stations: ${response.statusText}`);
 	}
 
-	const result = await response.json();
+	const text = await response.text();
+	let result: { errors?: unknown; data?: { stations?: Station[] } };
+	try {
+		result = JSON.parse(text);
+	} catch {
+		throw new Error(
+			`GraphQL API returned non-JSON response. Status: ${response.status}. Body preview: ${text.slice(0, 200)}`,
+		);
+	}
 
 	if (result.errors) {
 		throw new Error(`GraphQL Error: ${JSON.stringify(result.errors)}`);
@@ -84,7 +88,7 @@ async function fetchAllStations(): Promise<Station[]> {
 		);
 	}
 
-	const stations: Station[] = result.data.stations.map((s: GraphQLStation) => ({
+	const stations: Station[] = result.data.stations.map((s: Station) => ({
 		name: s.name.replace(" asema", ""),
 		shortCode: s.shortCode,
 	}));
@@ -117,7 +121,13 @@ async function hasCommuterTrains(stationCode: string): Promise<boolean | null> {
 		const trains = await response.json();
 		return Array.isArray(trains) && trains.length > 0;
 	} catch (error) {
-		console.error(`Error checking ${stationCode}:`, error);
+		const errorType =
+			error instanceof SyntaxError
+				? "JSON parse error"
+				: error instanceof TypeError
+					? "Network/fetch error"
+					: "Unexpected error";
+		console.error(`${errorType} checking ${stationCode}:`, error);
 		return null;
 	}
 }
@@ -144,18 +154,30 @@ async function findStationsWithoutTrains(
 
 		if (result === null) {
 			errorCount++;
-			// Keep current status for errored stations
+			// Preserve current status: keep excluded stations excluded, keep included stations included
 			if (currentExcluded.includes(station.shortCode)) {
 				excluded.push(station.shortCode);
+				console.warn(
+					`  Keeping ${station.shortCode} excluded (check failed, preserving current status)`,
+				);
+			} else {
+				console.warn(
+					`  Keeping ${station.shortCode} included (check failed, preserving current status)`,
+				);
 			}
 		} else if (!result) {
 			excluded.push(station.shortCode);
 		}
 	}
 
+	if (errorCount > 0) {
+		console.warn(
+			`\n${errorCount}/${allStations.length} station checks failed — preserving their current status`,
+		);
+	}
+
 	// Abort if too many errors — likely an API outage
-	const errorRate =
-		allStations.length > 0 ? errorCount / allStations.length : 1;
+	const errorRate = errorCount / allStations.length;
 	if (errorRate > SANITY_THRESHOLD) {
 		throw new Error(
 			`Too many stations failed to check: ${errorCount}/${allStations.length} (${Math.round(errorRate * 100)}%). Aborting.`,
@@ -189,22 +211,18 @@ function updateApiFile(newQuery: string): void {
 	console.log("Updating STATION_QUERY in api.ts...");
 
 	const fileContent = readFileSync(API_FILE_PATH, "utf-8");
-	const queryRegex = /const STATION_QUERY = `query GetStations \{[\s\S]*?\}`;/;
-
-	if (!queryRegex.test(fileContent)) {
+	if (!STATION_QUERY_REGEX.test(fileContent)) {
 		throw new Error("Could not find STATION_QUERY in api.ts file");
 	}
 
-	const updatedContent = fileContent.replace(queryRegex, newQuery);
+	const updatedContent = fileContent.replace(STATION_QUERY_REGEX, newQuery);
 	writeFileSync(API_FILE_PATH, updatedContent, "utf-8");
 	console.log("Updated STATION_QUERY in api.ts");
 }
 
 function getCurrentExcludedStations(): string[] {
 	const fileContent = readFileSync(API_FILE_PATH, "utf-8");
-	const queryMatch = fileContent.match(
-		/const STATION_QUERY = `query GetStations \{[\s\S]*?\}`;/,
-	);
+	const queryMatch = fileContent.match(STATION_QUERY_REGEX);
 
 	if (!queryMatch) {
 		throw new Error("Could not find STATION_QUERY in api.ts");
@@ -242,13 +260,17 @@ async function main(): Promise<void> {
 	}
 
 	// Sanity check: abort if too many stations would change status
+	const changeCount = toAdd.length + toRemove.length;
 	if (currentExcluded.length > 0) {
-		const changeCount = toAdd.length + toRemove.length;
 		if (changeCount / currentExcluded.length > SANITY_THRESHOLD) {
 			throw new Error(
 				`Sanity check failed: ${changeCount} changes vs ${currentExcluded.length} current exclusions (>${Math.round(SANITY_THRESHOLD * 100)}%). Aborting.`,
 			);
 		}
+	} else if (changeCount > 10) {
+		throw new Error(
+			`Sanity check failed: ${changeCount} exclusions from empty baseline. Aborting.`,
+		);
 	}
 
 	const newQuery = generateStationQuery(newExcluded);
@@ -261,7 +283,7 @@ async function main(): Promise<void> {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
 	main().catch((error) => {
-		console.error("Error:", error);
+		console.error("Station query update failed:", error);
 		process.exit(1);
 	});
 }

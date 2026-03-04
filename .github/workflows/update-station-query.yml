@@ -35,9 +35,6 @@ jobs:
 
       - name: Run station query update
         run: pnpm run update-station-query
-        env:
-          # Ensure we have enough time for the API calls
-          NODE_OPTIONS: '--max-old-space-size=4096'
 
       - name: Check for changes
         id: git-check
@@ -65,8 +62,3 @@ jobs:
         if: steps.git-check.outputs.changes != 'true'
         run: |
           echo "ℹ️ No changes to station query needed - all stations still have the same commuter traffic status"
-
-      - name: Trigger Netlify deploy
-        if: steps.git-check.outputs.changes == 'true'
-        run: |
-          echo "🚀 Changes pushed - Netlify will automatically rebuild the site"
