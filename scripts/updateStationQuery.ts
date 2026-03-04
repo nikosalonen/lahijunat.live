@@ -21,6 +21,10 @@ const getVersion = (): string => {
 
 const API_FILE_PATH = join(process.cwd(), "src/utils/api.ts");
 const DELAY_BETWEEN_REQUESTS = 2000; // 2 seconds to be respectful to the API
+const MAX_RETRIES = 2;
+const CONCURRENCY = 3;
+const SANITY_THRESHOLD = 0.3; // abort if >30% of stations change status
+const MAX_ABSOLUTE_CHANGES = 10;
 
 // GraphQL query to fetch ALL stations with passenger traffic (no exclusions)
 const ALL_STATIONS_QUERY = `query GetAllStations {
@@ -99,35 +103,29 @@ async function fetchAllStations(): Promise<Station[]> {
 		}),
 	);
 
+	if (stations.length === 0) {
+		throw new Error(
+			"GraphQL API returned zero stations. This likely indicates an API issue.",
+		);
+	}
+
 	console.log(
 		`✅ Fetched ${stations.length} total stations with passenger traffic`,
 	);
 	return stations;
 }
 
-async function findStationsWithoutDestinations(): Promise<string[]> {
-	console.log("🔍 Finding stations without commuter destinations...");
-
-	// Fetch ALL stations (not filtered by current exclusions)
-	const allStations = await fetchAllStations();
-	const stationsWithoutDestinations: string[] = [];
-
-	console.log(
-		`📊 Checking ${allStations.length} stations (including currently excluded)...`,
-	);
-
-	for (const [index, station] of allStations.entries()) {
+async function fetchWithRetry(
+	station: Station,
+): Promise<{ shortCode: string; hasDestinations: boolean | null }> {
+	for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
 		try {
-			console.log(
-				`[${index + 1}/${allStations.length}] Checking ${station.name} (${station.shortCode})...`,
-			);
-
-			// Add delay between requests to be respectful to the API
-			if (index > 0) {
+			if (attempt > 0) {
+				const backoff = DELAY_BETWEEN_REQUESTS * 2 ** attempt;
 				console.log(
-					`⏳ Waiting ${DELAY_BETWEEN_REQUESTS / 1000}s before next request...`,
+					`🔄 Retry ${attempt}/${MAX_RETRIES} for ${station.shortCode} (waiting ${backoff / 1000}s)...`,
 				);
-				await delay(DELAY_BETWEEN_REQUESTS);
+				await delay(backoff);
 			}
 
 			const destinations = await fetchTrainsLeavingFromStation(
@@ -135,19 +133,112 @@ async function findStationsWithoutDestinations(): Promise<string[]> {
 			);
 
 			if (destinations.length === 0) {
-				stationsWithoutDestinations.push(station.shortCode);
 				console.log(
 					`❌ No destinations found for: ${station.name} (${station.shortCode})`,
 				);
-			} else {
-				console.log(
-					`✅ Found ${destinations.length} destinations for: ${station.name} (${station.shortCode})`,
-				);
+				return { shortCode: station.shortCode, hasDestinations: false };
 			}
+			console.log(
+				`✅ Found ${destinations.length} destinations for: ${station.name} (${station.shortCode})`,
+			);
+			return { shortCode: station.shortCode, hasDestinations: true };
 		} catch (error) {
-			console.error(`💥 Error checking station ${station.name}:`, error);
-			// Add to exclusion list if there's an error (safer to exclude)
-			stationsWithoutDestinations.push(station.shortCode);
+			console.error(
+				`💥 Error checking station ${station.name} (attempt ${attempt + 1}/${MAX_RETRIES + 1}):`,
+				error,
+			);
+			// Don't retry on programming/parse errors — they won't recover
+			if (error instanceof TypeError || error instanceof SyntaxError) {
+				break;
+			}
+		}
+	}
+
+	console.warn(
+		`⚠️ All retries failed for ${station.name} (${station.shortCode}) — skipping (keeping current status)`,
+	);
+	return { shortCode: station.shortCode, hasDestinations: null };
+}
+
+async function findStationsWithoutDestinations(
+	currentExcluded: string[],
+): Promise<string[]> {
+	console.log("🔍 Finding stations without commuter destinations...");
+
+	const allStations = await fetchAllStations();
+	const results: { shortCode: string; hasDestinations: boolean | null }[] = [];
+
+	console.log(
+		`📊 Checking ${allStations.length} stations with concurrency=${CONCURRENCY}...`,
+	);
+
+	// Process stations with limited concurrency
+	const pending = new Set<Promise<void>>();
+
+	for (const [index, station] of allStations.entries()) {
+		console.log(
+			`[${index + 1}/${allStations.length}] Checking ${station.name} (${station.shortCode})...`,
+		);
+
+		// Stagger requests by DELAY_BETWEEN_REQUESTS
+		if (index > 0) {
+			await delay(DELAY_BETWEEN_REQUESTS);
+		}
+
+		const task = fetchWithRetry(station)
+			.then((result) => {
+				results.push(result);
+			})
+			.catch((error) => {
+				console.error(
+					`💥 Unexpected error processing ${station.shortCode}:`,
+					error,
+				);
+				results.push({ shortCode: station.shortCode, hasDestinations: null });
+			});
+		let tracked: Promise<void>;
+		tracked = task.finally(() => pending.delete(tracked));
+		pending.add(tracked);
+
+		// Wait for a slot when concurrency limit is reached
+		if (pending.size >= CONCURRENCY) {
+			await Promise.race(pending);
+		}
+	}
+
+	// Wait for all remaining
+	await Promise.all(pending);
+
+	if (results.length !== allStations.length) {
+		throw new Error(
+			`Results mismatch: got ${results.length} results for ${allStations.length} stations. Some stations may have been silently dropped.`,
+		);
+	}
+
+	// Abort if too many stations errored — likely an API outage
+	const errorCount = results.filter((r) => r.hasDestinations === null).length;
+	const errorRate =
+		allStations.length > 0 ? errorCount / allStations.length : 1;
+	console.log(
+		`\n📊 Check results: ${results.length} checked, ${errorCount} errors (${Math.round(errorRate * 100)}%)`,
+	);
+	if (errorRate > SANITY_THRESHOLD) {
+		throw new Error(
+			`🚨 Too many stations failed to check: ${errorCount}/${allStations.length} (${Math.round(errorRate * 100)}%). This likely indicates an API issue. Aborting.`,
+		);
+	}
+
+	// Build exclusion list: exclude stations with no destinations,
+	// keep current status for stations that errored (null)
+	const stationsWithoutDestinations: string[] = [];
+	for (const result of results) {
+		if (result.hasDestinations === false) {
+			stationsWithoutDestinations.push(result.shortCode);
+		} else if (result.hasDestinations === null) {
+			// Keep current status for errored stations
+			if (currentExcluded.includes(result.shortCode)) {
+				stationsWithoutDestinations.push(result.shortCode);
+			}
 		}
 	}
 
@@ -211,64 +302,87 @@ function getCurrentExcludedStations(): string[] {
 }
 
 async function main(): Promise<void> {
-	try {
-		console.log("🚀 Starting automated station query update...");
-		console.log(`📅 Started at: ${new Date().toISOString()}`);
+	console.log("🚀 Starting automated station query update...");
+	console.log(`📅 Started at: ${new Date().toISOString()}`);
 
-		// Get current exclusions
-		const currentExcluded = getCurrentExcludedStations();
-		console.log(`\n📋 Currently excluded stations: ${currentExcluded.length}`);
-		console.log(`Current: ${currentExcluded.join(", ")}`);
+	// Get current exclusions
+	const currentExcluded = getCurrentExcludedStations();
+	console.log(`\n📋 Currently excluded stations: ${currentExcluded.length}`);
+	console.log(`Current: ${currentExcluded.join(", ")}`);
 
-		// Find stations without destinations
-		const newExcluded = await findStationsWithoutDestinations();
+	// Find stations without destinations
+	const newExcluded = await findStationsWithoutDestinations(currentExcluded);
 
-		// Calculate differences
-		const toAdd = newExcluded.filter((code) => !currentExcluded.includes(code));
-		const toRemove = currentExcluded.filter(
-			(code) => !newExcluded.includes(code),
-		);
+	// Calculate differences
+	const toAdd = newExcluded.filter((code) => !currentExcluded.includes(code));
+	const toRemove = currentExcluded.filter(
+		(code) => !newExcluded.includes(code),
+	);
 
-		console.log("\n📊 Summary:");
-		console.log(
-			`✅ Stations with commuter traffic: ${toRemove.length} (will be re-included)`,
-		);
-		console.log(
-			`❌ Stations without commuter traffic: ${newExcluded.length} (will be excluded)`,
-		);
-		console.log(`📈 New exclusions: ${toAdd.length} stations`);
-		console.log(`📉 Removed exclusions: ${toRemove.length} stations`);
+	console.log("\n📊 Summary:");
+	console.log(
+		`✅ Stations with commuter traffic: ${toRemove.length} (will be re-included)`,
+	);
+	console.log(
+		`❌ Stations without commuter traffic: ${newExcluded.length} (will be excluded)`,
+	);
+	console.log(`📈 New exclusions: ${toAdd.length} stations`);
+	console.log(`📉 Removed exclusions: ${toRemove.length} stations`);
 
-		if (toAdd.length > 0) {
-			console.log(`🔴 Adding exclusions: ${toAdd.join(", ")}`);
-		}
-		if (toRemove.length > 0) {
-			console.log(`🟢 Removing exclusions: ${toRemove.join(", ")}`);
-		}
-
-		// Only update if there are changes
-		if (toAdd.length === 0 && toRemove.length === 0) {
-			console.log("\n✨ No changes needed - all stations have the same status");
-			return;
-		}
-
-		// Generate new query
-		const newQuery = generateStationQuery(newExcluded);
-
-		// Update the file
-		updateApiFile(newQuery);
-
-		console.log("\n🎉 Station query update completed successfully!");
-		console.log(`📝 Final exclusions: ${newExcluded.length} stations`);
-		console.log(`⏰ Finished at: ${new Date().toISOString()}`);
-	} catch (error) {
-		console.error("💥 Error during station query update:", error);
-		process.exit(1);
+	if (toAdd.length > 0) {
+		console.log(`🔴 Adding exclusions: ${toAdd.join(", ")}`);
 	}
+	if (toRemove.length > 0) {
+		console.log(`🟢 Removing exclusions: ${toRemove.join(", ")}`);
+	}
+
+	// Only update if there are changes
+	if (toAdd.length === 0 && toRemove.length === 0) {
+		console.log("\n✨ No changes needed - all stations have the same status");
+		return;
+	}
+
+	// Sanity check: abort if too many stations would change status
+	if (
+		currentExcluded.length > 0 &&
+		toAdd.length / currentExcluded.length > SANITY_THRESHOLD
+	) {
+		throw new Error(
+			`🚨 Sanity check failed: ${toAdd.length} new exclusions would be added (>${Math.round(SANITY_THRESHOLD * 100)}% of ${currentExcluded.length} current exclusions). This likely indicates an API issue. Aborting.`,
+		);
+	}
+	if (
+		currentExcluded.length > 0 &&
+		toRemove.length / currentExcluded.length > SANITY_THRESHOLD
+	) {
+		throw new Error(
+			`🚨 Sanity check failed: ${toRemove.length} exclusions would be removed (>${Math.round(SANITY_THRESHOLD * 100)}% of ${currentExcluded.length} current exclusions). This likely indicates an API issue. Aborting.`,
+		);
+	}
+
+	// Absolute threshold fallback for when currentExcluded is empty
+	if (currentExcluded.length === 0 && toAdd.length > MAX_ABSOLUTE_CHANGES) {
+		throw new Error(
+			`🚨 Sanity check failed: ${toAdd.length} stations would be excluded (absolute limit: ${MAX_ABSOLUTE_CHANGES}). This likely indicates an API issue. Aborting.`,
+		);
+	}
+
+	// Generate new query
+	const newQuery = generateStationQuery(newExcluded);
+
+	// Update the file
+	updateApiFile(newQuery);
+
+	console.log("\n🎉 Station query update completed successfully!");
+	console.log(`📝 Final exclusions: ${newExcluded.length} stations`);
+	console.log(`⏰ Finished at: ${new Date().toISOString()}`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-	main();
+	main().catch((error) => {
+		console.error("💥 Unhandled error in main:", error);
+		process.exit(1);
+	});
 }
 
 export { main as updateStationQuery };
