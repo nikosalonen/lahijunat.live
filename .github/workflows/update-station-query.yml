@@ -4,8 +4,8 @@ permissions:
 
 on:
   schedule:
-    # Run every Wednesday at 3 AM UTC (adjust as needed)
-    - cron: '0 3 * * 3'
+    # Run every Wednesday at 10 AM UTC (midday Finnish time, peak commuter traffic)
+    - cron: '0 10 * * 3'
 
   # Allow manual triggering for testing
   workflow_dispatch:
