@@ -21,6 +21,9 @@ const getVersion = (): string => {
 
 const API_FILE_PATH = join(process.cwd(), "src/utils/api.ts");
 const DELAY_BETWEEN_REQUESTS = 2000; // 2 seconds to be respectful to the API
+const MAX_RETRIES = 2;
+const CONCURRENCY = 3;
+const SANITY_THRESHOLD = 0.3; // abort if >30% of stations change status
 
 // GraphQL query to fetch ALL stations with passenger traffic (no exclusions)
 const ALL_STATIONS_QUERY = `query GetAllStations {
@@ -105,29 +108,17 @@ async function fetchAllStations(): Promise<Station[]> {
 	return stations;
 }
 
-async function findStationsWithoutDestinations(): Promise<string[]> {
-	console.log("🔍 Finding stations without commuter destinations...");
-
-	// Fetch ALL stations (not filtered by current exclusions)
-	const allStations = await fetchAllStations();
-	const stationsWithoutDestinations: string[] = [];
-
-	console.log(
-		`📊 Checking ${allStations.length} stations (including currently excluded)...`,
-	);
-
-	for (const [index, station] of allStations.entries()) {
+async function fetchWithRetry(
+	station: Station,
+): Promise<{ shortCode: string; hasDestinations: boolean | null }> {
+	for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
 		try {
-			console.log(
-				`[${index + 1}/${allStations.length}] Checking ${station.name} (${station.shortCode})...`,
-			);
-
-			// Add delay between requests to be respectful to the API
-			if (index > 0) {
+			if (attempt > 0) {
+				const backoff = DELAY_BETWEEN_REQUESTS * 2 ** attempt;
 				console.log(
-					`⏳ Waiting ${DELAY_BETWEEN_REQUESTS / 1000}s before next request...`,
+					`🔄 Retry ${attempt}/${MAX_RETRIES} for ${station.shortCode} (waiting ${backoff / 1000}s)...`,
 				);
-				await delay(DELAY_BETWEEN_REQUESTS);
+				await delay(backoff);
 			}
 
 			const destinations = await fetchTrainsLeavingFromStation(
@@ -135,19 +126,89 @@ async function findStationsWithoutDestinations(): Promise<string[]> {
 			);
 
 			if (destinations.length === 0) {
-				stationsWithoutDestinations.push(station.shortCode);
 				console.log(
 					`❌ No destinations found for: ${station.name} (${station.shortCode})`,
 				);
-			} else {
-				console.log(
-					`✅ Found ${destinations.length} destinations for: ${station.name} (${station.shortCode})`,
-				);
+				return { shortCode: station.shortCode, hasDestinations: false };
 			}
+			console.log(
+				`✅ Found ${destinations.length} destinations for: ${station.name} (${station.shortCode})`,
+			);
+			return { shortCode: station.shortCode, hasDestinations: true };
 		} catch (error) {
-			console.error(`💥 Error checking station ${station.name}:`, error);
-			// Add to exclusion list if there's an error (safer to exclude)
-			stationsWithoutDestinations.push(station.shortCode);
+			console.error(
+				`💥 Error checking station ${station.name} (attempt ${attempt + 1}/${MAX_RETRIES + 1}):`,
+				error,
+			);
+		}
+	}
+
+	console.warn(
+		`⚠️ All retries failed for ${station.name} (${station.shortCode}) — skipping (keeping current status)`,
+	);
+	return { shortCode: station.shortCode, hasDestinations: null };
+}
+
+async function findStationsWithoutDestinations(
+	currentExcluded: string[],
+): Promise<string[]> {
+	console.log("🔍 Finding stations without commuter destinations...");
+
+	const allStations = await fetchAllStations();
+	const results: { shortCode: string; hasDestinations: boolean | null }[] = [];
+
+	console.log(
+		`📊 Checking ${allStations.length} stations with concurrency=${CONCURRENCY}...`,
+	);
+
+	// Process stations with limited concurrency
+	let launched = 0;
+	const pending: Promise<void>[] = [];
+
+	for (const station of allStations) {
+		const index = launched++;
+		console.log(
+			`[${index + 1}/${allStations.length}] Checking ${station.name} (${station.shortCode})...`,
+		);
+
+		// Stagger requests by DELAY_BETWEEN_REQUESTS
+		if (index > 0) {
+			await delay(DELAY_BETWEEN_REQUESTS);
+		}
+
+		const task = fetchWithRetry(station).then((result) => {
+			results.push(result);
+		});
+		pending.push(task);
+
+		// Wait for a slot when concurrency limit is reached
+		if (pending.length >= CONCURRENCY) {
+			await Promise.race(pending);
+			// Remove settled promises
+			for (let i = pending.length - 1; i >= 0; i--) {
+				const settled = await Promise.race([
+					pending[i].then(() => true),
+					Promise.resolve(false),
+				]);
+				if (settled) pending.splice(i, 1);
+			}
+		}
+	}
+
+	// Wait for all remaining
+	await Promise.all(pending);
+
+	// Build exclusion list: exclude stations with no destinations,
+	// keep current status for stations that errored (null)
+	const stationsWithoutDestinations: string[] = [];
+	for (const result of results) {
+		if (result.hasDestinations === false) {
+			stationsWithoutDestinations.push(result.shortCode);
+		} else if (result.hasDestinations === null) {
+			// Keep current status for errored stations
+			if (currentExcluded.includes(result.shortCode)) {
+				stationsWithoutDestinations.push(result.shortCode);
+			}
 		}
 	}
 
@@ -221,7 +282,7 @@ async function main(): Promise<void> {
 		console.log(`Current: ${currentExcluded.join(", ")}`);
 
 		// Find stations without destinations
-		const newExcluded = await findStationsWithoutDestinations();
+		const newExcluded = await findStationsWithoutDestinations(currentExcluded);
 
 		// Calculate differences
 		const toAdd = newExcluded.filter((code) => !currentExcluded.includes(code));
@@ -250,6 +311,25 @@ async function main(): Promise<void> {
 		if (toAdd.length === 0 && toRemove.length === 0) {
 			console.log("\n✨ No changes needed - all stations have the same status");
 			return;
+		}
+
+		// Sanity check: abort if too many stations would change status
+		if (
+			currentExcluded.length > 0 &&
+			toAdd.length / currentExcluded.length > SANITY_THRESHOLD
+		) {
+			throw new Error(
+				`🚨 Sanity check failed: ${toAdd.length} new exclusions would be added (>${Math.round(SANITY_THRESHOLD * 100)}% of ${currentExcluded.length} current exclusions). This likely indicates an API issue. Aborting.`,
+			);
+		}
+
+		if (
+			currentExcluded.length > 0 &&
+			toRemove.length / currentExcluded.length > SANITY_THRESHOLD
+		) {
+			throw new Error(
+				`🚨 Sanity check failed: ${toRemove.length} exclusions would be removed (>${Math.round(SANITY_THRESHOLD * 100)}% of ${currentExcluded.length} current exclusions). This likely indicates an API issue. Aborting.`,
+			);
 		}
 
 		// Generate new query
