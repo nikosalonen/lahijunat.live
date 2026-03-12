@@ -50,7 +50,7 @@
 	"devDependencies": {
 		"@astrojs/check": "^0.9.6",
 		"@babel/plugin-bugfix-firefox-class-in-computed-class-key": "^7.28.5",
-		"@biomejs/biome": "2.4.5",
+		"@biomejs/biome": "2.4.6",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/preact": "^3.2.4",
 		"@types/node": "~24.0.15",
