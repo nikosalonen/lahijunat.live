@@ -29,7 +29,7 @@
 	},
 	"dependencies": {
 		"@astrojs/preact": "^4.1.3",
-		"@astrojs/sitemap": "^3.7.0",
+		"@astrojs/sitemap": "^3.7.1",
 		"@tailwindcss/vite": "^4.2.1",
 		"astro": "^5.18.0",
 		"preact": "^10.28.4",
@@ -48,7 +48,7 @@
 		]
 	},
 	"devDependencies": {
-		"@astrojs/check": "^0.9.6",
+		"@astrojs/check": "^0.9.7",
 		"@babel/plugin-bugfix-firefox-class-in-computed-class-key": "^7.28.5",
 		"@biomejs/biome": "2.4.5",
 		"@testing-library/jest-dom": "^6.9.1",
