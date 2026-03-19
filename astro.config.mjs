@@ -75,9 +75,6 @@ export default defineConfig({
 		service: { entrypoint: "astro/assets/services/noop" },
 	},
 	vite: {
-		// @ts-expect-error - Suppresses Vite plugin type mismatch caused by different Vite
-		// versions in the dependency tree (Astro's bundled Vite vs @tailwindcss/vite's Vite).
-		// This is a known issue and not a bug in Tailwind itself.
 		plugins: [tailwindcss()],
 		resolve: {
 			alias: {
