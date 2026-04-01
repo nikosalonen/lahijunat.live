@@ -22,7 +22,7 @@ jobs:
           # Use a personal access token to allow the workflow to push changes
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
