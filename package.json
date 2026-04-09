@@ -32,7 +32,7 @@
 		"@astrojs/sitemap": "^3.7.2",
 		"@tailwindcss/vite": "^4.2.2",
 		"astro": "^6.1.4",
-		"preact": "^10.29.0",
+		"preact": "^10.29.1",
 		"tailwindcss": "^4.2.2",
 		"workbox-cacheable-response": "^7.4.0",
 		"workbox-core": "^7.4.0",
