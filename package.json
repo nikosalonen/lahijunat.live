@@ -30,10 +30,10 @@
 	"dependencies": {
 		"@astrojs/preact": "^5.1.1",
 		"@astrojs/sitemap": "^3.7.2",
-		"@tailwindcss/vite": "^4.2.2",
+		"@tailwindcss/vite": "^4.2.4",
 		"astro": "^6.1.4",
-		"preact": "^10.29.0",
-		"tailwindcss": "^4.2.2",
+		"preact": "^10.29.1",
+		"tailwindcss": "^4.2.4",
 		"workbox-cacheable-response": "^7.4.0",
 		"workbox-core": "^7.4.0",
 		"workbox-expiration": "^7.4.0",
