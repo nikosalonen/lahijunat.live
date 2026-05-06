@@ -445,6 +445,7 @@ const STATION_QUERY = `query GetStations {
 			{shortCode:{unequals:"MH"}},
 			{shortCode:{unequals:"MI"}},
 			{shortCode:{unequals:"MIS"}},
+			{shortCode:{unequals:"MLO"}},
 			{shortCode:{unequals:"MR"}},
 			{shortCode:{unequals:"MUL"}},
 			{shortCode:{unequals:"MVA"}},
