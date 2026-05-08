@@ -218,12 +218,14 @@ const metaDescription = description || defaultDescription;
               </div>
               <label
                 id="theme-toggle"
+                for="theme-toggle-input"
                 class="swap swap-rotate relative z-0 min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center rounded-lg text-white hover:bg-white/10 active:bg-white/20 cursor-pointer"
                 aria-label="Toggle theme"
                 role="switch"
                 aria-checked="false"
               >
-                <input type="checkbox" class="sr-only" />
+                <input id="theme-toggle-input" type="checkbox" class="sr-only" />
+                <span class="sr-only">Toggle theme</span>
                 <!-- Light icon (sun) -->
                 <svg
                   id="theme-toggle-light-icon"
