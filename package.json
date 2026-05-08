@@ -2,7 +2,7 @@
 	"name": "lahijunat-live",
 	"type": "module",
 	"version": "1.14.0",
-	"packageManager": "pnpm@10.32.0+sha512.9b2634bb3fed5601c33633f2d92593f506270a3963b8c51d2b2d6a828da615ce4e9deebef9614ccebbc13ac8d3c0f9c9ccceb583c69c8578436fa477dbb20d70",
+	"packageManager": "pnpm@11.0.8",
 	"engines": {
 		"node": ">=24"
 	},
@@ -31,15 +31,15 @@
 		"@astrojs/preact": "^5.1.2",
 		"@astrojs/sitemap": "^3.7.2",
 		"@tailwindcss/vite": "^4.2.4",
-		"astro": "^6.1.9",
+		"astro": "^6.3.1",
 		"preact": "^10.29.1",
 		"tailwindcss": "^4.2.4",
-		"workbox-cacheable-response": "^7.4.0",
-		"workbox-core": "^7.4.0",
-		"workbox-expiration": "^7.4.0",
-		"workbox-precaching": "^7.4.0",
-		"workbox-routing": "^7.4.0",
-		"workbox-strategies": "^7.4.0"
+		"workbox-cacheable-response": "^7.4.1",
+		"workbox-core": "^7.4.1",
+		"workbox-expiration": "^7.4.1",
+		"workbox-precaching": "^7.4.1",
+		"workbox-routing": "^7.4.1",
+		"workbox-strategies": "^7.4.1"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
@@ -48,19 +48,19 @@
 		]
 	},
 	"devDependencies": {
-		"@astrojs/check": "^0.9.8",
+		"@astrojs/check": "^0.9.9",
 		"@babel/plugin-bugfix-firefox-class-in-computed-class-key": "^7.28.5",
-		"@biomejs/biome": "2.4.13",
+		"@biomejs/biome": "2.4.14",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/preact": "^3.2.4",
 		"@types/node": "~25.6.0",
 		"daisyui": "^5.5.19",
 		"husky": "^9.1.7",
-		"jsdom": "^29.0.2",
-		"lint-staged": "^16.4.0",
+		"jsdom": "^29.1.1",
+		"lint-staged": "^17.0.2",
 		"tsx": "^4.21.0",
-		"typescript": "^5.9.3",
+		"typescript": "^6.0.3",
 		"vitest": "^4.1.5",
-		"workbox-cli": "^7.4.0"
+		"workbox-cli": "^7.4.1"
 	}
 }
