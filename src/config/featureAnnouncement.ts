@@ -42,9 +42,9 @@ export const featureAnnouncementConfig = {
 	 * - translationKey: key from translations.ts for the feature description
 	 */
 	features: [
-		{ icon: "🔔", translationKey: "newFeaturesTrackChangeAlerts" },
 		{ icon: "♿", translationKey: "newFeaturesAccessibility" },
-		{ icon: "⚡", translationKey: "newFeaturesFasterLoading" },
+		{ icon: "📱", translationKey: "newFeaturesCleanerMobile" },
+		{ icon: "🛠️", translationKey: "newFeaturesPolish" },
 	] as Array<{ icon: string; translationKey: string }>,
 };
 

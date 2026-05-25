@@ -703,10 +703,6 @@ export default function TrainList({
 		return Math.max(0, Math.min(100, remaining));
 	}, [currentTime, lastRefreshAt, currentRefreshInterval]);
 
-	const elapsedSeconds = Math.floor(
-		(currentTime.getTime() - lastRefreshAt) / 1000,
-	);
-
 	return (
 		<div>
 			<div class="max-w-4xl mx-auto space-y-6 px-2 sm:px-4">
@@ -775,7 +771,7 @@ export default function TrainList({
 					<button
 						type="button"
 						onClick={() => void loadTrains()}
-						class="flex-grow flex flex-col gap-1 cursor-pointer bg-transparent border-0 p-0 text-left touch-manipulation"
+						class="flex-grow cursor-pointer bg-transparent border-0 p-0 text-left touch-manipulation"
 						aria-label={t("tapToRefresh")}
 					>
 						<LinearProgress
@@ -784,11 +780,6 @@ export default function TrainList({
 							widthClass="w-full"
 							direction="rtl"
 						/>
-						<span class="text-xs text-base-content/40">
-							{elapsedSeconds < 5
-								? t("justNow")
-								: `${elapsedSeconds}${t("secondsAgo")}`}
-						</span>
 					</button>
 					{hasSlowTrains && (
 						<label
@@ -827,7 +818,7 @@ export default function TrainList({
 										? ""
 										: isHiddenByFilter
 											? "opacity-0 max-h-0 overflow-hidden scale-95 pointer-events-none -mt-4"
-											: "animate-scale-in opacity-100 max-h-[200px]"
+											: "animate-scale-in opacity-100 max-h-[500px]"
 								}`}
 								style={{
 									animationDelay:

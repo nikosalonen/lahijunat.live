@@ -80,9 +80,9 @@ export const translations = {
 		pwaUpdateDismiss: "Myöhemmin",
 		// Feature announcement
 		newFeaturesTitle: "Uutta sovelluksessa",
-		newFeaturesTrackChangeAlerts: "Sovelluksen sisäiset raidemuutosilmoitukset",
 		newFeaturesAccessibility: "Parannettu saavutettavuus",
-		newFeaturesFasterLoading: "Nopeampi lataus",
+		newFeaturesCleanerMobile: "Selkeämpi mobiilinäkymä",
+		newFeaturesPolish: "Pieniä korjauksia ja viimeistelyä",
 		newFeaturesDismiss: "Selvä!",
 		// Accessibility
 		skipToContent: "Siirry sisältöön",
@@ -95,8 +95,6 @@ export const translations = {
 		stationsFound: "asemaa löytyi",
 		noStationsFound: "Asemia ei löytynyt",
 		// Mobile refresh
-		justNow: "Juuri nyt",
-		secondsAgo: "s sitten",
 		tapToRefresh: "Päivitä napauttamalla",
 		// Toast
 		trackChangedNotification: "Raide muuttunut",
@@ -179,9 +177,9 @@ export const translations = {
 		pwaUpdateDismiss: "Later",
 		// Feature announcement
 		newFeaturesTitle: "What's new",
-		newFeaturesTrackChangeAlerts: "In-app track change alerts",
 		newFeaturesAccessibility: "Improved accessibility",
-		newFeaturesFasterLoading: "Faster loading",
+		newFeaturesCleanerMobile: "Cleaner mobile view",
+		newFeaturesPolish: "Small fixes and polish",
 		newFeaturesDismiss: "Got it!",
 		// Accessibility
 		skipToContent: "Skip to content",
@@ -195,8 +193,6 @@ export const translations = {
 		stationsFound: "stations found",
 		noStationsFound: "No stations found",
 		// Mobile refresh
-		justNow: "Just now",
-		secondsAgo: "s ago",
 		tapToRefresh: "Tap to refresh",
 		// Toast
 		trackChangedNotification: "Track changed",
@@ -279,9 +275,9 @@ export const translations = {
 		pwaUpdateDismiss: "Senare",
 		// Feature announcement
 		newFeaturesTitle: "Nyheter",
-		newFeaturesTrackChangeAlerts: "Spårändringsaviseringar i appen",
 		newFeaturesAccessibility: "Förbättrad tillgänglighet",
-		newFeaturesFasterLoading: "Snabbare laddning",
+		newFeaturesCleanerMobile: "Renare mobilvy",
+		newFeaturesPolish: "Små fixar och putsning",
 		newFeaturesDismiss: "Uppfattat!",
 		// Accessibility
 		skipToContent: "Hoppa till innehåll",
@@ -295,8 +291,6 @@ export const translations = {
 		stationsFound: "stationer hittades",
 		noStationsFound: "Inga stationer hittades",
 		// Mobile refresh
-		justNow: "Just nu",
-		secondsAgo: "s sedan",
 		tapToRefresh: "Tryck för att uppdatera",
 		// Toast
 		trackChangedNotification: "Spår ändrat",
