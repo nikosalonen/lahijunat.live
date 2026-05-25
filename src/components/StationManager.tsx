@@ -704,7 +704,7 @@ export default function StationManager({
 							>
 								{t("from")}
 							</h3>
-							<div className="flex flex-row-reverse items-center gap-2">
+							<div className="flex flex-row-reverse items-start gap-2">
 								<div className="flex">
 									<button
 										type="button"
