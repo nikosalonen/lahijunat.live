@@ -31,7 +31,7 @@ function StationOption({
 			role="option"
 			aria-selected={isSelected}
 			class={`btn btn-ghost justify-start normal-case btn-block text-left text-lg sm:text-base min-h-[48px] station-option transition-colors duration-200 touch-manipulation select-none focus-ring ${
-				isHighlighted ? "bg-blue-100 animate-scale-in" : ""
+				isHighlighted ? "bg-blue-100 dark:bg-blue-900/40 animate-scale-in" : ""
 			}`}
 		>
 			{getLocalizedStationName(station.name, station.shortCode)} (
