@@ -13,13 +13,26 @@ import { getFavoritesSync, initStorage } from "@/utils/storage";
 import { showToast } from "@/utils/toast";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
-import { fetchTrains, type ServiceStatusInfo } from "../utils/api";
+import {
+	fetchActivePassengerMessages,
+	fetchTrains,
+	type ServiceStatusInfo,
+} from "../utils/api";
 import { hapticLight } from "../utils/haptics";
+import { helsinkiParts } from "../utils/helsinkiTime";
+import { getCurrentLanguage } from "../utils/language";
+import {
+	type ActiveMessage,
+	type PassengerInformationMessage,
+	partitionActiveMessages,
+	trainMessageKey,
+} from "../utils/passengerInfo";
 import { getLocalizedStationName } from "../utils/stationNames";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
 import LinearProgress from "./LinearProgress";
+import PassengerInfoBanner from "./PassengerInfoBanner";
 import ProgressCircle from "./ProgressCircle";
 import TrainCard from "./TrainCard";
 import TrainListSkeleton from "./TrainListSkeleton";
@@ -120,7 +133,7 @@ export default function TrainList({
 	destinationCode,
 	stations,
 }: Props) {
-	useLanguageChange();
+	const languageVersion = useLanguageChange();
 	const [state, setState] = useState({
 		trains: [] as Train[],
 		loading: true,
@@ -694,8 +707,101 @@ export default function TrainList({
 		});
 	}, [filteredTrains, stationCode, favoritesVersion]);
 
-	const displayedTrains = sortedTrains.slice(0, displayedTrainCount);
+	const displayedTrains = useMemo(
+		() => sortedTrains.slice(0, displayedTrainCount),
+		[sortedTrains, displayedTrainCount],
+	);
 	const hasMoreTrains = sortedTrains.length > displayedTrainCount;
+
+	// --- Passenger information messages ----------------------------------------
+	const [rawPassengerMessages, setRawPassengerMessages] = useState<
+		PassengerInformationMessage[]
+	>([]);
+
+	// Set of `${trainNumber}_${originDate}` keys for currently-displayed trains.
+	// Uses the train's true first-origin departure time captured in api.ts
+	// before timeTableRows is sliced to the selected station; this is the date
+	// the passenger-information API keys train-specific messages by, and
+	// matches the train's "service date" even for midnight-crossing services.
+	const { displayedTrainKeys, uniqueDepartureDates } = useMemo(() => {
+		const keys = new Set<string>();
+		const dates = new Set<string>();
+		for (const train of displayedTrains) {
+			const originTime =
+				train.originDepartureTime ?? train.timeTableRows[0]?.scheduledTime;
+			if (!originTime) continue;
+			const helsinki = helsinkiParts(new Date(originTime));
+			dates.add(helsinki.date);
+			keys.add(trainMessageKey(train.trainNumber, helsinki.date));
+		}
+		return {
+			displayedTrainKeys: keys,
+			uniqueDepartureDates: Array.from(dates).sort(),
+		};
+	}, [displayedTrains]);
+
+	const uniqueDatesKey = uniqueDepartureDates.join(",");
+
+	useEffect(() => {
+		if (!stationCode || !destinationCode) return;
+		if (!isPageVisible) return;
+		let cancelled = false;
+		let timeoutId: ReturnType<typeof setTimeout> | undefined;
+		const dates = uniqueDatesKey ? uniqueDatesKey.split(",") : [];
+
+		async function loadMessages() {
+			try {
+				const [general, perTrain] = await Promise.all([
+					fetchActivePassengerMessages({
+						stationCodes: [stationCode, destinationCode],
+						generalOnly: true,
+					}),
+					dates.length > 0
+						? fetchActivePassengerMessages({
+								stationCodes: [stationCode, destinationCode],
+								departureDates: dates,
+							})
+						: Promise.resolve([] as PassengerInformationMessage[]),
+				]);
+				if (cancelled) return;
+				const merged = new Map<string, PassengerInformationMessage>();
+				for (const m of general) merged.set(m.id, m);
+				for (const m of perTrain) if (!merged.has(m.id)) merged.set(m.id, m);
+				setRawPassengerMessages(Array.from(merged.values()));
+			} catch (error) {
+				if (!cancelled) {
+					console.error("[TrainList] Passenger info load failed:", error);
+				}
+			}
+		}
+
+		// setTimeout loop (not setInterval) so slow fetches can't overlap and
+		// resolve out of order under tab throttling or network congestion.
+		const tick = async () => {
+			await loadMessages();
+			if (!cancelled) {
+				timeoutId = setTimeout(tick, 60_000);
+			}
+		};
+		void tick();
+
+		return () => {
+			cancelled = true;
+			if (timeoutId) clearTimeout(timeoutId);
+		};
+	}, [stationCode, destinationCode, uniqueDatesKey, isPageVisible]);
+
+	const { generalMessages, perTrainMessages } = useMemo(() => {
+		const lang = getCurrentLanguage();
+		const { general, perTrain } = partitionActiveMessages(
+			rawPassengerMessages,
+			currentTime,
+			lang,
+			displayedTrainKeys,
+		);
+		return { generalMessages: general, perTrainMessages: perTrain };
+	}, [rawPassengerMessages, currentTime, languageVersion, displayedTrainKeys]);
+
 	const refreshProgress = useMemo(() => {
 		const interval = Math.max(currentRefreshInterval, 1);
 		const elapsed = currentTime.getTime() - lastRefreshAt;
@@ -804,11 +910,24 @@ export default function TrainList({
 						</label>
 					)}
 				</div>
+				{generalMessages.length > 0 && (
+					<PassengerInfoBanner messages={generalMessages} />
+				)}
 				<div ref={listContainerRef} class="flex flex-col gap-4">
 					{displayedTrains.map((train, index) => {
 						const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
 						const isSlow = isTrainSlow(train);
 						const isHiddenByFilter = hideSlowTrains && isSlow;
+						const originTime =
+							train.originDepartureTime ??
+							train.timeTableRows[0]?.scheduledTime;
+						let trainMessages: ActiveMessage[] | undefined;
+						if (originTime) {
+							const originDate = helsinkiParts(new Date(originTime)).date;
+							trainMessages = perTrainMessages.get(
+								trainMessageKey(train.trainNumber, originDate),
+							);
+						}
 						return (
 							<div
 								key={journeyKey}
@@ -835,6 +954,7 @@ export default function TrainList({
 									onDepart={() => handleTrainDeparted(journeyKey)}
 									onReappear={() => handleTrainReappear(journeyKey)}
 									getDurationSpeedType={getDurationSpeedType}
+									messages={trainMessages}
 								/>
 							</div>
 						);

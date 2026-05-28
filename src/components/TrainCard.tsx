@@ -18,10 +18,12 @@ import { showToast } from "@/utils/toast";
 import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
+import type { ActiveMessage } from "../utils/passengerInfo";
 import { calculateDuration, getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import { getDebugMode, subscribeToDebugMode } from "./DebugToggle";
 import TimeDisplay from "./TimeDisplay";
+import TrainMessagePanel from "./TrainMessagePanel";
 
 // Fixed reference point for animation sync - captured once at module load
 const ANIMATION_SYNC_BASELINE = Date.now();
@@ -40,6 +42,7 @@ interface Props {
 	getDurationSpeedType?: (
 		durationMinutes: number,
 	) => "fast" | "slow" | "normal";
+	messages?: ActiveMessage[];
 }
 
 // Swipe gesture constants
@@ -120,6 +123,7 @@ export default function TrainCard({
 	onDepart,
 	onReappear,
 	getDurationSpeedType,
+	messages,
 }: Props) {
 	const [, setLanguageChange] = useState(0);
 	const [isHighlighted, setIsHighlighted] = useState(false);
@@ -136,6 +140,23 @@ export default function TrainCard({
 	// Swipe gesture state
 	const [swipeOffset, setSwipeOffset] = useState(0);
 	const [isTransitioning, setIsTransitioning] = useState(false);
+	const [messagesOpen, setMessagesOpen] = useState(false);
+	const messagesPanelId = `train-${train.trainNumber}-${stationCode}-${destinationCode}-messages`;
+	const hasMessages = (messages?.length ?? 0) > 0;
+
+	useEffect(() => {
+		if (!messagesOpen) return;
+		const handleKey = (event: KeyboardEvent) => {
+			if (event.key === "Escape") setMessagesOpen(false);
+		};
+		window.addEventListener("keydown", handleKey);
+		return () => window.removeEventListener("keydown", handleKey);
+	}, [messagesOpen]);
+
+	// Auto-close panel if messages disappear (e.g. delivery window ended).
+	useEffect(() => {
+		if (!hasMessages && messagesOpen) setMessagesOpen(false);
+	}, [hasMessages, messagesOpen]);
 	const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 	const isSwipingRef = useRef(false);
 	const hasTriggeredRef = useRef(false);
@@ -856,7 +877,39 @@ export default function TrainCard({
 							departureRow?.unknownDelay ? "true" : "false"
 						}
 					>
-						<div class="card-body p-3 sm:p-4">
+						<div class="card-body p-3 sm:p-4 relative">
+							{hasMessages && (
+								<button
+									type="button"
+									class="absolute top-1.5 right-1.5 z-10 inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-100 dark:bg-amber-900/70 text-amber-700 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800 transition-colors shadow-sm"
+									aria-label={
+										messages && messages.length > 1
+											? `${t("passengerInfoTrainButton")} (${messages.length})`
+											: t("passengerInfoTrainButton")
+									}
+									aria-expanded={messagesOpen}
+									aria-controls={messagesPanelId}
+									onClick={(event) => {
+										event.stopPropagation();
+										setMessagesOpen((v) => !v);
+									}}
+								>
+									<svg
+										class="w-4 h-4"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										aria-hidden="true"
+									>
+										<circle cx="12" cy="12" r="10" />
+										<line x1="12" y1="8" x2="12" y2="12" />
+										<line x1="12" y1="16" x2="12.01" y2="16" />
+									</svg>
+								</button>
+							)}
 							<div class="flex items-start justify-between gap-2 sm:gap-4 min-h-[76px] sm:min-h-20">
 								<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
 									{/* Train identifier */}
@@ -1096,6 +1149,12 @@ export default function TrainCard({
 										? t("departingSoon")
 										: ""}
 							</div>
+							{messagesOpen && messages && messages.length > 0 && (
+								<TrainMessagePanel
+									messages={messages}
+									panelId={messagesPanelId}
+								/>
+							)}
 						</div>
 					</div>
 				</div>
