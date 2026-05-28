@@ -110,6 +110,8 @@ export const translations = {
 		passengerInfoIndicator: "Tiedote",
 		passengerInfoValidity: "Voimassa",
 		passengerInfoValidityRange: "{start} – {end}",
+		passengerInfoDismiss: "Sulje tiedotteet",
+		newFeaturesPassengerInfo: "Aseman tiedotteet näkyvillä",
 	},
 	en: {
 		title: "Local Trains Live | Real-time schedules for local trains",
@@ -218,6 +220,8 @@ export const translations = {
 		passengerInfoIndicator: "Announcement",
 		passengerInfoValidity: "Valid",
 		passengerInfoValidityRange: "{start} – {end}",
+		passengerInfoDismiss: "Hide announcements",
+		newFeaturesPassengerInfo: "Live station announcements",
 	},
 	sv: {
 		title: "Lokaltåg Live | Tidtabeller för lokaltåg i realtid",
@@ -326,6 +330,8 @@ export const translations = {
 		passengerInfoIndicator: "Meddelande",
 		passengerInfoValidity: "Giltigt",
 		passengerInfoValidityRange: "{start} – {end}",
+		passengerInfoDismiss: "Stäng meddelanden",
+		newFeaturesPassengerInfo: "Stationsmeddelanden i realtid",
 	},
 };
 
