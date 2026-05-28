@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/security/noGlobalEval: we're intentionally using it to avoid bundling issues */
 import type { Station, Train } from "../types";
+import type { PassengerInformationMessage } from "./passengerInfo";
 import { getDepartureDate } from "./trainUtils";
 
 /**
@@ -32,6 +33,7 @@ const ENDPOINTS = {
 	GRAPHQL: `${BASE_URL}/v2/graphql/graphql`,
 	STATIONS: `${BASE_URL}/v1/metadata/stations`,
 	LIVE_TRAINS: `${BASE_URL}/v1/live-trains/station`,
+	PASSENGER_INFO: `${BASE_URL}/v1/passenger-information/active`,
 	STATUS: "https://status.digitraffic.fi/index.json",
 } as const;
 
@@ -48,6 +50,7 @@ const CACHE_CONFIG = {
 	TRAIN_DURATION: 2 * 60 * 1000, // 2 minutes (shorter for real-time updates)
 	TRAIN_DURATION_URGENT: 30 * 1000, // 30 seconds for imminent trains
 	DESTINATION_DURATION: 5 * 60 * 1000, // 5 minutes for destination cache
+	PASSENGER_INFO_DURATION: 60 * 1000, // 60 seconds for passenger information
 	MAX_SIZE: 100, // Maximum number of entries in the cache
 } as const;
 
@@ -1078,6 +1081,123 @@ function sortByDepartureTime(a: Train, b: Train, stationCode: string): number {
  */
 function delay(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// ---------------------------------------------------------------------------
+// Passenger information messages
+// ---------------------------------------------------------------------------
+
+const passengerInfoCache = new Map<
+	string,
+	CacheEntry<PassengerInformationMessage[]>
+>();
+
+function buildPassengerInfoUrl(params: {
+	station: string;
+	departureDate?: string;
+	generalOnly?: boolean;
+}): string {
+	const search = new URLSearchParams();
+	search.append("station", params.station);
+	if (params.generalOnly) {
+		search.append("only_general", "true");
+	}
+	if (params.departureDate) {
+		search.append("train_departure_date", params.departureDate);
+	}
+	return `${ENDPOINTS.PASSENGER_INFO}?${search.toString()}`;
+}
+
+async function requestPassengerInfo(
+	url: string,
+): Promise<PassengerInformationMessage[]> {
+	const cached = passengerInfoCache.get(url);
+	if (
+		cached &&
+		Date.now() - cached.timestamp < CACHE_CONFIG.PASSENGER_INFO_DURATION
+	) {
+		return cached.data;
+	}
+
+	const data = await makeRateLimitedRequest(url, async () => {
+		const response = await makeRequestWithBackoff(() =>
+			fetch(url, { headers: DEFAULT_HEADERS }),
+		);
+		if (!response.ok) {
+			throw new Error(`Passenger info request failed: ${response.status}`);
+		}
+		const json = (await response.json()) as PassengerInformationMessage[];
+		return Array.isArray(json) ? json : [];
+	});
+
+	passengerInfoCache.set(url, { data, timestamp: Date.now() });
+	cleanupCache(passengerInfoCache);
+	return data;
+}
+
+/**
+ * Fetch currently-active passenger information messages for an origin and
+ * destination station pair.
+ *
+ * The Digitraffic API quirks the URL must work around:
+ * - Repeated `station=` params do NOT OR together — only the last value is
+ *   honoured (verified empirically: HKI+LH returns LH-only results). So we
+ *   issue one request per station and merge the results client-side.
+ * - Comma-separated `station` values are also rejected.
+ * - Exactly one `train_departure_date` per request; multiples are rejected or
+ *   silently fail. So we also fan out per unique date when requested.
+ *
+ * Final request count is `stationCodes.length * max(uniqueDates.length, 1)`.
+ * Results are merged and deduplicated by message id.
+ *
+ * Pass `generalOnly: true` to fetch only messages with `trainNumber === null`.
+ */
+export async function fetchActivePassengerMessages(opts: {
+	stationCodes: string[];
+	departureDates?: string[];
+	generalOnly?: boolean;
+}): Promise<PassengerInformationMessage[]> {
+	const stationCodes = Array.from(new Set(opts.stationCodes.filter(Boolean)));
+	if (stationCodes.length === 0) return [];
+
+	const uniqueDates = opts.generalOnly
+		? [undefined]
+		: Array.from(new Set((opts.departureDates ?? []).filter(Boolean)));
+	if (uniqueDates.length === 0) return [];
+
+	const tasks: Promise<PassengerInformationMessage[]>[] = [];
+	for (const station of stationCodes) {
+		for (const date of uniqueDates) {
+			const url = buildPassengerInfoUrl({
+				station,
+				generalOnly: opts.generalOnly,
+				departureDate: date,
+			});
+			tasks.push(
+				requestPassengerInfo(url).catch((error) => {
+					console.error(
+						`Failed to fetch passenger info for station=${station} date=${date ?? "-"}:`,
+						error,
+					);
+					return [] as PassengerInformationMessage[];
+				}),
+			);
+		}
+	}
+
+	const settled = await Promise.all(tasks);
+	const merged = new Map<string, PassengerInformationMessage>();
+	for (const batch of settled) {
+		for (const msg of batch) {
+			if (!merged.has(msg.id)) merged.set(msg.id, msg);
+		}
+	}
+	return Array.from(merged.values());
+}
+
+// Test-only helper to reset the cache between unit tests.
+export function __resetPassengerInfoCacheForTests(): void {
+	passengerInfoCache.clear();
 }
 
 /**

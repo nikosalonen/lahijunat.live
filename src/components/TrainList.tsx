@@ -13,13 +13,26 @@ import { getFavoritesSync, initStorage } from "@/utils/storage";
 import { showToast } from "@/utils/toast";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
-import { fetchTrains, type ServiceStatusInfo } from "../utils/api";
+import {
+	fetchActivePassengerMessages,
+	fetchTrains,
+	type ServiceStatusInfo,
+} from "../utils/api";
 import { hapticLight } from "../utils/haptics";
+import { helsinkiParts } from "../utils/helsinkiTime";
+import { getCurrentLanguage } from "../utils/language";
+import {
+	type ActiveMessage,
+	type PassengerInformationMessage,
+	partitionActiveMessages,
+	trainMessageKey,
+} from "../utils/passengerInfo";
 import { getLocalizedStationName } from "../utils/stationNames";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
 import LinearProgress from "./LinearProgress";
+import PassengerInfoBanner from "./PassengerInfoBanner";
 import ProgressCircle from "./ProgressCircle";
 import TrainCard from "./TrainCard";
 import TrainListSkeleton from "./TrainListSkeleton";
@@ -120,7 +133,7 @@ export default function TrainList({
 	destinationCode,
 	stations,
 }: Props) {
-	useLanguageChange();
+	const languageVersion = useLanguageChange();
 	const [state, setState] = useState({
 		trains: [] as Train[],
 		loading: true,
@@ -696,6 +709,84 @@ export default function TrainList({
 
 	const displayedTrains = sortedTrains.slice(0, displayedTrainCount);
 	const hasMoreTrains = sortedTrains.length > displayedTrainCount;
+
+	// --- Passenger information messages ----------------------------------------
+	const [rawPassengerMessages, setRawPassengerMessages] = useState<
+		PassengerInformationMessage[]
+	>([]);
+
+	// Set of `${trainNumber}_${originDate}` keys for currently-displayed trains.
+	// Uses each train's first-origin departure row (timeTableRows[0]), which is
+	// the date the passenger-information API keys train-specific messages by;
+	// for midnight-crossing services this is the previous calendar day.
+	const { displayedTrainKeys, uniqueDepartureDates } = useMemo(() => {
+		const keys = new Set<string>();
+		const dates = new Set<string>();
+		for (const train of displayedTrains) {
+			const originRow = train.timeTableRows[0];
+			if (!originRow?.scheduledTime) continue;
+			const helsinki = helsinkiParts(new Date(originRow.scheduledTime));
+			dates.add(helsinki.date);
+			keys.add(trainMessageKey(train.trainNumber, helsinki.date));
+		}
+		return {
+			displayedTrainKeys: keys,
+			uniqueDepartureDates: Array.from(dates).sort(),
+		};
+	}, [displayedTrains]);
+
+	const uniqueDatesKey = uniqueDepartureDates.join(",");
+
+	useEffect(() => {
+		if (!stationCode || !destinationCode) return;
+		let cancelled = false;
+		const dates = uniqueDatesKey ? uniqueDatesKey.split(",") : [];
+
+		async function loadMessages() {
+			try {
+				const [general, perTrain] = await Promise.all([
+					fetchActivePassengerMessages({
+						stationCodes: [stationCode, destinationCode],
+						generalOnly: true,
+					}),
+					dates.length > 0
+						? fetchActivePassengerMessages({
+								stationCodes: [stationCode, destinationCode],
+								departureDates: dates,
+							})
+						: Promise.resolve([] as PassengerInformationMessage[]),
+				]);
+				if (cancelled) return;
+				const merged = new Map<string, PassengerInformationMessage>();
+				for (const m of general) merged.set(m.id, m);
+				for (const m of perTrain) if (!merged.has(m.id)) merged.set(m.id, m);
+				setRawPassengerMessages(Array.from(merged.values()));
+			} catch (error) {
+				if (!cancelled) {
+					console.error("[TrainList] Passenger info load failed:", error);
+				}
+			}
+		}
+
+		void loadMessages();
+		const intervalId = window.setInterval(loadMessages, 60_000);
+		return () => {
+			cancelled = true;
+			window.clearInterval(intervalId);
+		};
+	}, [stationCode, destinationCode, uniqueDatesKey]);
+
+	const { generalMessages, perTrainMessages } = useMemo(() => {
+		const lang = getCurrentLanguage();
+		const { general, perTrain } = partitionActiveMessages(
+			rawPassengerMessages,
+			currentTime,
+			lang,
+			displayedTrainKeys,
+		);
+		return { generalMessages: general, perTrainMessages: perTrain };
+	}, [rawPassengerMessages, currentTime, languageVersion, displayedTrainKeys]);
+
 	const refreshProgress = useMemo(() => {
 		const interval = Math.max(currentRefreshInterval, 1);
 		const elapsed = currentTime.getTime() - lastRefreshAt;
@@ -804,11 +895,24 @@ export default function TrainList({
 						</label>
 					)}
 				</div>
+				{generalMessages.length > 0 && (
+					<PassengerInfoBanner messages={generalMessages} />
+				)}
 				<div ref={listContainerRef} class="flex flex-col gap-4">
 					{displayedTrains.map((train, index) => {
 						const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
 						const isSlow = isTrainSlow(train);
 						const isHiddenByFilter = hideSlowTrains && isSlow;
+						const originRow = train.timeTableRows[0];
+						let trainMessages: ActiveMessage[] | undefined;
+						if (originRow?.scheduledTime) {
+							const originDate = helsinkiParts(
+								new Date(originRow.scheduledTime),
+							).date;
+							trainMessages = perTrainMessages.get(
+								trainMessageKey(train.trainNumber, originDate),
+							);
+						}
 						return (
 							<div
 								key={journeyKey}
@@ -835,6 +939,7 @@ export default function TrainList({
 									onDepart={() => handleTrainDeparted(journeyKey)}
 									onReappear={() => handleTrainReappear(journeyKey)}
 									getDurationSpeedType={getDurationSpeedType}
+									messages={trainMessages}
 								/>
 							</div>
 						);

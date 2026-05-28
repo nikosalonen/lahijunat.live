@@ -100,6 +100,16 @@ export const translations = {
 		trackChangedNotification: "Raide muuttunut",
 		connectionIssue: "Yhteysongelma, näytetään viimeisin tieto",
 		close: "Sulje",
+		// Passenger information messages
+		passengerInfoBannerTitle: "Tiedotteet",
+		passengerInfoExpand: "Näytä tiedotteet",
+		passengerInfoCollapse: "Piilota tiedotteet",
+		passengerInfoTrainButton: "Näytä junan tiedote",
+		passengerInfoPrev: "Edellinen tiedote",
+		passengerInfoNext: "Seuraava tiedote",
+		passengerInfoIndicator: "Tiedote",
+		passengerInfoValidity: "Voimassa",
+		passengerInfoValidityRange: "{start} – {end}",
 	},
 	en: {
 		title: "Local Trains Live | Real-time schedules for local trains",
@@ -198,6 +208,16 @@ export const translations = {
 		trackChangedNotification: "Track changed",
 		connectionIssue: "Connection issue, showing last known data",
 		close: "Close",
+		// Passenger information messages
+		passengerInfoBannerTitle: "Announcements",
+		passengerInfoExpand: "Show announcements",
+		passengerInfoCollapse: "Hide announcements",
+		passengerInfoTrainButton: "Show train announcement",
+		passengerInfoPrev: "Previous announcement",
+		passengerInfoNext: "Next announcement",
+		passengerInfoIndicator: "Announcement",
+		passengerInfoValidity: "Valid",
+		passengerInfoValidityRange: "{start} – {end}",
 	},
 	sv: {
 		title: "Lokaltåg Live | Tidtabeller för lokaltåg i realtid",
@@ -296,6 +316,16 @@ export const translations = {
 		trackChangedNotification: "Spår ändrat",
 		connectionIssue: "Anslutningsproblem, visar senast kända data",
 		close: "Stäng",
+		// Passenger information messages
+		passengerInfoBannerTitle: "Meddelanden",
+		passengerInfoExpand: "Visa meddelanden",
+		passengerInfoCollapse: "Dölj meddelanden",
+		passengerInfoTrainButton: "Visa tågmeddelande",
+		passengerInfoPrev: "Föregående meddelande",
+		passengerInfoNext: "Nästa meddelande",
+		passengerInfoIndicator: "Meddelande",
+		passengerInfoValidity: "Giltigt",
+		passengerInfoValidityRange: "{start} – {end}",
 	},
 };
 
