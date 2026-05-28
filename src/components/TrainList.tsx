@@ -707,7 +707,10 @@ export default function TrainList({
 		});
 	}, [filteredTrains, stationCode, favoritesVersion]);
 
-	const displayedTrains = sortedTrains.slice(0, displayedTrainCount);
+	const displayedTrains = useMemo(
+		() => sortedTrains.slice(0, displayedTrainCount),
+		[sortedTrains, displayedTrainCount],
+	);
 	const hasMoreTrains = sortedTrains.length > displayedTrainCount;
 
 	// --- Passenger information messages ----------------------------------------
@@ -716,16 +719,18 @@ export default function TrainList({
 	>([]);
 
 	// Set of `${trainNumber}_${originDate}` keys for currently-displayed trains.
-	// Uses each train's first-origin departure row (timeTableRows[0]), which is
-	// the date the passenger-information API keys train-specific messages by;
-	// for midnight-crossing services this is the previous calendar day.
+	// Uses the train's true first-origin departure time captured in api.ts
+	// before timeTableRows is sliced to the selected station; this is the date
+	// the passenger-information API keys train-specific messages by, and
+	// matches the train's "service date" even for midnight-crossing services.
 	const { displayedTrainKeys, uniqueDepartureDates } = useMemo(() => {
 		const keys = new Set<string>();
 		const dates = new Set<string>();
 		for (const train of displayedTrains) {
-			const originRow = train.timeTableRows[0];
-			if (!originRow?.scheduledTime) continue;
-			const helsinki = helsinkiParts(new Date(originRow.scheduledTime));
+			const originTime =
+				train.originDepartureTime ?? train.timeTableRows[0]?.scheduledTime;
+			if (!originTime) continue;
+			const helsinki = helsinkiParts(new Date(originTime));
 			dates.add(helsinki.date);
 			keys.add(trainMessageKey(train.trainNumber, helsinki.date));
 		}
@@ -739,6 +744,7 @@ export default function TrainList({
 
 	useEffect(() => {
 		if (!stationCode || !destinationCode) return;
+		if (!isPageVisible) return;
 		let cancelled = false;
 		const dates = uniqueDatesKey ? uniqueDatesKey.split(",") : [];
 
@@ -774,7 +780,7 @@ export default function TrainList({
 			cancelled = true;
 			window.clearInterval(intervalId);
 		};
-	}, [stationCode, destinationCode, uniqueDatesKey]);
+	}, [stationCode, destinationCode, uniqueDatesKey, isPageVisible]);
 
 	const { generalMessages, perTrainMessages } = useMemo(() => {
 		const lang = getCurrentLanguage();
@@ -903,12 +909,12 @@ export default function TrainList({
 						const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
 						const isSlow = isTrainSlow(train);
 						const isHiddenByFilter = hideSlowTrains && isSlow;
-						const originRow = train.timeTableRows[0];
+						const originTime =
+							train.originDepartureTime ??
+							train.timeTableRows[0]?.scheduledTime;
 						let trainMessages: ActiveMessage[] | undefined;
-						if (originRow?.scheduledTime) {
-							const originDate = helsinkiParts(
-								new Date(originRow.scheduledTime),
-							).date;
+						if (originTime) {
+							const originDate = helsinkiParts(new Date(originTime)).date;
 							trainMessages = perTrainMessages.get(
 								trainMessageKey(train.trainNumber, originDate),
 							);

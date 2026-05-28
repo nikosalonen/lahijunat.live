@@ -147,13 +147,12 @@ export default function PassengerInfoCarousel({
 							<polyline points="15 18 9 12 15 6" />
 						</svg>
 					</button>
-					<div class="flex items-center gap-1.5" role="tablist">
+					<div class="flex items-center gap-1.5">
 						{messages.map((m, i) => (
 							<button
 								key={m.id}
 								type="button"
-								role="tab"
-								aria-selected={i === safeIndex}
+								aria-current={i === safeIndex ? "true" : undefined}
 								aria-label={`${t("passengerInfoIndicator")} ${i + 1}/${messageCount}`}
 								class={`h-2 w-2 rounded-full transition-colors ${
 									i === safeIndex

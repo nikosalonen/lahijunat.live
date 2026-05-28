@@ -140,12 +140,12 @@ function applyTimeOfDayToInstant(
 	if (mins == null) return baseMs;
 	// Take the Helsinki-local calendar date of the base instant and combine it
 	// with the override time-of-day. Build the resulting instant via UTC math
-	// using the Helsinki offset at that instant.
+	// using the Helsinki offset at the *target* wall-clock, not the base — so
+	// windows that straddle a DST transition resolve to the right instant.
 	const baseParts = helsinkiParts(new Date(baseMs));
 	const [year, month, day] = baseParts.date.split("-").map(Number);
 	const targetHour = Math.floor(mins / 60);
 	const targetMinute = mins % 60;
-	// Recover the Helsinki UTC offset (in ms) at the base instant.
 	const baseHelsinkiMs = Date.UTC(
 		year,
 		month - 1,
@@ -153,7 +153,6 @@ function applyTimeOfDayToInstant(
 		baseParts.hour,
 		baseParts.minute,
 	);
-	const offsetMs = baseHelsinkiMs - baseMs;
 	const targetHelsinkiMs = Date.UTC(
 		year,
 		month - 1,
@@ -161,7 +160,17 @@ function applyTimeOfDayToInstant(
 		targetHour,
 		targetMinute,
 	);
-	return targetHelsinkiMs - offsetMs;
+	// Estimate using the base instant's offset, then correct: if Helsinki time
+	// at the estimate doesn't match the target wall-clock, we crossed a DST
+	// boundary and need to shift by the difference (typically ±60 minutes).
+	let estimateMs = targetHelsinkiMs - (baseHelsinkiMs - baseMs);
+	const estParts = helsinkiParts(new Date(estimateMs));
+	const wantMin = targetHour * 60 + targetMinute;
+	const gotMin = estParts.hour * 60 + estParts.minute;
+	if (gotMin !== wantMin) {
+		estimateMs += (wantMin - gotMin) * 60_000;
+	}
+	return estimateMs;
 }
 
 /**

@@ -848,12 +848,17 @@ function processTrainData(
 					`Train ${train.trainNumber} does not stop at ${stationCode}`,
 				);
 			}
-			return firstStationIndex === -1
-				? null
-				: {
-						...train,
-						timeTableRows: train.timeTableRows.slice(firstStationIndex),
-					};
+			if (firstStationIndex === -1) return null;
+			// Capture the train's true first-origin scheduled time before slicing
+			// — passenger-information messages key on the train's origin date,
+			// which differs from the selected station for midnight-crossing or
+			// previously-originated services.
+			const sliced: Train = {
+				...train,
+				originDepartureTime: train.timeTableRows[0]?.scheduledTime,
+				timeTableRows: train.timeTableRows.slice(firstStationIndex),
+			};
+			return sliced;
 		})
 		.filter((train): train is Train => {
 			if (!train) return false;

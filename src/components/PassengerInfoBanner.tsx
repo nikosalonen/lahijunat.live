@@ -1,6 +1,6 @@
 /** @format */
 
-import { useCallback, useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useId, useState } from "preact/hooks";
 import type { ActiveMessage } from "../utils/passengerInfo";
 import { t } from "../utils/translations";
 import PassengerInfoCarousel from "./PassengerInfoCarousel";
@@ -71,6 +71,7 @@ export default function PassengerInfoBanner({ messages }: Props) {
 	const [expanded, setExpanded] = useState(false);
 	const [pref, setPref] = useState<PassengerInfoPref | null>(() => readPref());
 	const [promptOpen, setPromptOpen] = useState(false);
+	const panelId = useId();
 
 	const snoozed = isSnoozed(pref, Date.now());
 
@@ -144,6 +145,7 @@ export default function PassengerInfoBanner({ messages }: Props) {
 					type="button"
 					class="flex-1 flex items-center gap-3 px-4 py-3 text-left min-w-0"
 					aria-expanded={expanded}
+					aria-controls={panelId}
 					onClick={() => setExpanded((v) => !v)}
 				>
 					<svg
@@ -241,7 +243,10 @@ export default function PassengerInfoBanner({ messages }: Props) {
 				</div>
 			)}
 			{expanded && !promptOpen && (
-				<div class="px-4 pb-4 pt-1 border-t border-amber-200/60 dark:border-amber-900/40">
+				<div
+					id={panelId}
+					class="px-4 pb-4 pt-1 border-t border-amber-200/60 dark:border-amber-900/40"
+				>
 					<PassengerInfoCarousel messages={messages} />
 				</div>
 			)}

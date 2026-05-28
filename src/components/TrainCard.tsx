@@ -141,7 +141,7 @@ export default function TrainCard({
 	const [swipeOffset, setSwipeOffset] = useState(0);
 	const [isTransitioning, setIsTransitioning] = useState(false);
 	const [messagesOpen, setMessagesOpen] = useState(false);
-	const messagesPanelId = `train-${train.trainNumber}-messages`;
+	const messagesPanelId = `train-${train.trainNumber}-${stationCode}-${destinationCode}-messages`;
 	const hasMessages = (messages?.length ?? 0) > 0;
 
 	useEffect(() => {

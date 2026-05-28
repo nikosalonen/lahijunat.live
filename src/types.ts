@@ -19,6 +19,8 @@ export interface Train {
 	isDeparted?: boolean;
 	/** ISO string when train is considered departed (actual or inferred) */
 	departedAt?: string;
+	/** ISO scheduled time of the train's true first origin, captured before timeTableRows is sliced to the selected station. */
+	originDepartureTime?: string;
 }
 
 export interface TimeTableRow {
