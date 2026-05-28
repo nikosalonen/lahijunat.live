@@ -111,6 +111,11 @@ export const translations = {
 		passengerInfoValidity: "Voimassa",
 		passengerInfoValidityRange: "{start} – {end}",
 		passengerInfoDismiss: "Sulje tiedotteet",
+		passengerInfoConfirmPrompt:
+			"Haluatko nähdä tiedotteet myöhemmin uudelleen?",
+		passengerInfoConfirmDaily: "Piilota tältä päivältä",
+		passengerInfoConfirmNever: "Älä näytä enää",
+		passengerInfoConfirmCancel: "Peruuta",
 		newFeaturesPassengerInfo: "Aseman tiedotteet näkyvillä",
 	},
 	en: {
@@ -221,6 +226,11 @@ export const translations = {
 		passengerInfoValidity: "Valid",
 		passengerInfoValidityRange: "{start} – {end}",
 		passengerInfoDismiss: "Hide announcements",
+		passengerInfoConfirmPrompt:
+			"Would you like to see announcements again later?",
+		passengerInfoConfirmDaily: "Hide for today",
+		passengerInfoConfirmNever: "Don't show again",
+		passengerInfoConfirmCancel: "Cancel",
 		newFeaturesPassengerInfo: "Live station announcements",
 	},
 	sv: {
@@ -331,6 +341,10 @@ export const translations = {
 		passengerInfoValidity: "Giltigt",
 		passengerInfoValidityRange: "{start} – {end}",
 		passengerInfoDismiss: "Stäng meddelanden",
+		passengerInfoConfirmPrompt: "Vill du se meddelandena igen senare?",
+		passengerInfoConfirmDaily: "Dölj idag",
+		passengerInfoConfirmNever: "Visa inte igen",
+		passengerInfoConfirmCancel: "Avbryt",
 		newFeaturesPassengerInfo: "Stationsmeddelanden i realtid",
 	},
 };

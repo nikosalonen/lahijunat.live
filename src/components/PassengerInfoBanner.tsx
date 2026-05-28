@@ -1,6 +1,6 @@
 /** @format */
 
-import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
+import { useCallback, useEffect, useState } from "preact/hooks";
 import type { ActiveMessage } from "../utils/passengerInfo";
 import { t } from "../utils/translations";
 import PassengerInfoCarousel from "./PassengerInfoCarousel";
@@ -9,71 +9,130 @@ interface Props {
 	messages: ActiveMessage[];
 }
 
-const DISMISSED_STORAGE_KEY = "passengerInfoDismissed";
+const PREF_STORAGE_KEY = "passengerInfoPref";
+const DAY_MS = 24 * 60 * 60 * 1000;
 
-function readDismissedIds(): Set<string> {
-	if (typeof window === "undefined") return new Set();
+type PassengerInfoPref =
+	| { mode: "never" }
+	| { mode: "daily"; snoozedUntil: number };
+
+function readPref(): PassengerInfoPref | null {
+	if (typeof window === "undefined") return null;
 	try {
-		const raw = window.localStorage.getItem(DISMISSED_STORAGE_KEY);
-		if (!raw) return new Set();
-		const parsed = JSON.parse(raw);
-		if (!Array.isArray(parsed)) return new Set();
-		return new Set(parsed.filter((v): v is string => typeof v === "string"));
+		const raw = window.localStorage.getItem(PREF_STORAGE_KEY);
+		if (!raw) return null;
+		const parsed = JSON.parse(raw) as PassengerInfoPref | null;
+		if (!parsed || typeof parsed !== "object") return null;
+		if (parsed.mode === "never") return parsed;
+		if (
+			parsed.mode === "daily" &&
+			typeof (parsed as { snoozedUntil?: unknown }).snoozedUntil === "number"
+		) {
+			return parsed;
+		}
+		return null;
 	} catch {
-		return new Set();
+		return null;
 	}
 }
 
-function writeDismissedIds(ids: Set<string>): void {
+function writePref(p: PassengerInfoPref): void {
 	if (typeof window === "undefined") return;
 	try {
-		window.localStorage.setItem(
-			DISMISSED_STORAGE_KEY,
-			JSON.stringify(Array.from(ids)),
-		);
+		window.localStorage.setItem(PREF_STORAGE_KEY, JSON.stringify(p));
 	} catch {
-		// localStorage may be unavailable (private mode, quota); dismissal is
-		// best-effort and not worth surfacing an error.
+		// localStorage may be unavailable; preference is best-effort.
 	}
+}
+
+function isSnoozed(pref: PassengerInfoPref | null, now: number): boolean {
+	if (!pref) return false;
+	if (pref.mode === "never") return true;
+	return now < pref.snoozedUntil;
 }
 
 /**
  * Banner above the train list that surfaces general passenger-information
- * announcements (messages with `trainNumber === null`). Collapsed by default;
- * expands to reveal the message text (or a carousel when multiple are active).
+ * announcements. Collapsed by default; expands to reveal the message text
+ * (or a carousel when multiple are active).
  *
- * Dismissal: a small × button on the header marks the currently-visible
- * message IDs as dismissed in localStorage, so they stay hidden across page
- * reloads. Messages with new IDs that the user has not seen will still appear.
+ * Dismissal flow:
+ * - First time the user clicks ×, an inline confirm row asks whether to
+ *   show announcements again later. "Never" hides them permanently; "Hide
+ *   for today" snoozes them for 24h.
+ * - On subsequent closes the previous choice is applied silently — for the
+ *   "daily" mode, that means re-arming the 24h snooze without re-prompting.
+ *   For "never" the banner never reappears in the first place, so there is
+ *   nothing more to click.
+ *
+ * Choice persists in localStorage under `passengerInfoPref`.
  */
 export default function PassengerInfoBanner({ messages }: Props) {
 	const [expanded, setExpanded] = useState(false);
-	const [dismissedIds, setDismissedIds] = useState<Set<string>>(() =>
-		readDismissedIds(),
-	);
+	const [pref, setPref] = useState<PassengerInfoPref | null>(() => readPref());
+	const [promptOpen, setPromptOpen] = useState(false);
 
-	const visibleMessages = useMemo(
-		() => messages.filter((m) => !dismissedIds.has(m.id)),
-		[messages, dismissedIds],
-	);
+	const snoozed = isSnoozed(pref, Date.now());
 
-	const dismissCurrent = useCallback(() => {
-		const next = new Set(dismissedIds);
-		for (const m of visibleMessages) next.add(m.id);
-		writeDismissedIds(next);
-		setDismissedIds(next);
-		setExpanded(false);
-	}, [dismissedIds, visibleMessages]);
-
-	// Collapse if all messages disappear (e.g. delivery window closes or every
-	// remaining message gets dismissed).
+	// Re-arm a render once the daily snooze expires while the page is open.
 	useEffect(() => {
-		if (visibleMessages.length === 0 && expanded) setExpanded(false);
-	}, [visibleMessages.length, expanded]);
+		if (!pref || pref.mode !== "daily") return;
+		const remaining = pref.snoozedUntil - Date.now();
+		if (remaining <= 0) return;
+		const handle = window.setTimeout(() => {
+			setPref(readPref());
+		}, remaining + 100);
+		return () => window.clearTimeout(handle);
+	}, [pref]);
 
-	if (visibleMessages.length === 0) return null;
+	// Auto-collapse if message list empties.
+	useEffect(() => {
+		if (messages.length === 0 && expanded) setExpanded(false);
+	}, [messages.length, expanded]);
 
-	const count = visibleMessages.length;
+	const onCloseClick = useCallback(() => {
+		// No prior choice → ask once.
+		if (!pref) {
+			setPromptOpen(true);
+			return;
+		}
+		// Returning user already chose. If they chose "daily" before, just
+		// re-arm the 24h snooze silently. ("never" can't reach this branch
+		// because the banner would not be visible.)
+		if (pref.mode === "daily") {
+			const next: PassengerInfoPref = {
+				mode: "daily",
+				snoozedUntil: Date.now() + DAY_MS,
+			};
+			writePref(next);
+			setPref(next);
+			setExpanded(false);
+		}
+	}, [pref]);
+
+	const chooseNever = useCallback(() => {
+		const next: PassengerInfoPref = { mode: "never" };
+		writePref(next);
+		setPref(next);
+		setPromptOpen(false);
+		setExpanded(false);
+	}, []);
+
+	const chooseDaily = useCallback(() => {
+		const next: PassengerInfoPref = {
+			mode: "daily",
+			snoozedUntil: Date.now() + DAY_MS,
+		};
+		writePref(next);
+		setPref(next);
+		setPromptOpen(false);
+		setExpanded(false);
+	}, []);
+
+	if (messages.length === 0) return null;
+	if (snoozed && !promptOpen) return null;
+
+	const count = messages.length;
 
 	return (
 		<section
@@ -129,7 +188,7 @@ export default function PassengerInfoBanner({ messages }: Props) {
 					aria-label={t("passengerInfoDismiss")}
 					onClick={(event) => {
 						event.stopPropagation();
-						dismissCurrent();
+						onCloseClick();
 					}}
 				>
 					<svg
@@ -147,9 +206,43 @@ export default function PassengerInfoBanner({ messages }: Props) {
 					</svg>
 				</button>
 			</div>
-			{expanded && (
+			{promptOpen && (
+				<div
+					class="px-4 py-3 border-t border-amber-200/60 dark:border-amber-900/40 bg-amber-100/40 dark:bg-amber-950/60"
+					role="dialog"
+					aria-label={t("passengerInfoConfirmPrompt")}
+				>
+					<p class="text-sm text-gray-800 dark:text-gray-100 mb-3">
+						{t("passengerInfoConfirmPrompt")}
+					</p>
+					<div class="flex flex-wrap items-center gap-2">
+						<button
+							type="button"
+							class="btn btn-sm bg-amber-200 hover:bg-amber-300 dark:bg-amber-800 dark:hover:bg-amber-700 border-0 text-amber-900 dark:text-amber-100"
+							onClick={chooseDaily}
+						>
+							{t("passengerInfoConfirmDaily")}
+						</button>
+						<button
+							type="button"
+							class="btn btn-sm btn-ghost text-gray-700 dark:text-gray-200"
+							onClick={chooseNever}
+						>
+							{t("passengerInfoConfirmNever")}
+						</button>
+						<button
+							type="button"
+							class="btn btn-sm btn-ghost text-gray-500 dark:text-gray-400 ml-auto"
+							onClick={() => setPromptOpen(false)}
+						>
+							{t("passengerInfoConfirmCancel")}
+						</button>
+					</div>
+				</div>
+			)}
+			{expanded && !promptOpen && (
 				<div class="px-4 pb-4 pt-1 border-t border-amber-200/60 dark:border-amber-900/40">
-					<PassengerInfoCarousel messages={visibleMessages} />
+					<PassengerInfoCarousel messages={messages} />
 				</div>
 			)}
 		</section>
