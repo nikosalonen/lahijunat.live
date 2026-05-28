@@ -31,7 +31,11 @@ const partsFormatter = new Intl.DateTimeFormat("en-CA", {
 	day: "2-digit",
 	hour: "2-digit",
 	minute: "2-digit",
-	hour12: false,
+	// `hourCycle: "h23"` forces 00–23 output. `hour12: false` is ambiguous and
+	// can resolve to "h24" (01–24) in some runtimes, where midnight is "24"
+	// paired with the *previous* calendar day — which would silently break
+	// Helsinki-date-based keys around midnight.
+	hourCycle: "h23",
 	weekday: "long",
 });
 
@@ -46,10 +50,7 @@ export function helsinkiParts(d: Date): HelsinkiParts {
 	const year = map.get("year") ?? "1970";
 	const month = map.get("month") ?? "01";
 	const day = map.get("day") ?? "01";
-	// `hour: "2-digit"` with `hour12: false` can yield "24" at midnight in some
-	// runtimes; normalise to "00" so minute arithmetic stays well-defined.
-	const hourRaw = map.get("hour") ?? "00";
-	const hour = hourRaw === "24" ? 0 : Number.parseInt(hourRaw, 10);
+	const hour = Number.parseInt(map.get("hour") ?? "00", 10);
 	const minute = Number.parseInt(map.get("minute") ?? "0", 10);
 	const weekday = (map.get("weekday") ?? "MONDAY").toUpperCase() as Weekday;
 	return {
