@@ -882,7 +882,11 @@ export default function TrainCard({
 								<button
 									type="button"
 									class="absolute top-1.5 right-1.5 z-10 inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-100 dark:bg-amber-900/70 text-amber-700 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800 transition-colors shadow-sm"
-									aria-label={t("passengerInfoTrainButton")}
+									aria-label={
+										messages && messages.length > 1
+											? `${t("passengerInfoTrainButton")} (${messages.length})`
+											: t("passengerInfoTrainButton")
+									}
 									aria-expanded={messagesOpen}
 									aria-controls={messagesPanelId}
 									onClick={(event) => {
@@ -904,9 +908,6 @@ export default function TrainCard({
 										<line x1="12" y1="8" x2="12" y2="12" />
 										<line x1="12" y1="16" x2="12.01" y2="16" />
 									</svg>
-									{messages && messages.length > 1 && (
-										<span class="sr-only">{messages.length}</span>
-									)}
 								</button>
 							)}
 							<div class="flex items-start justify-between gap-2 sm:gap-4 min-h-[76px] sm:min-h-20">

@@ -746,6 +746,7 @@ export default function TrainList({
 		if (!stationCode || !destinationCode) return;
 		if (!isPageVisible) return;
 		let cancelled = false;
+		let timeoutId: ReturnType<typeof setTimeout> | undefined;
 		const dates = uniqueDatesKey ? uniqueDatesKey.split(",") : [];
 
 		async function loadMessages() {
@@ -774,11 +775,19 @@ export default function TrainList({
 			}
 		}
 
-		void loadMessages();
-		const intervalId = window.setInterval(loadMessages, 60_000);
+		// setTimeout loop (not setInterval) so slow fetches can't overlap and
+		// resolve out of order under tab throttling or network congestion.
+		const tick = async () => {
+			await loadMessages();
+			if (!cancelled) {
+				timeoutId = setTimeout(tick, 60_000);
+			}
+		};
+		void tick();
+
 		return () => {
 			cancelled = true;
-			window.clearInterval(intervalId);
+			if (timeoutId) clearTimeout(timeoutId);
 		};
 	}, [stationCode, destinationCode, uniqueDatesKey, isPageVisible]);
 

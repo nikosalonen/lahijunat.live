@@ -10,7 +10,12 @@ interface Props {
 }
 
 const PREF_STORAGE_KEY = "passengerInfoPref";
-const DAY_MS = 24 * 60 * 60 * 1000;
+
+function endOfLocalDay(now: number): number {
+	const d = new Date(now);
+	d.setHours(24, 0, 0, 0);
+	return d.getTime();
+}
 
 type PassengerInfoPref =
 	| { mode: "never" }
@@ -59,11 +64,11 @@ function isSnoozed(pref: PassengerInfoPref | null, now: number): boolean {
  * Dismissal flow:
  * - First time the user clicks ×, an inline confirm row asks whether to
  *   show announcements again later. "Never" hides them permanently; "Hide
- *   for today" snoozes them for 24h.
+ *   for today" snoozes them until the next local midnight.
  * - On subsequent closes the previous choice is applied silently — for the
- *   "daily" mode, that means re-arming the 24h snooze without re-prompting.
- *   For "never" the banner never reappears in the first place, so there is
- *   nothing more to click.
+ *   "daily" mode, that means re-arming the until-midnight snooze without
+ *   re-prompting. For "never" the banner never reappears in the first
+ *   place, so there is nothing more to click.
  *
  * Choice persists in localStorage under `passengerInfoPref`.
  */
@@ -103,7 +108,7 @@ export default function PassengerInfoBanner({ messages }: Props) {
 		if (pref.mode === "daily") {
 			const next: PassengerInfoPref = {
 				mode: "daily",
-				snoozedUntil: Date.now() + DAY_MS,
+				snoozedUntil: endOfLocalDay(Date.now()),
 			};
 			writePref(next);
 			setPref(next);
@@ -122,7 +127,7 @@ export default function PassengerInfoBanner({ messages }: Props) {
 	const chooseDaily = useCallback(() => {
 		const next: PassengerInfoPref = {
 			mode: "daily",
-			snoozedUntil: Date.now() + DAY_MS,
+			snoozedUntil: endOfLocalDay(Date.now()),
 		};
 		writePref(next);
 		setPref(next);
