@@ -305,6 +305,75 @@ describe("partitionActiveMessages", () => {
 		);
 		expect(g).toHaveLength(0);
 	});
+
+	it("resolves station codes to localized names when a resolver is given", () => {
+		const msg = makeMessage({
+			id: "s1",
+			trainNumber: null,
+			stations: ["PSL", "HKI"],
+			video: { text: { fi: "Raide on suljettu.", sv: null, en: null } },
+		});
+		const resolve = (code: string) =>
+			({ PSL: "Pasila", HKI: "Helsinki" })[code] ?? code;
+		const { general: g } = partitionActiveMessages(
+			[msg],
+			now,
+			"fi",
+			displayedKeys,
+			resolve,
+		);
+		expect(g[0].stationNames).toEqual(["Pasila", "Helsinki"]);
+	});
+
+	it("omits stationNames when no resolver is given", () => {
+		const msg = makeMessage({
+			id: "s2",
+			trainNumber: null,
+			stations: ["PSL"],
+			video: { text: { fi: "Raide on suljettu.", sv: null, en: null } },
+		});
+		const { general: g } = partitionActiveMessages(
+			[msg],
+			now,
+			"fi",
+			displayedKeys,
+		);
+		expect(g[0].stationNames).toBeUndefined();
+	});
+
+	it("omits stationNames when the stations list is empty", () => {
+		const msg = makeMessage({
+			id: "s3",
+			trainNumber: null,
+			stations: [],
+			video: { text: { fi: "Yleinen", sv: null, en: null } },
+		});
+		const { general: g } = partitionActiveMessages(
+			[msg],
+			now,
+			"fi",
+			displayedKeys,
+			(c) => c,
+		);
+		expect(g[0].stationNames).toBeUndefined();
+	});
+
+	it("keeps the raw code when the resolver does not know it", () => {
+		const msg = makeMessage({
+			id: "s4",
+			trainNumber: null,
+			stations: ["ZZZ"],
+			video: { text: { fi: "Yleinen", sv: null, en: null } },
+		});
+		const { general: g } = partitionActiveMessages(
+			[msg],
+			now,
+			"fi",
+			displayedKeys,
+			(c) => ({ PSL: "Pasila" })[c] ?? c,
+		);
+		expect(g[0].stationNames).toEqual(["ZZZ"]);
+	});
 });
 
 describe("fetchActivePassengerMessages URL construction", () => {

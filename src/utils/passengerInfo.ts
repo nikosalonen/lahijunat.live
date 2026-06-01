@@ -40,6 +40,7 @@ export interface ActiveMessage {
 	trainDepartureDate: string | null;
 	startValidity: string;
 	endValidity: string;
+	stationNames?: string[];
 }
 
 /**
@@ -182,6 +183,7 @@ export function partitionActiveMessages(
 	now: Date,
 	lang: string,
 	displayedTrainKeys: Set<string>,
+	resolveStationName?: (code: string) => string,
 ): {
 	general: ActiveMessage[];
 	perTrain: Map<string, ActiveMessage[]>;
@@ -198,6 +200,11 @@ export function partitionActiveMessages(
 		if (!display) continue;
 		if (!isWithinRules(display.rules, now)) continue;
 
+		const stationNames =
+			resolveStationName && msg.stations.length > 0
+				? msg.stations.map(resolveStationName)
+				: undefined;
+
 		const active: ActiveMessage = {
 			id: msg.id,
 			text: display.text,
@@ -205,6 +212,7 @@ export function partitionActiveMessages(
 			trainDepartureDate: msg.trainDepartureDate,
 			startValidity: msg.startValidity,
 			endValidity: msg.endValidity,
+			stationNames,
 		};
 
 		if (msg.trainNumber == null) {
