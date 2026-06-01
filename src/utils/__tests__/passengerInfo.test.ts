@@ -374,6 +374,78 @@ describe("partitionActiveMessages", () => {
 		);
 		expect(g[0].stationNames).toEqual(["ZZZ"]);
 	});
+
+	it("orders general messages shortest-validity-first", () => {
+		const long = makeMessage({
+			id: "long",
+			trainNumber: null,
+			startValidity: "2026-06-01T00:00:00Z",
+			endValidity: "2026-09-01T00:00:00Z",
+			video: { text: { fi: "Pitkä", sv: null, en: null } },
+		});
+		const short = makeMessage({
+			id: "short",
+			trainNumber: null,
+			startValidity: "2026-06-03T00:00:00Z",
+			endValidity: "2026-06-03T23:59:00Z",
+			video: { text: { fi: "Lyhyt", sv: null, en: null } },
+		});
+		const { general: g } = partitionActiveMessages(
+			[long, short],
+			now,
+			"fi",
+			displayedKeys,
+		);
+		expect(g.map((m) => m.id)).toEqual(["short", "long"]);
+	});
+
+	it("breaks ties by earlier startValidity", () => {
+		const later = makeMessage({
+			id: "later",
+			trainNumber: null,
+			startValidity: "2026-06-03T06:00:00Z",
+			endValidity: "2026-06-03T10:00:00Z",
+			video: { text: { fi: "Myöhempi", sv: null, en: null } },
+		});
+		const earlier = makeMessage({
+			id: "earlier",
+			trainNumber: null,
+			startValidity: "2026-06-03T05:00:00Z",
+			endValidity: "2026-06-03T09:00:00Z",
+			video: { text: { fi: "Aiempi", sv: null, en: null } },
+		});
+		const { general: g } = partitionActiveMessages(
+			[later, earlier],
+			now,
+			"fi",
+			displayedKeys,
+		);
+		expect(g.map((m) => m.id)).toEqual(["earlier", "later"]);
+	});
+
+	it("sorts messages with invalid validity dates last", () => {
+		const good = makeMessage({
+			id: "good",
+			trainNumber: null,
+			startValidity: "2026-06-03T05:00:00Z",
+			endValidity: "2026-06-03T07:00:00Z",
+			video: { text: { fi: "Kunnollinen", sv: null, en: null } },
+		});
+		const bad = makeMessage({
+			id: "bad",
+			trainNumber: null,
+			startValidity: "not-a-date",
+			endValidity: "also-bad",
+			video: { text: { fi: "Rikki", sv: null, en: null } },
+		});
+		const { general: g } = partitionActiveMessages(
+			[bad, good],
+			now,
+			"fi",
+			displayedKeys,
+		);
+		expect(g.map((m) => m.id)).toEqual(["good", "bad"]);
+	});
 });
 
 describe("fetchActivePassengerMessages URL construction", () => {

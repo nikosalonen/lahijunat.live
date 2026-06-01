@@ -175,6 +175,31 @@ function applyTimeOfDayToInstant(
 }
 
 /**
+ * Validity-window length in milliseconds. Shorter windows are treated as more
+ * time-critical and sorted first. Returns Infinity for unparseable dates so
+ * malformed entries sort last instead of jumping to the front.
+ */
+function validityDurationMs(msg: ActiveMessage): number {
+	const start = new Date(msg.startValidity).getTime();
+	const end = new Date(msg.endValidity).getTime();
+	if (Number.isNaN(start) || Number.isNaN(end)) return Number.POSITIVE_INFINITY;
+	return end - start;
+}
+
+/**
+ * Compare two active messages: shortest validity first, ties broken by the
+ * earlier start. Invalid-date messages (Infinity duration) fall to the end.
+ */
+function byTimeCriticality(a: ActiveMessage, b: ActiveMessage): number {
+	const durationDiff = validityDurationMs(a) - validityDurationMs(b);
+	if (durationDiff !== 0) return durationDiff;
+	const startA = new Date(a.startValidity).getTime();
+	const startB = new Date(b.startValidity).getTime();
+	if (Number.isNaN(startA) || Number.isNaN(startB)) return 0;
+	return startA - startB;
+}
+
+/**
  * Filter raw messages down to the active set and route them into the
  * general-banner pool and a per-train key map.
  */
@@ -230,6 +255,9 @@ export function partitionActiveMessages(
 			perTrain.set(key, [active]);
 		}
 	}
+
+	general.sort(byTimeCriticality);
+	for (const arr of perTrain.values()) arr.sort(byTimeCriticality);
 
 	return { general, perTrain };
 }
