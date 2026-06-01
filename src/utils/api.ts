@@ -51,6 +51,8 @@ const CACHE_CONFIG = {
 	TRAIN_DURATION_URGENT: 30 * 1000, // 30 seconds for imminent trains
 	DESTINATION_DURATION: 5 * 60 * 1000, // 5 minutes for destination cache
 	PASSENGER_INFO_DURATION: 60 * 1000, // 60 seconds for passenger information
+	STATUS_DURATION: 5 * 60 * 1000, // 5 minutes for the Digitraffic status check
+	STATUS_KEY: "digitraffic-status",
 	MAX_SIZE: 100, // Maximum number of entries in the cache
 } as const;
 
@@ -203,12 +205,18 @@ export async function checkDigitrafficStatus(): Promise<ServiceStatusInfo> {
 		statusPageUrl: STATUS_PAGE_URL,
 	};
 
+	// Serve a recent determination to avoid hammering the status endpoint when
+	// many train fetches fail in quick succession (e.g. during an outage).
+	const cached = getCachedStatus();
+	if (cached) return cached;
+
 	try {
 		const response = await fetch(ENDPOINTS.STATUS, {
 			headers: { Accept: "application/json" },
 		});
 
 		if (!response.ok) {
+			// Transient failure of the status page itself — don't cache it.
 			return defaultResult;
 		}
 
@@ -219,10 +227,6 @@ export async function checkDigitrafficStatus(): Promise<ServiceStatusInfo> {
 		const criticalDown = data.systems.filter(
 			(system) => ourServices.includes(system.name) && system.status === "down",
 		);
-
-		if (criticalDown.length === 0) {
-			return defaultResult;
-		}
 
 		const affectedSystems = criticalDown.map(
 			(system) => system.description || system.name,
@@ -236,15 +240,25 @@ export async function checkDigitrafficStatus(): Promise<ServiceStatusInfo> {
 			})),
 		);
 
-		return {
-			isDown: true,
-			affectedSystems,
-			issues,
-			statusPageUrl: STATUS_PAGE_URL,
-		};
+		const result: ServiceStatusInfo =
+			criticalDown.length === 0
+				? defaultResult
+				: {
+						isDown: true,
+						affectedSystems,
+						issues,
+						statusPageUrl: STATUS_PAGE_URL,
+					};
+
+		// Cache successful determinations (up or down) for STATUS_DURATION.
+		statusCache.set(CACHE_CONFIG.STATUS_KEY, {
+			data: result,
+			timestamp: Date.now(),
+		});
+		return result;
 	} catch (error) {
 		console.error("Error checking Digitraffic status:", error);
-		// If we can't check status, don't block the user
+		// If we can't check status, don't block the user — and don't cache it.
 		return defaultResult;
 	}
 }
@@ -271,6 +285,24 @@ function getCachedStations(): Station[] | null {
 
 	if (Date.now() - cached.timestamp > CACHE_CONFIG.STATION_DURATION) {
 		stationCache.delete(CACHE_CONFIG.STATION_KEY);
+		return null;
+	}
+
+	return cached.data;
+}
+
+// Cache for the Digitraffic service-status determination
+const statusCache = new Map<string, CacheEntry<ServiceStatusInfo>>();
+
+/**
+ * Return the cached Digitraffic status determination while it is still fresh.
+ */
+function getCachedStatus(): ServiceStatusInfo | null {
+	const cached = statusCache.get(CACHE_CONFIG.STATUS_KEY);
+	if (!cached) return null;
+
+	if (Date.now() - cached.timestamp > CACHE_CONFIG.STATUS_DURATION) {
+		statusCache.delete(CACHE_CONFIG.STATUS_KEY);
 		return null;
 	}
 
@@ -1203,6 +1235,11 @@ export async function fetchActivePassengerMessages(opts: {
 // Test-only helper to reset the cache between unit tests.
 export function __resetPassengerInfoCacheForTests(): void {
 	passengerInfoCache.clear();
+}
+
+// Test-only helper to reset the Digitraffic status cache between unit tests.
+export function __resetStatusCacheForTests(): void {
+	statusCache.clear();
 }
 
 /**
