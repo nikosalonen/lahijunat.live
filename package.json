@@ -57,7 +57,7 @@
 		"daisyui": "^5.5.20",
 		"husky": "^9.1.7",
 		"jsdom": "^29.1.1",
-		"lint-staged": "^17.0.6",
+		"lint-staged": "^17.0.7",
 		"tsx": "^4.22.3",
 		"typescript": "^6.0.3",
 		"vitest": "^4.1.7",
