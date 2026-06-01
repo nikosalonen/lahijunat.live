@@ -82,7 +82,7 @@ export default function PassengerInfoBanner({ messages }: Props) {
 
 	// Re-arm a render once the daily snooze expires while the page is open.
 	useEffect(() => {
-		if (!pref || pref.mode !== "daily") return;
+		if (pref?.mode !== "daily") return;
 		const remaining = pref.snoozedUntil - Date.now();
 		if (remaining <= 0) return;
 		const handle = window.setTimeout(() => {
