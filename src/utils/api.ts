@@ -194,21 +194,43 @@ export interface ServiceStatusInfo {
 
 const STATUS_PAGE_URL = "https://status.digitraffic.fi";
 
+// Shared in-flight request so a burst of concurrent cold-cache callers (e.g.
+// many train fetches failing at once during an outage) awaits a single status
+// check instead of each issuing its own fetch.
+let inFlightStatusPromise: Promise<ServiceStatusInfo> | null = null;
+
 /**
  * Check Digitraffic service status for Rail systems.
  */
 export async function checkDigitrafficStatus(): Promise<ServiceStatusInfo> {
+	// Serve a recent determination to avoid hammering the status endpoint when
+	// many train fetches fail in quick succession (e.g. during an outage).
+	const cached = getCachedStatus();
+	if (cached) return cached;
+
+	// A check is already running — share its result rather than fetching again.
+	if (inFlightStatusPromise) return inFlightStatusPromise;
+
+	inFlightStatusPromise = fetchDigitrafficStatus();
+	try {
+		return await inFlightStatusPromise;
+	} finally {
+		inFlightStatusPromise = null;
+	}
+}
+
+/**
+ * Fetch the live Digitraffic status determination and cache successful results.
+ * Always resolves (never rejects): on any failure it returns a "service up"
+ * default without caching, so transient status-page outages aren't pinned.
+ */
+async function fetchDigitrafficStatus(): Promise<ServiceStatusInfo> {
 	const defaultResult: ServiceStatusInfo = {
 		isDown: false,
 		affectedSystems: [],
 		issues: [],
 		statusPageUrl: STATUS_PAGE_URL,
 	};
-
-	// Serve a recent determination to avoid hammering the status endpoint when
-	// many train fetches fail in quick succession (e.g. during an outage).
-	const cached = getCachedStatus();
-	if (cached) return cached;
 
 	try {
 		const response = await fetch(ENDPOINTS.STATUS, {
@@ -1251,6 +1273,7 @@ export function __resetPassengerInfoCacheForTests(): void {
 // Test-only helper to reset the Digitraffic status cache between unit tests.
 export function __resetStatusCacheForTests(): void {
 	statusCache.clear();
+	inFlightStatusPromise = null;
 }
 
 /**

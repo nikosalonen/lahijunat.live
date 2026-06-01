@@ -109,6 +109,31 @@ describe("checkDigitrafficStatus caching", () => {
 		nowSpy.mockRestore();
 	});
 
+	it("dedupes concurrent cold-cache callers onto a single fetch", async () => {
+		let resolveFetch: ((value: Response) => void) | undefined;
+		fetchSpy = vi.spyOn(globalThis, "fetch").mockImplementation(
+			() =>
+				new Promise<Response>((resolve) => {
+					resolveFetch = resolve;
+				}),
+		);
+
+		// Fire several callers while the cache is cold and the fetch is pending.
+		const inFlight = Promise.all([
+			checkDigitrafficStatus(),
+			checkDigitrafficStatus(),
+			checkDigitrafficStatus(),
+		]);
+		resolveFetch?.(jsonResponse({ systems: [] }));
+		const results = await inFlight;
+
+		// All three share the one in-flight request.
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+		for (const result of results) {
+			expect(result.isDown).toBe(false);
+		}
+	});
+
 	it("caches a detected outage", async () => {
 		fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
 			jsonResponse({
