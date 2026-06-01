@@ -76,8 +76,6 @@ export const translations = {
 		viewStatusPage: "Näytä tilannesivu",
 		// Feature announcement
 		newFeaturesTitle: "Uutta sovelluksessa",
-		newFeaturesAccessibility: "Parannettu saavutettavuus",
-		newFeaturesCleanerMobile: "Selkeämpi mobiilinäkymä",
 		newFeaturesPolish: "Pieniä korjauksia ja viimeistelyä",
 		newFeaturesDismiss: "Selvä!",
 		// Accessibility
@@ -188,8 +186,6 @@ export const translations = {
 		viewStatusPage: "View status page",
 		// Feature announcement
 		newFeaturesTitle: "What's new",
-		newFeaturesAccessibility: "Improved accessibility",
-		newFeaturesCleanerMobile: "Cleaner mobile view",
 		newFeaturesPolish: "Small fixes and polish",
 		newFeaturesDismiss: "Got it!",
 		// Accessibility
@@ -301,8 +297,6 @@ export const translations = {
 		viewStatusPage: "Visa statussida",
 		// Feature announcement
 		newFeaturesTitle: "Nyheter",
-		newFeaturesAccessibility: "Förbättrad tillgänglighet",
-		newFeaturesCleanerMobile: "Renare mobilvy",
 		newFeaturesPolish: "Små fixar och putsning",
 		newFeaturesDismiss: "Uppfattat!",
 		// Accessibility

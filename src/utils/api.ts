@@ -1164,7 +1164,14 @@ async function requestPassengerInfo(
 			throw new Error(`Passenger info request failed: ${response.status}`);
 		}
 		const json = (await response.json()) as PassengerInformationMessage[];
-		return Array.isArray(json) ? json : [];
+		if (!Array.isArray(json)) {
+			console.error(
+				"[API] Unexpected passenger info response shape (expected array):",
+				{ url, json },
+			);
+			return [];
+		}
+		return json;
 	});
 
 	passengerInfoCache.set(url, { data, timestamp: Date.now() });
@@ -1202,6 +1209,10 @@ export async function fetchActivePassengerMessages(opts: {
 		: Array.from(new Set((opts.departureDates ?? []).filter(Boolean)));
 	if (uniqueDates.length === 0) return [];
 
+	// Each station×date request resolves independently: a single failed leg
+	// degrades to an empty list (logged below) and merges into a partial result
+	// rather than failing the whole batch. Announcements are non-critical, so we
+	// prefer showing what we could fetch over showing nothing.
 	const tasks: Promise<PassengerInformationMessage[]>[] = [];
 	for (const station of stationCodes) {
 		for (const date of uniqueDates) {

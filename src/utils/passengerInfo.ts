@@ -248,7 +248,7 @@ export function partitionActiveMessages(
 		}
 
 		if (!msg.trainDepartureDate) continue;
-		const key = `${msg.trainNumber}_${msg.trainDepartureDate}`;
+		const key = trainMessageKey(msg.trainNumber, msg.trainDepartureDate);
 		if (!displayedTrainKeys.has(key)) continue;
 		const existing = perTrain.get(key);
 		if (existing) {

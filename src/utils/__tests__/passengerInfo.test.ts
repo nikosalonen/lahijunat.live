@@ -214,6 +214,100 @@ describe("isWithinRules — WHEN", () => {
 			isWithinRules(overnightWindow, new Date("2026-06-03T09:00:00Z")),
 		).toBe(false);
 	});
+
+	it("is inactive for a zero-length daily window (startTime === endTime)", () => {
+		const zeroWindow: VideoDeliveryRules = {
+			...weekdayWindow,
+			startTime: "08:00",
+			endTime: "08:00",
+		};
+		// Wed 2026-06-03 11:00 Helsinki = 08:00Z, inside the outer window and on a
+		// weekday — only the zero-length daily window should exclude it.
+		expect(isWithinRules(zeroWindow, new Date("2026-06-03T08:00:00Z"))).toBe(
+			false,
+		);
+	});
+
+	it("falls back to outer-window membership when start/endTime are missing", () => {
+		const noDailyWindow: VideoDeliveryRules = {
+			...weekdayWindow,
+			startDateTime: "2026-06-01T00:00:00Z",
+			endDateTime: "2026-06-05T00:00:00Z",
+			startTime: undefined,
+			endTime: undefined,
+		};
+		// Wed 2026-06-03 inside the outer window on a weekday → active regardless
+		// of time of day.
+		expect(isWithinRules(noDailyWindow, new Date("2026-06-03T02:00:00Z"))).toBe(
+			true,
+		);
+		// Before the outer window → inactive.
+		expect(isWithinRules(noDailyWindow, new Date("2026-05-31T12:00:00Z"))).toBe(
+			false,
+		);
+	});
+
+	it("is inactive when the outer datetimes are unparseable", () => {
+		const badOuter: VideoDeliveryRules = {
+			...weekdayWindow,
+			startDateTime: "not-a-date",
+		};
+		expect(isWithinRules(badOuter, new Date("2026-06-03T09:00:00Z"))).toBe(
+			false,
+		);
+	});
+});
+
+describe("isWithinRules — DST boundary correction (CONTINUOS_VISUALIZATION)", () => {
+	const allDays: VideoDeliveryRules["weekDays"] = [
+		"MONDAY",
+		"TUESDAY",
+		"WEDNESDAY",
+		"THURSDAY",
+		"FRIDAY",
+		"SATURDAY",
+		"SUNDAY",
+	];
+
+	it("applies the target wall-clock offset across the spring-forward transition", () => {
+		// Helsinki springs forward 2026-03-29 03:00 EET(+2) → 04:00 EEST(+3).
+		// The base instant lands at 01:00 Helsinki (EET) but the 12:00 startTime
+		// falls after the transition (EEST), so the effective start is
+		// 2026-03-29 12:00 Helsinki = 09:00Z — not the uncorrected 10:00Z.
+		const rules: VideoDeliveryRules = {
+			deliveryType: "CONTINUOS_VISUALIZATION",
+			startDateTime: "2026-03-28T23:00:00Z", // Helsinki 2026-03-29 01:00
+			endDateTime: "2026-03-30T00:00:00Z",
+			startTime: "12:00",
+			endTime: "23:00",
+			weekDays: allDays,
+		};
+		// 09:30Z = 12:30 Helsinki → just past the corrected 12:00 start → active.
+		expect(isWithinRules(rules, new Date("2026-03-29T09:30:00Z"))).toBe(true);
+		// 08:30Z = 11:30 Helsinki → before the start. (Without the DST correction
+		// the start would be 10:00Z and this would wrongly read as active.)
+		expect(isWithinRules(rules, new Date("2026-03-29T08:30:00Z"))).toBe(false);
+	});
+
+	it("applies the target wall-clock offset across the fall-back transition", () => {
+		// Helsinki falls back 2026-10-25 04:00 EEST(+3) → 03:00 EET(+2).
+		// The base instant is at 03:00 Helsinki (EEST) but the 12:00 startTime is
+		// after the transition (EET), so the effective start is
+		// 2026-10-25 12:00 Helsinki = 10:00Z — not the uncorrected 09:00Z.
+		const rules: VideoDeliveryRules = {
+			deliveryType: "CONTINUOS_VISUALIZATION",
+			startDateTime: "2026-10-25T00:00:00Z", // Helsinki 2026-10-25 03:00
+			endDateTime: "2026-10-26T00:00:00Z",
+			startTime: "12:00",
+			endTime: "23:00",
+			weekDays: allDays,
+		};
+		// 10:30Z = 12:30 Helsinki → just past the corrected 12:00 start → active.
+		expect(isWithinRules(rules, new Date("2026-10-25T10:30:00Z"))).toBe(true);
+		// 09:30Z = 11:30 Helsinki → before the start. (Without the DST correction
+		// the start would be 09:00Z and this would wrongly read as active.)
+		expect(isWithinRules(rules, new Date("2026-10-25T09:30:00Z"))).toBe(false);
+	});
 });
 
 describe("partitionActiveMessages", () => {
@@ -620,5 +714,118 @@ describe("fetchActivePassengerMessages URL construction", () => {
 		});
 		expect(result).toEqual([]);
 		expect(urls).toHaveLength(0);
+	});
+});
+
+describe("fetchActivePassengerMessages resilience", () => {
+	let fetchSpy: ReturnType<typeof vi.spyOn>;
+	let errorSpy: ReturnType<typeof vi.spyOn>;
+
+	beforeEach(() => {
+		__resetPassengerInfoCacheForTests();
+		errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+	});
+
+	afterEach(() => {
+		fetchSpy?.mockRestore();
+		errorSpy.mockRestore();
+	});
+
+	it("logs and discards a non-array response body instead of propagating it", async () => {
+		fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+			new Response(JSON.stringify({ error: "boom" }), {
+				status: 200,
+				headers: { "Content-Type": "application/json" },
+			}),
+		);
+
+		const result = await fetchActivePassengerMessages({
+			stationCodes: ["HKI"],
+			generalOnly: true,
+		});
+
+		expect(result).toEqual([]);
+		expect(errorSpy).toHaveBeenCalledWith(
+			expect.stringContaining("Unexpected passenger info response shape"),
+			expect.objectContaining({ json: { error: "boom" } }),
+		);
+	});
+
+	it("merges the surviving leg when one station request fails", async () => {
+		fetchSpy = vi
+			.spyOn(globalThis, "fetch")
+			.mockImplementation(async (input: RequestInfo | URL) => {
+				const url = typeof input === "string" ? input : input.toString();
+				const station = new URL(url).searchParams.get("station");
+				if (station === "HKI") {
+					// A 5xx (not a rejection) surfaces as a thrown error without
+					// triggering backoff retries.
+					return new Response("upstream error", { status: 500 });
+				}
+				return new Response(
+					JSON.stringify([
+						{
+							id: "psl-msg",
+							startValidity: "2026-01-01T00:00:00Z",
+							endValidity: "2027-01-01T00:00:00Z",
+							trainNumber: null,
+							trainDepartureDate: null,
+							stations: [],
+							video: { text: { fi: "x", sv: null, en: null } },
+						},
+					]),
+					{ status: 200, headers: { "Content-Type": "application/json" } },
+				);
+			});
+
+		const result = await fetchActivePassengerMessages({
+			stationCodes: ["HKI", "PSL"],
+			generalOnly: true,
+		});
+
+		// The failed HKI leg degrades to [] (logged) but PSL's result survives.
+		expect(result.map((m) => m.id)).toEqual(["psl-msg"]);
+		expect(errorSpy).toHaveBeenCalledWith(
+			expect.stringContaining("Failed to fetch passenger info for station=HKI"),
+			expect.anything(),
+		);
+	});
+
+	it("serves the cached result within the TTL and re-fetches just past it", async () => {
+		// 60s TTL — assert the boundary is exclusive. t0 is chosen beyond the real
+		// wall clock so the rate limiter's "time since last request" stays positive.
+		const PASSENGER_INFO_DURATION = 60 * 1000;
+		const t0 = 2_000_000_000_000;
+		const nowSpy = vi.spyOn(Date, "now").mockReturnValue(t0);
+		fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+			new Response("[]", {
+				status: 200,
+				headers: { "Content-Type": "application/json" },
+			}),
+		);
+
+		await fetchActivePassengerMessages({
+			stationCodes: ["HKI"],
+			generalOnly: true,
+		});
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+		// 1ms before the TTL → still cached.
+		nowSpy.mockReturnValue(t0 + PASSENGER_INFO_DURATION - 1);
+		await fetchActivePassengerMessages({
+			stationCodes: ["HKI"],
+			generalOnly: true,
+		});
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+		// At the TTL boundary the entry is stale → re-fetch.
+		nowSpy.mockReturnValue(t0 + PASSENGER_INFO_DURATION);
+		await fetchActivePassengerMessages({
+			stationCodes: ["HKI"],
+			generalOnly: true,
+		});
+		expect(fetchSpy).toHaveBeenCalledTimes(2);
+
+		nowSpy.mockRestore();
 	});
 });

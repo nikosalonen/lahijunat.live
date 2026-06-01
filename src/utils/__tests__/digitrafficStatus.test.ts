@@ -65,6 +65,50 @@ describe("checkDigitrafficStatus caching", () => {
 		expect(fetchSpy).toHaveBeenCalledTimes(2);
 	});
 
+	it("does not cache a network rejection", async () => {
+		const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+		fetchSpy = vi
+			.spyOn(globalThis, "fetch")
+			.mockRejectedValue(new Error("network down"));
+
+		const first = await checkDigitrafficStatus();
+		const second = await checkDigitrafficStatus();
+
+		// A fetch rejection falls back to "up" but is never cached, so each call
+		// re-checks rather than pinning a failure for the cache duration.
+		expect(first.isDown).toBe(false);
+		expect(second.isDown).toBe(false);
+		expect(fetchSpy).toHaveBeenCalledTimes(2);
+		expect(errorSpy).toHaveBeenCalled();
+		errorSpy.mockRestore();
+	});
+
+	it("serves the cached result up to the TTL and re-fetches once past it", async () => {
+		// 5-minute TTL — assert the boundary is exclusive (expires when the age
+		// strictly exceeds the duration).
+		const STATUS_DURATION = 5 * 60 * 1000;
+		const t0 = 1_000_000_000;
+		const nowSpy = vi.spyOn(Date, "now").mockReturnValue(t0);
+		fetchSpy = vi
+			.spyOn(globalThis, "fetch")
+			.mockResolvedValue(jsonResponse({ systems: [] }));
+
+		await checkDigitrafficStatus();
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+		// Exactly at the TTL the age is not yet greater than the duration → cached.
+		nowSpy.mockReturnValue(t0 + STATUS_DURATION);
+		await checkDigitrafficStatus();
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+		// One ms past the TTL → stale → re-fetch.
+		nowSpy.mockReturnValue(t0 + STATUS_DURATION + 1);
+		await checkDigitrafficStatus();
+		expect(fetchSpy).toHaveBeenCalledTimes(2);
+
+		nowSpy.mockRestore();
+	});
+
 	it("caches a detected outage", async () => {
 		fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
 			jsonResponse({

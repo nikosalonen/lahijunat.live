@@ -18,7 +18,12 @@ if ("serviceWorker" in navigator) {
 	};
 
 	function getUpdateToastMessage() {
-		const lang = localStorage.getItem("lang") || "fi";
+		let lang = "fi";
+		try {
+			// localStorage access throws in some privacy modes (e.g. Safari
+			// private browsing); fall back to Finnish rather than losing the toast.
+			lang = localStorage.getItem("lang") || "fi";
+		} catch {}
 		return updateToastTranslations[lang] || updateToastTranslations.fi;
 	}
 
