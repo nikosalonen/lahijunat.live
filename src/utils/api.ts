@@ -51,6 +51,8 @@ const CACHE_CONFIG = {
 	TRAIN_DURATION_URGENT: 30 * 1000, // 30 seconds for imminent trains
 	DESTINATION_DURATION: 5 * 60 * 1000, // 5 minutes for destination cache
 	PASSENGER_INFO_DURATION: 60 * 1000, // 60 seconds for passenger information
+	STATUS_DURATION: 5 * 60 * 1000, // 5 minutes for the Digitraffic status check
+	STATUS_KEY: "digitraffic-status",
 	MAX_SIZE: 100, // Maximum number of entries in the cache
 } as const;
 
@@ -192,10 +194,37 @@ export interface ServiceStatusInfo {
 
 const STATUS_PAGE_URL = "https://status.digitraffic.fi";
 
+// Shared in-flight request so a burst of concurrent cold-cache callers (e.g.
+// many train fetches failing at once during an outage) awaits a single status
+// check instead of each issuing its own fetch.
+let inFlightStatusPromise: Promise<ServiceStatusInfo> | null = null;
+
 /**
  * Check Digitraffic service status for Rail systems.
  */
 export async function checkDigitrafficStatus(): Promise<ServiceStatusInfo> {
+	// Serve a recent determination to avoid hammering the status endpoint when
+	// many train fetches fail in quick succession (e.g. during an outage).
+	const cached = getCachedStatus();
+	if (cached) return cached;
+
+	// A check is already running — share its result rather than fetching again.
+	if (inFlightStatusPromise) return inFlightStatusPromise;
+
+	inFlightStatusPromise = fetchDigitrafficStatus();
+	try {
+		return await inFlightStatusPromise;
+	} finally {
+		inFlightStatusPromise = null;
+	}
+}
+
+/**
+ * Fetch the live Digitraffic status determination and cache successful results.
+ * Always resolves (never rejects): on any failure it returns a "service up"
+ * default without caching, so transient status-page outages aren't pinned.
+ */
+async function fetchDigitrafficStatus(): Promise<ServiceStatusInfo> {
 	const defaultResult: ServiceStatusInfo = {
 		isDown: false,
 		affectedSystems: [],
@@ -209,6 +238,7 @@ export async function checkDigitrafficStatus(): Promise<ServiceStatusInfo> {
 		});
 
 		if (!response.ok) {
+			// Transient failure of the status page itself — don't cache it.
 			return defaultResult;
 		}
 
@@ -219,10 +249,6 @@ export async function checkDigitrafficStatus(): Promise<ServiceStatusInfo> {
 		const criticalDown = data.systems.filter(
 			(system) => ourServices.includes(system.name) && system.status === "down",
 		);
-
-		if (criticalDown.length === 0) {
-			return defaultResult;
-		}
 
 		const affectedSystems = criticalDown.map(
 			(system) => system.description || system.name,
@@ -236,15 +262,25 @@ export async function checkDigitrafficStatus(): Promise<ServiceStatusInfo> {
 			})),
 		);
 
-		return {
-			isDown: true,
-			affectedSystems,
-			issues,
-			statusPageUrl: STATUS_PAGE_URL,
-		};
+		const result: ServiceStatusInfo =
+			criticalDown.length === 0
+				? defaultResult
+				: {
+						isDown: true,
+						affectedSystems,
+						issues,
+						statusPageUrl: STATUS_PAGE_URL,
+					};
+
+		// Cache successful determinations (up or down) for STATUS_DURATION.
+		statusCache.set(CACHE_CONFIG.STATUS_KEY, {
+			data: result,
+			timestamp: Date.now(),
+		});
+		return result;
 	} catch (error) {
 		console.error("Error checking Digitraffic status:", error);
-		// If we can't check status, don't block the user
+		// If we can't check status, don't block the user — and don't cache it.
 		return defaultResult;
 	}
 }
@@ -271,6 +307,24 @@ function getCachedStations(): Station[] | null {
 
 	if (Date.now() - cached.timestamp > CACHE_CONFIG.STATION_DURATION) {
 		stationCache.delete(CACHE_CONFIG.STATION_KEY);
+		return null;
+	}
+
+	return cached.data;
+}
+
+// Cache for the Digitraffic service-status determination
+const statusCache = new Map<string, CacheEntry<ServiceStatusInfo>>();
+
+/**
+ * Return the cached Digitraffic status determination while it is still fresh.
+ */
+function getCachedStatus(): ServiceStatusInfo | null {
+	const cached = statusCache.get(CACHE_CONFIG.STATUS_KEY);
+	if (!cached) return null;
+
+	if (Date.now() - cached.timestamp > CACHE_CONFIG.STATUS_DURATION) {
+		statusCache.delete(CACHE_CONFIG.STATUS_KEY);
 		return null;
 	}
 
@@ -1132,7 +1186,14 @@ async function requestPassengerInfo(
 			throw new Error(`Passenger info request failed: ${response.status}`);
 		}
 		const json = (await response.json()) as PassengerInformationMessage[];
-		return Array.isArray(json) ? json : [];
+		if (!Array.isArray(json)) {
+			console.error(
+				"[API] Unexpected passenger info response shape (expected array):",
+				{ url, json },
+			);
+			return [];
+		}
+		return json;
 	});
 
 	passengerInfoCache.set(url, { data, timestamp: Date.now() });
@@ -1170,6 +1231,10 @@ export async function fetchActivePassengerMessages(opts: {
 		: Array.from(new Set((opts.departureDates ?? []).filter(Boolean)));
 	if (uniqueDates.length === 0) return [];
 
+	// Each station×date request resolves independently: a single failed leg
+	// degrades to an empty list (logged below) and merges into a partial result
+	// rather than failing the whole batch. Announcements are non-critical, so we
+	// prefer showing what we could fetch over showing nothing.
 	const tasks: Promise<PassengerInformationMessage[]>[] = [];
 	for (const station of stationCodes) {
 		for (const date of uniqueDates) {
@@ -1203,6 +1268,12 @@ export async function fetchActivePassengerMessages(opts: {
 // Test-only helper to reset the cache between unit tests.
 export function __resetPassengerInfoCacheForTests(): void {
 	passengerInfoCache.clear();
+}
+
+// Test-only helper to reset the Digitraffic status cache between unit tests.
+export function __resetStatusCacheForTests(): void {
+	statusCache.clear();
+	inFlightStatusPromise = null;
 }
 
 /**

@@ -40,6 +40,7 @@ export interface ActiveMessage {
 	trainDepartureDate: string | null;
 	startValidity: string;
 	endValidity: string;
+	stationNames?: string[];
 }
 
 /**
@@ -174,6 +175,33 @@ function applyTimeOfDayToInstant(
 }
 
 /**
+ * Validity-window length in milliseconds. Shorter windows are treated as more
+ * time-critical and sorted first. Returns Infinity for unparseable dates so
+ * malformed entries sort last instead of jumping to the front.
+ */
+function validityDurationMs(msg: ActiveMessage): number {
+	const start = new Date(msg.startValidity).getTime();
+	const end = new Date(msg.endValidity).getTime();
+	if (Number.isNaN(start) || Number.isNaN(end)) return Number.POSITIVE_INFINITY;
+	return end - start;
+}
+
+/**
+ * Compare two active messages: shortest validity first, ties broken by the
+ * earlier start. Invalid-date messages (Infinity duration) fall to the end.
+ */
+function byTimeCriticality(a: ActiveMessage, b: ActiveMessage): number {
+	const durationDiff = validityDurationMs(a) - validityDurationMs(b);
+	// Both durations Infinity (two unparseable messages) yields NaN here; skip
+	// it and fall through to the tie-break so the comparator never returns NaN.
+	if (!Number.isNaN(durationDiff) && durationDiff !== 0) return durationDiff;
+	const startA = new Date(a.startValidity).getTime();
+	const startB = new Date(b.startValidity).getTime();
+	if (Number.isNaN(startA) || Number.isNaN(startB)) return 0;
+	return startA - startB;
+}
+
+/**
  * Filter raw messages down to the active set and route them into the
  * general-banner pool and a per-train key map.
  */
@@ -182,6 +210,7 @@ export function partitionActiveMessages(
 	now: Date,
 	lang: string,
 	displayedTrainKeys: Set<string>,
+	resolveStationName?: (code: string) => string,
 ): {
 	general: ActiveMessage[];
 	perTrain: Map<string, ActiveMessage[]>;
@@ -198,6 +227,11 @@ export function partitionActiveMessages(
 		if (!display) continue;
 		if (!isWithinRules(display.rules, now)) continue;
 
+		const stationNames =
+			resolveStationName && msg.stations.length > 0
+				? msg.stations.map(resolveStationName)
+				: undefined;
+
 		const active: ActiveMessage = {
 			id: msg.id,
 			text: display.text,
@@ -205,6 +239,7 @@ export function partitionActiveMessages(
 			trainDepartureDate: msg.trainDepartureDate,
 			startValidity: msg.startValidity,
 			endValidity: msg.endValidity,
+			stationNames,
 		};
 
 		if (msg.trainNumber == null) {
@@ -213,7 +248,7 @@ export function partitionActiveMessages(
 		}
 
 		if (!msg.trainDepartureDate) continue;
-		const key = `${msg.trainNumber}_${msg.trainDepartureDate}`;
+		const key = trainMessageKey(msg.trainNumber, msg.trainDepartureDate);
 		if (!displayedTrainKeys.has(key)) continue;
 		const existing = perTrain.get(key);
 		if (existing) {
@@ -222,6 +257,9 @@ export function partitionActiveMessages(
 			perTrain.set(key, [active]);
 		}
 	}
+
+	general.sort(byTimeCriticality);
+	for (const arr of perTrain.values()) arr.sort(byTimeCriticality);
 
 	return { general, perTrain };
 }

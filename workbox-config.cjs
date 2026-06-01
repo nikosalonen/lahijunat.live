@@ -7,7 +7,9 @@ module.exports = {
 	mode: "production",
 
 	// Service worker configuration
-	skipWaiting: false, // Let user decide when to update
+	// Auto-activate new versions: the client shows a brief toast instead of a
+	// blocking "update available" banner (see public/sw-register.js).
+	skipWaiting: true,
 	clientsClaim: true,
 
 	// Enable navigation preload

@@ -791,16 +791,35 @@ export default function TrainList({
 		};
 	}, [stationCode, destinationCode, uniqueDatesKey, isPageVisible]);
 
+	const stationsByCode = useMemo(() => {
+		const map = new Map<string, Station>();
+		for (const s of stations) map.set(s.shortCode, s);
+		return map;
+	}, [stations]);
+
 	const { generalMessages, perTrainMessages } = useMemo(() => {
 		const lang = getCurrentLanguage();
+		const resolveStationName = (code: string) => {
+			const station = stationsByCode.get(code);
+			return station
+				? getLocalizedStationName(station.name, station.shortCode) || code
+				: code;
+		};
 		const { general, perTrain } = partitionActiveMessages(
 			rawPassengerMessages,
 			currentTime,
 			lang,
 			displayedTrainKeys,
+			resolveStationName,
 		);
 		return { generalMessages: general, perTrainMessages: perTrain };
-	}, [rawPassengerMessages, currentTime, languageVersion, displayedTrainKeys]);
+	}, [
+		rawPassengerMessages,
+		currentTime,
+		languageVersion,
+		displayedTrainKeys,
+		stationsByCode,
+	]);
 
 	const refreshProgress = useMemo(() => {
 		const interval = Math.max(currentRefreshInterval, 1);
