@@ -252,7 +252,7 @@ export default function PassengerInfoBanner({ messages }: Props) {
 					id={panelId}
 					class="px-4 pb-4 pt-1 border-t border-amber-200/60 dark:border-amber-900/40"
 				>
-					<PassengerInfoCarousel messages={messages} />
+					<PassengerInfoCarousel messages={messages} showStations />
 				</div>
 			)}
 		</section>
