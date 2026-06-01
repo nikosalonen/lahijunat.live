@@ -74,10 +74,6 @@ export const translations = {
 			"Junaliikenteen tietopalvelussa on häiriö. Tiedot eivät välttämättä ole ajan tasalla.",
 		issueStarted: "Alkanut",
 		viewStatusPage: "Näytä tilannesivu",
-		// PWA Update Banner
-		pwaUpdateTitle: "🚀 Uusi versio sovelluksesta on saatavilla!",
-		pwaUpdateButton: "Päivitä nyt",
-		pwaUpdateDismiss: "Myöhemmin",
 		// Feature announcement
 		newFeaturesTitle: "Uutta sovelluksessa",
 		newFeaturesAccessibility: "Parannettu saavutettavuus",
@@ -189,10 +185,6 @@ export const translations = {
 			"The train data service is experiencing issues. Data may not be up to date.",
 		issueStarted: "Started",
 		viewStatusPage: "View status page",
-		// PWA Update Banner
-		pwaUpdateTitle: "🚀 New version of the app is available!",
-		pwaUpdateButton: "Update now",
-		pwaUpdateDismiss: "Later",
 		// Feature announcement
 		newFeaturesTitle: "What's new",
 		newFeaturesAccessibility: "Improved accessibility",
@@ -305,10 +297,6 @@ export const translations = {
 			"Tågdatatjänsten har problem. Data kanske inte är aktuell.",
 		issueStarted: "Startade",
 		viewStatusPage: "Visa statussida",
-		// PWA Update Banner
-		pwaUpdateTitle: "🚀 En ny version av appen är tillgänglig!",
-		pwaUpdateButton: "Uppdatera nu",
-		pwaUpdateDismiss: "Senare",
 		// Feature announcement
 		newFeaturesTitle: "Nyheter",
 		newFeaturesAccessibility: "Förbättrad tillgänglighet",
