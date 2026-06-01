@@ -192,7 +192,9 @@ function validityDurationMs(msg: ActiveMessage): number {
  */
 function byTimeCriticality(a: ActiveMessage, b: ActiveMessage): number {
 	const durationDiff = validityDurationMs(a) - validityDurationMs(b);
-	if (durationDiff !== 0) return durationDiff;
+	// Both durations Infinity (two unparseable messages) yields NaN here; skip
+	// it and fall through to the tie-break so the comparator never returns NaN.
+	if (!Number.isNaN(durationDiff) && durationDiff !== 0) return durationDiff;
 	const startA = new Date(a.startValidity).getTime();
 	const startB = new Date(b.startValidity).getTime();
 	if (Number.isNaN(startA) || Number.isNaN(startB)) return 0;

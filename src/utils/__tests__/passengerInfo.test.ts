@@ -446,6 +446,58 @@ describe("partitionActiveMessages", () => {
 		);
 		expect(g.map((m) => m.id)).toEqual(["good", "bad"]);
 	});
+
+	it("keeps both messages when both have invalid validity dates", () => {
+		const bad1 = makeMessage({
+			id: "bad1",
+			trainNumber: null,
+			startValidity: "nope",
+			endValidity: "nope",
+			video: { text: { fi: "Rikki 1", sv: null, en: null } },
+		});
+		const bad2 = makeMessage({
+			id: "bad2",
+			trainNumber: null,
+			startValidity: "nope",
+			endValidity: "nope",
+			video: { text: { fi: "Rikki 2", sv: null, en: null } },
+		});
+		const { general: g } = partitionActiveMessages(
+			[bad1, bad2],
+			now,
+			"fi",
+			displayedKeys,
+		);
+		// Comparator must not return NaN; both messages survive in input order.
+		expect(g.map((m) => m.id)).toEqual(["bad1", "bad2"]);
+	});
+
+	it("orders per-train messages shortest-validity-first", () => {
+		const longTrain = makeMessage({
+			id: "lt",
+			trainNumber: 1234,
+			trainDepartureDate: "2026-06-03",
+			startValidity: "2026-06-01T00:00:00Z",
+			endValidity: "2026-09-01T00:00:00Z",
+			video: { text: { fi: "Pitkä juna", sv: null, en: null } },
+		});
+		const shortTrain = makeMessage({
+			id: "st",
+			trainNumber: 1234,
+			trainDepartureDate: "2026-06-03",
+			startValidity: "2026-06-03T00:00:00Z",
+			endValidity: "2026-06-03T23:59:00Z",
+			video: { text: { fi: "Lyhyt juna", sv: null, en: null } },
+		});
+		const { perTrain } = partitionActiveMessages(
+			[longTrain, shortTrain],
+			now,
+			"fi",
+			displayedKeys,
+		);
+		const arr = perTrain.get(trainMessageKey(1234, "2026-06-03"));
+		expect(arr?.map((m) => m.id)).toEqual(["st", "lt"]);
+	});
 });
 
 describe("fetchActivePassengerMessages URL construction", () => {
