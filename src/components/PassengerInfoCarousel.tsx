@@ -9,6 +9,7 @@ interface Props {
 	messages: ActiveMessage[];
 	compact?: boolean;
 	showValidity?: boolean;
+	showStations?: boolean;
 }
 
 const AUTO_ADVANCE_MS = 20000;
@@ -25,6 +26,7 @@ export default function PassengerInfoCarousel({
 	messages,
 	compact = false,
 	showValidity = true,
+	showStations = false,
 }: Props) {
 	const [index, setIndex] = useState(0);
 	const [displayedIndex, setDisplayedIndex] = useState(0);
@@ -119,6 +121,13 @@ export default function PassengerInfoCarousel({
 				>
 					{current.text}
 				</p>
+				{showStations &&
+					current.stationNames &&
+					current.stationNames.length > 0 && (
+						<p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+							{t("passengerInfoStation")}: {current.stationNames.join(", ")}
+						</p>
+					)}
 				{showValidity && validity && (
 					<p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
 						{t("passengerInfoValidity")}: {validity}
