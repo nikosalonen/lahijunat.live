@@ -113,6 +113,7 @@ export const translations = {
 		passengerInfoConfirmNever: "Älä näytä enää",
 		passengerInfoConfirmCancel: "Peruuta",
 		passengerInfoStation: "Asema",
+		passengerInfoStations: "Asemat",
 		newFeaturesPassengerInfo: "Aseman tiedotteet näkyvillä",
 	},
 	en: {
@@ -225,6 +226,7 @@ export const translations = {
 		passengerInfoConfirmNever: "Don't show again",
 		passengerInfoConfirmCancel: "Cancel",
 		passengerInfoStation: "Station",
+		passengerInfoStations: "Stations",
 		newFeaturesPassengerInfo: "Live station announcements",
 	},
 	sv: {
@@ -336,6 +338,7 @@ export const translations = {
 		passengerInfoConfirmNever: "Visa inte igen",
 		passengerInfoConfirmCancel: "Avbryt",
 		passengerInfoStation: "Station",
+		passengerInfoStations: "Stationer",
 		newFeaturesPassengerInfo: "Stationsmeddelanden i realtid",
 	},
 };

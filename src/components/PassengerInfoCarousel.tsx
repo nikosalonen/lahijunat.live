@@ -125,7 +125,11 @@ export default function PassengerInfoCarousel({
 					current.stationNames &&
 					current.stationNames.length > 0 && (
 						<p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-							{t("passengerInfoStation")}: {current.stationNames.join(", ")}
+							{`${
+								current.stationNames.length > 1
+									? t("passengerInfoStations")
+									: t("passengerInfoStation")
+							}: ${current.stationNames.join(", ")}`}
 						</p>
 					)}
 				{showValidity && validity && (
