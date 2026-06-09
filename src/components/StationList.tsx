@@ -250,7 +250,7 @@ export default function StationList({
 			<output className="sr-only" aria-live="polite">
 				{announcement}
 			</output>
-			{(isOpen || isLoading) && (
+			{isOpen && (
 				<div
 					ref={listboxRef}
 					id={listboxId}
