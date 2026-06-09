@@ -51,7 +51,7 @@ export default function Toast() {
 			{toasts.map((toast) => (
 				<div
 					key={toast.id}
-					class={`alert ${alertClass[toast.type]} shadow-lg animate-slide-up text-sm py-2 px-4 min-h-0`}
+					class={`alert ${alertClass[toast.type]} shadow-lg toast-enter text-sm py-2 px-4 min-h-0`}
 					role="alert"
 				>
 					<span>{toast.message}</span>

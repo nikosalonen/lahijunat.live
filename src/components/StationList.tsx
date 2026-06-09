@@ -258,7 +258,7 @@ export default function StationList({
 					role="listbox"
 					className={`menu bg-base-100 rounded-box w-full mt-2 border border-base-content/30 ${
 						isLoading || filteredCount >= 5 ? "min-h-[12rem]" : ""
-					} max-h-[50vh] sm:max-h-60 overflow-y-auto flex-nowrap shadow-xl z-50 animate-slide-down`}
+					} max-h-[50vh] sm:max-h-60 overflow-y-auto flex-nowrap shadow-xl z-50 dropdown-enter`}
 					style={{
 						touchAction: "pan-y",
 						WebkitOverflowScrolling: "touch",

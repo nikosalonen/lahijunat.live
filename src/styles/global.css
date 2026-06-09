@@ -319,6 +319,29 @@
 	animation: slide-up 0.3s ease-out;
 }
 
+/* Entry transitions via @starting-style (progressive enhancement).
+   Unsupported browsers (pre Chrome 117 / Safari 17.5 / Firefox 129)
+   simply show the element instantly. */
+.toast-enter {
+	transition:
+		opacity 0.3s ease-out,
+		transform 0.3s ease-out;
+	@starting-style {
+		opacity: 0;
+		transform: translateY(1rem);
+	}
+}
+
+.dropdown-enter {
+	transition:
+		opacity 0.25s ease-out,
+		transform 0.25s ease-out;
+	@starting-style {
+		opacity: 0;
+		transform: translateY(-0.5rem);
+	}
+}
+
 /* Reduced-motion support */
 @media (prefers-reduced-motion: reduce) {
 	*,
