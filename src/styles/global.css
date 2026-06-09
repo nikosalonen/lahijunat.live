@@ -2,6 +2,84 @@
 @plugin "daisyui";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* DaisyUI built-in theme customization (brand primary) */
+@plugin "daisyui/theme" {
+	name: "light";
+	default: true;
+	--color-primary: #8c4799;
+	--color-primary-content: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+	name: "dark";
+	prefersdark: true;
+	--color-primary: #8c4799;
+	--color-primary-content: #ffffff;
+}
+
+/* Design tokens migrated from the former tailwind.config.mjs (dead under v4) */
+@theme {
+	--shadow-brand-soft: 0 2px 8px rgba(140, 71, 153, 0.08);
+	--shadow-brand-medium: 0 4px 16px rgba(140, 71, 153, 0.12);
+	--shadow-brand-strong: 0 8px 32px rgba(140, 71, 153, 0.16);
+
+	--animate-scale-in: scale-in 0.2s ease-out;
+	--animate-bounce-subtle: bounce-subtle 0.6s ease-in-out;
+	--animate-time-update: time-update 0.6s ease-out;
+	--animate-track-flash: track-flash 0.8s ease-out;
+	--animate-favorite-pop: favorite-pop 0.25s var(--ease-spring) both;
+
+	@keyframes scale-in {
+		from {
+			transform: scale(0.95);
+			opacity: 0;
+		}
+		to {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+	@keyframes bounce-subtle {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(-4px);
+		}
+	}
+	/* No 100% frame: the element animates back to its natural styles */
+	@keyframes time-update {
+		0% {
+			opacity: 0.3;
+		}
+		35% {
+			color: var(--color-time-flash);
+			opacity: 1;
+		}
+	}
+	@keyframes track-flash {
+		0% {
+			box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+		}
+		70% {
+			box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+		}
+	}
+	@keyframes favorite-pop {
+		from {
+			transform: scale(0);
+		}
+		to {
+			transform: scale(1);
+		}
+	}
+}
+
 @font-face {
 	font-family: "Gotham Rounded";
 	src:
@@ -40,6 +118,10 @@
 	/* Gradients */
 	--gradient-primary: linear-gradient(135deg, #8c4799 0%, #6b2c75 100%);
 	--gradient-surface: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+
+	/* Spring easing: linear() where supported, overshoot cubic-bezier elsewhere */
+	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--color-time-flash: #8c4799;
 }
 
 .dark {
@@ -47,6 +129,13 @@
 	--glass-bg: rgba(31, 41, 55, 0.85);
 	--glass-border: rgba(255, 255, 255, 0.1);
 	--gradient-surface: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+	--color-time-flash: #b388ff;
+}
+
+@supports (transition-timing-function: linear(0, 1)) {
+	:root {
+		--ease-spring: linear(0, 1.06 35%, 1.2 60%, 0.95 80%, 1);
+	}
 }
 
 @keyframes soft-blink {
