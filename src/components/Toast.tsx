@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { TOAST_EVENT, type ToastEvent, type ToastType } from "@/utils/toast";
 import { t } from "@/utils/translations";
 
@@ -19,6 +19,7 @@ const alertClass: Record<ToastType, string> = {
 
 export default function Toast() {
 	const [toasts, setToasts] = useState<ToastItem[]>([]);
+	const timersRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
 
 	const removeToast = useCallback((id: number) => {
 		setToasts((prev) => prev.filter((toast) => toast.id !== id));
@@ -35,13 +36,21 @@ export default function Toast() {
 				{ id, message: detail.message, type: detail.type },
 			]);
 
-			setTimeout(() => {
+			const timer = setTimeout(() => {
+				timersRef.current.delete(timer);
 				removeToast(id);
 			}, duration);
+			timersRef.current.add(timer);
 		};
 
 		window.addEventListener(TOAST_EVENT, handler);
-		return () => window.removeEventListener(TOAST_EVENT, handler);
+		return () => {
+			window.removeEventListener(TOAST_EVENT, handler);
+			for (const timer of timersRef.current) {
+				clearTimeout(timer);
+			}
+			timersRef.current.clear();
+		};
 	}, [removeToast]);
 
 	if (toasts.length === 0) return null;
