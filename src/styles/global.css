@@ -380,16 +380,25 @@
 
 @supports (transition-behavior: allow-discrete) {
 	.train-row {
-		transition-property: opacity, transform, max-height, margin, display;
-		transition-behavior: allow-discrete;
+		transition:
+			opacity 0.3s ease-in-out,
+			transform 0.3s ease-in-out,
+			max-height 0.3s ease-in-out,
+			margin 0.3s ease-in-out,
+			display 0.3s ease-in-out allow-discrete;
 	}
 	.train-row-hidden {
 		display: none;
 	}
 	.train-row:not(.train-row-hidden) {
+		/* opacity/transform entry visuals are driven by the restarted animate-scale-in
+		   animation (identical from-values); max-height/margin drive the expansion
+		   transition when a row comes back from display:none. */
 		@starting-style {
 			opacity: 0;
 			transform: scale(0.95);
+			max-height: 0;
+			margin-top: -1rem;
 		}
 	}
 }
