@@ -347,7 +347,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
                     style="transform-style: preserve-3d; transform: rotateY(0deg); transition: transform 0.4s ease-out; position: relative; min-height: 32px;"
                   >
                     <div
-                      class="badge badge-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105 whitespace-nowrap"
+                      class="badge badge-lg font-semibold transition-[color,background-color,border-color,transform,opacity] duration-200 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105 whitespace-nowrap"
                       style="backface-visibility: hidden; -webkit-backface-visibility: hidden;"
                     >
                       Raide
@@ -365,7 +365,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
                       </svg>
                     </div>
                     <div
-                      class="badge badge-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105 whitespace-nowrap"
+                      class="badge badge-lg font-semibold transition-[color,background-color,border-color,transform,opacity] duration-200 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105 whitespace-nowrap"
                       style="backface-visibility: hidden; -webkit-backface-visibility: hidden; transform: rotateY(180deg); position: absolute; top: 0px; left: 0px; right: 0px;"
                     >
                       <svg
@@ -567,7 +567,7 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
                     style="transform-style: preserve-3d; transform: rotateY(0deg); transition: transform 0.4s ease-out; position: relative; min-height: 32px;"
                   >
                     <div
-                      class="badge badge-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105 whitespace-nowrap"
+                      class="badge badge-lg font-semibold transition-[color,background-color,border-color,transform,opacity] duration-200 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105 whitespace-nowrap"
                       style="backface-visibility: hidden; -webkit-backface-visibility: hidden;"
                     >
                       Raide
@@ -585,7 +585,7 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
                       </svg>
                     </div>
                     <div
-                      class="badge badge-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105 whitespace-nowrap"
+                      class="badge badge-lg font-semibold transition-[color,background-color,border-color,transform,opacity] duration-200 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105 whitespace-nowrap"
                       style="backface-visibility: hidden; -webkit-backface-visibility: hidden; transform: rotateY(180deg); position: absolute; top: 0px; left: 0px; right: 0px;"
                     >
                       <svg

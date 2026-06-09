@@ -1041,7 +1041,7 @@ export default function TrainCard({
 														>
 															{/* Front face - Departure Track */}
 															<div
-																class={`badge badge-lg font-semibold transition-all duration-200 ${getTrackBadgeClass(
+																class={`badge badge-lg font-semibold transition-[color,background-color,border-color,transform,opacity] duration-200 ${getTrackBadgeClass(
 																	"departure",
 																)} whitespace-nowrap`}
 																style={{
@@ -1063,7 +1063,7 @@ export default function TrainCard({
 															</div>
 															{/* Back face - Arrival Track */}
 															<div
-																class={`badge badge-lg font-semibold transition-all duration-200 ${getTrackBadgeClass(
+																class={`badge badge-lg font-semibold transition-[color,background-color,border-color,transform,opacity] duration-200 ${getTrackBadgeClass(
 																	"arrival",
 																)} whitespace-nowrap`}
 																style={{
