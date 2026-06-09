@@ -788,6 +788,9 @@ export default function TrainCard({
 				style={{
 					// Only use inline opacity when actively fading (overrides the opacity-50 class)
 					opacity: hasDeparted && opacity < 1 ? opacity : undefined,
+					// Slide out to the right while fading, like a train leaving the board
+					transform:
+						hasDeparted && opacity < 1 ? "translateX(2rem)" : undefined,
 				}}
 				onTransitionEnd={(e) => {
 					if (e.target !== e.currentTarget) return;
