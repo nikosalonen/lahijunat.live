@@ -136,3 +136,35 @@ describe("TimeRow", () => {
 		expect(hiddenTilde).not.toBeNull();
 	});
 });
+
+describe("time-change pulse", () => {
+	const baseRow = {
+		stationShortCode: "HKI",
+		type: "DEPARTURE",
+		scheduledTime: "2026-06-09T10:00:00.000Z",
+		cancelled: false,
+		trainStopping: true,
+		commercialTrack: "1",
+	} as Train["timeTableRows"][0];
+
+	it("does not animate on initial render", () => {
+		const { container } = render(<TimeRow departureRow={baseRow} />);
+		const time = container.querySelector("time");
+		expect(time?.className ?? "").not.toContain("animate-time-update");
+	});
+
+	it("animates the departure time when the displayed time changes", () => {
+		const { container, rerender } = render(<TimeRow departureRow={baseRow} />);
+		rerender(
+			<TimeRow
+				departureRow={{
+					...baseRow,
+					liveEstimateTime: "2026-06-09T10:05:00.000Z",
+					differenceInMinutes: 5,
+				}}
+			/>,
+		);
+		const time = container.querySelector("time");
+		expect(time?.className ?? "").toContain("animate-time-update");
+	});
+});
