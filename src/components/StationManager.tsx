@@ -86,6 +86,7 @@ export default function StationManager({
 		message?: string;
 	} | null>(null);
 	const [isSwapping, setIsSwapping] = useState(false);
+	const [swapRotation, setSwapRotation] = useState(0);
 	const isSwappingRef = useRef(false);
 	const lastSwapTimeRef = useRef(0);
 
@@ -482,6 +483,7 @@ export default function StationManager({
 	const handleSwap = useCallback(async () => {
 		if (!selectedOrigin || !selectedDestination) return;
 
+		setSwapRotation((prev) => prev + 180);
 		hapticMedium();
 		// Set swapping flags and timestamp to prevent dropdown from showing
 		setIsSwapping(true);
@@ -664,6 +666,10 @@ export default function StationManager({
 						>
 							<svg
 								className="w-6 h-6"
+								style={{
+									transform: `rotate(${swapRotation}deg)`,
+									transition: "transform 300ms var(--ease-spring)",
+								}}
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -744,6 +750,10 @@ export default function StationManager({
 									>
 										<svg
 											className="w-6 h-6"
+											style={{
+												transform: `rotate(${swapRotation}deg)`,
+												transition: "transform 300ms var(--ease-spring)",
+											}}
 											fill="none"
 											stroke="currentColor"
 											viewBox="0 0 24 24"
