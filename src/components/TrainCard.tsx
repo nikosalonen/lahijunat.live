@@ -551,7 +551,7 @@ export default function TrainCard({
 
 	const getTrackBadgeClass = (side: "departure" | "arrival") =>
 		trackChangeInfo.changedSide === side && isTrackChanged
-			? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
+			? "animate-track-flash badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
 			: "bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105";
 
 	// Notify via toast when a highlighted train's track changes
