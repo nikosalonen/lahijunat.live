@@ -288,6 +288,11 @@ export default function TrainCard({
 	// Drive fade animation based on hasDeparted state
 	// First show grayed-out state, then fade out after a delay
 	const fadeDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const departFallbackRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	// Keep the latest onDepart reachable from timers without re-running the
+	// effect (the parent passes a new inline closure on every render)
+	const onDepartRef = useRef(onDepart);
+	onDepartRef.current = onDepart;
 
 	useEffect(() => {
 		if (!hasDeparted) {
@@ -298,6 +303,10 @@ export default function TrainCard({
 			if (fadeDelayRef.current !== null) {
 				clearTimeout(fadeDelayRef.current);
 				fadeDelayRef.current = null;
+			}
+			if (departFallbackRef.current !== null) {
+				clearTimeout(departFallbackRef.current);
+				departFallbackRef.current = null;
 			}
 			setOpacity(1);
 			return;
@@ -312,6 +321,13 @@ export default function TrainCard({
 				setOpacity(0);
 			});
 			fadeRafRef.current = rafId;
+			// Fallback: if the opacity transition never completes (e.g. the row
+			// is display:none so transitionend never fires), still notify the
+			// parent after the transition duration (700ms) plus a margin.
+			departFallbackRef.current = setTimeout(() => {
+				departFallbackRef.current = null;
+				onDepartRef.current?.();
+			}, 1200);
 		}, 2000); // 2 second delay to show grayed-out state
 
 		return () => {
@@ -322,6 +338,10 @@ export default function TrainCard({
 			if (fadeRafRef.current !== null) {
 				cancelAnimationFrame(fadeRafRef.current);
 				fadeRafRef.current = null;
+			}
+			if (departFallbackRef.current !== null) {
+				clearTimeout(departFallbackRef.current);
+				departFallbackRef.current = null;
 			}
 		};
 	}, [hasDeparted]);
@@ -787,6 +807,10 @@ export default function TrainCard({
 				onTransitionEnd={(e) => {
 					if (e.target !== e.currentTarget) return;
 					if (e.propertyName === "opacity" && hasDeparted && opacity === 0) {
+						if (departFallbackRef.current !== null) {
+							clearTimeout(departFallbackRef.current);
+							departFallbackRef.current = null;
+						}
 						onDepart?.();
 					}
 				}}
