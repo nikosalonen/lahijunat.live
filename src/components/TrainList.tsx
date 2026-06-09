@@ -951,12 +951,12 @@ export default function TrainList({
 							<div
 								key={journeyKey}
 								data-journey-key={journeyKey}
-								class={`transition-all duration-300 ease-in-out ${
+								class={`train-row ${
 									departedTrains.has(journeyKey)
 										? ""
 										: isHiddenByFilter
-											? "opacity-0 max-h-0 overflow-hidden scale-95 pointer-events-none -mt-4"
-											: "animate-scale-in [animation-fill-mode:backwards] opacity-100 max-h-[500px]"
+											? "train-row-hidden"
+											: "animate-scale-in [animation-fill-mode:backwards] max-h-[500px]"
 								}`}
 								style={{
 									animationDelay:

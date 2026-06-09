@@ -343,6 +343,42 @@
 	}
 }
 
+/* Train rows hidden by the slow-train filter. In browsers supporting
+   transition-behavior: allow-discrete they reach display:none after the
+   transition (removed from the a11y tree); elsewhere they collapse as before. */
+.train-row {
+	transition:
+		opacity 0.3s ease-in-out,
+		transform 0.3s ease-in-out,
+		max-height 0.3s ease-in-out,
+		margin 0.3s ease-in-out;
+}
+
+.train-row-hidden {
+	opacity: 0;
+	max-height: 0;
+	transform: scale(0.95);
+	margin-top: -1rem;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+@supports (transition-behavior: allow-discrete) {
+	.train-row {
+		transition-property: opacity, transform, max-height, margin, display;
+		transition-behavior: allow-discrete;
+	}
+	.train-row-hidden {
+		display: none;
+	}
+	.train-row:not(.train-row-hidden) {
+		@starting-style {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+	}
+}
+
 /* Reduced-motion support */
 @media (prefers-reduced-motion: reduce) {
 	*,
