@@ -80,6 +80,11 @@
 	}
 }
 
+/* iOS safe-area padding (used by the toast container) */
+@utility pb-safe {
+	padding-bottom: env(safe-area-inset-bottom);
+}
+
 @font-face {
 	font-family: "Gotham Rounded";
 	src:
