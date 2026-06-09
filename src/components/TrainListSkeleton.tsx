@@ -31,7 +31,8 @@ export default function TrainListSkeleton({ count = 5 }: Props) {
 				{Array.from({ length: count }, (_, index) => (
 					<div
 						key={`train-skeleton-item-${index}`}
-						class={`stagger-${Math.min(index + 1, 5)}`}
+						class="animate-scale-in [animation-fill-mode:backwards]"
+						style={{ animationDelay: `${Math.min(index, 6) * 0.04}s` }}
 					>
 						<TrainCardSkeleton />
 					</div>

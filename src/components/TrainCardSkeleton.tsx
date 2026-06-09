@@ -3,7 +3,7 @@
 export default function TrainCardSkeleton() {
 	return (
 		<output
-			class="card bg-base-100 shadow-xl border border-base-300 rounded-xl animate-scale-in block"
+			class="card bg-base-100 shadow-xl border border-base-300 rounded-xl block"
 			aria-label="Loading train information"
 		>
 			<div class="card-body p-3 sm:p-4">

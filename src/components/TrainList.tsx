@@ -956,13 +956,13 @@ export default function TrainList({
 										? ""
 										: isHiddenByFilter
 											? "opacity-0 max-h-0 overflow-hidden scale-95 pointer-events-none -mt-4"
-											: "animate-scale-in opacity-100 max-h-[500px]"
+											: "animate-scale-in [animation-fill-mode:backwards] opacity-100 max-h-[500px]"
 								}`}
 								style={{
 									animationDelay:
 										departedTrains.has(journeyKey) || isHiddenByFilter
 											? "0s"
-											: `${index * 0.05}s`,
+											: `${Math.min(index, 6) * 0.04}s`,
 								}}
 							>
 								<MemoizedTrainCard
