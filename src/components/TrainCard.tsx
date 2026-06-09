@@ -27,6 +27,7 @@ import TrainMessagePanel from "./TrainMessagePanel";
 
 // Fixed reference point for animation sync - captured once at module load
 const ANIMATION_SYNC_BASELINE = Date.now();
+const ANIMATION_DURATION_MS = 4000;
 
 interface Props {
 	train: Train;
@@ -135,7 +136,18 @@ export default function TrainCard({
 	const [isTrackFlipped, setIsTrackFlipped] = useState(false);
 	const [showDebugPanel, setShowDebugPanel] = useState(() => getDebugMode());
 	const fadeRafRef = useRef<number | null>(null);
-	const animationSyncRef = useRef<number | null>(null);
+
+	// Phase-sync the blink animation across cards: every time the animation
+	// (re)starts (mount, highlight/dark-mode class swap, display:none round-trip),
+	// recompute the negative delay from the shared baseline so all cards align.
+	const [blinkDelay, setBlinkDelay] = useState<string | undefined>(undefined);
+	const handleCardAnimationStart = useCallback((e: AnimationEvent) => {
+		if (e.target !== e.currentTarget) return;
+		if (!e.animationName.startsWith("soft-blink")) return;
+		setBlinkDelay(
+			`-${(Date.now() - ANIMATION_SYNC_BASELINE) % ANIMATION_DURATION_MS}ms`,
+		);
+	}, []);
 
 	// Swipe gesture state
 	const [swipeOffset, setSwipeOffset] = useState(0);
@@ -761,26 +773,6 @@ export default function TrainCard({
 	const visualOffset = swipeOffset * SWIPE_RESISTANCE;
 	const isSwipeActive = Math.abs(swipeOffset) > 0;
 
-	// Calculate animation delay to sync all blinking cards
-	// Capture offset once when entering departing soon state to prevent animation jumps on re-render.
-	// All cards calculate offset from the shared module-level baseline,
-	// ensuring they're always in phase regardless of when they enter departing soon state.
-	const ANIMATION_DURATION_MS = 4000;
-
-	if (departingSoon && animationSyncRef.current === null) {
-		// Capture once: offset from shared baseline ensures all cards are in phase
-		animationSyncRef.current =
-			(Date.now() - ANIMATION_SYNC_BASELINE) % ANIMATION_DURATION_MS;
-	} else if (!departingSoon) {
-		// Reset when leaving departing soon state
-		animationSyncRef.current = null;
-	}
-
-	const syncedAnimationDelay =
-		departingSoon && animationSyncRef.current !== null
-			? `-${animationSyncRef.current}ms`
-			: undefined;
-
 	return (
 		<>
 			<div
@@ -865,10 +857,11 @@ export default function TrainCard({
 								isSwipeActive || isTransitioning
 									? `translateX(${visualOffset}px)`
 									: undefined,
-							animationDelay: syncedAnimationDelay,
+							animationDelay: departingSoon ? blinkDelay : undefined,
 							WebkitTouchCallout: "none",
 							WebkitTapHighlightColor: "transparent",
 						}}
+						onAnimationStart={handleCardAnimationStart}
 						onTouchStart={handleTouchStart}
 						onTouchMove={handleTouchMove}
 						onTouchEnd={handleTouchEnd}
