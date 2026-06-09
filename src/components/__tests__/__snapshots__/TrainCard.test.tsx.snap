@@ -5,7 +5,7 @@ exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
   class="rounded-xl transition-all duration-700 ease-in-out  "
 >
   <div
-    class="relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
+    class="train-card-lift relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
   >
     <div
       aria-hidden="true"
@@ -174,7 +174,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
   class="rounded-xl transition-all duration-700 ease-in-out ring-4 ring-[#8c4799] dark:ring-[#b388ff] shadow-[0_0_12px_rgba(140,71,153,0.3)] dark:shadow-[0_0_12px_rgba(179,136,255,0.3)] "
 >
   <div
-    class="relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
+    class="train-card-lift relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
   >
     <div
       aria-hidden="true"
@@ -413,7 +413,7 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
   class="rounded-xl transition-all duration-700 ease-in-out  "
 >
   <div
-    class="relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
+    class="train-card-lift relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
   >
     <div
       aria-hidden="true"

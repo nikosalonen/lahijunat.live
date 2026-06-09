@@ -800,7 +800,7 @@ export default function TrainCard({
 				}}
 			>
 				{/* Inner wrapper for overflow clipping (swipe reveals) - shadow/border applied here */}
-				<div class="relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]">
+				<div class="train-card-lift relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]">
 					{/* Left reveal - shown when swiping right */}
 					<div
 						class={`absolute inset-y-0 left-0 w-16 flex items-center justify-center transition-opacity duration-150 ${
