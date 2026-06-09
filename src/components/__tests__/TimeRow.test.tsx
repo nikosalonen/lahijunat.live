@@ -167,4 +167,38 @@ describe("time-change pulse", () => {
 		const time = container.querySelector("time");
 		expect(time?.className ?? "").toContain("animate-time-update");
 	});
+
+	it("animates the arrival time when the displayed arrival time changes", () => {
+		const arrivalRow = {
+			stationShortCode: "TKL",
+			type: "ARRIVAL",
+			scheduledTime: "2026-06-09T10:30:00.000Z",
+			cancelled: false,
+			trainStopping: true,
+			commercialTrack: "1",
+		} as Train["timeTableRows"][0];
+
+		const { container, rerender } = render(
+			<TimeRow departureRow={baseRow} arrivalRow={arrivalRow} />,
+		);
+		const initialArrivalTime = container.querySelectorAll("time")[1];
+		expect(initialArrivalTime?.className ?? "").not.toContain(
+			"animate-time-update",
+		);
+
+		rerender(
+			<TimeRow
+				departureRow={baseRow}
+				arrivalRow={{
+					...arrivalRow,
+					liveEstimateTime: "2026-06-09T10:36:00.000Z",
+					differenceInMinutes: 6,
+				}}
+			/>,
+		);
+		const updatedArrivalTime = container.querySelectorAll("time")[1];
+		expect(updatedArrivalTime?.className ?? "").toContain(
+			"animate-time-update",
+		);
+	});
 });
