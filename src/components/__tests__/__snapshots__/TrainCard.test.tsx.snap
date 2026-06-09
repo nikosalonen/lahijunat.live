@@ -239,7 +239,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
             >
               A
               <div
-                class="absolute -top-0.5 -right-0.5 bg-error rounded-full p-1 shadow animate-favorite-pop"
+                class="absolute top-0 right-0 bg-error rounded-full p-1 shadow animate-favorite-pop"
               >
                 <svg
                   aria-hidden="true"

@@ -931,7 +931,7 @@ export default function TrainCard({
 										>
 											{train.commuterLineID}
 											{isHighlighted && (
-												<div class="absolute -top-0.5 -right-0.5 bg-error rounded-full p-1 shadow animate-favorite-pop">
+												<div class="absolute top-0 right-0 bg-error rounded-full p-1 shadow animate-favorite-pop">
 													<svg
 														class="w-2.5 h-2.5 text-white"
 														fill="currentColor"
