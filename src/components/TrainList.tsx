@@ -187,6 +187,20 @@ export default function TrainList({
 	// Guard against post-unmount side effects (e.g. showToast from stale fetches)
 	const isMountedRef = useRef(true);
 
+	// Reset to the loading skeleton when the station pair changes (e.g. swap):
+	// trains from the previous direction filtered against the new stations
+	// render a misleading, near-empty list frame until the new data arrives
+	useEffect(() => {
+		initialLoadRef.current = true;
+		setState((prev) => ({
+			...prev,
+			trains: [],
+			loading: true,
+			initialLoad: true,
+			error: null,
+		}));
+	}, [stationCode, destinationCode]);
+
 	// FLIP animation refs
 	const listContainerRef = useRef<HTMLDivElement>(null);
 	const cardPositionsRef = useRef<Map<string, DOMRect>>(new Map());

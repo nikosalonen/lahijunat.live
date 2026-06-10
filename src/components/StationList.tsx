@@ -256,7 +256,7 @@ export default function StationList({
 					id={listboxId}
 					data-testid="station-listbox"
 					role="listbox"
-					className={`menu bg-base-100 rounded-box w-full mt-2 border border-base-content/30 ${
+					className={`menu absolute left-0 right-0 top-full bg-base-100 rounded-box w-full mt-2 border border-base-content/30 ${
 						isLoading || filteredCount >= 5 ? "min-h-[12rem]" : ""
 					} max-h-[50vh] sm:max-h-60 overflow-y-auto flex-nowrap shadow-xl z-50 dropdown-enter`}
 					style={{

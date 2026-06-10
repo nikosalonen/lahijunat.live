@@ -345,14 +345,14 @@
 		display: none;
 	}
 	.train-row:not(.train-row-hidden) {
-		/* opacity/transform entry visuals are driven by the restarted animate-scale-in
-		   animation (identical from-values); max-height/margin drive the expansion
-		   transition when a row comes back from display:none. */
+		/* Entry visuals are driven by the restarted animate-scale-in animation
+		   (identical from-values). Deliberately NO max-height/margin here:
+		   @starting-style cannot distinguish a row returning from display:none
+		   (rare filter un-hide) from a freshly mounted one, and animating height
+		   on mount made every list render unfold from zero — janky on mobile. */
 		@starting-style {
 			opacity: 0;
 			transform: scale(0.95);
-			max-height: 0;
-			margin-top: -1rem;
 		}
 	}
 }
