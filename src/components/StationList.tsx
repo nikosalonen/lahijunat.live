@@ -222,7 +222,7 @@ export default function StationList({
 				aria-activedescendant={
 					highlightedStation ? `option-${highlightedIndex}` : undefined
 				}
-				aria-controls={listboxId}
+				aria-controls={isOpen ? listboxId : undefined}
 				value={
 					isOpen
 						? searchTerm
