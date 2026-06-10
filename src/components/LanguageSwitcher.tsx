@@ -108,10 +108,10 @@ const LanguageSwitcher = () => {
 					/>
 				</svg>
 			</button>
-			{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-			{/* @ts-ignore - role="menu" is correct for accessibility despite linter warning */}
 			<ul
 				id="language-menu"
+				// biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: the menuitemradio children require a menu ancestor
+				role="menu"
 				className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-300"
 			>
 				<li>
