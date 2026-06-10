@@ -15,6 +15,7 @@ import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import {
 	fetchActivePassengerMessages,
+	fetchAllStationNames,
 	fetchTrains,
 	type ServiceStatusInfo,
 } from "../utils/api";
@@ -732,6 +733,30 @@ export default function TrainList({
 		PassengerInformationMessage[]
 	>([]);
 
+	// Announcements can reference stations outside the commuter-filtered
+	// station list (e.g. long-distance stations); lazily load the full-network
+	// name map so they don't render as bare short codes.
+	const [allStationNames, setAllStationNames] = useState<Map<
+		string,
+		string
+	> | null>(null);
+
+	useEffect(() => {
+		if (allStationNames) return;
+		if (!rawPassengerMessages.some((msg) => msg.stations.length > 0)) return;
+		let cancelled = false;
+		fetchAllStationNames()
+			.then((map) => {
+				if (!cancelled) setAllStationNames(map);
+			})
+			.catch(() => {
+				// Resolver falls back to short codes; retried on next message update
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [rawPassengerMessages, allStationNames]);
+
 	// Set of `${trainNumber}_${originDate}` keys for currently-displayed trains.
 	// Uses the train's true first-origin departure time captured in api.ts
 	// before timeTableRows is sliced to the selected station; this is the date
@@ -815,8 +840,12 @@ export default function TrainList({
 		const lang = getCurrentLanguage();
 		const resolveStationName = (code: string) => {
 			const station = stationsByCode.get(code);
-			return station
-				? getLocalizedStationName(station.name, station.shortCode) || code
+			if (station) {
+				return getLocalizedStationName(station.name, station.shortCode) || code;
+			}
+			const fullNetworkName = allStationNames?.get(code);
+			return fullNetworkName
+				? getLocalizedStationName(fullNetworkName, code)
 				: code;
 		};
 		const { general, perTrain } = partitionActiveMessages(
@@ -833,6 +862,7 @@ export default function TrainList({
 		languageVersion,
 		displayedTrainKeys,
 		stationsByCode,
+		allStationNames,
 	]);
 
 	const refreshProgress = useMemo(() => {

@@ -633,6 +633,46 @@ export async function fetchStations(): Promise<Station[]> {
 }
 
 /**
+ * Full-network station name lookup from the REST metadata endpoint. Unlike
+ * STATION_QUERY (filtered to commuter stations for the pickers), this covers
+ * every station, so passenger announcements that reference long-distance or
+ * excluded stations can still show a name instead of a bare short code.
+ * Fetched at most once per session; a failure allows a later retry.
+ */
+let allStationNamesPromise: Promise<Map<string, string>> | null = null;
+
+export function fetchAllStationNames(): Promise<Map<string, string>> {
+	if (!allStationNamesPromise) {
+		allStationNamesPromise = (async () => {
+			const response = await makeRequestWithBackoff(() =>
+				fetch(ENDPOINTS.STATIONS, { headers: DEFAULT_HEADERS }),
+			);
+			if (!response.ok) {
+				throw new Error(
+					`Failed to fetch station names: ${response.statusText}`,
+				);
+			}
+			const stations: Array<{
+				stationShortCode: string;
+				stationName: string;
+			}> = await response.json();
+			const map = new Map<string, string>();
+			for (const station of stations) {
+				map.set(
+					station.stationShortCode,
+					station.stationName.replace(" asema", ""),
+				);
+			}
+			return map;
+		})().catch((error) => {
+			allStationNamesPromise = null;
+			throw error;
+		});
+	}
+	return allStationNamesPromise;
+}
+
+/**
  * Fetch commuter trains departing from an origin station and return unique destination stations.
  */
 export async function fetchTrainsLeavingFromStation(
