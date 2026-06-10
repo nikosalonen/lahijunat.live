@@ -97,33 +97,6 @@
 
 /* Modern CSS Custom Properties */
 :root {
-	/* Enhanced Purple Palette */
-	--color-primary-50: #faf7ff;
-	--color-primary-100: #f3e8ff;
-	--color-primary-200: #e9d5ff;
-	--color-primary-300: #d8b4fe;
-	--color-primary-400: #c084fc;
-	--color-primary-500: #8c4799;
-	--color-primary-600: #7c3085;
-	--color-primary-700: #6b2c75;
-	--color-primary-800: #581c5a;
-	--color-primary-900: #441545;
-
-	/* Enhanced Shadows */
-	--shadow-soft: 0 2px 8px rgba(140, 71, 153, 0.08);
-	--shadow-medium: 0 4px 16px rgba(140, 71, 153, 0.12);
-	--shadow-strong: 0 8px 32px rgba(140, 71, 153, 0.16);
-	--shadow-glow:
-		0 0 0 1px rgba(140, 71, 153, 0.1), 0 4px 16px rgba(140, 71, 153, 0.15);
-
-	/* Glass Effects */
-	--glass-bg: rgba(255, 255, 255, 0.85);
-	--glass-border: rgba(255, 255, 255, 0.2);
-
-	/* Gradients */
-	--gradient-primary: linear-gradient(135deg, #8c4799 0%, #6b2c75 100%);
-	--gradient-surface: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-
 	/* Spring easing: linear() where supported, overshoot cubic-bezier elsewhere */
 	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 	--color-time-flash: #8c4799;
@@ -131,9 +104,6 @@
 
 .dark {
 	/* Dark Mode Overrides */
-	--glass-bg: rgba(31, 41, 55, 0.85);
-	--glass-border: rgba(255, 255, 255, 0.1);
-	--gradient-surface: linear-gradient(135deg, #1f2937 0%, #111827 100%);
 	--color-time-flash: #b388ff;
 }
 
@@ -253,27 +223,6 @@
 }
 
 /* Animation play state is controlled by the base class - no conditional selectors needed */
-
-@keyframes pulse {
-	0%,
-	100% {
-		opacity: 1;
-	}
-	50% {
-		opacity: 0.5;
-	}
-}
-
-.animate-pulse {
-	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Smooth height transitions */
-.height-transition {
-	transition:
-		height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-		max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
 
 /* Enhanced focus states */
 @layer utilities {
@@ -454,20 +403,4 @@ body {
 }
 .collapse-open > .collapse-content {
 	overflow: visible;
-}
-
-/* Scrollable containers */
-.scroll-smooth {
-	overscroll-behavior: contain;
-	scroll-behavior: smooth;
-}
-
-/* Mobile-specific scroll optimizations */
-@media (max-width: 768px) {
-	/* Prevent body scroll when modals/dropdowns are open */
-	.scroll-lock {
-		overflow: hidden;
-		position: fixed;
-		width: 100%;
-	}
 }
