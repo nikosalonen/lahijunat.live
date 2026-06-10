@@ -295,6 +295,9 @@ export default function StationManager({
 				}
 			} else {
 				setAvailableDestinations(stations);
+				// Clear any loading state left behind by a fetch that was
+				// cancelled when the origin was cleared mid-flight
+				setIsLoadingDestinations(false);
 			}
 		};
 
