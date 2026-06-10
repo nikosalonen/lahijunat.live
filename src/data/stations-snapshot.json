@@ -1,0 +1,706 @@
+[
+	{
+		"name": "Ainola",
+		"shortCode": "AIN",
+		"location": {
+			"latitude": 60.455619,
+			"longitude": 25.101895
+		}
+	},
+	{
+		"name": "Aviapolis",
+		"shortCode": "AVP",
+		"location": {
+			"latitude": 60.30435,
+			"longitude": 24.956191
+		}
+	},
+	{
+		"name": "Dragsvik",
+		"shortCode": "DRA",
+		"location": {
+			"latitude": 59.990199,
+			"longitude": 23.488607
+		}
+	},
+	{
+		"name": "Espoo",
+		"shortCode": "EPO",
+		"location": {
+			"latitude": 60.205067,
+			"longitude": 24.655992
+		}
+	},
+	{
+		"name": "Haarajoki",
+		"shortCode": "HAA",
+		"location": {
+			"latitude": 60.496261,
+			"longitude": 25.13382
+		}
+	},
+	{
+		"name": "Hikiä",
+		"shortCode": "HK",
+		"location": {
+			"latitude": 60.752588,
+			"longitude": 24.919201
+		}
+	},
+	{
+		"name": "Hiekkaharju",
+		"shortCode": "HKH",
+		"location": {
+			"latitude": 60.303067,
+			"longitude": 25.049296
+		}
+	},
+	{
+		"name": "Helsinki",
+		"shortCode": "HKI",
+		"location": {
+			"latitude": 60.171356,
+			"longitude": 24.941444
+		}
+	},
+	{
+		"name": "Hanko-Pohjoinen",
+		"shortCode": "HKP",
+		"location": {
+			"latitude": 59.830141,
+			"longitude": 22.988361
+		}
+	},
+	{
+		"name": "Hämeenlinna",
+		"shortCode": "HL",
+		"location": {
+			"latitude": 61.002368,
+			"longitude": 24.478851
+		}
+	},
+	{
+		"name": "Hanko",
+		"shortCode": "HNK",
+		"location": {
+			"latitude": 59.826865,
+			"longitude": 22.968291
+		}
+	},
+	{
+		"name": "Henna",
+		"shortCode": "HNN",
+		"location": {
+			"latitude": 60.799132,
+			"longitude": 25.494389
+		}
+	},
+	{
+		"name": "Huopalahti",
+		"shortCode": "HPL",
+		"location": {
+			"latitude": 60.21835,
+			"longitude": 24.893523
+		}
+	},
+	{
+		"name": "Herrala",
+		"shortCode": "HR",
+		"location": {
+			"latitude": 60.896944,
+			"longitude": 25.475624
+		}
+	},
+	{
+		"name": "Hyvinkää",
+		"shortCode": "HY",
+		"location": {
+			"latitude": 60.63126,
+			"longitude": 24.857481
+		}
+	},
+	{
+		"name": "Inkeroinen",
+		"shortCode": "IKR",
+		"location": {
+			"latitude": 60.696674,
+			"longitude": 26.839178
+		}
+	},
+	{
+		"name": "Ilmala",
+		"shortCode": "ILA",
+		"location": {
+			"latitude": 60.207808,
+			"longitude": 24.920829
+		}
+	},
+	{
+		"name": "Iittala",
+		"shortCode": "ITA",
+		"location": {
+			"latitude": 61.090616,
+			"longitude": 24.140789
+		}
+	},
+	{
+		"name": "Jokela",
+		"shortCode": "JK",
+		"location": {
+			"latitude": 60.552798,
+			"longitude": 24.970682
+		}
+	},
+	{
+		"name": "Järvenpää",
+		"shortCode": "JP",
+		"location": {
+			"latitude": 60.473684,
+			"longitude": 25.090796
+		}
+	},
+	{
+		"name": "Järvelä",
+		"shortCode": "JR",
+		"location": {
+			"latitude": 60.867325,
+			"longitude": 25.274659
+		}
+	},
+	{
+		"name": "Jorvas",
+		"shortCode": "JRS",
+		"location": {
+			"latitude": 60.137885,
+			"longitude": 24.512776
+		}
+	},
+	{
+		"name": "Kausala",
+		"shortCode": "KA",
+		"location": {
+			"latitude": 60.885347,
+			"longitude": 26.329366
+		}
+	},
+	{
+		"name": "Kerava",
+		"shortCode": "KE",
+		"location": {
+			"latitude": 60.404297,
+			"longitude": 25.106028
+		}
+	},
+	{
+		"name": "Kera",
+		"shortCode": "KEA",
+		"location": {
+			"latitude": 60.216573,
+			"longitude": 24.75564
+		}
+	},
+	{
+		"name": "Kilo",
+		"shortCode": "KIL",
+		"location": {
+			"latitude": 60.217939,
+			"longitude": 24.782393
+		}
+	},
+	{
+		"name": "Kirkkonummi",
+		"shortCode": "KKN",
+		"location": {
+			"latitude": 60.119648,
+			"longitude": 24.438814
+		}
+	},
+	{
+		"name": "Kauklahti",
+		"shortCode": "KLH",
+		"location": {
+			"latitude": 60.189456,
+			"longitude": 24.600354
+		}
+	},
+	{
+		"name": "Kyminlinna",
+		"shortCode": "KLN",
+		"location": {
+			"latitude": 60.508258,
+			"longitude": 26.895812
+		}
+	},
+	{
+		"name": "Kauniainen",
+		"shortCode": "KNI",
+		"location": {
+			"latitude": 60.211939,
+			"longitude": 24.730884
+		}
+	},
+	{
+		"name": "Karjaa",
+		"shortCode": "KR",
+		"location": {
+			"latitude": 60.068724,
+			"longitude": 23.66126
+		}
+	},
+	{
+		"name": "Koria",
+		"shortCode": "KRA",
+		"location": {
+			"latitude": 60.847067,
+			"longitude": 26.60131
+		}
+	},
+	{
+		"name": "Korso",
+		"shortCode": "KRS",
+		"location": {
+			"latitude": 60.35129,
+			"longitude": 25.078507
+		}
+	},
+	{
+		"name": "Kotka",
+		"shortCode": "KTA",
+		"location": {
+			"latitude": 60.464388,
+			"longitude": 26.928611
+		}
+	},
+	{
+		"name": "Kotkan satama",
+		"shortCode": "KTS",
+		"location": {
+			"latitude": 60.466492,
+			"longitude": 26.934952
+		}
+	},
+	{
+		"name": "Kivistö",
+		"shortCode": "KTÖ",
+		"location": {
+			"latitude": 60.314607,
+			"longitude": 24.846938
+		}
+	},
+	{
+		"name": "Kouvola",
+		"shortCode": "KV",
+		"location": {
+			"latitude": 60.865613,
+			"longitude": 26.704588
+		}
+	},
+	{
+		"name": "Koivuhovi",
+		"shortCode": "KVH",
+		"location": {
+			"latitude": 60.207144,
+			"longitude": 24.701273
+		}
+	},
+	{
+		"name": "Koivukylä",
+		"shortCode": "KVY",
+		"location": {
+			"latitude": 60.323284,
+			"longitude": 25.059797
+		}
+	},
+	{
+		"name": "Kymi",
+		"shortCode": "KY",
+		"location": {
+			"latitude": 60.539229,
+			"longitude": 26.90714
+		}
+	},
+	{
+		"name": "Käpylä",
+		"shortCode": "KÄP",
+		"location": {
+			"latitude": 60.22017,
+			"longitude": 24.946034
+		}
+	},
+	{
+		"name": "Lappila",
+		"shortCode": "LAA",
+		"location": {
+			"latitude": 60.848954,
+			"longitude": 25.17423
+		}
+	},
+	{
+		"name": "Lentoasema",
+		"shortCode": "LEN",
+		"location": {
+			"latitude": 60.315732,
+			"longitude": 24.968343
+		}
+	},
+	{
+		"name": "Lahti",
+		"shortCode": "LH",
+		"location": {
+			"latitude": 60.97647,
+			"longitude": 25.657397
+		}
+	},
+	{
+		"name": "Leinelä",
+		"shortCode": "LNÄ",
+		"location": {
+			"latitude": 60.322641,
+			"longitude": 25.039419
+		}
+	},
+	{
+		"name": "Louhela",
+		"shortCode": "LOH",
+		"location": {
+			"latitude": 60.270798,
+			"longitude": 24.853299
+		}
+	},
+	{
+		"name": "Lappohja",
+		"shortCode": "LPO",
+		"location": {
+			"latitude": 59.904082,
+			"longitude": 23.236919
+		}
+	},
+	{
+		"name": "Leppävaara",
+		"shortCode": "LPV",
+		"location": {
+			"latitude": 60.21948,
+			"longitude": 24.813541
+		}
+	},
+	{
+		"name": "Lempäälä",
+		"shortCode": "LPÄ",
+		"location": {
+			"latitude": 61.314233,
+			"longitude": 23.755094
+		}
+	},
+	{
+		"name": "Masala",
+		"shortCode": "MAS",
+		"location": {
+			"latitude": 60.158661,
+			"longitude": 24.539106
+		}
+	},
+	{
+		"name": "Myllykoski",
+		"shortCode": "MKI",
+		"location": {
+			"latitude": 60.771013,
+			"longitude": 26.78669
+		}
+	},
+	{
+		"name": "Malmi",
+		"shortCode": "ML",
+		"location": {
+			"latitude": 60.25166,
+			"longitude": 25.011468
+		}
+	},
+	{
+		"name": "Mommila",
+		"shortCode": "MLA",
+		"location": {
+			"latitude": 60.821177,
+			"longitude": 25.075141
+		}
+	},
+	{
+		"name": "Mäntsälä",
+		"shortCode": "MLÄ",
+		"location": {
+			"latitude": 60.647258,
+			"longitude": 25.307475
+		}
+	},
+	{
+		"name": "Martinlaakso",
+		"shortCode": "MRL",
+		"location": {
+			"latitude": 60.27808,
+			"longitude": 24.852604
+		}
+	},
+	{
+		"name": "Myyrmäki",
+		"shortCode": "MYR",
+		"location": {
+			"latitude": 60.261327,
+			"longitude": 24.854751
+		}
+	},
+	{
+		"name": "Nokia",
+		"shortCode": "NOA",
+		"location": {
+			"latitude": 61.481059,
+			"longitude": 23.49917
+		}
+	},
+	{
+		"name": "Nastola",
+		"shortCode": "NSL",
+		"location": {
+			"latitude": 60.935567,
+			"longitude": 25.935467
+		}
+	},
+	{
+		"name": "Oitti",
+		"shortCode": "OI",
+		"location": {
+			"latitude": 60.789806,
+			"longitude": 25.021316
+		}
+	},
+	{
+		"name": "Oulunkylä",
+		"shortCode": "OLK",
+		"location": {
+			"latitude": 60.229,
+			"longitude": 24.967676
+		}
+	},
+	{
+		"name": "Puistola",
+		"shortCode": "PLA",
+		"location": {
+			"latitude": 60.276313,
+			"longitude": 25.036683
+		}
+	},
+	{
+		"name": "Pukinmäki",
+		"shortCode": "PMK",
+		"location": {
+			"latitude": 60.242216,
+			"longitude": 24.993288
+		}
+	},
+	{
+		"name": "Parola",
+		"shortCode": "PRL",
+		"location": {
+			"latitude": 61.049922,
+			"longitude": 24.366497
+		}
+	},
+	{
+		"name": "Pasila",
+		"shortCode": "PSL",
+		"location": {
+			"latitude": 60.198689,
+			"longitude": 24.933521
+		}
+	},
+	{
+		"name": "Paimenportti",
+		"shortCode": "PTI",
+		"location": {
+			"latitude": 60.479685,
+			"longitude": 26.919372
+		}
+	},
+	{
+		"name": "Riihimäki",
+		"shortCode": "RI",
+		"location": {
+			"latitude": 60.736078,
+			"longitude": 24.781241
+		}
+	},
+	{
+		"name": "Rekola",
+		"shortCode": "RKL",
+		"location": {
+			"latitude": 60.332871,
+			"longitude": 25.068666
+		}
+	},
+	{
+		"name": "Ryttylä",
+		"shortCode": "RY",
+		"location": {
+			"latitude": 60.818048,
+			"longitude": 24.758186
+		}
+	},
+	{
+		"name": "Saunakallio",
+		"shortCode": "SAU",
+		"location": {
+			"latitude": 60.487305,
+			"longitude": 25.065568
+		}
+	},
+	{
+		"name": "Savio",
+		"shortCode": "SAV",
+		"location": {
+			"latitude": 60.381296,
+			"longitude": 25.097803
+		}
+	},
+	{
+		"name": "Skogby",
+		"shortCode": "SGY",
+		"location": {
+			"latitude": 59.926668,
+			"longitude": 23.312403
+		}
+	},
+	{
+		"name": "Santala",
+		"shortCode": "STA",
+		"location": {
+			"latitude": 59.875008,
+			"longitude": 23.121052
+		}
+	},
+	{
+		"name": "Siuntio",
+		"shortCode": "STI",
+		"location": {
+			"latitude": 60.140648,
+			"longitude": 24.221671
+		}
+	},
+	{
+		"name": "Tikkurila",
+		"shortCode": "TKL",
+		"location": {
+			"latitude": 60.292166,
+			"longitude": 25.044055
+		}
+	},
+	{
+		"name": "Toijala",
+		"shortCode": "TL",
+		"location": {
+			"latitude": 61.170611,
+			"longitude": 23.860905
+		}
+	},
+	{
+		"name": "Tammisaari",
+		"shortCode": "TMS",
+		"location": {
+			"latitude": 59.979553,
+			"longitude": 23.443501
+		}
+	},
+	{
+		"name": "Tapanila",
+		"shortCode": "TNA",
+		"location": {
+			"latitude": 60.2639,
+			"longitude": 25.030033
+		}
+	},
+	{
+		"name": "Tolsa",
+		"shortCode": "TOL",
+		"location": {
+			"latitude": 60.118558,
+			"longitude": 24.472724
+		}
+	},
+	{
+		"name": "Tampere",
+		"shortCode": "TPE",
+		"location": {
+			"latitude": 61.498236,
+			"longitude": 23.773454
+		}
+	},
+	{
+		"name": "Tuomarila",
+		"shortCode": "TRL",
+		"location": {
+			"latitude": 60.20605,
+			"longitude": 24.681767
+		}
+	},
+	{
+		"name": "Tavastila",
+		"shortCode": "TSL",
+		"location": {
+			"latitude": 60.573333,
+			"longitude": 26.954701
+		}
+	},
+	{
+		"name": "Tesoma",
+		"shortCode": "TSO",
+		"location": {
+			"latitude": 61.503363,
+			"longitude": 23.630271
+		}
+	},
+	{
+		"name": "Turenki",
+		"shortCode": "TU",
+		"location": {
+			"latitude": 60.918387,
+			"longitude": 24.63865
+		}
+	},
+	{
+		"name": "Uusikylä",
+		"shortCode": "UKÄ",
+		"location": {
+			"latitude": 60.927722,
+			"longitude": 25.993966
+		}
+	},
+	{
+		"name": "Vehkala",
+		"shortCode": "VEH",
+		"location": {
+			"latitude": 60.295054,
+			"longitude": 24.843716
+		}
+	},
+	{
+		"name": "Viiala",
+		"shortCode": "VIA",
+		"location": {
+			"latitude": 61.211787,
+			"longitude": 23.770683
+		}
+	},
+	{
+		"name": "Vantaankoski",
+		"shortCode": "VKS",
+		"location": {
+			"latitude": 60.286119,
+			"longitude": 24.847966
+		}
+	},
+	{
+		"name": "Villähde",
+		"shortCode": "VLH",
+		"location": {
+			"latitude": 60.946379,
+			"longitude": 25.833724
+		}
+	}
+]

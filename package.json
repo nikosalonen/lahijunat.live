@@ -17,6 +17,7 @@
 		"typecheck": "astro check",
 		"check-stations": "pnpm tsx scripts/findStationsWithoutDestinations.ts",
 		"update-station-query": "pnpm tsx scripts/updateStationQuery.ts",
+		"update-stations-snapshot": "pnpm tsx scripts/updateStationsSnapshot.ts",
 		"test-station-query": "pnpm tsx scripts/testStationQuery.ts",
 		"test": "vitest run",
 		"test:watch": "vitest watch",

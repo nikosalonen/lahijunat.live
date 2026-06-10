@@ -587,6 +587,27 @@ export async function fetchStations(): Promise<Station[]> {
 	const cached = getCachedStations();
 	if (cached) return cached;
 
+	try {
+		return await fetchStationsFromApi();
+	} catch (error) {
+		// During prerender (CI), Digitraffic occasionally returns 403 to shared
+		// runner IPs; fall back to the committed snapshot so a single failed
+		// request can't kill the whole build. Browsers still surface the error.
+		if (typeof window === "undefined") {
+			console.warn(
+				"[API] Station fetch failed, falling back to committed snapshot:",
+				error,
+			);
+			const { default: snapshot } = await import(
+				"../data/stations-snapshot.json"
+			);
+			return snapshot as Station[];
+		}
+		throw error;
+	}
+}
+
+async function fetchStationsFromApi(): Promise<Station[]> {
 	return makeRateLimitedRequest("stations", async () => {
 		const response = await makeRequestWithBackoff(() =>
 			fetch(ENDPOINTS.GRAPHQL, {
