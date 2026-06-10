@@ -36,17 +36,20 @@ jobs:
       - name: Run station query update
         run: pnpm run update-station-query
 
+      - name: Refresh stations snapshot
+        run: pnpm run update-stations-snapshot
+
       - name: Check for changes
         id: git-check
         run: |
-          git diff --exit-code src/utils/api.ts || echo "changes=true" >> $GITHUB_OUTPUT
+          git diff --exit-code src/utils/api.ts src/data/stations-snapshot.json || echo "changes=true" >> $GITHUB_OUTPUT
 
       - name: Commit and push changes
         if: steps.git-check.outputs.changes == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add src/utils/api.ts
+          git add src/utils/api.ts src/data/stations-snapshot.json
           git commit -m "feat: update station query exclusions
 
           Auto-update based on current commuter traffic status

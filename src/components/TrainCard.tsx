@@ -27,6 +27,7 @@ import TrainMessagePanel from "./TrainMessagePanel";
 
 // Fixed reference point for animation sync - captured once at module load
 const ANIMATION_SYNC_BASELINE = Date.now();
+const ANIMATION_DURATION_MS = 4000;
 
 interface Props {
 	train: Train;
@@ -135,7 +136,18 @@ export default function TrainCard({
 	const [isTrackFlipped, setIsTrackFlipped] = useState(false);
 	const [showDebugPanel, setShowDebugPanel] = useState(() => getDebugMode());
 	const fadeRafRef = useRef<number | null>(null);
-	const animationSyncRef = useRef<number | null>(null);
+
+	// Phase-sync the blink animation across cards: every time the animation
+	// (re)starts (mount, highlight/dark-mode class swap, display:none round-trip),
+	// recompute the negative delay from the shared baseline so all cards align.
+	const [blinkDelay, setBlinkDelay] = useState<string | undefined>(undefined);
+	const handleCardAnimationStart = useCallback((e: AnimationEvent) => {
+		if (e.target !== e.currentTarget) return;
+		if (!e.animationName.startsWith("soft-blink")) return;
+		setBlinkDelay(
+			`-${(Date.now() - ANIMATION_SYNC_BASELINE) % ANIMATION_DURATION_MS}ms`,
+		);
+	}, []);
 
 	// Swipe gesture state
 	const [swipeOffset, setSwipeOffset] = useState(0);
@@ -276,6 +288,11 @@ export default function TrainCard({
 	// Drive fade animation based on hasDeparted state
 	// First show grayed-out state, then fade out after a delay
 	const fadeDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const departFallbackRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	// Keep the latest onDepart reachable from timers without re-running the
+	// effect (the parent passes a new inline closure on every render)
+	const onDepartRef = useRef(onDepart);
+	onDepartRef.current = onDepart;
 
 	useEffect(() => {
 		if (!hasDeparted) {
@@ -286,6 +303,10 @@ export default function TrainCard({
 			if (fadeDelayRef.current !== null) {
 				clearTimeout(fadeDelayRef.current);
 				fadeDelayRef.current = null;
+			}
+			if (departFallbackRef.current !== null) {
+				clearTimeout(departFallbackRef.current);
+				departFallbackRef.current = null;
 			}
 			setOpacity(1);
 			return;
@@ -300,6 +321,13 @@ export default function TrainCard({
 				setOpacity(0);
 			});
 			fadeRafRef.current = rafId;
+			// Fallback: if the opacity transition never completes (e.g. the row
+			// is display:none so transitionend never fires), still notify the
+			// parent after the transition duration (700ms) plus a margin.
+			departFallbackRef.current = setTimeout(() => {
+				departFallbackRef.current = null;
+				onDepartRef.current?.();
+			}, 1200);
 		}, 2000); // 2 second delay to show grayed-out state
 
 		return () => {
@@ -310,6 +338,10 @@ export default function TrainCard({
 			if (fadeRafRef.current !== null) {
 				cancelAnimationFrame(fadeRafRef.current);
 				fadeRafRef.current = null;
+			}
+			if (departFallbackRef.current !== null) {
+				clearTimeout(departFallbackRef.current);
+				departFallbackRef.current = null;
 			}
 		};
 	}, [hasDeparted]);
@@ -551,7 +583,7 @@ export default function TrainCard({
 
 	const getTrackBadgeClass = (side: "departure" | "arrival") =>
 		trackChangeInfo.changedSide === side && isTrackChanged
-			? "badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
+			? "animate-track-flash badge-error badge-outline group-hover:bg-error/20 dark:group-hover:bg-error/30 group-hover:scale-105"
 			: "bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:scale-105";
 
 	// Notify via toast when a highlighted train's track changes
@@ -761,25 +793,38 @@ export default function TrainCard({
 	const visualOffset = swipeOffset * SWIPE_RESISTANCE;
 	const isSwipeActive = Math.abs(swipeOffset) > 0;
 
-	// Calculate animation delay to sync all blinking cards
-	// Capture offset once when entering departing soon state to prevent animation jumps on re-render.
-	// All cards calculate offset from the shared module-level baseline,
-	// ensuring they're always in phase regardless of when they enter departing soon state.
-	const ANIMATION_DURATION_MS = 4000;
-
-	if (departingSoon && animationSyncRef.current === null) {
-		// Capture once: offset from shared baseline ensures all cards are in phase
-		animationSyncRef.current =
-			(Date.now() - ANIMATION_SYNC_BASELINE) % ANIMATION_DURATION_MS;
-	} else if (!departingSoon) {
-		// Reset when leaving departing soon state
-		animationSyncRef.current = null;
-	}
-
-	const syncedAnimationDelay =
-		departingSoon && animationSyncRef.current !== null
-			? `-${animationSyncRef.current}ms`
-			: undefined;
+	const messagesButton = hasMessages && (
+		<button
+			type="button"
+			class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-100 dark:bg-amber-900/70 text-amber-700 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800 transition-colors shadow-sm flex-shrink-0"
+			aria-label={
+				messages && messages.length > 1
+					? `${t("passengerInfoTrainButton")} (${messages.length})`
+					: t("passengerInfoTrainButton")
+			}
+			aria-expanded={messagesOpen}
+			aria-controls={messagesPanelId}
+			onClick={(event) => {
+				event.stopPropagation();
+				setMessagesOpen((v) => !v);
+			}}
+		>
+			<svg
+				class="w-4 h-4"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<circle cx="12" cy="12" r="10" />
+				<line x1="12" y1="8" x2="12" y2="12" />
+				<line x1="12" y1="16" x2="12.01" y2="16" />
+			</svg>
+		</button>
+	);
 
 	return (
 		<>
@@ -788,16 +833,23 @@ export default function TrainCard({
 				style={{
 					// Only use inline opacity when actively fading (overrides the opacity-50 class)
 					opacity: hasDeparted && opacity < 1 ? opacity : undefined,
+					// Slide out to the right while fading, like a train leaving the board
+					transform:
+						hasDeparted && opacity < 1 ? "translateX(2rem)" : undefined,
 				}}
 				onTransitionEnd={(e) => {
 					if (e.target !== e.currentTarget) return;
 					if (e.propertyName === "opacity" && hasDeparted && opacity === 0) {
+						if (departFallbackRef.current !== null) {
+							clearTimeout(departFallbackRef.current);
+							departFallbackRef.current = null;
+						}
 						onDepart?.();
 					}
 				}}
 			>
 				{/* Inner wrapper for overflow clipping (swipe reveals) - shadow/border applied here */}
-				<div class="relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]">
+				<div class="train-card-lift relative overflow-hidden rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)] border border-gray-200 dark:border-gray-600 dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]">
 					{/* Left reveal - shown when swiping right */}
 					<div
 						class={`absolute inset-y-0 left-0 w-16 flex items-center justify-center transition-opacity duration-150 ${
@@ -862,10 +914,11 @@ export default function TrainCard({
 								isSwipeActive || isTransitioning
 									? `translateX(${visualOffset}px)`
 									: undefined,
-							animationDelay: syncedAnimationDelay,
+							animationDelay: departingSoon ? blinkDelay : undefined,
 							WebkitTouchCallout: "none",
 							WebkitTapHighlightColor: "transparent",
 						}}
+						onAnimationStart={handleCardAnimationStart}
 						onTouchStart={handleTouchStart}
 						onTouchMove={handleTouchMove}
 						onTouchEnd={handleTouchEnd}
@@ -877,42 +930,10 @@ export default function TrainCard({
 							departureRow?.unknownDelay ? "true" : "false"
 						}
 					>
-						<div class="card-body p-3 sm:p-4 relative">
-							{hasMessages && (
-								<button
-									type="button"
-									class="absolute top-1.5 right-1.5 z-10 inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-100 dark:bg-amber-900/70 text-amber-700 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800 transition-colors shadow-sm"
-									aria-label={
-										messages && messages.length > 1
-											? `${t("passengerInfoTrainButton")} (${messages.length})`
-											: t("passengerInfoTrainButton")
-									}
-									aria-expanded={messagesOpen}
-									aria-controls={messagesPanelId}
-									onClick={(event) => {
-										event.stopPropagation();
-										setMessagesOpen((v) => !v);
-									}}
-								>
-									<svg
-										class="w-4 h-4"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										aria-hidden="true"
-									>
-										<circle cx="12" cy="12" r="10" />
-										<line x1="12" y1="8" x2="12" y2="12" />
-										<line x1="12" y1="16" x2="12.01" y2="16" />
-									</svg>
-								</button>
-							)}
-							<div class="flex items-start justify-between gap-2 sm:gap-4 min-h-[76px] sm:min-h-20">
-								<div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 overflow-hidden">
-									{/* Train identifier */}
+						<div class="card-body p-3 sm:p-4">
+							<div class="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 sm:gap-x-4 gap-y-1.5 sm:gap-y-2 items-center">
+								{/* Row 1+2, Col 1: Line badge (row-span-2 wrapper always rendered) */}
+								<div class="row-span-2">
 									{train.commuterLineID && (
 										<button
 											onClick={handleFavorite}
@@ -928,7 +949,7 @@ export default function TrainCard({
 										>
 											{train.commuterLineID}
 											{isHighlighted && (
-												<div class="absolute -top-0.5 -right-0.5 bg-error rounded-full p-1 shadow">
+												<div class="absolute top-0 right-0 bg-error rounded-full p-1 shadow animate-favorite-pop">
 													<svg
 														class="w-2.5 h-2.5 text-white"
 														fill="currentColor"
@@ -946,67 +967,29 @@ export default function TrainCard({
 											)}
 										</button>
 									)}
-
-									{/* Main train info - Using card-title semantic structure */}
-									<div class="space-y-2 sm:space-y-1 min-w-0 flex-1 overflow-hidden">
-										<div class="card-title p-0 flex-col items-start gap-1">
-											<div class="flex flex-col gap-2 sm:gap-1 w-full">
-												<TimeDisplay
-													departureRow={departureRow}
-													arrivalRow={arrivalRow}
-													timeDifferenceMinutes={timeDifferenceMinutes}
-												/>
-												{duration && (
-													<output
-														class={`text-sm sm:text-base font-medium flex items-center truncate ${
-															durationSpeedType === "fast"
-																? "text-success"
-																: durationSpeedType === "slow"
-																	? "text-warning"
-																	: "text-base-content/60"
-														} ${train.cancelled ? "opacity-0 pointer-events-none select-none" : ""}`}
-														aria-hidden={train.cancelled ? "true" : undefined}
-														aria-label={
-															!train.cancelled
-																? `${t("duration")} ${duration.hours} ${t("hours")} ${duration.minutes} ${t("minutes")}`
-																: undefined
-														}
-													>
-														<svg
-															class="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1"
-															fill="currentColor"
-															viewBox="0 0 512 512"
-															aria-hidden="true"
-														>
-															<path d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
-														</svg>
-														<span>
-															{duration.hours}h {duration.minutes}m
-														</span>
-													</output>
-												)}
-											</div>
-										</div>
-									</div>
 								</div>
 
-								{/* Track info and departure countdown */}
-								<div class="flex flex-col items-end gap-2 sm:gap-3 flex-shrink-0 min-h-[76px] sm:min-h-20 justify-start">
+								{/* Row 1, Col 2: Times */}
+								<div class="card-title p-0 min-w-0 overflow-hidden">
+									<TimeDisplay
+										departureRow={departureRow}
+										arrivalRow={arrivalRow}
+										timeDifferenceMinutes={timeDifferenceMinutes}
+									/>
+								</div>
+
+								{/* Row 1, Col 3: Track badge (or cancelled badge) */}
+								<div class="flex items-center justify-self-end gap-1.5">
 									{train.cancelled ? (
 										<>
+											{messagesButton}
 											<span class="badge badge-error badge-lg text-white">
 												{t("cancelled")}
 											</span>
-											{/* Invisible placeholder to maintain consistent height */}
-											<div
-												class="badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4 invisible"
-												aria-hidden="true"
-											>
-												<span>0 min</span>
-											</div>
 										</>
 									) : (
 										<>
+											{messagesButton}
 											{/* Interactive Flippable Track Badge */}
 											<div class="indicator">
 												<button
@@ -1041,7 +1024,7 @@ export default function TrainCard({
 														>
 															{/* Front face - Departure Track */}
 															<div
-																class={`badge badge-lg font-semibold transition-all duration-200 ${getTrackBadgeClass(
+																class={`badge badge-lg font-semibold transition-[color,background-color,border-color,transform,opacity] duration-200 ${getTrackBadgeClass(
 																	"departure",
 																)} whitespace-nowrap`}
 																style={{
@@ -1063,7 +1046,7 @@ export default function TrainCard({
 															</div>
 															{/* Back face - Arrival Track */}
 															<div
-																class={`badge badge-lg font-semibold transition-all duration-200 ${getTrackBadgeClass(
+																class={`badge badge-lg font-semibold transition-[color,background-color,border-color,transform,opacity] duration-200 ${getTrackBadgeClass(
 																	"arrival",
 																)} whitespace-nowrap`}
 																style={{
@@ -1111,36 +1094,68 @@ export default function TrainCard({
 														</span>
 													)}
 											</div>
-
-											{/* Always reserve space for minutes badge to maintain consistent card height */}
-											<div
-												class={`badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4 ${
-													!hasDerivedActualDeparture &&
-													minutesToDeparture !== null &&
-													minutesToDeparture <= 30 &&
-													minutesToDeparture >= 0
-														? ""
-														: "invisible"
-												}`}
-												aria-hidden={
-													hasDerivedActualDeparture ||
-													minutesToDeparture === null ||
-													minutesToDeparture > 30 ||
-													minutesToDeparture < 0
-												}
-											>
-												<span>
-													{minutesToDeparture !== null &&
-													minutesToDeparture >= 0
-														? minutesToDeparture === 0
-															? "0 min"
-															: `${minutesToDeparture} min`
-														: "0 min"}
-												</span>
-											</div>
 										</>
 									)}
 								</div>
+
+								{/* Row 2, Col 2: Duration */}
+								{duration && (
+									<output
+										class={`col-start-2 text-sm sm:text-base font-medium flex items-center truncate ${
+											durationSpeedType === "fast"
+												? "text-success"
+												: durationSpeedType === "slow"
+													? "text-warning"
+													: "text-base-content/60"
+										} ${train.cancelled ? "opacity-0 pointer-events-none select-none" : ""}`}
+										aria-hidden={train.cancelled ? "true" : undefined}
+										aria-label={
+											!train.cancelled
+												? `${t("duration")} ${duration.hours} ${t("hours")} ${duration.minutes} ${t("minutes")}`
+												: undefined
+										}
+									>
+										<svg
+											class="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1"
+											fill="currentColor"
+											viewBox="0 0 512 512"
+											aria-hidden="true"
+										>
+											<path d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+										</svg>
+										<span>
+											{duration.hours}h {duration.minutes}m
+										</span>
+									</output>
+								)}
+
+								{/* Row 2, Col 3: Countdown */}
+								{!train.cancelled && (
+									<div
+										class={`col-start-3 justify-self-end badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4 ${
+											!hasDerivedActualDeparture &&
+											minutesToDeparture !== null &&
+											minutesToDeparture <= 30 &&
+											minutesToDeparture >= 0
+												? ""
+												: "invisible"
+										}`}
+										aria-hidden={
+											hasDerivedActualDeparture ||
+											minutesToDeparture === null ||
+											minutesToDeparture > 30 ||
+											minutesToDeparture < 0
+										}
+									>
+										<span>
+											{minutesToDeparture !== null && minutesToDeparture >= 0
+												? minutesToDeparture === 0
+													? "0 min"
+													: `${minutesToDeparture} min`
+												: "0 min"}
+										</span>
+									</div>
+								)}
 							</div>
 							<div aria-live="polite" class="sr-only">
 								{train.cancelled

@@ -1,3 +1,4 @@
+import { useValueChanged } from "../hooks/useValueChanged";
 import type { Train } from "../types";
 import { formatTime } from "../utils/trainUtils";
 
@@ -34,10 +35,19 @@ const TimeRow = ({
 		? (arrivalRow?.liveEstimateTime as string)
 		: arrivalRow?.scheduledTime;
 
+	const departureTimeChanged = useValueChanged(displayedTime);
+	const arrivalTimeChanged = useValueChanged(arrivalDisplayedTime);
+
 	return (
 		<span class="text-base-content/70 text-sm sm:text-xl whitespace-nowrap">
 			{useLiveEstimate && <span aria-hidden="true">~</span>}
-			<time datetime={displayedTime}>{formatTime(displayedTime)}</time>
+			<time
+				key={displayedTime}
+				datetime={displayedTime}
+				class={departureTimeChanged ? "animate-time-update" : undefined}
+			>
+				{formatTime(displayedTime)}
+			</time>
 			{arrivalRow && (
 				<svg
 					class="inline-block w-3 h-3 sm:w-4 sm:h-4 mx-1 sm:mx-2"
@@ -51,7 +61,11 @@ const TimeRow = ({
 			{arrivalRow && arrivalDisplayedTime && (
 				<>
 					{useArrivalLiveEstimate && <span aria-hidden="true">~</span>}
-					<time datetime={arrivalDisplayedTime}>
+					<time
+						key={arrivalDisplayedTime}
+						datetime={arrivalDisplayedTime}
+						class={arrivalTimeChanged ? "animate-time-update" : undefined}
+					>
 						{formatTime(arrivalDisplayedTime)}
 					</time>
 				</>

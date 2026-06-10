@@ -86,6 +86,7 @@ export default function StationManager({
 		message?: string;
 	} | null>(null);
 	const [isSwapping, setIsSwapping] = useState(false);
+	const [swapRotation, setSwapRotation] = useState(0);
 	const isSwappingRef = useRef(false);
 	const lastSwapTimeRef = useRef(0);
 
@@ -248,12 +249,15 @@ export default function StationManager({
 			return;
 		}
 
+		let cancelled = false;
+
 		const fetchDestinations = async () => {
 			if (selectedOrigin) {
 				setIsLoadingDestinations(true);
 				try {
 					const destinations =
 						await fetchTrainsLeavingFromStation(selectedOrigin);
+					if (cancelled) return;
 					setAvailableDestinations(destinations);
 
 					// Only clear and focus if the current destination is not available in the new list
@@ -269,6 +273,7 @@ export default function StationManager({
 						}, 0);
 					}
 				} catch (error) {
+					if (cancelled) return;
 					console.error("Error fetching destinations:", error);
 					setAvailableDestinations(stations);
 					// Also check availability against all stations if fetch fails
@@ -284,14 +289,23 @@ export default function StationManager({
 						}, 0);
 					}
 				} finally {
-					setIsLoadingDestinations(false);
+					if (!cancelled) {
+						setIsLoadingDestinations(false);
+					}
 				}
 			} else {
 				setAvailableDestinations(stations);
+				// Clear any loading state left behind by a fetch that was
+				// cancelled when the origin was cleared mid-flight
+				setIsLoadingDestinations(false);
 			}
 		};
 
 		fetchDestinations();
+
+		return () => {
+			cancelled = true;
+		};
 	}, [selectedOrigin, stations]);
 
 	const handleDestinationSelect = (station: Station) => {
@@ -455,33 +469,21 @@ export default function StationManager({
 		return () => window.removeEventListener("popstate", handlePopState);
 	}, [stations]);
 
-	const fetchDestinations = async (originCode: string) => {
-		try {
-			setIsLoadingDestinations(true);
-			const destinations = await fetchTrainsLeavingFromStation(originCode);
-			setAvailableDestinations(destinations);
-		} catch (error) {
-			console.error("Error fetching destinations:", error);
-			setAvailableDestinations(stations);
-		} finally {
-			setIsLoadingDestinations(false);
-		}
-	};
-
 	const handleOriginSelect = useCallback(
 		(station: Station) => {
 			setSelectedOrigin(station.shortCode);
 			setStoredValue("selectedOrigin", station.shortCode);
 			setOpenList("to");
-			setIsLoadingDestinations(true);
-			fetchDestinations(station.shortCode);
+			// Destinations for the new origin are fetched by the
+			// selectedOrigin effect above.
 		},
-		[fetchDestinations],
+		[setOpenList],
 	);
 
 	const handleSwap = useCallback(async () => {
 		if (!selectedOrigin || !selectedDestination) return;
 
+		setSwapRotation((prev) => prev + 180);
 		hapticMedium();
 		// Set swapping flags and timestamp to prevent dropdown from showing
 		setIsSwapping(true);
@@ -664,6 +666,10 @@ export default function StationManager({
 						>
 							<svg
 								className="w-6 h-6"
+								style={{
+									transform: `rotate(${swapRotation}deg)`,
+									transition: "transform 300ms var(--ease-spring)",
+								}}
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -744,6 +750,10 @@ export default function StationManager({
 									>
 										<svg
 											className="w-6 h-6"
+											style={{
+												transform: `rotate(${swapRotation}deg)`,
+												transition: "transform 300ms var(--ease-spring)",
+											}}
 											fill="none"
 											stroke="currentColor"
 											viewBox="0 0 24 24"

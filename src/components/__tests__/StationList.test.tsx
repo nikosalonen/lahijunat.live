@@ -337,12 +337,20 @@ describe("StationList", () => {
 			});
 		});
 
-		it("announces loading state to screen readers", () => {
+		it("announces loading state to screen readers when open", () => {
 			const { container } = render(
-				<StationList {...defaultProps} isLoading={true} />,
+				<StationList {...defaultProps} isOpen={true} isLoading={true} />,
 			);
 
 			expect(container.querySelector(".skeleton")).toBeInTheDocument();
+		});
+
+		it("does not show skeleton when closed even while loading", () => {
+			const { container } = render(
+				<StationList {...defaultProps} isOpen={false} isLoading={true} />,
+			);
+
+			expect(container.querySelector(".skeleton")).not.toBeInTheDocument();
 		});
 
 		it("provides clear feedback for selection", () => {

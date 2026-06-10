@@ -15,6 +15,7 @@ import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station, Train } from "../types";
 import {
 	fetchActivePassengerMessages,
+	fetchAllStationNames,
 	fetchTrains,
 	type ServiceStatusInfo,
 } from "../utils/api";
@@ -186,6 +187,20 @@ export default function TrainList({
 	const initialLoadRef = useRef(true);
 	// Guard against post-unmount side effects (e.g. showToast from stale fetches)
 	const isMountedRef = useRef(true);
+
+	// Reset to the loading skeleton when the station pair changes (e.g. swap):
+	// trains from the previous direction filtered against the new stations
+	// render a misleading, near-empty list frame until the new data arrives
+	useEffect(() => {
+		initialLoadRef.current = true;
+		setState((prev) => ({
+			...prev,
+			trains: [],
+			loading: true,
+			initialLoad: true,
+			error: null,
+		}));
+	}, [stationCode, destinationCode]);
 
 	// FLIP animation refs
 	const listContainerRef = useRef<HTMLDivElement>(null);
@@ -718,6 +733,30 @@ export default function TrainList({
 		PassengerInformationMessage[]
 	>([]);
 
+	// Announcements can reference stations outside the commuter-filtered
+	// station list (e.g. long-distance stations); lazily load the full-network
+	// name map so they don't render as bare short codes.
+	const [allStationNames, setAllStationNames] = useState<Map<
+		string,
+		string
+	> | null>(null);
+
+	useEffect(() => {
+		if (allStationNames) return;
+		if (!rawPassengerMessages.some((msg) => msg.stations.length > 0)) return;
+		let cancelled = false;
+		fetchAllStationNames()
+			.then((map) => {
+				if (!cancelled) setAllStationNames(map);
+			})
+			.catch(() => {
+				// Resolver falls back to short codes; retried on next message update
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [rawPassengerMessages, allStationNames]);
+
 	// Set of `${trainNumber}_${originDate}` keys for currently-displayed trains.
 	// Uses the train's true first-origin departure time captured in api.ts
 	// before timeTableRows is sliced to the selected station; this is the date
@@ -801,8 +840,12 @@ export default function TrainList({
 		const lang = getCurrentLanguage();
 		const resolveStationName = (code: string) => {
 			const station = stationsByCode.get(code);
-			return station
-				? getLocalizedStationName(station.name, station.shortCode) || code
+			if (station) {
+				return getLocalizedStationName(station.name, station.shortCode) || code;
+			}
+			const fullNetworkName = allStationNames?.get(code);
+			return fullNetworkName
+				? getLocalizedStationName(fullNetworkName, code)
 				: code;
 		};
 		const { general, perTrain } = partitionActiveMessages(
@@ -819,6 +862,7 @@ export default function TrainList({
 		languageVersion,
 		displayedTrainKeys,
 		stationsByCode,
+		allStationNames,
 	]);
 
 	const refreshProgress = useMemo(() => {
@@ -951,18 +995,18 @@ export default function TrainList({
 							<div
 								key={journeyKey}
 								data-journey-key={journeyKey}
-								class={`transition-all duration-300 ease-in-out ${
+								class={`train-row ${
 									departedTrains.has(journeyKey)
 										? ""
 										: isHiddenByFilter
-											? "opacity-0 max-h-0 overflow-hidden scale-95 pointer-events-none -mt-4"
-											: "animate-scale-in opacity-100 max-h-[500px]"
+											? "train-row-hidden"
+											: "animate-scale-in [animation-fill-mode:backwards] max-h-[500px]"
 								}`}
 								style={{
 									animationDelay:
 										departedTrains.has(journeyKey) || isHiddenByFilter
 											? "0s"
-											: `${index * 0.05}s`,
+											: `${Math.min(index, 6) * 0.04}s`,
 								}}
 							>
 								<MemoizedTrainCard

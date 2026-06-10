@@ -2,6 +2,89 @@
 @plugin "daisyui";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* DaisyUI built-in theme customization (brand primary) */
+@plugin "daisyui/theme" {
+	name: "light";
+	default: true;
+	--color-primary: #8c4799;
+	--color-primary-content: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+	name: "dark";
+	prefersdark: true;
+	--color-primary: #8c4799;
+	--color-primary-content: #ffffff;
+}
+
+/* Design tokens migrated from the former tailwind.config.mjs (dead under v4) */
+@theme {
+	--shadow-brand-soft: 0 2px 8px rgba(140, 71, 153, 0.08);
+	--shadow-brand-medium: 0 4px 16px rgba(140, 71, 153, 0.12);
+	--shadow-brand-strong: 0 8px 32px rgba(140, 71, 153, 0.16);
+
+	--animate-scale-in: scale-in 0.2s ease-out;
+	--animate-bounce-subtle: bounce-subtle 0.6s ease-in-out;
+	--animate-time-update: time-update 0.6s ease-out;
+	--animate-track-flash: track-flash 0.8s ease-out;
+	--animate-favorite-pop: favorite-pop 0.25s var(--ease-spring) both;
+
+	@keyframes scale-in {
+		from {
+			transform: scale(0.95);
+			opacity: 0;
+		}
+		to {
+			transform: scale(1);
+			opacity: 1;
+		}
+	}
+	@keyframes bounce-subtle {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(-4px);
+		}
+	}
+	/* No 100% frame: the element animates back to its natural styles */
+	@keyframes time-update {
+		0% {
+			opacity: 0.3;
+		}
+		35% {
+			color: var(--color-time-flash);
+			opacity: 1;
+		}
+	}
+	@keyframes track-flash {
+		0% {
+			box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+		}
+		70% {
+			box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+		}
+	}
+	@keyframes favorite-pop {
+		from {
+			transform: scale(0);
+		}
+		to {
+			transform: scale(1);
+		}
+	}
+}
+
+/* iOS safe-area padding (used by the toast container) */
+@utility pb-safe {
+	padding-bottom: env(safe-area-inset-bottom);
+}
+
 @font-face {
 	font-family: "Gotham Rounded";
 	src:
@@ -14,39 +97,20 @@
 
 /* Modern CSS Custom Properties */
 :root {
-	/* Enhanced Purple Palette */
-	--color-primary-50: #faf7ff;
-	--color-primary-100: #f3e8ff;
-	--color-primary-200: #e9d5ff;
-	--color-primary-300: #d8b4fe;
-	--color-primary-400: #c084fc;
-	--color-primary-500: #8c4799;
-	--color-primary-600: #7c3085;
-	--color-primary-700: #6b2c75;
-	--color-primary-800: #581c5a;
-	--color-primary-900: #441545;
-
-	/* Enhanced Shadows */
-	--shadow-soft: 0 2px 8px rgba(140, 71, 153, 0.08);
-	--shadow-medium: 0 4px 16px rgba(140, 71, 153, 0.12);
-	--shadow-strong: 0 8px 32px rgba(140, 71, 153, 0.16);
-	--shadow-glow:
-		0 0 0 1px rgba(140, 71, 153, 0.1), 0 4px 16px rgba(140, 71, 153, 0.15);
-
-	/* Glass Effects */
-	--glass-bg: rgba(255, 255, 255, 0.85);
-	--glass-border: rgba(255, 255, 255, 0.2);
-
-	/* Gradients */
-	--gradient-primary: linear-gradient(135deg, #8c4799 0%, #6b2c75 100%);
-	--gradient-surface: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+	/* Spring easing: linear() where supported, overshoot cubic-bezier elsewhere */
+	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--color-time-flash: #8c4799;
 }
 
 .dark {
 	/* Dark Mode Overrides */
-	--glass-bg: rgba(31, 41, 55, 0.85);
-	--glass-border: rgba(255, 255, 255, 0.1);
-	--gradient-surface: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+	--color-time-flash: #b388ff;
+}
+
+@supports (transition-timing-function: linear(0, 1)) {
+	:root {
+		--ease-spring: linear(0, 1.06 35%, 1.2 60%, 0.95 80%, 1);
+	}
 }
 
 @keyframes soft-blink {
@@ -160,27 +224,6 @@
 
 /* Animation play state is controlled by the base class - no conditional selectors needed */
 
-@keyframes pulse {
-	0%,
-	100% {
-		opacity: 1;
-	}
-	50% {
-		opacity: 0.5;
-	}
-}
-
-.animate-pulse {
-	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Smooth height transitions */
-.height-transition {
-	transition:
-		height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-		max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* Enhanced focus states */
 @layer utilities {
 	.focus-ring:focus-visible {
@@ -207,6 +250,21 @@
 	.dark .station-option:active {
 		background-color: rgb(75 85 99); /* gray-600 */
 	}
+
+	.train-card-lift {
+		transition:
+			transform 150ms ease-out,
+			box-shadow 150ms ease-out;
+	}
+	.train-card-lift:hover {
+		transform: translateY(-1px);
+		box-shadow:
+			0 4px 14px rgba(0, 0, 0, 0.12),
+			0 2px 4px rgba(0, 0, 0, 0.06);
+	}
+	.dark .train-card-lift:hover {
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+	}
 }
 
 /* Rely on DaisyUI's btn/btn-primary styling */
@@ -228,6 +286,75 @@
 
 .animate-slide-up {
 	animation: slide-up 0.3s ease-out;
+}
+
+/* Entry transitions via @starting-style (progressive enhancement).
+   Unsupported browsers (pre Chrome 117 / Safari 17.5 / Firefox 129)
+   simply show the element instantly. */
+.toast-enter {
+	animation: none;
+	transition:
+		opacity 0.3s ease-out,
+		transform 0.3s ease-out;
+	@starting-style {
+		opacity: 0;
+		transform: translateY(1rem);
+	}
+}
+
+.dropdown-enter {
+	transition:
+		opacity 0.25s ease-out,
+		transform 0.25s ease-out;
+	@starting-style {
+		opacity: 0;
+		transform: translateY(-0.5rem);
+	}
+}
+
+/* Train rows hidden by the slow-train filter. In browsers supporting
+   transition-behavior: allow-discrete they reach display:none after the
+   transition (removed from the a11y tree); elsewhere they collapse as before. */
+.train-row {
+	transition:
+		opacity 0.3s ease-in-out,
+		transform 0.3s ease-in-out,
+		max-height 0.3s ease-in-out,
+		margin 0.3s ease-in-out;
+}
+
+.train-row-hidden {
+	opacity: 0;
+	max-height: 0;
+	transform: scale(0.95);
+	margin-top: -1rem;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+@supports (transition-behavior: allow-discrete) {
+	.train-row {
+		transition:
+			opacity 0.3s ease-in-out,
+			transform 0.3s ease-in-out,
+			max-height 0.3s ease-in-out,
+			margin 0.3s ease-in-out,
+			display 0.3s ease-in-out allow-discrete;
+	}
+	.train-row-hidden {
+		display: none;
+	}
+	.train-row:not(.train-row-hidden) {
+		/* Entry visuals are driven by the restarted animate-scale-in animation
+		   (identical from-values). Deliberately NO max-height/margin here:
+		   @starting-style cannot distinguish a row returning from display:none
+		   (rare filter un-hide) from a freshly mounted one, and animating height
+		   on mount made every list render unfold from zero — janky on mobile. */
+		@starting-style {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+	}
 }
 
 /* Reduced-motion support */
@@ -276,20 +403,4 @@ body {
 }
 .collapse-open > .collapse-content {
 	overflow: visible;
-}
-
-/* Scrollable containers */
-.scroll-smooth {
-	overscroll-behavior: contain;
-	scroll-behavior: smooth;
-}
-
-/* Mobile-specific scroll optimizations */
-@media (max-width: 768px) {
-	/* Prevent body scroll when modals/dropdowns are open */
-	.scroll-lock {
-		overflow: hidden;
-		position: fixed;
-		width: 100%;
-	}
 }

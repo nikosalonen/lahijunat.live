@@ -587,6 +587,27 @@ export async function fetchStations(): Promise<Station[]> {
 	const cached = getCachedStations();
 	if (cached) return cached;
 
+	try {
+		return await fetchStationsFromApi();
+	} catch (error) {
+		// During prerender (CI), Digitraffic occasionally returns 403 to shared
+		// runner IPs; fall back to the committed snapshot so a single failed
+		// request can't kill the whole build. Browsers still surface the error.
+		if (typeof window === "undefined") {
+			console.warn(
+				"[API] Station fetch failed, falling back to committed snapshot:",
+				error,
+			);
+			const { default: snapshot } = await import(
+				"../data/stations-snapshot.json"
+			);
+			return snapshot as Station[];
+		}
+		throw error;
+	}
+}
+
+async function fetchStationsFromApi(): Promise<Station[]> {
 	return makeRateLimitedRequest("stations", async () => {
 		const response = await makeRequestWithBackoff(() =>
 			fetch(ENDPOINTS.GRAPHQL, {
@@ -630,6 +651,46 @@ export async function fetchStations(): Promise<Station[]> {
 		cleanupCache(stationCache);
 		return stations;
 	});
+}
+
+/**
+ * Full-network station name lookup from the REST metadata endpoint. Unlike
+ * STATION_QUERY (filtered to commuter stations for the pickers), this covers
+ * every station, so passenger announcements that reference long-distance or
+ * excluded stations can still show a name instead of a bare short code.
+ * Fetched at most once per session; a failure allows a later retry.
+ */
+let allStationNamesPromise: Promise<Map<string, string>> | null = null;
+
+export function fetchAllStationNames(): Promise<Map<string, string>> {
+	if (!allStationNamesPromise) {
+		allStationNamesPromise = (async () => {
+			const response = await makeRequestWithBackoff(() =>
+				fetch(ENDPOINTS.STATIONS, { headers: DEFAULT_HEADERS }),
+			);
+			if (!response.ok) {
+				throw new Error(
+					`Failed to fetch station names: ${response.statusText}`,
+				);
+			}
+			const stations: Array<{
+				stationShortCode: string;
+				stationName: string;
+			}> = await response.json();
+			const map = new Map<string, string>();
+			for (const station of stations) {
+				map.set(
+					station.stationShortCode,
+					station.stationName.replace(" asema", ""),
+				);
+			}
+			return map;
+		})().catch((error) => {
+			allStationNamesPromise = null;
+			throw error;
+		});
+	}
+	return allStationNamesPromise;
 }
 
 /**

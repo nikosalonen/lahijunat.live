@@ -76,6 +76,9 @@ export const translations = {
 		viewStatusPage: "Näytä tilannesivu",
 		// Feature announcement
 		newFeaturesTitle: "Uutta sovelluksessa",
+		newFeaturesAnimations:
+			"Hienovaraisia animaatioita ja sulavampi käyttötuntuma",
+		newFeaturesCardLayout: "Junakortin asettelu siistitty",
 		newFeaturesPolish: "Pieniä korjauksia ja viimeistelyä",
 		newFeaturesDismiss: "Selvä!",
 		// Accessibility
@@ -186,6 +189,8 @@ export const translations = {
 		viewStatusPage: "View status page",
 		// Feature announcement
 		newFeaturesTitle: "What's new",
+		newFeaturesAnimations: "Subtle animations and a smoother feel",
+		newFeaturesCardLayout: "Tidier train card layout",
 		newFeaturesPolish: "Small fixes and polish",
 		newFeaturesDismiss: "Got it!",
 		// Accessibility
@@ -297,6 +302,8 @@ export const translations = {
 		viewStatusPage: "Visa statussida",
 		// Feature announcement
 		newFeaturesTitle: "Nyheter",
+		newFeaturesAnimations: "Subtila animationer och en mjukare känsla",
+		newFeaturesCardLayout: "Snyggare layout för tågkortet",
 		newFeaturesPolish: "Små fixar och putsning",
 		newFeaturesDismiss: "Uppfattat!",
 		// Accessibility

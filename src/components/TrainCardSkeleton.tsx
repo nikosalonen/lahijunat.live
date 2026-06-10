@@ -2,9 +2,9 @@
 
 export default function TrainCardSkeleton() {
 	return (
-		<output
-			class="card bg-base-100 shadow-xl border border-base-300 rounded-xl animate-scale-in block"
-			aria-label="Loading train information"
+		<div
+			class="card bg-base-100 shadow-xl border border-base-300 rounded-xl block"
+			aria-hidden="true"
 		>
 			<div class="card-body p-3 sm:p-4">
 				<div class="flex items-start justify-between gap-2 sm:gap-4">
@@ -37,6 +37,6 @@ export default function TrainCardSkeleton() {
 					</div>
 				</div>
 			</div>
-		</output>
+		</div>
 	);
 }

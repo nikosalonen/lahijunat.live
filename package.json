@@ -1,7 +1,7 @@
 {
 	"name": "lahijunat-live",
 	"type": "module",
-	"version": "1.16.0",
+	"version": "1.17.0",
 	"packageManager": "pnpm@11.0.8",
 	"engines": {
 		"node": ">=24"
@@ -17,6 +17,7 @@
 		"typecheck": "astro check",
 		"check-stations": "pnpm tsx scripts/findStationsWithoutDestinations.ts",
 		"update-station-query": "pnpm tsx scripts/updateStationQuery.ts",
+		"update-stations-snapshot": "pnpm tsx scripts/updateStationsSnapshot.ts",
 		"test-station-query": "pnpm tsx scripts/testStationQuery.ts",
 		"test": "vitest run",
 		"test:watch": "vitest watch",
@@ -28,10 +29,10 @@
 		]
 	},
 	"dependencies": {
-		"@astrojs/preact": "^5.1.4",
+		"@astrojs/preact": "^5.1.5",
 		"@astrojs/sitemap": "^3.7.3",
 		"@tailwindcss/vite": "^4.3.0",
-		"astro": "^6.4.2",
+		"astro": "^6.4.4",
 		"preact": "^10.29.2",
 		"tailwindcss": "^4.3.0",
 		"workbox-cacheable-response": "^7.4.1",
@@ -53,14 +54,14 @@
 		"@biomejs/biome": "^2.4.16",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/preact": "^3.2.4",
-		"@types/node": "^24.12.4",
-		"daisyui": "^5.5.20",
+		"@types/node": "^24.13.1",
+		"daisyui": "^5.5.23",
 		"husky": "^9.1.7",
 		"jsdom": "^29.1.1",
 		"lint-staged": "^17.0.7",
-		"tsx": "^4.22.3",
+		"tsx": "^4.22.4",
 		"typescript": "^6.0.3",
-		"vitest": "^4.1.7",
+		"vitest": "^4.1.8",
 		"workbox-cli": "^7.4.1"
 	}
 }
