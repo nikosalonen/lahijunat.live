@@ -61,7 +61,7 @@
 		"lint-staged": "^17.0.7",
 		"tsx": "^4.22.4",
 		"typescript": "^6.0.3",
-		"vitest": "^4.1.8",
+		"vitest": "^4.1.9",
 		"workbox-cli": "^7.4.1"
 	}
 }
