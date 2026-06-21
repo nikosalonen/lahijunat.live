@@ -87,6 +87,17 @@ describe("ShareButton", () => {
 		expect(queryByRole("dialog")).not.toBeInTheDocument();
 	});
 
+	it("closes the modal when the backdrop is clicked", () => {
+		const { getByLabelText, getByRole, queryByRole } = render(<ShareButton />);
+		act(() => {
+			getByLabelText("shareButtonLabel").click();
+		});
+		act(() => {
+			fireEvent.click(getByRole("dialog"));
+		});
+		expect(queryByRole("dialog")).not.toBeInTheDocument();
+	});
+
 	it("renders the QR code SVG after opening", async () => {
 		const { getByLabelText, findByTestId } = render(<ShareButton />);
 		act(() => {
@@ -167,6 +178,51 @@ describe("ShareButton", () => {
 				`${window.location.origin}/HKI/TKL`,
 			);
 		});
+	});
+
+	it("re-evaluates the default target when opened after client-side navigation", async () => {
+		// Mounted on the homepage, then the app navigates to a route via
+		// pushState without remounting the component.
+		const { getByLabelText, getByRole } = render(<ShareButton />);
+		window.history.pushState({}, "", "/HKI/TKL");
+		act(() => {
+			getByLabelText("shareButtonLabel").click();
+		});
+		await act(async () => {
+			getByRole("button", { name: "copyLink" }).click();
+		});
+		await waitFor(() => {
+			expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+				`${window.location.origin}/HKI/TKL`,
+			);
+		});
+	});
+
+	it("reflects the selected target via aria-pressed", () => {
+		window.history.pushState({}, "", "/HKI/TKL");
+		const { getByLabelText, getByRole } = render(<ShareButton />);
+		act(() => {
+			getByLabelText("shareButtonLabel").click();
+		});
+		expect(getByRole("button", { name: "shareCurrentView" })).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		);
+		expect(getByRole("button", { name: "shareHomepage" })).toHaveAttribute(
+			"aria-pressed",
+			"false",
+		);
+		act(() => {
+			getByRole("button", { name: "shareHomepage" }).click();
+		});
+		expect(getByRole("button", { name: "shareHomepage" })).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		);
+		expect(getByRole("button", { name: "shareCurrentView" })).toHaveAttribute(
+			"aria-pressed",
+			"false",
+		);
 	});
 
 	it("shares the homepage when the homepage option is chosen", async () => {

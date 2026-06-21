@@ -74,6 +74,9 @@ export default function ShareButton() {
 
 	const open = () => {
 		hapticLight();
+		// Re-evaluate the default target on each open: the app changes the route
+		// via history.pushState without remounting, so the initial value can be stale.
+		setTarget(isOnRoute() ? "current" : "homepage");
 		setIsOpen(true);
 	};
 
@@ -160,7 +163,7 @@ export default function ShareButton() {
 								<legend className="sr-only">{t("shareTargetLabel")}</legend>
 								<button
 									type="button"
-									className={`btn btn-sm join-item ${target === "current" ? "btn-active" : ""}`}
+									className={`btn btn-sm join-item ${target === "current" ? "btn-primary" : "btn-outline btn-primary"}`}
 									aria-pressed={target === "current"}
 									onClick={() => setTarget("current")}
 								>
@@ -168,7 +171,7 @@ export default function ShareButton() {
 								</button>
 								<button
 									type="button"
-									className={`btn btn-sm join-item ${target === "homepage" ? "btn-active" : ""}`}
+									className={`btn btn-sm join-item ${target === "homepage" ? "btn-primary" : "btn-outline btn-primary"}`}
 									aria-pressed={target === "homepage"}
 									onClick={() => setTarget("homepage")}
 								>
