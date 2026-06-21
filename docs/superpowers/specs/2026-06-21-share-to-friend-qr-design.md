@@ -12,9 +12,13 @@ native share sheet on supported devices.
 
 ## Decisions
 
-- **Share target:** Always the homepage (site root), not the current route.
+- **Share target:** User-selectable between the homepage (site root) and the current
+  view (full current URL, including the selected stations). On a route page the modal
+  shows a toggle and defaults to the current view; on the homepage the toggle is hidden
+  and only the homepage URL is shared.
 - **QR generation:** Bundled client-side library, lazy-loaded on first modal open.
-  Works offline (PWA), no external requests, privacy-friendly.
+  Works offline (PWA), no external requests, privacy-friendly. The QR is regenerated
+  when the selected target changes.
 - **Share actions:** QR code + Copy link + Native share (Web Share API where available).
 
 ## Components & files
@@ -38,6 +42,10 @@ native share sheet on supported devices.
 - Modal contents:
   - Heading `t("shareModalTitle")` (e.g. "Jaa kaverille") + short
     `t("shareModalDescription")`.
+  - **Share-target toggle** (only when viewing a route): a `<fieldset class="join">`
+    with a visually-hidden `<legend>` (`t("shareTargetLabel")`) and two toggle buttons —
+    `t("shareCurrentView")` ("Nykyiset valinnat") and `t("shareHomepage")`
+    ("Perusnäkymä"). Selecting one updates the QR, displayed URL, copy, and native share.
   - **QR code:** inline SVG rendered on a white rounded panel (stays scannable in dark
     mode), ~200px, `alt` / `aria-label` = `t("qrCodeAlt")`.
   - The URL shown as selectable monospace text.
@@ -49,14 +57,13 @@ native share sheet on supported devices.
 
 ## URL source
 
-`window.location.origin + "/"` computed at runtime — environment-correct (dev/prod) and
-matches the "always homepage" decision. Because the target is constant, the QR matrix is
-generated once and memoized.
+Computed at runtime (environment-correct for dev/prod):
 
-> Considered alternative: since the QR target is a constant (the site root), a
-> pre-generated static SVG asset could replace the runtime library entirely. We kept the
-> bundled-library approach (more robust, and trivially extends to per-route sharing
-> later).
+- **Homepage:** `window.location.origin + "/"`.
+- **Current view:** `window.location.href`.
+
+`window.location.pathname !== "/"` determines whether a route is being viewed (and thus
+whether the toggle is shown and "current view" is the default).
 
 ## Error handling
 
@@ -79,11 +86,16 @@ New keys for fi / en / sv:
 - `shareButtonLabel`
 - `shareModalTitle`
 - `shareModalDescription`
+- `shareTargetLabel`
+- `shareHomepage` (fi: "Perusnäkymä")
+- `shareCurrentView` (fi: "Nykyiset valinnat")
 - `copyLink`
 - `linkCopied`
 - `copyLinkFailed`
 - `nativeShare`
+- `shareFailed`
 - `qrCodeAlt`
+- `closeShareModal`
 
 Reuse an existing close/dismiss key if one is present. The modal uses
 `useLanguageChange()` so text updates live when the language changes.

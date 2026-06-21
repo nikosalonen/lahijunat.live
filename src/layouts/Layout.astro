@@ -16,6 +16,7 @@ import DebugToggle from "../components/DebugToggle";
 import FeatureAnnouncement from "../components/FeatureAnnouncement";
 import Footer from "../components/Footer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import ShareButton from "../components/ShareButton";
 import Toast from "../components/Toast";
 import { t } from "../utils/translations";
 
@@ -216,6 +217,7 @@ const metaDescription = description || defaultDescription;
               <div class="relative z-10">
                 <LanguageSwitcher client:load />
               </div>
+              <ShareButton client:load />
               <label
                 id="theme-toggle"
                 for="theme-toggle-input"
