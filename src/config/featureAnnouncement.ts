@@ -41,11 +41,10 @@ export const featureAnnouncementConfig = {
 	 * - icon: emoji or "svg:iconName" for built-in SVG icons (currently: "lightning")
 	 * - translationKey: key from translations.ts for the feature description
 	 */
-	features: [
-		{ icon: "✨", translationKey: "newFeaturesAnimations" },
-		{ icon: "🚆", translationKey: "newFeaturesCardLayout" },
-		{ icon: "🛠️", translationKey: "newFeaturesPolish" },
-	] as Array<{ icon: string; translationKey: string }>,
+	features: [{ icon: "📲", translationKey: "newFeaturesShare" }] as Array<{
+		icon: string;
+		translationKey: string;
+	}>,
 };
 
 export type FeatureConfig = { icon: string; translationKey: string };
