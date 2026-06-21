@@ -94,6 +94,7 @@ export const translations = {
 			"Hienovaraisia animaatioita ja sulavampi käyttötuntuma",
 		newFeaturesCardLayout: "Junakortin asettelu siistitty",
 		newFeaturesPolish: "Pieniä korjauksia ja viimeistelyä",
+		newFeaturesShare: "Jaa sivusto kaverille QR-koodilla",
 		newFeaturesDismiss: "Selvä!",
 		// Accessibility
 		skipToContent: "Siirry sisältöön",
@@ -220,6 +221,7 @@ export const translations = {
 		newFeaturesAnimations: "Subtle animations and a smoother feel",
 		newFeaturesCardLayout: "Tidier train card layout",
 		newFeaturesPolish: "Small fixes and polish",
+		newFeaturesShare: "Share the site with a friend via QR code",
 		newFeaturesDismiss: "Got it!",
 		// Accessibility
 		skipToContent: "Skip to content",
@@ -347,6 +349,7 @@ export const translations = {
 		newFeaturesAnimations: "Subtila animationer och en mjukare känsla",
 		newFeaturesCardLayout: "Snyggare layout för tågkortet",
 		newFeaturesPolish: "Små fixar och putsning",
+		newFeaturesShare: "Dela webbplatsen med en vän via QR-kod",
 		newFeaturesDismiss: "Uppfattat!",
 		// Accessibility
 		skipToContent: "Hoppa till innehåll",
