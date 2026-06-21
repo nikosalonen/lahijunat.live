@@ -31,10 +31,10 @@
 	"dependencies": {
 		"@astrojs/preact": "^5.1.5",
 		"@astrojs/sitemap": "^3.7.3",
-		"@tailwindcss/vite": "^4.3.0",
-		"astro": "^6.4.4",
+		"@tailwindcss/vite": "^4.3.1",
+		"astro": "^6.4.8",
 		"preact": "^10.29.2",
-		"tailwindcss": "^4.3.0",
+		"tailwindcss": "^4.3.1",
 		"workbox-cacheable-response": "^7.4.1",
 		"workbox-core": "^7.4.1",
 		"workbox-expiration": "^7.4.1",
@@ -51,17 +51,17 @@
 	"devDependencies": {
 		"@astrojs/check": "^0.9.9",
 		"@babel/plugin-bugfix-firefox-class-in-computed-class-key": "^7.29.7",
-		"@biomejs/biome": "^2.4.16",
+		"@biomejs/biome": "^2.5.0",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/preact": "^3.2.4",
-		"@types/node": "^24.13.1",
+		"@types/node": "^24.13.2",
 		"daisyui": "^5.5.23",
 		"husky": "^9.1.7",
 		"jsdom": "^29.1.1",
 		"lint-staged": "^17.0.7",
 		"tsx": "^4.22.4",
 		"typescript": "^6.0.3",
-		"vitest": "^4.1.8",
+		"vitest": "^4.1.9",
 		"workbox-cli": "^7.4.1"
 	}
 }
