@@ -4,8 +4,11 @@ permissions:
 
 on:
   schedule:
-    # Run every Wednesday at 10 AM UTC (midday Finnish time, peak commuter traffic)
-    - cron: '0 10 * * 3'
+    # Run daily at 23:00 UTC — 02:00 Finnish time in summer (EEST), before morning
+    # commuter traffic starts. The check uses a 24h look-ahead window, so results
+    # are independent of the run hour. Daily cadence keeps station open/close status
+    # (e.g. summer track construction) fresh within ~1 day instead of up to a week.
+    - cron: '0 23 * * *'
 
   # Allow manual triggering for testing
   workflow_dispatch:
