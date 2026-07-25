@@ -376,14 +376,6 @@
 		}
 	},
 	{
-		"name": "Nokia",
-		"shortCode": "NOA",
-		"location": {
-			"latitude": 61.481059,
-			"longitude": 23.49917
-		}
-	},
-	{
 		"name": "Nastola",
 		"shortCode": "NSL",
 		"location": {
@@ -549,14 +541,6 @@
 		"location": {
 			"latitude": 60.573333,
 			"longitude": 26.954701
-		}
-	},
-	{
-		"name": "Tesoma",
-		"shortCode": "TSO",
-		"location": {
-			"latitude": 61.503363,
-			"longitude": 23.630271
 		}
 	},
 	{
