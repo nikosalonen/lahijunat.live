@@ -5,3 +5,8 @@ overrides:
 allowBuilds:
   esbuild: true
   sharp: true
+
+# Exempt from pnpm's default 24h minimumReleaseAge quarantine so daisyui bumps
+# can land the same day they are published.
+minimumReleaseAgeExclude:
+  - daisyui
