@@ -693,6 +693,11 @@ export default function StationManager({
 					"collapse",
 					isStationSelectorExpanded ? "collapse-open" : "collapse-close",
 					"sm:collapse-open",
+					// DaisyUI's .collapse sets `isolation: isolate`, so the dropdown's
+					// own z-50 cannot escape this element. Lift the whole collapse
+					// while a list is open, otherwise the mobile refresh progress bar
+					// in TrainList (a later sibling) paints over the dropdown.
+					openList !== null && "z-50",
 					!isStationSelectorExpanded &&
 						"bg-base-100 border border-base-300 rounded-lg shadow-sm sm:border-0 sm:bg-transparent",
 				]

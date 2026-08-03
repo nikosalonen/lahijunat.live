@@ -282,6 +282,37 @@ describe("StationManager", () => {
 		});
 	});
 
+	// DaisyUI's .collapse sets `isolation: isolate`, which makes the station
+	// selector its own stacking context. The dropdown's own z-50 is therefore
+	// trapped inside it, so without an explicit z-index on the collapse itself
+	// the mobile refresh progress bar in TrainList (a later sibling) paints
+	// over the open dropdown.
+	it("does not raise the station selector while every dropdown is closed", () => {
+		// Bare StationManager, not the wrapper: the wrapper forces openList to "from".
+		const { container } = render(<StationManager stations={mockStations} />);
+
+		expect(container.querySelector(".collapse")).not.toHaveClass("z-50");
+	});
+
+	it("raises the station selector above the train list while a dropdown is open", async () => {
+		const { getByText, container } = render(
+			<StationManagerTestWrapper stations={mockStations} />,
+		);
+
+		const fromInput =
+			getByText("Mistä").nextElementSibling?.querySelector("input");
+		expect(fromInput).toBeTruthy();
+		fireEvent.focus(fromInput as HTMLInputElement);
+
+		await waitFor(() => {
+			expect(
+				container.querySelector('[data-testid="station-listbox"]'),
+			).toBeInTheDocument();
+		});
+
+		expect(container.querySelector(".collapse")).toHaveClass("z-50");
+	});
+
 	describe("geolocation functionality", () => {
 		let mockGeolocation: {
 			getCurrentPosition: ReturnType<typeof vi.fn>;
