@@ -33,7 +33,7 @@
 		"@astrojs/sitemap": "^3.7.3",
 		"@tailwindcss/vite": "^4.3.3",
 		"astro": "^7.1.6",
-		"preact": "^10.29.7",
+		"preact": "^10.29.8",
 		"qrcode-generator": "^2.0.4",
 		"tailwindcss": "^4.3.3",
 		"workbox-cacheable-response": "^7.4.1",
