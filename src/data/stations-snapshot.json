@@ -192,6 +192,14 @@
 		}
 	},
 	{
+		"name": "Kannelmäki",
+		"shortCode": "KAN",
+		"location": {
+			"latitude": 60.239562,
+			"longitude": 24.877004
+		}
+	},
+	{
 		"name": "Kerava",
 		"shortCode": "KE",
 		"location": {
@@ -456,6 +464,22 @@
 		}
 	},
 	{
+		"name": "Mäkkylä",
+		"shortCode": "MÄK",
+		"location": {
+			"latitude": 60.22131,
+			"longitude": 24.842976
+		}
+	},
+	{
+		"name": "Nokia",
+		"shortCode": "NOA",
+		"location": {
+			"latitude": 61.481059,
+			"longitude": 23.49917
+		}
+	},
+	{
 		"name": "Nastola",
 		"shortCode": "NSL",
 		"location": {
@@ -480,6 +504,14 @@
 		}
 	},
 	{
+		"name": "Pitäjänmäki",
+		"shortCode": "PJM",
+		"location": {
+			"latitude": 60.223412,
+			"longitude": 24.859649
+		}
+	},
+	{
 		"name": "Puistola",
 		"shortCode": "PLA",
 		"location": {
@@ -493,6 +525,14 @@
 		"location": {
 			"latitude": 60.242216,
 			"longitude": 24.993288
+		}
+	},
+	{
+		"name": "Pohjois-Haaga",
+		"shortCode": "POH",
+		"location": {
+			"latitude": 60.230156,
+			"longitude": 24.883319
 		}
 	},
 	{
@@ -632,19 +672,19 @@
 		}
 	},
 	{
-		"name": "Tuomarila",
-		"shortCode": "TRL",
-		"location": {
-			"latitude": 60.20605,
-			"longitude": 24.681767
-		}
-	},
-	{
 		"name": "Tavastila",
 		"shortCode": "TSL",
 		"location": {
 			"latitude": 60.573333,
 			"longitude": 26.954701
+		}
+	},
+	{
+		"name": "Tesoma",
+		"shortCode": "TSO",
+		"location": {
+			"latitude": 61.503363,
+			"longitude": 23.630271
 		}
 	},
 	{
@@ -693,6 +733,14 @@
 		"location": {
 			"latitude": 60.946379,
 			"longitude": 25.833724
+		}
+	},
+	{
+		"name": "Valimo",
+		"shortCode": "VMO",
+		"location": {
+			"latitude": 60.222028,
+			"longitude": 24.87583
 		}
 	}
 ]
