@@ -560,6 +560,14 @@
 		}
 	},
 	{
+		"name": "Purola",
+		"shortCode": "PUR",
+		"location": {
+			"latitude": 60.500329,
+			"longitude": 25.050225
+		}
+	},
+	{
 		"name": "Riihimäki",
 		"shortCode": "RI",
 		"location": {

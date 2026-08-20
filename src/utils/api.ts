@@ -528,7 +528,6 @@ const STATION_QUERY = `query GetStations {
 			{shortCode:{unequals:"PTO"}},
 			{shortCode:{unequals:"PTR"}},
 			{shortCode:{unequals:"PUN"}},
-			{shortCode:{unequals:"PUR"}},
 			{shortCode:{unequals:"PVI"}},
 			{shortCode:{unequals:"REE"}},
 			{shortCode:{unequals:"RKI"}},
