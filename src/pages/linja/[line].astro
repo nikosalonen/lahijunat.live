@@ -5,20 +5,22 @@ import { getLines, getLineStats } from "../../data/routeStats";
 import Layout from "../../layouts/Layout.astro";
 import { fetchStations } from "../../utils/api";
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
 	// Lowercase, like every other path on the site
-	return getLines().map(({ line }) => ({ params: { line: line.toLowerCase() } }));
+	const stations = await fetchStations();
+	return getLines(stations).map(({ line }) => ({
+		params: { line: line.toLowerCase() },
+	}));
 }
 
+const stations = await fetchStations();
 const { line: lineParam } = Astro.params;
 const line = (lineParam ?? "").toUpperCase();
-const stats = getLineStats(line);
+const stats = getLineStats(line, stations);
 
 if (!stats) {
 	return Astro.redirect("/linjat/");
 }
-
-const stations = await fetchStations();
 const stationName = (shortCode: string) =>
 	stations.find((station) => station.shortCode === shortCode)?.name ?? shortCode;
 

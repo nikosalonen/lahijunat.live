@@ -120,7 +120,9 @@ const generateBreadcrumbs = () => {
 // Used for the meta description only: each page describes itself with its own
 // numbers, while the page body stays uncluttered.
 const routeStats = getRouteStats(validFromStation, validToStation);
-const stationStats = validToStation ? null : getStationStats(validFromStation);
+const stationStats = validToStation
+	? null
+	: getStationStats(validFromStation, stations);
 
 // A pair with no direct train has nothing on the page but an empty state.
 // Keep following the links so the footer still passes authority on.

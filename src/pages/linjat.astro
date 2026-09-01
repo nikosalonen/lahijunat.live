@@ -6,7 +6,7 @@ import Layout from "../layouts/Layout.astro";
 import { fetchStations } from "../utils/api";
 
 const stations = await fetchStations();
-const lines = getLines();
+const lines = getLines(stations);
 
 const siteUrl = Astro.site?.toString() || "https://www.lahijunat.live";
 const breadcrumbs = [
