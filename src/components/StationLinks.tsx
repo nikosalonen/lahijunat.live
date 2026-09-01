@@ -12,8 +12,11 @@ interface Props {
 	codes: readonly string[];
 	/** Translation key for the heading and the nav's accessible name. */
 	titleKey: string;
-	/** "footer" inherits the footer's white text; "page" uses link colours. */
-	variant?: "footer" | "page";
+	/**
+	 * "footer" inherits the footer's white text, "page" flows a long list into
+	 * columns, "sequence" keeps one column so a route reads top to bottom.
+	 */
+	variant?: "footer" | "page" | "sequence";
 	/** Sort alphabetically instead of keeping the order of `codes`. */
 	sortByName?: boolean;
 	/** Off where the page's own h1 already names the list. */
@@ -64,16 +67,26 @@ export default function StationLinks({
 	return (
 		<nav
 			aria-label={title}
-			class={isFooter ? "px-4 pb-2 text-sm" : "text-sm dark:text-white"}
+			class={
+				isFooter
+					? "px-4 pb-2 text-sm"
+					: variant === "sequence"
+						? // As wide as its longest station name, centred under the heading
+							"text-sm dark:text-white w-fit mx-auto"
+						: "text-sm dark:text-white"
+			}
 		>
 			{showHeading && <h2 class="font-semibold mb-1">{title}</h2>}
-			{/* Multi-column rather than a grid: it fills each column top to
-			    bottom, so the alphabet reads down instead of across. */}
+			{/* Columns rather than a grid: they fill top to bottom, so a list reads
+			    down instead of across. A route stays in one column so its order
+			    is unmistakable. */}
 			<ul
 				class={
 					isFooter
 						? "flex flex-wrap justify-center gap-x-3 gap-y-1"
-						: "columns-2 sm:columns-3 md:columns-4 gap-x-6"
+						: variant === "sequence"
+							? "flex flex-col border-l-2 border-base-300 ml-2 pl-5 py-1"
+							: "columns-2 sm:columns-3 md:columns-4 gap-x-6"
 				}
 			>
 				{links.map((link) => (

@@ -1,25 +1,12 @@
 ---
+import LineLinks from "../components/LineLinks";
+import PageHeading from "../components/PageHeading";
 import { getLines } from "../data/routeStats";
 import Layout from "../layouts/Layout.astro";
 import { fetchStations } from "../utils/api";
-import { buildRoutePath } from "../utils/stationRoute";
 
 const stations = await fetchStations();
-const stationName = (shortCode: string) =>
-	stations.find((station) => station.shortCode === shortCode)?.name ?? shortCode;
-
-const lines = getLines().map(({ line, stats }) => ({
-	line,
-	href: `/linja/${line.toLowerCase()}/`,
-	// The run the line makes most often, which is how people recognise it. A
-	// ring line starts and ends at the same station, so name its far point too.
-	route: [
-		stationName(stats.endpoints[0]),
-		...(stats.via ? [stationName(stats.via)] : []),
-		stationName(stats.endpoints[1]),
-	].join(" – "),
-	stationCount: stats.stations.length,
-}));
+const lines = getLines();
 
 const siteUrl = Astro.site?.toString() || "https://www.lahijunat.live";
 const breadcrumbs = [
@@ -36,37 +23,12 @@ const breadcrumbs = [
 >
 	<div class="py-4 sm:py-8">
 		<div class="w-full max-w-3xl mx-auto px-2 sm:px-6 md:px-8 lg:px-12">
-			<h1 class="text-2xl sm:text-3xl font-bold mb-2 text-center dark:text-white">
-				Lähijunalinjat
-			</h1>
-			<p class="text-sm text-center opacity-70 mb-6 dark:text-white">
-				Valitse linja nähdäksesi sen asemat.
-			</p>
-			<ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-				{
-					lines.map((item) => (
-						<li>
-							<a
-								href={item.href}
-								class="flex items-center gap-3 p-3 rounded-lg border border-base-300 hover:border-base-400 hover:bg-base-200 transition-colors"
-							>
-								<span class="font-mono font-bold text-lg w-8 text-center shrink-0">
-									{item.line}
-								</span>
-								<span class="text-sm dark:text-white">
-									{item.route}
-									<span class="opacity-60"> · {item.stationCount} asemaa</span>
-								</span>
-							</a>
-						</li>
-					))
-				}
-			</ul>
-			<p class="text-sm text-center mt-6">
-				<a href={buildRoutePath(null, null)} class="link link-hover">
-					Etusivulle
-				</a>
-			</p>
+			<PageHeading
+				client:load
+				titleKey="allLinesTitle"
+				introKey="allLinesIntro"
+			/>
+			<LineLinks client:load stations={stations} lines={lines} />
 		</div>
 	</div>
 </Layout>

@@ -35,6 +35,15 @@ export const translations = {
 		popularStations: "Suositut asemat",
 		allStations: "Kaikki asemat",
 		allLines: "Linjat",
+		allStationsIntro:
+			"Valitse asema nähdäksesi sen lähtevät lähijunat reaaliaikaisesti.",
+		allLinesTitle: "Lähijunalinjat",
+		allLinesIntro: "Valitse linja nähdäksesi sen asemat.",
+		stationCount: "{count} asemaa",
+		homePage: "Etusivulle",
+		lineHeading: "{line}-juna",
+		lineIntro:
+			"Junia noin {count} vuorokaudessa, ensimmäinen lähtö {first} ja viimeinen {last}. Valitse asema nähdäksesi sen reaaliaikaiset lähdöt.",
 		placeholder: "Valitse asema...",
 		swapDirection: "Vaihda suunta",
 		hint: "Määränpäät on suodatettu näyttämään vain asemat, joihin on suoria junayhteyksiä valitulta lähtöasemalta.",
@@ -169,6 +178,15 @@ export const translations = {
 		popularStations: "Popular stations",
 		allStations: "All stations",
 		allLines: "Lines",
+		allStationsIntro:
+			"Choose a station to see its departing commuter trains in real time.",
+		allLinesTitle: "Commuter lines",
+		allLinesIntro: "Choose a line to see its stations.",
+		stationCount: "{count} stations",
+		homePage: "Home",
+		lineHeading: "{line} train",
+		lineIntro:
+			"About {count} trains a day, first departure {first} and last {last}. Choose a station to see its live departures.",
 		placeholder: "Select a station...",
 		swapDirection: "Swap direction",
 		hint: "The destinations are filtered to show only stations with direct train connections from the selected departure station.",
@@ -302,6 +320,15 @@ export const translations = {
 		popularStations: "Populära stationer",
 		allStations: "Alla stationer",
 		allLines: "Linjer",
+		allStationsIntro:
+			"Välj en station för att se dess avgående lokaltåg i realtid.",
+		allLinesTitle: "Lokaltågslinjer",
+		allLinesIntro: "Välj en linje för att se dess stationer.",
+		stationCount: "{count} stationer",
+		homePage: "Till startsidan",
+		lineHeading: "{line}-tåget",
+		lineIntro:
+			"Cirka {count} tåg per dygn, första avgången {first} och sista {last}. Välj en station för att se dess avgångar i realtid.",
 		placeholder: "Välj station...",
 		swapDirection: "Byt riktning",
 		hint: "Destinationerna är filtrerade för att endast visa stationer med direkta tågförbindelser från den valda avgångsstationen.",
@@ -422,5 +449,18 @@ export function t(key: string): string {
 		dict[key as keyof typeof dict] ??
 		translations.fi[key as keyof typeof translations.fi] ??
 		key
+	);
+}
+
+/**
+ * Translate and fill in {placeholders}, e.g. tf("lineHeading", { line: "K" }).
+ */
+export function tf(
+	key: TranslationKey | string,
+	values: Record<string, string | number>,
+): string {
+	return Object.entries(values).reduce(
+		(text, [name, value]) => text.replaceAll(`{${name}}`, String(value)),
+		t(key),
 	);
 }
