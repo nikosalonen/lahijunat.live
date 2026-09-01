@@ -109,6 +109,8 @@ export const translations = {
 		newFeaturesCardLayout: "Junakortin asettelu siistitty",
 		newFeaturesPolish: "Pieniä korjauksia ja viimeistelyä",
 		newFeaturesShare: "Jaa sivusto kaverille QR-koodilla",
+		newFeaturesLinePages: "Oma sivu jokaiselle lähijunalinjalle",
+		newFeaturesStationList: "Kaikki asemat ja linjat yhdeltä sivulta",
 		newFeaturesDismiss: "Selvä!",
 		// Accessibility
 		skipToContent: "Siirry sisältöön",
@@ -250,6 +252,8 @@ export const translations = {
 		newFeaturesCardLayout: "Tidier train card layout",
 		newFeaturesPolish: "Small fixes and polish",
 		newFeaturesShare: "Share the site with a friend via QR code",
+		newFeaturesLinePages: "A page of its own for every commuter line",
+		newFeaturesStationList: "Every station and line on one page",
 		newFeaturesDismiss: "Got it!",
 		// Accessibility
 		skipToContent: "Skip to content",
@@ -392,6 +396,8 @@ export const translations = {
 		newFeaturesCardLayout: "Snyggare layout för tågkortet",
 		newFeaturesPolish: "Små fixar och putsning",
 		newFeaturesShare: "Dela webbplatsen med en vän via QR-kod",
+		newFeaturesLinePages: "En egen sida för varje lokaltågslinje",
+		newFeaturesStationList: "Alla stationer och linjer på en sida",
 		newFeaturesDismiss: "Uppfattat!",
 		// Accessibility
 		skipToContent: "Hoppa till innehåll",
