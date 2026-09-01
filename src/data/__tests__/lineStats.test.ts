@@ -31,6 +31,18 @@ describe("getLines", () => {
 		}
 	});
 
+	it("lists stations in travel order, from Helsinki where it is served", () => {
+		for (const { line, stats } of getLines()) {
+			// A corridor, not a handful of scattered legs
+			expect(stats.stations.length, `line ${line}`).toBeGreaterThan(3);
+			if (stats.stations.includes("HKI")) {
+				expect(stats.stations.indexOf("HKI"), `line ${line}`).toBeLessThan(
+					stats.stations.length / 2,
+				);
+			}
+		}
+	});
+
 	it("gives a ring line a far point and a plain line none", () => {
 		for (const { line, stats } of getLines()) {
 			const isRing = stats.endpoints[0] === stats.endpoints[1];

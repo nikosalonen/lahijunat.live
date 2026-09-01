@@ -33,6 +33,13 @@ const SERVED_WINDOW_DAYS = 7;
 /** A line needs this many daily trains before it gets a page. */
 const MIN_TRAINS_PER_LINE = 2;
 /**
+ * A line's longest run must cover this much of the stations it touches. Some
+ * line IDs cover scattered two-stop legs rather than a corridor — line V ran 14
+ * trains over 19 stations with a longest run of 3 — and there is no honest way
+ * to put those stations in travel order.
+ */
+const MIN_CORRIDOR_COVERAGE = 0.6;
+/**
  * The service day starts at 04:00 local time, so a 00.26 train counts as the
  * last one of the previous evening rather than the first of the morning.
  */
@@ -223,6 +230,54 @@ function collectRoutes(
 }
 
 /**
+ * Merges a line's runs into one list of stations in travel order.
+ *
+ * A line is a path, but no single run has to cover it: trains turn back early,
+ * run limited-stop legs, or serve a branch. So the longest run becomes the
+ * backbone and every other run is folded into it — flipped first if it travels
+ * the other way, then its unseen stations slotted in next to the neighbour they
+ * follow. Helsinki leads where the line reaches it, which is the direction
+ * people read these lists in.
+ */
+function orderLineStations(runs: string[][]): string[] {
+	const cleaned = runs
+		.map((run) => [...new Set(run)])
+		.sort((a, b) => b.length - a.length);
+	if (cleaned.length === 0) return [];
+
+	const order = [...cleaned[0]];
+
+	const foldIn = (run: string[]) => {
+		// Insert each unseen station directly after the last station already
+		// placed, so it lands between the stops it actually runs between
+		let anchor = -1;
+		for (const code of run) {
+			const at = order.indexOf(code);
+			if (at !== -1) {
+				anchor = at;
+				continue;
+			}
+			order.splice(anchor + 1, 0, code);
+			anchor += 1;
+		}
+	};
+
+	for (const run of cleaned.slice(1)) {
+		const shared = run.filter((code) => order.includes(code));
+		// Two shared stations are enough to tell which way this run travels
+		const runsBackwards =
+			shared.length >= 2 &&
+			order.indexOf(shared[0]) > order.indexOf(shared[shared.length - 1]);
+		foldIn(runsBackwards ? [...run].reverse() : run);
+	}
+
+	const helsinki = order.indexOf("HKI");
+	if (helsinki > order.length / 2) order.reverse();
+
+	return order;
+}
+
+/**
  * What each commuter line looks like on this day: how many trains it runs, when
  * they start and finish, and every run it makes grouped by where it starts and
  * ends. Runs are grouped rather than merged because the longest run of the day
@@ -368,35 +423,33 @@ async function main(): Promise<void> {
 			([, a], [, b]) => b - a,
 		)[0];
 		const typicalRun = accumulator.runs.get(typicalPair) ?? [];
-		const [from, to] = typicalPair.split("|");
+		const pairEnds = typicalPair.split("|");
 
-		// The label describes the typical run, but the station list covers every
-		// stop the line makes, because the page links to each one. Start from the
-		// typical run so the order is the familiar one, then add what the other
-		// patterns reach — some lines run legs that share no station with their
-		// most common one.
-		const stations: string[] = [];
-		const addStops = (run: string[]) => {
-			for (const code of run) {
-				if (!stations.includes(code)) stations.push(code);
-			}
-		};
-		addStops(typicalRun);
-		for (const run of [...accumulator.runs.values()].sort(
-			(a, b) => b.length - a.length,
-		)) {
-			addStops(run);
+		// The label describes the typical run; the station list covers every stop
+		// the line makes, in travel order, because the page links to each one
+		const runs = [...accumulator.runs.values()];
+		const stations = orderLineStations(runs);
+		const longestRun = Math.max(...runs.map((run) => new Set(run).size));
+		if (longestRun < stations.length * MIN_CORRIDOR_COVERAGE) {
+			console.log(
+				`Skipping line ${line}: longest run covers ${longestRun} of ${stations.length} stations, so it has no single corridor`,
+			);
+			continue;
 		}
 
 		lineStats[line] = {
 			trainsPerDay: accumulator.trains,
 			firstDeparture: formatMinutes(departures[0]),
 			lastDeparture: formatMinutes(departures[departures.length - 1]),
-			endpoints: [from, to],
+			// Named in the order the station list runs, so the label and the list
+			// agree on which way round the line is
+			endpoints: [...pairEnds].sort(
+				(a, b) => stations.indexOf(a) - stations.indexOf(b),
+			),
 			// A run that ends where it started is a ring: name the far point so
 			// the line is recognisable ("Helsinki - Aviapolis - Helsinki")
 			via:
-				from === to
+				pairEnds[0] === pairEnds[1]
 					? (typicalRun[Math.floor(typicalRun.length / 2)] ?? null)
 					: null,
 			stations,
