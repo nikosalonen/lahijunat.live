@@ -2,6 +2,7 @@
 import StationManager from "../components/StationManager";
 import Layout from "../layouts/Layout.astro";
 import { fetchStations } from "../utils/api";
+import { buildRoutePath, resolveShortCode } from "../utils/stationRoute";
 
 export async function getStaticPaths() {
 	const stations = await fetchStations();
@@ -10,17 +11,21 @@ export async function getStaticPaths() {
 	// Add the default path (no stations selected)
 	paths.push({ params: { stations: undefined } });
 
-	// Generate all possible station combinations
+	// Generate all possible station combinations. Paths are lowercase because
+	// that is the form the site is served from (see utils/stationRoute.ts).
 	for (const fromStation of stations) {
 		// Add single station paths
-		paths.push({ params: { stations: fromStation.shortCode } });
+		paths.push({
+			params: { stations: fromStation.shortCode.toLowerCase() },
+		});
 
 		// Add station pairs
 		for (const toStation of stations) {
 			if (fromStation.shortCode !== toStation.shortCode) {
 				paths.push({
 					params: {
-						stations: `${fromStation.shortCode}/${toStation.shortCode}`,
+						stations:
+							`${fromStation.shortCode}/${toStation.shortCode}`.toLowerCase(),
 					},
 				});
 			}
@@ -36,12 +41,10 @@ const { stations: params } = Astro.params;
 // Split the URL path into from and to station codes
 const [fromStation, toStation] = params?.split("/") || [null, null];
 
-// Validate that the stations exist in our station list
-const isValidStation = (code: string | null) =>
-	code && stations.some((station) => station.shortCode === code);
-
-const validFromStation = isValidStation(fromStation) ? fromStation : null;
-const validToStation = isValidStation(toStation) ? toStation : null;
+// Resolve the URL codes to canonical (uppercase) short codes; unknown
+// stations resolve to null.
+const validFromStation = resolveShortCode(stations, fromStation);
+const validToStation = resolveShortCode(stations, toStation);
 
 // Get station names for SEO
 const getStationName = (code: string | null) => {
@@ -85,14 +88,17 @@ const generateBreadcrumbs = () => {
 	if (fromStationName && validFromStation) {
 		breadcrumbs.push({
 			name: fromStationName,
-			url: `${siteUrl}${validFromStation}`
+			url: new URL(buildRoutePath(validFromStation, null), siteUrl).toString()
 		});
 	}
 
 	if (toStationName && validFromStation && validToStation) {
 		breadcrumbs.push({
 			name: toStationName,
-			url: `${siteUrl}${validFromStation}/${validToStation}`
+			url: new URL(
+				buildRoutePath(validFromStation, validToStation),
+				siteUrl
+			).toString()
 		});
 	}
 

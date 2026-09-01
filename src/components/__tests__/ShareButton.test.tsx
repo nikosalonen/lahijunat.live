@@ -153,7 +153,7 @@ describe("ShareButton", () => {
 	});
 
 	it("offers homepage and current-view options when viewing a route", () => {
-		window.history.pushState({}, "", "/HKI/TKL");
+		window.history.pushState({}, "", "/hki/tkl/");
 		const { getByLabelText, getByRole } = render(<ShareButton />);
 		act(() => {
 			getByLabelText("shareButtonLabel").click();
@@ -165,7 +165,7 @@ describe("ShareButton", () => {
 	});
 
 	it("defaults to sharing the current view on a route page", async () => {
-		window.history.pushState({}, "", "/HKI/TKL");
+		window.history.pushState({}, "", "/hki/tkl/");
 		const { getByLabelText, getByRole } = render(<ShareButton />);
 		act(() => {
 			getByLabelText("shareButtonLabel").click();
@@ -175,7 +175,7 @@ describe("ShareButton", () => {
 		});
 		await waitFor(() => {
 			expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-				`${window.location.origin}/HKI/TKL`,
+				`${window.location.origin}/hki/tkl/`,
 			);
 		});
 	});
@@ -184,7 +184,7 @@ describe("ShareButton", () => {
 		// Mounted on the homepage, then the app navigates to a route via
 		// pushState without remounting the component.
 		const { getByLabelText, getByRole } = render(<ShareButton />);
-		window.history.pushState({}, "", "/HKI/TKL");
+		window.history.pushState({}, "", "/hki/tkl/");
 		act(() => {
 			getByLabelText("shareButtonLabel").click();
 		});
@@ -193,13 +193,13 @@ describe("ShareButton", () => {
 		});
 		await waitFor(() => {
 			expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-				`${window.location.origin}/HKI/TKL`,
+				`${window.location.origin}/hki/tkl/`,
 			);
 		});
 	});
 
 	it("reflects the selected target via aria-pressed", () => {
-		window.history.pushState({}, "", "/HKI/TKL");
+		window.history.pushState({}, "", "/hki/tkl/");
 		const { getByLabelText, getByRole } = render(<ShareButton />);
 		act(() => {
 			getByLabelText("shareButtonLabel").click();
@@ -226,7 +226,7 @@ describe("ShareButton", () => {
 	});
 
 	it("shares the homepage when the homepage option is chosen", async () => {
-		window.history.pushState({}, "", "/HKI/TKL");
+		window.history.pushState({}, "", "/hki/tkl/");
 		const { getByLabelText, getByRole } = render(<ShareButton />);
 		act(() => {
 			getByLabelText("shareButtonLabel").click();

@@ -26,3 +26,6 @@ coverage/
 
 # jetbrains setting folder
 .idea/
+
+# Playwright MCP session artifacts
+.playwright-mcp/

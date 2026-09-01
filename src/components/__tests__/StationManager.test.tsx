@@ -641,7 +641,7 @@ describe("StationManager", () => {
 				expect(window.history.replaceState).toHaveBeenCalledWith(
 					{},
 					"",
-					"/HKI/TPE",
+					"/hki/tpe/",
 				);
 			});
 		});
@@ -673,7 +673,7 @@ describe("StationManager", () => {
 
 			// Wait for URL to be updated
 			await waitFor(() => {
-				expect(window.history.pushState).toHaveBeenCalledWith({}, "", "/HKI");
+				expect(window.history.pushState).toHaveBeenCalledWith({}, "", "/hki/");
 			});
 		});
 
@@ -728,7 +728,7 @@ describe("StationManager", () => {
 				expect(window.history.pushState).toHaveBeenCalledWith(
 					{},
 					"",
-					"/HKI/TPE",
+					"/hki/tpe/",
 				);
 			});
 		});
@@ -737,7 +737,7 @@ describe("StationManager", () => {
 			render(<StationManager stations={mockStations} />);
 
 			// Simulate back button (popstate event)
-			window.location.pathname = "/HKI/TPE";
+			window.location.pathname = "/hki/tpe/";
 			fireEvent(window, new PopStateEvent("popstate"));
 
 			await waitFor(() => {

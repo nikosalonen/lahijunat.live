@@ -12,6 +12,11 @@ import {
 } from "../utils/haptics";
 import { calculateDistance, isInFinland } from "../utils/location";
 import { getLocalizedStationName } from "../utils/stationNames";
+import {
+	buildRoutePath,
+	decodePath,
+	resolveShortCode,
+} from "../utils/stationRoute";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
 import StationList from "./StationList";
@@ -177,10 +182,14 @@ export default function StationManager({
 					window.history.replaceState(
 						{},
 						"",
-						`/${savedOrigin}/${savedDestination}`,
+						buildRoutePath(savedOrigin, savedDestination),
 					);
 				} else {
-					window.history.replaceState({}, "", `/${savedOrigin}`);
+					window.history.replaceState(
+						{},
+						"",
+						buildRoutePath(savedOrigin, null),
+					);
 				}
 			}
 		} else {
@@ -426,15 +435,10 @@ export default function StationManager({
 
 		// Only update URL if not a PWA launch or if it's not the initial load
 		if (!isPwaLaunch || document.visibilityState === "visible") {
-			const newPath =
-				selectedOrigin && selectedDestination
-					? `/${selectedOrigin}/${selectedDestination}`
-					: selectedOrigin
-						? `/${selectedOrigin}`
-						: "/";
+			const newPath = buildRoutePath(selectedOrigin, selectedDestination);
 
 			// Only update if the URL is different
-			if (window.location.pathname !== newPath) {
+			if (decodePath(window.location.pathname) !== newPath) {
 				window.history.pushState({}, "", newPath);
 			}
 		}
@@ -445,20 +449,24 @@ export default function StationManager({
 		if (typeof window === "undefined") return;
 
 		const handlePopState = () => {
-			const pathParts = window.location.pathname.split("/").filter(Boolean);
+			const pathParts = decodePath(window.location.pathname)
+				.split("/")
+				.filter(Boolean);
 			const [fromStation, toStation] = pathParts;
 
-			if (fromStation && stations.some((s) => s.shortCode === fromStation)) {
-				setSelectedOrigin(fromStation);
-				setStoredValue("selectedOrigin", fromStation);
+			const originCode = resolveShortCode(stations, fromStation);
+			if (originCode) {
+				setSelectedOrigin(originCode);
+				setStoredValue("selectedOrigin", originCode);
 			} else {
 				setSelectedOrigin(null);
 				localStorage.removeItem("selectedOrigin");
 			}
 
-			if (toStation && stations.some((s) => s.shortCode === toStation)) {
-				setSelectedDestination(toStation);
-				setStoredValue("selectedDestination", toStation);
+			const destinationCode = resolveShortCode(stations, toStation);
+			if (destinationCode) {
+				setSelectedDestination(destinationCode);
+				setStoredValue("selectedDestination", destinationCode);
 			} else {
 				setSelectedDestination(null);
 				localStorage.removeItem("selectedDestination");
@@ -511,13 +519,11 @@ export default function StationManager({
 
 			// Update the URL state immediately after setting local state
 			if (typeof window !== "undefined") {
-				const newPath =
-					selectedDestination && temp
-						? `/${selectedDestination}/${temp}`
-						: selectedDestination
-							? `/${selectedDestination}`
-							: "/";
-				window.history.pushState({}, "", newPath);
+				window.history.pushState(
+					{},
+					"",
+					buildRoutePath(selectedDestination, temp),
+				);
 			}
 
 			// If we had a selected destination, reset destinations to all stations
