@@ -42,3 +42,14 @@ export type Duration = {
 	hours: number;
 	minutes: number;
 };
+
+/** Build-time facts about one route, from src/data/route-stats.json. */
+export interface RouteStats {
+	trainsPerDay: number;
+	/** Local time, "HH.MM". */
+	firstDeparture: string;
+	lastDeparture: string;
+	medianDuration: number;
+	/** Commuter line letters serving the route, e.g. ["I", "P"]. */
+	lines: string[];
+}

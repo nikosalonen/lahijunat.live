@@ -30,6 +30,14 @@ export const translations = {
 		locate: "Paikanna",
 		loading: "Ladataan...",
 		h1title: "Lähtevät lähijunat",
+		h1Trains: "Junat",
+		h1DeparturesFrom: "Lähtevät junat asemalta",
+		popularRoutes: "Suositut reitit",
+		routeSummaryTrains: "Suoria junia noin {count} vuorokaudessa.",
+		routeSummaryDuration: "Matka kestää keskimäärin {minutes} min.",
+		routeSummaryLine: "Linja {lines}.",
+		routeSummaryLines: "Linjat {lines}.",
+		routeSummaryFirstLast: "Ensimmäinen juna {first}, viimeinen {last}.",
 		placeholder: "Valitse asema...",
 		swapDirection: "Vaihda suunta",
 		hint: "Määränpäät on suodatettu näyttämään vain asemat, joihin on suoria junayhteyksiä valitulta lähtöasemalta.",
@@ -159,6 +167,14 @@ export const translations = {
 		locate: "Locate",
 		loading: "Loading...",
 		h1title: "Departing commuter trains",
+		h1Trains: "Trains",
+		h1DeparturesFrom: "Departures from",
+		popularRoutes: "Popular routes",
+		routeSummaryTrains: "About {count} direct trains per day.",
+		routeSummaryDuration: "The journey takes {minutes} min on average.",
+		routeSummaryLine: "Line {lines}.",
+		routeSummaryLines: "Lines {lines}.",
+		routeSummaryFirstLast: "First train {first}, last {last}.",
 		placeholder: "Select a station...",
 		swapDirection: "Swap direction",
 		hint: "The destinations are filtered to show only stations with direct train connections from the selected departure station.",
@@ -287,6 +303,14 @@ export const translations = {
 		locate: "Hitta",
 		loading: "Laddar...",
 		h1title: "Avgående lokaltåg",
+		h1Trains: "Tåg",
+		h1DeparturesFrom: "Avgående tåg från",
+		popularRoutes: "Populära rutter",
+		routeSummaryTrains: "Cirka {count} direkta tåg per dygn.",
+		routeSummaryDuration: "Resan tar i snitt {minutes} min.",
+		routeSummaryLine: "Linje {lines}.",
+		routeSummaryLines: "Linjer {lines}.",
+		routeSummaryFirstLast: "Första tåget {first}, sista {last}.",
 		placeholder: "Välj station...",
 		swapDirection: "Byt riktning",
 		hint: "Destinationerna är filtrerade för att endast visa stationer med direkta tågförbindelser från den valda avgångsstationen.",
@@ -407,5 +431,19 @@ export function t(key: string): string {
 		dict[key as keyof typeof dict] ??
 		translations.fi[key as keyof typeof translations.fi] ??
 		key
+	);
+}
+
+/**
+ * Translate and fill in {placeholders}, e.g.
+ * tf("routeSummaryTrains", { count: 174 }).
+ */
+export function tf(
+	key: TranslationKey | string,
+	values: Record<string, string | number>,
+): string {
+	return Object.entries(values).reduce(
+		(text, [name, value]) => text.replaceAll(`{${name}}`, String(value)),
+		t(key),
 	);
 }

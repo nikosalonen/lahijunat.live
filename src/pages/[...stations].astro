@@ -1,6 +1,7 @@
 ---
 import StationManager from "../components/StationManager";
 import Layout from "../layouts/Layout.astro";
+import { getRouteStats } from "../data/routeStats";
 import { fetchStations } from "../utils/api";
 import { buildRoutePath, resolveShortCode } from "../utils/stationRoute";
 
@@ -105,18 +106,21 @@ const generateBreadcrumbs = () => {
 	return breadcrumbs;
 };
 
+const routeStats = getRouteStats(validFromStation, validToStation);
+
 const pageTitle = generateTitle();
 const pageDescription = generateDescription();
 const breadcrumbs = generateBreadcrumbs();
 ---
 
-<Layout title={pageTitle} description={pageDescription} breadcrumbs={breadcrumbs}>
+<Layout title={pageTitle} description={pageDescription} breadcrumbs={breadcrumbs} stations={stations}>
 	<div class="py-4 sm:py-8">
 		<StationManager
 			client:load
 			stations={stations}
 			initialFromStation={validFromStation}
 			initialToStation={validToStation}
+			routeStats={routeStats}
 		/>
 	</div>
 </Layout>

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import EmptyState from "@/components/EmptyState";
 import { useLanguageChange } from "../hooks/useLanguageChange";
-import type { Station } from "../types";
+import type { RouteStats, Station } from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
 import {
 	hapticLight,
@@ -19,6 +19,7 @@ import {
 } from "../utils/stationRoute";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
+import RouteSummary from "./RouteSummary";
 import StationList from "./StationList";
 import TrainList from "./TrainList";
 
@@ -26,6 +27,8 @@ interface Props {
 	stations: Station[];
 	initialFromStation?: string | null;
 	initialToStation?: string | null;
+	/** Facts about the route in the URL, from the build-time snapshot. */
+	routeStats?: RouteStats | null;
 	// For testing only:
 	openList?: "from" | "to" | null;
 	setOpenList?: (v: "from" | "to" | null) => void;
@@ -65,6 +68,7 @@ function useHasMounted() {
 export default function StationManager({
 	stations,
 	initialFromStation,
+	routeStats = null,
 	initialToStation,
 	openList: openListProp,
 	setOpenList: setOpenListProp,
@@ -564,11 +568,39 @@ export default function StationManager({
 		(s) => s.shortCode === selectedDestination,
 	);
 
+	// Name the route in the heading so each generated page has a heading of
+	// its own instead of the same generic one on all of them.
+	const originName = selectedOriginStation
+		? getLocalizedStationName(
+				selectedOriginStation.name,
+				selectedOriginStation.shortCode,
+			)
+		: null;
+	const destinationName = selectedDestinationStation
+		? getLocalizedStationName(
+				selectedDestinationStation.name,
+				selectedDestinationStation.shortCode,
+			)
+		: null;
+	const heading =
+		originName && destinationName
+			? `${t("h1Trains")} ${originName} → ${destinationName}`
+			: originName
+				? `${t("h1DeparturesFrom")} ${originName}`
+				: t("h1title");
+
 	return (
 		<div className="w-full max-w-3xl mx-auto px-2 sm:px-6 md:px-8 lg:px-12 py-2 sm:py-6 md:py-8">
-			<h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center dark:text-white">
-				{t("h1title")}
+			<h1 className="text-2xl sm:text-3xl font-bold mb-2 text-center dark:text-white">
+				{heading}
 			</h1>
+			<RouteSummary
+				stats={routeStats}
+				statsFrom={initialFromStation ?? null}
+				statsTo={initialToStation ?? null}
+				activeFrom={selectedOrigin}
+				activeTo={selectedDestination}
+			/>
 
 			{/* Mobile compact header with toggle and action buttons */}
 			<div className="sm:hidden mb-4">

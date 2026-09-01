@@ -1,0 +1,62 @@
+name: Update Route Stats
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    # Monthly, on the 1st at 03:00 UTC. Timetables change a few times a year,
+    # and the numbers drift slightly day to day — a daily run would churn a
+    # 300 kB file for no real gain.
+    - cron: '0 3 1 * *'
+
+  # Allow manual triggering after a timetable change
+  workflow_dispatch:
+
+jobs:
+  update-route-stats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Regenerate route statistics
+        run: pnpm run update-route-stats
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --exit-code src/data/route-stats.json || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add src/data/route-stats.json
+          git commit -m "chore: refresh route statistics
+
+          Regenerated from the most recent Tuesday's commuter timetable on $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: No changes detected
+        if: steps.git-check.outputs.changes != 'true'
+        run: |
+          echo "ℹ️ Route statistics unchanged"

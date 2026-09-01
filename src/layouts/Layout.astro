@@ -8,6 +8,7 @@ interface Props {
   title: string;
   description?: string;
   breadcrumbs?: BreadcrumbItem[];
+  stations?: Station[];
 }
 
 import { Image } from "astro:assets";
@@ -18,9 +19,20 @@ import Footer from "../components/Footer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import ShareButton from "../components/ShareButton";
 import Toast from "../components/Toast";
+import { POPULAR_ROUTES } from "../data/popularRoutes";
+import type { Station } from "../types";
 import { t } from "../utils/translations";
 
-const { title, description, breadcrumbs } = Astro.props as Props;
+const { title, description, breadcrumbs, stations = [] } = Astro.props as Props;
+
+// The footer only needs the handful of stations its route links name, so the
+// full station list is not serialised into every page a second time.
+const linkedCodes = new Set(
+  POPULAR_ROUTES.flatMap((route) => [route.from, route.to]),
+);
+const footerStations = stations.filter((station) =>
+  linkedCodes.has(station.shortCode),
+);
 
 const defaultDescription = "Reaaliaikaiset lähtöajat Suomen lähijunille. Saat ajantasaista tietoa lähijunien aikatauluista ja laitureista.";
 const metaDescription = description || defaultDescription;
@@ -128,6 +140,22 @@ const metaDescription = description || defaultDescription;
         }
       }
 	</script>
+
+    <script is:inline type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Lähijunat Live",
+        "alternateName": "lahijunat.live",
+        "url": "https://www.lahijunat.live",
+        "inLanguage": ["fi-FI", "sv-FI", "en"],
+        "publisher": {
+          "@type": "Person",
+          "name": "Niko Salonen",
+          "url": "https://bsky.app/profile/niko.torttu.fi"
+        }
+      }
+    </script>
 
     {breadcrumbs && breadcrumbs.length > 0 && (
       <script is:inline type="application/ld+json" set:html={JSON.stringify({
@@ -272,7 +300,7 @@ const metaDescription = description || defaultDescription;
           <slot />
         </main>
       </div>
-      <Footer client:load />
+      <Footer client:load stations={footerStations} />
     </div>
     <FeatureAnnouncement client:load />
     <Toast client:load />

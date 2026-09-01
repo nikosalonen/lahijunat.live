@@ -1,13 +1,26 @@
 import pkg from "../../package.json";
+import { POPULAR_ROUTES } from "../data/popularRoutes";
 import { useLanguageChange } from "../hooks/useLanguageChange";
+import type { Station } from "../types";
 import { t } from "../utils/translations";
+import RouteLinks from "./RouteLinks";
 
-export default function Footer() {
+interface Props {
+	/** Stations used by POPULAR_ROUTES; omitted on pages without station data. */
+	stations?: Station[];
+}
+
+export default function Footer({ stations = [] }: Props) {
 	useLanguageChange();
 
 	return (
 		<footer class="py-4 text-center text-white bg-[#8c4799] w-full mt-auto">
 			<div class="space-y-2">
+				<RouteLinks
+					stations={stations}
+					routes={POPULAR_ROUTES}
+					titleKey="popularRoutes"
+				/>
 				<p>
 					{t("madeBy")}{" "}
 					<a

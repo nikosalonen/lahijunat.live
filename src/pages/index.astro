@@ -6,7 +6,10 @@ import { fetchStations } from "../utils/api";
 const stations = await fetchStations();
 ---
 
-<Layout title="lahijunat.live | Lähijunien aikataulut reaaliaikaisesti">
+<Layout
+  title="lahijunat.live | Lähijunien aikataulut reaaliaikaisesti"
+  stations={stations}
+>
   <div class="py-4 sm:py-8">
     <StationManager client:load stations={stations} />
   </div>
