@@ -3,7 +3,8 @@ import { join } from "node:path";
 
 /**
  * Regenerates src/data/route-stats.json: a summary per station pair with direct
- * commuter service, plus the list of every pair served at all.
+ * commuter service, the list of every pair served at all, and a summary per
+ * commuter line.
  *
  * Route pages are otherwise near-identical — same layout, same text, only the
  * station names differ — and Google's sitelinks guidance asks sites to "avoid
@@ -29,6 +30,8 @@ const TIME_ZONE = "Europe/Helsinki";
 const MIN_TRAINS_PER_DAY = 2;
 /** Days of timetable to scan when deciding which pairs have any service. */
 const SERVED_WINDOW_DAYS = 7;
+/** A line needs this many daily trains before it gets a page. */
+const MIN_TRAINS_PER_LINE = 2;
 /**
  * The service day starts at 04:00 local time, so a 00.26 train counts as the
  * last one of the previous evening rather than the first of the morning.
@@ -63,6 +66,15 @@ interface Accumulator {
 	departures: number[];
 	durations: number[];
 	lines: Set<string>;
+}
+
+interface LineAccumulator {
+	trains: number;
+	departures: number[];
+	/** How many runs shared each "FIRST|LAST" pair of stops. */
+	pairCounts: Map<string, number>;
+	/** The longest run seen for each "FIRST|LAST" pair. */
+	runs: Map<string, string[]>;
 }
 
 function getVersion(): string {
@@ -210,6 +222,57 @@ function collectRoutes(
 	return routes;
 }
 
+/**
+ * What each commuter line looks like on this day: how many trains it runs, when
+ * they start and finish, and every run it makes grouped by where it starts and
+ * ends. Runs are grouped rather than merged because the longest run of the day
+ * is often a depot move, which describes the line badly — the most repeated
+ * pattern is the line as passengers know it.
+ */
+function collectLines(
+	trains: ApiTrain[],
+	known: Set<string>,
+): Map<string, LineAccumulator> {
+	const lines = new Map<string, LineAccumulator>();
+
+	for (const train of trains) {
+		const line = train.commuterLineID;
+		if (!line) continue;
+
+		const stops = commercialStops(train).filter((s) => known.has(s.shortCode));
+		if (stops.length < 2) continue;
+
+		let accumulator = lines.get(line);
+		if (!accumulator) {
+			accumulator = {
+				trains: 0,
+				departures: [],
+				pairCounts: new Map(),
+				runs: new Map(),
+			};
+			lines.set(line, accumulator);
+		}
+
+		accumulator.trains += 1;
+		if (stops[0].departure !== undefined) {
+			accumulator.departures.push(stops[0].departure);
+		}
+
+		const sequence = stops.map((stop) => stop.shortCode);
+		const pair = `${sequence[0]}|${sequence[sequence.length - 1]}`;
+		accumulator.pairCounts.set(
+			pair,
+			(accumulator.pairCounts.get(pair) ?? 0) + 1,
+		);
+		const longest = accumulator.runs.get(pair);
+		if (!longest || sequence.length > longest.length) {
+			accumulator.runs.set(pair, sequence);
+		}
+	}
+
+	return lines;
+}
+
 /** The SERVED_WINDOW_DAYS dates ending on `lastDate`, oldest first. */
 function windowEndingOn(lastDate: string): string[] {
 	const end = new Date(`${lastDate}T00:00:00Z`);
@@ -229,12 +292,42 @@ async function main(): Promise<void> {
 	const date = lastTuesday();
 	const served = new Set<string>();
 	let routes = new Map<string, Accumulator>();
+	const lines = new Map<string, LineAccumulator>();
 
 	for (const day of windowEndingOn(date)) {
 		const trains = await fetchCommuterTrains(day);
 		const dayRoutes = collectRoutes(trains, known);
 		for (const key of dayRoutes.keys()) served.add(key);
 		if (day === date) routes = dayRoutes;
+
+		// Trains and times describe the weekday; the stop list takes the longest
+		// run seen all week, so a line that ran only a short leg on the Tuesday
+		// is not described by that leg alone.
+		for (const [line, dayLine] of collectLines(trains, known)) {
+			const accumulator = lines.get(line) ?? {
+				trains: 0,
+				departures: [],
+				pairCounts: new Map<string, number>(),
+				runs: new Map<string, string[]>(),
+			};
+			for (const [pair, count] of dayLine.pairCounts) {
+				accumulator.pairCounts.set(
+					pair,
+					(accumulator.pairCounts.get(pair) ?? 0) + count,
+				);
+			}
+			for (const [pair, sequence] of dayLine.runs) {
+				const longest = accumulator.runs.get(pair);
+				if (!longest || sequence.length > longest.length) {
+					accumulator.runs.set(pair, sequence);
+				}
+			}
+			if (day === date) {
+				accumulator.trains = dayLine.trains;
+				accumulator.departures = dayLine.departures;
+			}
+			lines.set(line, accumulator);
+		}
 		console.log(
 			`${day}: ${trains.length} commuter trains, ${dayRoutes.size} routes`,
 		);
@@ -260,6 +353,56 @@ async function main(): Promise<void> {
 		};
 	}
 
+	const lineStats: Record<string, unknown> = {};
+	for (const [line, accumulator] of [...lines].sort(([a], [b]) =>
+		a.localeCompare(b),
+	)) {
+		if (accumulator.trains < MIN_TRAINS_PER_LINE) continue;
+
+		const departures = accumulator.departures
+			.map(localMinutes)
+			.sort((a, b) => serviceDayOffset(a) - serviceDayOffset(b));
+
+		// The pattern the line runs most often is the one to describe it by
+		const [typicalPair] = [...accumulator.pairCounts].sort(
+			([, a], [, b]) => b - a,
+		)[0];
+		const typicalRun = accumulator.runs.get(typicalPair) ?? [];
+		const [from, to] = typicalPair.split("|");
+
+		// The label describes the typical run, but the station list covers every
+		// stop the line makes, because the page links to each one. Start from the
+		// typical run so the order is the familiar one, then add what the other
+		// patterns reach — some lines run legs that share no station with their
+		// most common one.
+		const stations: string[] = [];
+		const addStops = (run: string[]) => {
+			for (const code of run) {
+				if (!stations.includes(code)) stations.push(code);
+			}
+		};
+		addStops(typicalRun);
+		for (const run of [...accumulator.runs.values()].sort(
+			(a, b) => b.length - a.length,
+		)) {
+			addStops(run);
+		}
+
+		lineStats[line] = {
+			trainsPerDay: accumulator.trains,
+			firstDeparture: formatMinutes(departures[0]),
+			lastDeparture: formatMinutes(departures[departures.length - 1]),
+			endpoints: [from, to],
+			// A run that ends where it started is a ring: name the far point so
+			// the line is recognisable ("Helsinki - Aviapolis - Helsinki")
+			via:
+				from === to
+					? (typicalRun[Math.floor(typicalRun.length / 2)] ?? null)
+					: null,
+			stations,
+		};
+	}
+
 	const routeCount = Object.keys(stats).length;
 	if (routeCount < MIN_EXPECTED_ROUTES) {
 		throw new Error(
@@ -274,6 +417,7 @@ async function main(): Promise<void> {
 				sourceDate: date,
 				servedWindowDays: SERVED_WINDOW_DAYS,
 				routes: stats,
+				lines: lineStats,
 				served: [...served].sort(),
 			},
 			null,
@@ -281,7 +425,7 @@ async function main(): Promise<void> {
 		)}\n`,
 	);
 	console.log(
-		`Wrote ${routeCount} summaries and ${served.size} served pairs to src/data/route-stats.json`,
+		`Wrote ${routeCount} summaries, ${Object.keys(lineStats).length} lines and ${served.size} served pairs to src/data/route-stats.json`,
 	);
 }
 

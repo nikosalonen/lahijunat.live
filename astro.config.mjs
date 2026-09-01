@@ -23,7 +23,7 @@ const servedRoutePaths = new Set(
 	}),
 );
 
-/** Keeps the home page, station pages, and served routes in the sitemap. */
+/** Keeps the home page, index pages, line pages, station pages and served routes. */
 const isSitemapPage = (/** @type {string} */ pageUrl) => {
 	let pathname = new URL(pageUrl).pathname;
 	try {
@@ -33,6 +33,7 @@ const isSitemapPage = (/** @type {string} */ pageUrl) => {
 	}
 	const segments = pathname.split("/").filter(Boolean);
 	if (segments.length < 2) return true;
+	if (segments[0] === "linja") return true;
 	return servedRoutePaths.has(pathname);
 };
 

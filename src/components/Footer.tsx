@@ -21,12 +21,18 @@ export default function Footer({ stations = [] }: Props) {
 					codes={POPULAR_STATIONS}
 					titleKey="popularStations"
 				/>
-				<p class="text-sm">
+				<p class="text-sm flex flex-wrap justify-center gap-x-3">
 					<a
 						href="/asemat/"
 						class="hover:text-blue-100 hover:underline underline-offset-2 transition-colors"
 					>
 						{t("allStations")}
+					</a>
+					<a
+						href="/linjat/"
+						class="hover:text-blue-100 hover:underline underline-offset-2 transition-colors"
+					>
+						{t("allLines")}
 					</a>
 				</p>
 				<p>

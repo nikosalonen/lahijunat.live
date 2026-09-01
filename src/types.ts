@@ -62,3 +62,16 @@ export interface StationStats {
 	firstDeparture: string;
 	lastDeparture: string;
 }
+
+/** Build-time facts about one commuter line, e.g. I or K. */
+export interface LineStats {
+	trainsPerDay: number;
+	firstDeparture: string;
+	lastDeparture: string;
+	/** Ends of the run the line makes most often. */
+	endpoints: string[];
+	/** For a ring line, the far point between identical endpoints. */
+	via: string | null;
+	/** Every station the line calls at, in the order of its longest run. */
+	stations: string[];
+}

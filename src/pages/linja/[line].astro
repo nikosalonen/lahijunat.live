@@ -1,0 +1,68 @@
+---
+import StationLinks from "../../components/StationLinks";
+import { getLines, getLineStats } from "../../data/routeStats";
+import Layout from "../../layouts/Layout.astro";
+import { fetchStations } from "../../utils/api";
+
+export function getStaticPaths() {
+	// Lowercase, like every other path on the site
+	return getLines().map(({ line }) => ({ params: { line: line.toLowerCase() } }));
+}
+
+const { line: lineParam } = Astro.params;
+const line = (lineParam ?? "").toUpperCase();
+const stats = getLineStats(line);
+
+if (!stats) {
+	return Astro.redirect("/linjat/");
+}
+
+const stations = await fetchStations();
+const stationName = (shortCode: string) =>
+	stations.find((station) => station.shortCode === shortCode)?.name ?? shortCode;
+
+const route = [
+	stationName(stats.endpoints[0]),
+	...(stats.via ? [stationName(stats.via)] : []),
+	stationName(stats.endpoints[1]),
+].join(" – ");
+
+const siteUrl = Astro.site?.toString() || "https://www.lahijunat.live";
+const breadcrumbs = [
+	{ name: "Etusivu", url: siteUrl },
+	{ name: "Linjat", url: new URL("/linjat/", siteUrl).toString() },
+	{
+		name: `${line}-juna`,
+		url: new URL(`/linja/${line.toLowerCase()}/`, siteUrl).toString(),
+	},
+];
+---
+
+<Layout
+	title={`${line}-juna – aikataulu ja asemat | Lähijunat Live`}
+	description={`${line}-juna ${route}: asemat ja reaaliaikaiset lähtöajat. Junia noin ${stats.trainsPerDay} vuorokaudessa, ensimmäinen ${stats.firstDeparture} ja viimeinen ${stats.lastDeparture}.`}
+	breadcrumbs={breadcrumbs}
+	stations={stations}
+>
+	<div class="py-4 sm:py-8">
+		<div class="w-full max-w-3xl mx-auto px-2 sm:px-6 md:px-8 lg:px-12">
+			<h1 class="text-2xl sm:text-3xl font-bold mb-2 text-center dark:text-white">
+				{line}-juna
+			</h1>
+			<p class="text-base text-center mb-1 dark:text-white">{route}</p>
+			<p class="text-sm text-center opacity-70 mb-6 dark:text-white">
+				Junia noin {stats.trainsPerDay} vuorokaudessa, ensimmäinen lähtö {stats.firstDeparture} ja
+				viimeinen {stats.lastDeparture}. Valitse asema nähdäksesi sen
+				reaaliaikaiset lähdöt.
+			</p>
+			<StationLinks
+				client:visible
+				stations={stations}
+				codes={stats.stations}
+				titleKey="allStations"
+				variant="page"
+				showHeading={false}
+			/>
+		</div>
+	</div>
+</Layout>

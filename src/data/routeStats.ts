@@ -1,6 +1,6 @@
 /** @format */
 
-import type { RouteStats, StationStats } from "../types";
+import type { LineStats, RouteStats, StationStats } from "../types";
 import routeStatsData from "./route-stats.json";
 
 /**
@@ -82,4 +82,18 @@ export const getStationStats = (
 		firstDeparture: departures[0],
 		lastDeparture: departures[departures.length - 1],
 	};
+};
+
+const lineStats = routeStatsData.lines as Record<string, LineStats>;
+
+/** Commuter lines that run on a weekday, in alphabetical order. */
+export const getLines = (): { line: string; stats: LineStats }[] =>
+	Object.entries(lineStats)
+		.map(([line, stats]) => ({ line, stats }))
+		.sort((a, b) => a.line.localeCompare(b.line));
+
+/** One line's facts, or null if it does not run. Case-insensitive. */
+export const getLineStats = (line: string | null): LineStats | null => {
+	if (!line) return null;
+	return lineStats[line.toUpperCase()] ?? null;
 };
