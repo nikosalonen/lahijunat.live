@@ -67,15 +67,20 @@ export default function StationLinks({
 			class={isFooter ? "px-4 pb-2 text-sm" : "text-sm dark:text-white"}
 		>
 			{showHeading && <h2 class="font-semibold mb-1">{title}</h2>}
+			{/* Multi-column rather than a grid: it fills each column top to
+			    bottom, so the alphabet reads down instead of across. */}
 			<ul
 				class={
 					isFooter
 						? "flex flex-wrap justify-center gap-x-3 gap-y-1"
-						: "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-2"
+						: "columns-2 sm:columns-3 md:columns-4 gap-x-6"
 				}
 			>
 				{links.map((link) => (
-					<li key={link.href}>
+					<li
+						key={link.href}
+						class={isFooter ? undefined : "break-inside-avoid py-0.5"}
+					>
 						<a
 							href={link.href}
 							class={
