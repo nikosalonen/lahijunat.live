@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import EmptyState from "@/components/EmptyState";
 import { useLanguageChange } from "../hooks/useLanguageChange";
-import type { RouteStats, Station, StationStats } from "../types";
+import type { Station } from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
 import {
 	hapticLight,
@@ -19,7 +19,6 @@ import {
 } from "../utils/stationRoute";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
-import RouteSummary from "./RouteSummary";
 import StationList from "./StationList";
 import TrainList from "./TrainList";
 
@@ -27,10 +26,6 @@ interface Props {
 	stations: Station[];
 	initialFromStation?: string | null;
 	initialToStation?: string | null;
-	/** Facts about the route in the URL, from the build-time snapshot. */
-	routeStats?: RouteStats | null;
-	/** Facts about the origin station, used when the URL names only one. */
-	stationStats?: StationStats | null;
 	// For testing only:
 	openList?: "from" | "to" | null;
 	setOpenList?: (v: "from" | "to" | null) => void;
@@ -70,8 +65,6 @@ function useHasMounted() {
 export default function StationManager({
 	stations,
 	initialFromStation,
-	routeStats = null,
-	stationStats = null,
 	initialToStation,
 	openList: openListProp,
 	setOpenList: setOpenListProp,
@@ -199,14 +192,18 @@ export default function StationManager({
 					);
 				}
 			}
-		} else {
-			// Normal web launch, use initial values or localStorage as fallback
-			if (!initialFromStation) {
-				setSelectedOrigin(getStoredValue("selectedOrigin"));
-			}
-			if (!initialToStation) {
-				setSelectedDestination(getStoredValue("selectedDestination"));
-			}
+		} else if (!initialFromStation && !initialToStation) {
+			// Normal web launch with no route in the URL: restore the last one.
+			// When the URL does name a station it is the source of truth — filling
+			// the other end from storage would show a route the visitor did not
+			// ask for, and a remembered station equal to the one in the URL would
+			// produce a route from a station to itself.
+			const savedOrigin = getStoredValue("selectedOrigin");
+			const savedDestination = getStoredValue("selectedDestination");
+			setSelectedOrigin(savedOrigin);
+			setSelectedDestination(
+				savedDestination === savedOrigin ? null : savedDestination,
+			);
 		}
 
 		if (isLocalStorageAvailable()) {
@@ -488,6 +485,10 @@ export default function StationManager({
 		(station: Station) => {
 			setSelectedOrigin(station.shortCode);
 			setStoredValue("selectedOrigin", station.shortCode);
+			// Clear a destination that just became the origin
+			setSelectedDestination((current) =>
+				current === station.shortCode ? null : current,
+			);
 			setOpenList("to");
 			// Destinations for the new origin are fetched by the
 			// selectedOrigin effect above.
@@ -594,17 +595,9 @@ export default function StationManager({
 
 	return (
 		<div className="w-full max-w-3xl mx-auto px-2 sm:px-6 md:px-8 lg:px-12 py-2 sm:py-6 md:py-8">
-			<h1 className="text-2xl sm:text-3xl font-bold mb-2 text-center dark:text-white">
+			<h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center dark:text-white">
 				{heading}
 			</h1>
-			<RouteSummary
-				routeStats={routeStats}
-				stationStats={stationStats}
-				statsFrom={initialFromStation ?? null}
-				statsTo={initialToStation ?? null}
-				activeFrom={selectedOrigin}
-				activeTo={selectedDestination}
-			/>
 
 			{/* Mobile compact header with toggle and action buttons */}
 			<div className="sm:hidden mb-4">
@@ -748,7 +741,21 @@ export default function StationManager({
 			>
 				{/* Upward caret when expanded (mobile) - clickable to close */}
 
-				<div id="station-selector" className="collapse-content px-0">
+				{/* DaisyUI's .collapse-content sets `overflow: clip`, which cuts off
+				    the station dropdown; clipping ignores z-index, so the collapse's
+				    own z-50 cannot help. The selector is always open from sm up, and
+				    on mobile only while a list is open — the rest of the time the
+				    clipping is what keeps the collapsed content hidden. */}
+				<div
+					id="station-selector"
+					className={[
+						"collapse-content px-0",
+						"sm:overflow-visible",
+						openList !== null && "overflow-visible",
+					]
+						.filter(Boolean)
+						.join(" ")}
+				>
 					<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
 						<div className="space-y-2">
 							<h3

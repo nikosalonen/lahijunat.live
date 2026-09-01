@@ -113,6 +113,46 @@ describe("StationManager", () => {
 		).mockResolvedValue(mockDestinations);
 	});
 
+	describe("restoring the last route", () => {
+		// The heading is what gives the restored state away: a stored destination
+		// equal to the origin produced "Helsinki -> Helsinki" and a URL of
+		// /hki/hki/, a page that is never generated.
+		const heading = (container: ParentNode) =>
+			container.querySelector("h1")?.textContent;
+
+		it("ignores a stored destination when the URL names a station", async () => {
+			localStorageMock.setItem("selectedDestination", "HKI");
+
+			const { container } = render(
+				<StationManager stations={mockStations} initialFromStation="HKI" />,
+			);
+
+			await waitFor(() => expect(heading(container)).toBeTruthy());
+			expect(heading(container)).toBe("h1DeparturesFrom Helsinki");
+		});
+
+		it("drops a stored destination that equals the stored origin", async () => {
+			localStorageMock.setItem("selectedOrigin", "HKI");
+			localStorageMock.setItem("selectedDestination", "HKI");
+
+			const { container } = render(<StationManager stations={mockStations} />);
+
+			await waitFor(() => expect(heading(container)).toBeTruthy());
+			expect(heading(container)).toBe("h1DeparturesFrom Helsinki");
+		});
+
+		it("still restores a different stored route with no URL route", async () => {
+			localStorageMock.setItem("selectedOrigin", "HKI");
+			localStorageMock.setItem("selectedDestination", "TPE");
+
+			const { container } = render(<StationManager stations={mockStations} />);
+
+			await waitFor(() =>
+				expect(heading(container)).toBe("h1Trains Helsinki → Tampere"),
+			);
+		});
+	});
+
 	it("shows loading state when fetching destinations", async () => {
 		const { getByText, findByText, container } = render(
 			<StationManagerTestWrapper stations={mockStations} />,

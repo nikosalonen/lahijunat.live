@@ -34,15 +34,6 @@ export const translations = {
 		h1DeparturesFrom: "Lähtevät lähijunat asemalta",
 		popularStations: "Suositut asemat",
 		allStations: "Kaikki asemat",
-		routeSummaryTrains: "Suoria junia noin {count} vuorokaudessa.",
-		routeSummaryDuration: "Matka kestää keskimäärin {minutes} min.",
-		routeSummaryLine: "Linja {lines}.",
-		routeSummaryLines: "Linjat {lines}.",
-		routeSummaryFirstLast: "Ensimmäinen juna {first}, viimeinen {last}.",
-		stationSummaryDestinations: "Suoria yhteyksiä {count} asemalle.",
-		stationSummaryLine: "Linja {lines}.",
-		stationSummaryLines: "Linjat {lines}.",
-		stationSummaryFirstLast: "Ensimmäinen lähtö {first}, viimeinen {last}.",
 		placeholder: "Valitse asema...",
 		swapDirection: "Vaihda suunta",
 		hint: "Määränpäät on suodatettu näyttämään vain asemat, joihin on suoria junayhteyksiä valitulta lähtöasemalta.",
@@ -176,15 +167,6 @@ export const translations = {
 		h1DeparturesFrom: "Departures from",
 		popularStations: "Popular stations",
 		allStations: "All stations",
-		routeSummaryTrains: "About {count} direct trains per day.",
-		routeSummaryDuration: "The journey takes {minutes} min on average.",
-		routeSummaryLine: "Line {lines}.",
-		routeSummaryLines: "Lines {lines}.",
-		routeSummaryFirstLast: "First train {first}, last {last}.",
-		stationSummaryDestinations: "Direct connections to {count} stations.",
-		stationSummaryLine: "Line {lines}.",
-		stationSummaryLines: "Lines {lines}.",
-		stationSummaryFirstLast: "First departure {first}, last {last}.",
 		placeholder: "Select a station...",
 		swapDirection: "Swap direction",
 		hint: "The destinations are filtered to show only stations with direct train connections from the selected departure station.",
@@ -317,15 +299,6 @@ export const translations = {
 		h1DeparturesFrom: "Avgående lokaltåg från",
 		popularStations: "Populära stationer",
 		allStations: "Alla stationer",
-		routeSummaryTrains: "Cirka {count} direkta tåg per dygn.",
-		routeSummaryDuration: "Resan tar i snitt {minutes} min.",
-		routeSummaryLine: "Linje {lines}.",
-		routeSummaryLines: "Linjer {lines}.",
-		routeSummaryFirstLast: "Första tåget {first}, sista {last}.",
-		stationSummaryDestinations: "Direkta förbindelser till {count} stationer.",
-		stationSummaryLine: "Linje {lines}.",
-		stationSummaryLines: "Linjer {lines}.",
-		stationSummaryFirstLast: "Första avgången {first}, sista {last}.",
 		placeholder: "Välj station...",
 		swapDirection: "Byt riktning",
 		hint: "Destinationerna är filtrerade för att endast visa stationer med direkta tågförbindelser från den valda avgångsstationen.",
@@ -446,19 +419,5 @@ export function t(key: string): string {
 		dict[key as keyof typeof dict] ??
 		translations.fi[key as keyof typeof translations.fi] ??
 		key
-	);
-}
-
-/**
- * Translate and fill in {placeholders}, e.g.
- * tf("routeSummaryTrains", { count: 174 }).
- */
-export function tf(
-	key: TranslationKey | string,
-	values: Record<string, string | number>,
-): string {
-	return Object.entries(values).reduce(
-		(text, [name, value]) => text.replaceAll(`{${name}}`, String(value)),
-		t(key),
 	);
 }

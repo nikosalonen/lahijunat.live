@@ -77,13 +77,13 @@ const generateTitle = () => {
 const generateDescription = () => {
 	if (fromStationName && toStationName) {
 		const facts = routeStats
-			? ` Suoria junia noin ${routeStats.trainsPerDay} vuorokaudessa, matka noin ${routeStats.medianDuration} min.`
+			? ` Matka kestää noin ${routeStats.medianDuration} min.`
 			: "";
 		return `Lähijunat ${fromStationName} → ${toStationName} reaaliaikaisesti: lähtöajat, raiteet ja viiveet.${facts}`;
 	}
 	if (fromStationName) {
 		const facts = stationStats
-			? ` Suoria yhteyksiä ${stationStats.destinations} asemalle, linjat ${stationStats.lines.join(", ")}.`
+			? ` Suoria yhteyksiä ${stationStats.destinations} asemalle.`
 			: "";
 		return `Lähijunien aikataulut asemalta ${fromStationName} reaaliaikaisesti: lähtöajat, raiteet ja viiveet.${facts}`;
 	}
@@ -117,6 +117,8 @@ const generateBreadcrumbs = () => {
 	return breadcrumbs;
 };
 
+// Used for the meta description only: each page describes itself with its own
+// numbers, while the page body stays uncluttered.
 const routeStats = getRouteStats(validFromStation, validToStation);
 const stationStats = validToStation ? null : getStationStats(validFromStation);
 
@@ -139,8 +141,6 @@ const breadcrumbs = generateBreadcrumbs();
 			stations={stations}
 			initialFromStation={validFromStation}
 			initialToStation={validToStation}
-			routeStats={routeStats}
-			stationStats={stationStats}
 		/>
 	</div>
 </Layout>
