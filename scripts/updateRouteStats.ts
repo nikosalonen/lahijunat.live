@@ -2,15 +2,19 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 /**
- * Regenerates src/data/route-stats.json: one summary per station pair that has
- * direct commuter service.
+ * Regenerates src/data/route-stats.json: a summary per station pair with direct
+ * commuter service, plus the list of every pair served at all.
  *
  * Route pages are otherwise near-identical — same layout, same text, only the
  * station names differ — and Google's sitelinks guidance asks sites to "avoid
  * content repetition". These summaries give each page facts of its own.
  *
- * The whole day's trains come from one request (~900 kB gzipped), so the result
- * is committed to the repo rather than fetched during the build: Digitraffic
+ * The summaries describe one weekday, which is what most visitors travel on.
+ * The served list covers a full week, because it decides whether a page gets
+ * indexed and a pair with weekend-only service must not be dropped.
+ *
+ * A day's trains come from one request (~900 kB gzipped), so the result is
+ * committed to the repo rather than fetched during the build: Digitraffic
  * occasionally 403s CI runner IPs, and the build must not depend on it.
  *
  * Run with: pnpm run update-route-stats
@@ -23,6 +27,8 @@ const TIME_ZONE = "Europe/Helsinki";
 
 /** A route needs this many daily trains before it gets a summary. */
 const MIN_TRAINS_PER_DAY = 2;
+/** Days of timetable to scan when deciding which pairs have any service. */
+const SERVED_WINDOW_DAYS = 7;
 /**
  * The service day starts at 04:00 local time, so a 00.26 train counts as the
  * last one of the previous evening rather than the first of the morning.
@@ -148,13 +154,7 @@ function percentile(sorted: number[], fraction: number): number {
 	return sorted[index];
 }
 
-async function main(): Promise<void> {
-	const stations: { shortCode: string }[] = JSON.parse(
-		readFileSync(STATIONS_PATH, "utf-8"),
-	);
-	const known = new Set(stations.map((s) => s.shortCode));
-
-	const date = lastTuesday();
+async function fetchCommuterTrains(date: string): Promise<ApiTrain[]> {
 	const response = await fetch(`${TRAINS_URL}/${date}`, {
 		headers: {
 			"Accept-Encoding": "gzip",
@@ -163,19 +163,24 @@ async function main(): Promise<void> {
 	});
 	if (!response.ok) {
 		throw new Error(
-			`Train request failed: ${response.status} ${response.statusText}`,
+			`Train request for ${date} failed: ${response.status} ${response.statusText}`,
 		);
 	}
 
 	const trains: ApiTrain[] = await response.json();
-	const commuter = trains.filter(
+	return trains.filter(
 		(train) => train.trainCategory === "Commuter" && !train.cancelled,
 	);
-	console.log(`${commuter.length} commuter trains on ${date}`);
+}
 
-	// Every ordered pair of stops on a train is a route that train serves
+/** Every ordered pair of stops on a train is a route that train serves. */
+function collectRoutes(
+	trains: ApiTrain[],
+	known: Set<string>,
+): Map<string, Accumulator> {
 	const routes = new Map<string, Accumulator>();
-	for (const train of commuter) {
+
+	for (const train of trains) {
 		const stops = commercialStops(train).filter((s) => known.has(s.shortCode));
 
 		for (let i = 0; i < stops.length; i++) {
@@ -200,6 +205,39 @@ async function main(): Promise<void> {
 				if (train.commuterLineID) accumulator.lines.add(train.commuterLineID);
 			}
 		}
+	}
+
+	return routes;
+}
+
+/** The SERVED_WINDOW_DAYS dates ending on `lastDate`, oldest first. */
+function windowEndingOn(lastDate: string): string[] {
+	const end = new Date(`${lastDate}T00:00:00Z`);
+	return Array.from({ length: SERVED_WINDOW_DAYS }, (_, index) => {
+		const date = new Date(end);
+		date.setUTCDate(date.getUTCDate() - (SERVED_WINDOW_DAYS - 1 - index));
+		return date.toISOString().slice(0, 10);
+	});
+}
+
+async function main(): Promise<void> {
+	const stations: { shortCode: string }[] = JSON.parse(
+		readFileSync(STATIONS_PATH, "utf-8"),
+	);
+	const known = new Set(stations.map((s) => s.shortCode));
+
+	const date = lastTuesday();
+	const served = new Set<string>();
+	let routes = new Map<string, Accumulator>();
+
+	for (const day of windowEndingOn(date)) {
+		const trains = await fetchCommuterTrains(day);
+		const dayRoutes = collectRoutes(trains, known);
+		for (const key of dayRoutes.keys()) served.add(key);
+		if (day === date) routes = dayRoutes;
+		console.log(
+			`${day}: ${trains.length} commuter trains, ${dayRoutes.size} routes`,
+		);
 	}
 
 	const stats: Record<string, unknown> = {};
@@ -231,9 +269,20 @@ async function main(): Promise<void> {
 
 	writeFileSync(
 		OUTPUT_PATH,
-		`${JSON.stringify({ sourceDate: date, routes: stats }, null, "\t")}\n`,
+		`${JSON.stringify(
+			{
+				sourceDate: date,
+				servedWindowDays: SERVED_WINDOW_DAYS,
+				routes: stats,
+				served: [...served].sort(),
+			},
+			null,
+			"\t",
+		)}\n`,
 	);
-	console.log(`Wrote ${routeCount} routes to src/data/route-stats.json`);
+	console.log(
+		`Wrote ${routeCount} summaries and ${served.size} served pairs to src/data/route-stats.json`,
+	);
 }
 
 main().catch((error) => {

@@ -53,3 +53,12 @@ export interface RouteStats {
 	/** Commuter line letters serving the route, e.g. ["I", "P"]. */
 	lines: string[];
 }
+
+/** Build-time facts about departures from one station. */
+export interface StationStats {
+	/** Stations reachable without changing trains. */
+	destinations: number;
+	lines: string[];
+	firstDeparture: string;
+	lastDeparture: string;
+}

@@ -1,12 +1,12 @@
 import pkg from "../../package.json";
-import { POPULAR_ROUTES } from "../data/popularRoutes";
+import { POPULAR_STATIONS } from "../data/popularStations";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station } from "../types";
 import { t } from "../utils/translations";
-import RouteLinks from "./RouteLinks";
+import StationLinks from "./StationLinks";
 
 interface Props {
-	/** Stations used by POPULAR_ROUTES; omitted on pages without station data. */
+	/** Stations named by POPULAR_STATIONS; omitted on pages without station data. */
 	stations?: Station[];
 }
 
@@ -16,11 +16,19 @@ export default function Footer({ stations = [] }: Props) {
 	return (
 		<footer class="py-4 text-center text-white bg-[#8c4799] w-full mt-auto">
 			<div class="space-y-2">
-				<RouteLinks
+				<StationLinks
 					stations={stations}
-					routes={POPULAR_ROUTES}
-					titleKey="popularRoutes"
+					codes={POPULAR_STATIONS}
+					titleKey="popularStations"
 				/>
+				<p class="text-sm">
+					<a
+						href="/asemat/"
+						class="hover:text-blue-100 hover:underline underline-offset-2 transition-colors"
+					>
+						{t("allStations")}
+					</a>
+				</p>
 				<p>
 					{t("madeBy")}{" "}
 					<a

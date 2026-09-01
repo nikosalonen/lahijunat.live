@@ -1,5 +1,6 @@
 // @ts-check
 
+import { readFileSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,6 +10,31 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Station pairs with direct commuter service, as "/from/to/" paths. Pairs
+// without one are served with noindex (see src/pages/[...stations].astro), so
+// listing them in the sitemap would contradict that.
+const servedRoutePaths = new Set(
+	JSON.parse(
+		readFileSync(path.resolve(__dirname, "src/data/route-stats.json"), "utf8"),
+	).served.map((/** @type {string} */ key) => {
+		const [from, to] = key.split("-");
+		return `/${from.toLowerCase()}/${to.toLowerCase()}/`;
+	}),
+);
+
+/** Keeps the home page, station pages, and served routes in the sitemap. */
+const isSitemapPage = (/** @type {string} */ pageUrl) => {
+	let pathname = new URL(pageUrl).pathname;
+	try {
+		pathname = decodeURIComponent(pathname);
+	} catch {
+		// Leave a malformed escape sequence as it is
+	}
+	const segments = pathname.split("/").filter(Boolean);
+	if (segments.length < 2) return true;
+	return servedRoutePaths.has(pathname);
+};
 
 const mySwPlugin = () => {
 	return {
@@ -83,5 +109,9 @@ export default defineConfig({
 		},
 	},
 
-	integrations: [preact(), sitemap(), mySwPlugin()],
+	integrations: [
+		preact(),
+		sitemap({ filter: isSitemapPage }),
+		mySwPlugin(),
+	],
 });

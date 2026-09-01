@@ -9,6 +9,8 @@ interface Props {
   description?: string;
   breadcrumbs?: BreadcrumbItem[];
   stations?: Station[];
+  /** Robots directive; pages with no content of their own pass "noindex, follow". */
+  robots?: string;
 }
 
 import { Image } from "astro:assets";
@@ -19,17 +21,21 @@ import Footer from "../components/Footer";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import ShareButton from "../components/ShareButton";
 import Toast from "../components/Toast";
-import { POPULAR_ROUTES } from "../data/popularRoutes";
+import { POPULAR_STATIONS } from "../data/popularStations";
 import type { Station } from "../types";
 import { t } from "../utils/translations";
 
-const { title, description, breadcrumbs, stations = [] } = Astro.props as Props;
+const {
+  title,
+  description,
+  breadcrumbs,
+  stations = [],
+  robots = "index, follow",
+} = Astro.props as Props;
 
-// The footer only needs the handful of stations its route links name, so the
-// full station list is not serialised into every page a second time.
-const linkedCodes = new Set(
-  POPULAR_ROUTES.flatMap((route) => [route.from, route.to]),
-);
+// The footer only needs the handful of stations it links to, so the full
+// station list is not serialised into every page a second time.
+const linkedCodes = new Set(POPULAR_STATIONS);
 const footerStations = stations.filter((station) =>
   linkedCodes.has(station.shortCode),
 );
@@ -59,7 +65,7 @@ const metaDescription = description || defaultDescription;
       content="lähijunat, paikallisjunat, suomen junat, helsingin junat, juna-aikataulut, reaaliaikaiset junat"
     />
     <meta name="author" content="Lähijunat Live" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={robots} />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />

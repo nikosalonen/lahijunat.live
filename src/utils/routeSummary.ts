@@ -1,6 +1,6 @@
 /** @format */
 
-import type { RouteStats } from "../types";
+import type { RouteStats, StationStats } from "../types";
 import { tf } from "./translations";
 
 /**
@@ -18,6 +18,20 @@ export const formatRouteSummary = (stats: RouteStats): string =>
 			lines: stats.lines.join(", "),
 		}),
 		tf("routeSummaryFirstLast", {
+			first: stats.firstDeparture,
+			last: stats.lastDeparture,
+		}),
+	].join(" ");
+
+/** One sentence of station-specific facts, in the active language. */
+export const formatStationSummary = (stats: StationStats): string =>
+	[
+		tf("stationSummaryDestinations", { count: stats.destinations }),
+		tf(
+			stats.lines.length === 1 ? "stationSummaryLine" : "stationSummaryLines",
+			{ lines: stats.lines.join(", ") },
+		),
+		tf("stationSummaryFirstLast", {
 			first: stats.firstDeparture,
 			last: stats.lastDeparture,
 		}),

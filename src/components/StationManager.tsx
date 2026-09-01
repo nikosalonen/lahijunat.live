@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import EmptyState from "@/components/EmptyState";
 import { useLanguageChange } from "../hooks/useLanguageChange";
-import type { RouteStats, Station } from "../types";
+import type { RouteStats, Station, StationStats } from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
 import {
 	hapticLight,
@@ -29,6 +29,8 @@ interface Props {
 	initialToStation?: string | null;
 	/** Facts about the route in the URL, from the build-time snapshot. */
 	routeStats?: RouteStats | null;
+	/** Facts about the origin station, used when the URL names only one. */
+	stationStats?: StationStats | null;
 	// For testing only:
 	openList?: "from" | "to" | null;
 	setOpenList?: (v: "from" | "to" | null) => void;
@@ -69,6 +71,7 @@ export default function StationManager({
 	stations,
 	initialFromStation,
 	routeStats = null,
+	stationStats = null,
 	initialToStation,
 	openList: openListProp,
 	setOpenList: setOpenListProp,
@@ -595,7 +598,8 @@ export default function StationManager({
 				{heading}
 			</h1>
 			<RouteSummary
-				stats={routeStats}
+				routeStats={routeStats}
+				stationStats={stationStats}
 				statsFrom={initialFromStation ?? null}
 				statsTo={initialToStation ?? null}
 				activeFrom={selectedOrigin}

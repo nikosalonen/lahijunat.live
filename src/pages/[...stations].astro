@@ -1,7 +1,11 @@
 ---
 import StationManager from "../components/StationManager";
 import Layout from "../layouts/Layout.astro";
-import { getRouteStats } from "../data/routeStats";
+import {
+	getRouteStats,
+	getStationStats,
+	isServedRoute,
+} from "../data/routeStats";
 import { fetchStations } from "../utils/api";
 import { buildRoutePath, resolveShortCode } from "../utils/stationRoute";
 
@@ -60,21 +64,28 @@ const toStationName = getStationName(validToStation);
 // Generate dynamic title based on selected stations
 const generateTitle = () => {
 	if (fromStationName && toStationName) {
-		return `${fromStationName} → ${toStationName} | Lähijunat Live`;
+		return `Lähijunat ${fromStationName} → ${toStationName} – aikataulut`;
 	}
 	if (fromStationName) {
-		return `${fromStationName} | Lähijunat Live`;
+		return `Lähijunat ${fromStationName} – aikataulut ja lähtöajat`;
 	}
-	return "Lähijunat Live | Lähijunien aikataulut reaaliaikaisesti";
+	return "Lähijunien aikataulut reaaliaikaisesti | Lähijunat Live";
 };
 
 // Generate dynamic description based on selected stations
+// Descriptions carry each page's own numbers, so no two are alike
 const generateDescription = () => {
 	if (fromStationName && toStationName) {
-		return `Reaaliaikaiset junat ${fromStationName} → ${toStationName}. Lähtöajat, raiteet ja viiveet.`;
+		const facts = routeStats
+			? ` Suoria junia noin ${routeStats.trainsPerDay} vuorokaudessa, matka noin ${routeStats.medianDuration} min.`
+			: "";
+		return `Lähijunat ${fromStationName} → ${toStationName} reaaliaikaisesti: lähtöajat, raiteet ja viiveet.${facts}`;
 	}
 	if (fromStationName) {
-		return `Reaaliaikaiset lähtevät junat asemalta ${fromStationName}. Lähtöajat, raiteet ja viiveet.`;
+		const facts = stationStats
+			? ` Suoria yhteyksiä ${stationStats.destinations} asemalle, linjat ${stationStats.lines.join(", ")}.`
+			: "";
+		return `Lähijunien aikataulut asemalta ${fromStationName} reaaliaikaisesti: lähtöajat, raiteet ja viiveet.${facts}`;
 	}
 	return "Reaaliaikaiset lähtöajat Suomen lähijunille. Saat ajantasaista tietoa lähijunien aikatauluista ja laitureista.";
 };
@@ -107,13 +118,21 @@ const generateBreadcrumbs = () => {
 };
 
 const routeStats = getRouteStats(validFromStation, validToStation);
+const stationStats = validToStation ? null : getStationStats(validFromStation);
+
+// A pair with no direct train has nothing on the page but an empty state.
+// Keep following the links so the footer still passes authority on.
+const robots =
+	validFromStation && validToStation && !isServedRoute(validFromStation, validToStation)
+		? "noindex, follow"
+		: "index, follow";
 
 const pageTitle = generateTitle();
 const pageDescription = generateDescription();
 const breadcrumbs = generateBreadcrumbs();
 ---
 
-<Layout title={pageTitle} description={pageDescription} breadcrumbs={breadcrumbs} stations={stations}>
+<Layout title={pageTitle} description={pageDescription} breadcrumbs={breadcrumbs} stations={stations} robots={robots}>
 	<div class="py-4 sm:py-8">
 		<StationManager
 			client:load
@@ -121,6 +140,7 @@ const breadcrumbs = generateBreadcrumbs();
 			initialFromStation={validFromStation}
 			initialToStation={validToStation}
 			routeStats={routeStats}
+			stationStats={stationStats}
 		/>
 	</div>
 </Layout>
