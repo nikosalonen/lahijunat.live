@@ -118,18 +118,20 @@ export default function StationIndex({ stations, lines, popular }: Props) {
 								{group.entries.map((entry) => (
 									<li
 										key={entry.code}
-										class="flex items-center justify-between gap-3 py-2.5"
+										class="flex items-start justify-between gap-3 py-2.5"
 									>
 										<a
 											href={entry.href}
-											class={`link link-hover underline-offset-2 text-base leading-snug ${
+											class={`link link-hover underline-offset-2 text-base leading-snug shrink-0 py-0.5 ${
 												entry.popular ? "font-bold" : ""
 											}`}
 										>
 											{entry.label}
 										</a>
+										{/* Helsinki and Pasila have 13 lines; the chips must be
+										    allowed to shrink so they wrap instead of widening the row */}
 										{entry.lines.length > 0 && (
-											<span class="flex flex-wrap justify-end gap-1 shrink-0">
+											<span class="flex flex-wrap justify-end gap-1 min-w-0">
 												{entry.lines.map((line) => (
 													<a
 														key={line}
