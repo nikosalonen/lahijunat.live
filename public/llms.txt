@@ -1,36 +1,33 @@
-# llms.txt for lahijunat.live
+# Lähijunat Live
 
-> lahijunat.live is a Finnish commuter train schedule application providing real-time train departure information for stations in the Helsinki metropolitan area and across Finland.
+> Real-time departure boards for Finland's commuter trains. Pick a departure and a destination station and see the next trains with delays, track numbers and journey times, in Finnish, Swedish or English. Free, no account, works offline as an installable web app.
 
-## About
+Lähijunat Live is a static site: every station, every station pair with direct service and every commuter line has its own URL that is complete without JavaScript. Live train data is fetched in the browser from Fintraffic's open Digitraffic API. Page titles and descriptions are in Finnish; the interface follows the reader's language.
 
-This is a Progressive Web App (PWA) built with Astro and Preact that displays live train schedules between Finnish railway stations. Users can select departure and destination stations to see upcoming trains, delays, track numbers, and journey times.
+URL patterns:
 
-## Data Source
+- `/{station}/` — departures from one station, by lowercase short code, e.g. `/hki/` for Helsinki
+- `/{from}/{to}/` — trains between two stations, e.g. `/hki/ke/` for Helsinki to Kerava
+- `/linja/{letter}/` — one commuter line and its stations in travel order, e.g. `/linja/k/`
 
-All train data is provided by Fintraffic's digitraffic.fi service (rata.digitraffic.fi) under the CC 4.0 BY license.
+## Pages
 
-## Features
+- [Home](https://www.lahijunat.live/): choose stations and see live departures
+- [All stations](https://www.lahijunat.live/asemat/): every station, alphabetically, with the lines that call there
+- [Lines](https://www.lahijunat.live/linjat/): every commuter line and its route
+- [K train](https://www.lahijunat.live/linja/k/): example line page, Helsinki to Kerava
+- [Helsinki](https://www.lahijunat.live/hki/): example station page
+- [Sitemap](https://www.lahijunat.live/sitemap-index.xml): index of every public page
 
-- Real-time train departures with automatic refresh
-- Delay information and track changes
-- Geolocation to find nearest station
-- Bilingual support (Finnish and English)
-- Offline functionality via service worker
-- Installable as a mobile app
+## Data
 
-## Technical Stack
+- [Digitraffic railway traffic API](https://www.digitraffic.fi/en/railway-traffic/): source of all train data, provided by Fintraffic under the CC BY 4.0 licence
+- [Digitraffic status](https://status.digitraffic.fi/): service status of the data source
 
-- Astro (static site generator)
-- Preact (UI components)
-- TailwindCSS with DaisyUI
-- TypeScript
-- Workbox (PWA/service worker)
+## Source
 
-## Source Code
+- [GitHub repository](https://github.com/nikosalonen/lahijunat.live): source code, MIT-licensed, built with Astro, Preact, Tailwind CSS and TypeScript
 
-The source code is available at: https://github.com/nikosalonen/lahijunat.live
+## Optional
 
-## Contact
-
-Website: https://www.lahijunat.live
+- [Author](https://niko.torttu.fi): the site is a personal project by Niko Salonen
