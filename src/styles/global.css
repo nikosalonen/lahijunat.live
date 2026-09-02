@@ -404,3 +404,9 @@ body {
 .collapse-open > .collapse-content {
 	overflow: visible;
 }
+
+/* Set before paint by the layout's inline script for readers who dismissed
+   the destination hint; the island removes the hint itself once hydrated */
+.hint-dismissed .destination-hint {
+	display: none;
+}

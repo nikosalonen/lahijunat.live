@@ -54,14 +54,6 @@ const isLocalStorageAvailable = () => {
 	}
 };
 
-function useHasMounted() {
-	const [hasMounted, setHasMounted] = useState(false);
-	useEffect(() => {
-		setHasMounted(true);
-	}, []);
-	return hasMounted;
-}
-
 export default function StationManager({
 	stations,
 	initialFromStation,
@@ -81,7 +73,11 @@ export default function StationManager({
 	const [selectedDestination, setSelectedDestination] = useState<string | null>(
 		initialToStation || null,
 	);
-	const [showHint, setShowHint] = useState<boolean | null>(null);
+	// True on the server so the hint is in the first paint: it is the largest
+	// text on the page, and adding it only after hydration made it the LCP.
+	// Readers who dismissed it get it hidden before paint by a class the
+	// layout's inline script sets from localStorage.
+	const [showHint, setShowHint] = useState(true);
 	const [availableDestinations, setAvailableDestinations] =
 		useState<Station[]>(stations);
 	const [isLoadingDestinations, setIsLoadingDestinations] = useState(false);
@@ -103,7 +99,6 @@ export default function StationManager({
 		!initialFromStation || !initialToStation,
 	);
 
-	const hasMounted = useHasMounted();
 	const toInputRef = useRef<HTMLInputElement>(null);
 	const prevDestinationRef = useRef<string | null>(null);
 	const isFirstRunRef = useRef(true);
@@ -758,12 +753,12 @@ export default function StationManager({
 				>
 					<div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6">
 						<div className="space-y-2">
-							<h3
+							<h2
 								id="label-from"
 								className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100"
 							>
 								{t("from")}
-							</h3>
+							</h2>
 							<div className="flex flex-row-reverse items-start gap-2">
 								<div className="flex">
 									<button
@@ -841,12 +836,12 @@ export default function StationManager({
 						</div>
 
 						<div className="space-y-2">
-							<h3
+							<h2
 								id="label-to"
 								className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100"
 							>
 								{t("to")}
-							</h3>
+							</h2>
 							<div className="flex items-center gap-2">
 								<div className="flex-grow">
 									<div className="h-full">
@@ -866,42 +861,39 @@ export default function StationManager({
 									</div>
 								</div>
 							</div>
-							{hasMounted &&
-								showHint !== null &&
-								showHint &&
-								isLocalStorageAvailable() && (
-									<div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-300 mt-1">
-										<p>{t("hint")}</p>
-										<button
-											type="button"
-											onClick={() => {
-												hapticLight();
-												setShowHint(false);
-												if (isLocalStorageAvailable()) {
-													localStorage.setItem("hideDestinationHint", "true");
-												}
-											}}
-											className="btn btn-ghost btn-sm ml-2 p-2 hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-all duration-150 touch-manipulation select-none active:scale-95"
-											aria-label="Sulje vihje"
+							{showHint && (
+								<div className="destination-hint flex items-center justify-between text-sm text-gray-500 dark:text-gray-300 mt-1">
+									<p>{t("hint")}</p>
+									<button
+										type="button"
+										onClick={() => {
+											hapticLight();
+											setShowHint(false);
+											if (isLocalStorageAvailable()) {
+												localStorage.setItem("hideDestinationHint", "true");
+											}
+										}}
+										className="btn btn-ghost btn-sm ml-2 p-2 hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-all duration-150 touch-manipulation select-none active:scale-95"
+										aria-label="Sulje vihje"
+									>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="16"
+											height="16"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+											strokeLinecap="round"
+											strokeLinejoin="round"
 										>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												width="16"
-												height="16"
-												viewBox="0 0 24 24"
-												fill="none"
-												stroke="currentColor"
-												strokeWidth="2"
-												strokeLinecap="round"
-												strokeLinejoin="round"
-											>
-												<title>{t("closeHint")}</title>
-												<line x1="18" y1="6" x2="6" y2="18" />
-												<line x1="6" y1="6" x2="18" y2="18" />
-											</svg>
-										</button>
-									</div>
-								)}
+											<title>{t("closeHint")}</title>
+											<line x1="18" y1="6" x2="6" y2="18" />
+											<line x1="6" y1="6" x2="18" y2="18" />
+										</svg>
+									</button>
+								</div>
+							)}
 						</div>
 
 						{locationError && (

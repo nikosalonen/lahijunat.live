@@ -210,6 +210,15 @@ const metaDescription = description || defaultDescription;
       if (savedLang === "en" || savedLang === "sv") {
         document.documentElement.lang = savedLang;
       }
+
+      // The destination hint is server-rendered so it is in the first paint;
+      // hide it before paint for readers who have dismissed it
+      if (
+        typeof localStorage !== "undefined" &&
+        localStorage.getItem("hideDestinationHint") === "true"
+      ) {
+        document.documentElement.classList.add("hint-dismissed");
+      }
     </script>
          {
        import.meta.env.PROD &&
@@ -245,7 +254,7 @@ const metaDescription = description || defaultDescription;
                   width={32}
                   height={32}
                   src="/Juna.png"
-                  alt="Lähijunat Live"
+                  alt=""
                   class="h-7 sm:h-8"
                   fetchpriority="high"
                   loading="eager"
@@ -264,12 +273,15 @@ const metaDescription = description || defaultDescription;
                 id="theme-toggle"
                 for="theme-toggle-input"
                 class="swap swap-rotate relative z-0 min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center rounded-lg text-white hover:bg-white/10 active:bg-white/20 cursor-pointer"
-                aria-label="Toggle theme"
-                role="switch"
-                aria-checked="false"
               >
-                <input id="theme-toggle-input" type="checkbox" class="sr-only" />
-                <span class="sr-only">Toggle theme</span>
+                <input
+                  id="theme-toggle-input"
+                  type="checkbox"
+                  class="sr-only"
+                  role="switch"
+                  aria-checked="false"
+                  aria-label="Toggle theme"
+                />
                 <!-- Light icon (sun) -->
                 <svg
                   id="theme-toggle-light-icon"
@@ -330,16 +342,20 @@ const metaDescription = description || defaultDescription;
           document.documentElement.setAttribute("data-theme", "dark");
           localStorage.setItem("theme", "dark");
           // daisyUI swap: checkbox unchecked shows swap-off (moon)
-          if (themeToggleInput) themeToggleInput.checked = false;
-          themeToggleBtn?.setAttribute("aria-checked", "false");
+          if (themeToggleInput) {
+            themeToggleInput.checked = false;
+            themeToggleInput.setAttribute("aria-checked", "false");
+          }
         } else {
           document.documentElement.classList.remove("dark");
           document.documentElement.classList.add("light");
           document.documentElement.setAttribute("data-theme", "light");
           localStorage.setItem("theme", "light");
           // daisyUI swap: checkbox checked shows swap-on (sun)
-          if (themeToggleInput) themeToggleInput.checked = true;
-          themeToggleBtn?.setAttribute("aria-checked", "true");
+          if (themeToggleInput) {
+            themeToggleInput.checked = true;
+            themeToggleInput.setAttribute("aria-checked", "true");
+          }
         }
       };
 
