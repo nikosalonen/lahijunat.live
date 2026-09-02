@@ -136,7 +136,7 @@ const pageDescription = generateDescription();
 const breadcrumbs = generateBreadcrumbs();
 ---
 
-<Layout title={pageTitle} description={pageDescription} breadcrumbs={breadcrumbs} stations={stations} robots={robots}>
+<Layout title={pageTitle} description={pageDescription} breadcrumbs={breadcrumbs} stations={stations} robots={robots} apiPreconnect="always">
 	<div class="py-4 sm:py-8">
 		<StationManager
 			client:load

@@ -9,6 +9,7 @@ const stations = await fetchStations();
 <Layout
   title="Lähijunien aikataulut reaaliaikaisesti | Lähijunat Live"
   stations={stations}
+  apiPreconnect="returning"
 >
   <div class="py-4 sm:py-8">
     <StationManager client:load stations={stations} />

@@ -46,7 +46,7 @@ const mySwPlugin = () => {
 			},
 			"astro:build:done": async (/** @type {any} */ _args) => {
 				// Use external script to avoid CSP issues with inline scripts
-				const injection = `<script src="/sw-register.js"></script>`;
+				const injection = `<script src="/sw-register.js" defer></script>`;
 
 				// Recursively find all HTML files
 				/**
@@ -106,6 +106,24 @@ export default defineConfig({
 		resolve: {
 			alias: {
 				"@": path.resolve(__dirname, "./src"),
+			},
+		},
+		environments: {
+			client: {
+				build: {
+					rolldownOptions: {
+						output: {
+							// Every island is its own bundle entry, so the modules they
+							// share (Preact, translations, hooks) end up as a dozen tiny
+							// files the browser requests one by one. Merge them into one
+							// chunk. The header, footer and toast islands are on every page,
+							// so every page needs nearly all of it anyway.
+							codeSplitting: {
+								groups: [{ name: "shared", minShareCount: 2 }],
+							},
+						},
+					},
+				},
 			},
 		},
 	},

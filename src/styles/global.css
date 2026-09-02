@@ -1,5 +1,14 @@
 @import "tailwindcss";
-@plugin "daisyui";
+/* Only the DaisyUI parts the site uses. The full library is ~170 kB of CSS
+   and the stylesheet blocks first paint, so unused components stay out.
+   When you use a new DaisyUI component, add it here or it will not exist. */
+@plugin "daisyui" {
+	include:
+		rootscrollgutter, svg, rootcolor, rootscrolllock, scrollbar, properties,
+		alert, badge, button, card, checkbox, collapse, dropdown, indicator, input,
+		link, loading, menu, modal, radialprogress, skeleton, swap, toast, tooltip,
+		join, radius;
+}
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -88,6 +97,7 @@
 @font-face {
 	font-family: "Gotham Rounded";
 	src:
+		url("/fonts/gothamrounded-medium-webfont.woff2") format("woff2"),
 		url("/fonts/gothamrounded-medium-webfont.woff") format("woff"),
 		url("/fonts/gothamrounded-medium-webfont.ttf") format("truetype");
 	font-weight: normal;

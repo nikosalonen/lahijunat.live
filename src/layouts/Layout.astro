@@ -11,6 +11,12 @@ interface Props {
   stations?: Station[];
   /** Robots directive; pages with no content of their own pass "noindex, follow". */
   robots?: string;
+  /**
+   * When to open a connection to the train API before the page asks for it.
+   * "always" for pages that load live trains, "returning" for the home page,
+   * which loads trains only for visitors with a remembered route.
+   */
+  apiPreconnect?: "always" | "returning" | "none";
 }
 
 import { Image } from "astro:assets";
@@ -31,6 +37,7 @@ const {
   breadcrumbs,
   stations = [],
   robots = "index, follow",
+  apiPreconnect = "none",
 } = Astro.props as Props;
 
 // The footer only needs the handful of stations it links to, so the full
@@ -53,8 +60,20 @@ const metaDescription = description || defaultDescription;
       content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover"
     />
 
-    <!-- Preconnect to external resources -->
-    <link rel="preconnect" href="https://rata.digitraffic.fi" crossorigin />
+    <!-- Open the API connection early only on pages that load live trains.
+         The home page does this in the inline script below, for returning visitors. -->
+    {apiPreconnect === "always" && (
+      <link rel="preconnect" href="https://rata.digitraffic.fi" crossorigin />
+    )}
+
+    <!-- Without this the body font is found only after the stylesheet has loaded -->
+    <link
+      rel="preload"
+      href="/fonts/gothamrounded-medium-webfont.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
 
     <meta
       name="description"
@@ -176,7 +195,7 @@ const metaDescription = description || defaultDescription;
       })} />
     )}
 
-	<script is:inline>
+	<script is:inline define:vars={{ apiPreconnect }}>
       // Check for saved theme preference or use system preference
       const theme = (() => {
         if (
@@ -218,6 +237,20 @@ const metaDescription = description || defaultDescription;
         localStorage.getItem("hideDestinationHint") === "true"
       ) {
         document.documentElement.classList.add("hint-dismissed");
+      }
+
+      // Returning visitors land on their remembered route, which loads live
+      // trains straight away, so open the API connection while the page parses.
+      if (
+        apiPreconnect === "returning" &&
+        typeof localStorage !== "undefined" &&
+        localStorage.getItem("selectedOrigin")
+      ) {
+        const apiLink = document.createElement("link");
+        apiLink.rel = "preconnect";
+        apiLink.href = "https://rata.digitraffic.fi";
+        apiLink.crossOrigin = "anonymous";
+        document.head.appendChild(apiLink);
       }
     </script>
          {
@@ -264,11 +297,11 @@ const metaDescription = description || defaultDescription;
               </div>
             </a>
             <div class="flex items-center gap-2 sm:gap-4">
-              <DebugToggle client:load />
+              {import.meta.env.DEV && <DebugToggle client:load />}
               <div class="relative z-10">
                 <LanguageSwitcher client:load />
               </div>
-              <ShareButton client:load />
+              <ShareButton client:idle />
               <label
                 id="theme-toggle"
                 for="theme-toggle-input"
@@ -326,9 +359,9 @@ const metaDescription = description || defaultDescription;
           <slot />
         </main>
       </div>
-      <Footer client:load stations={footerStations} />
+      <Footer client:visible stations={footerStations} />
     </div>
-    <FeatureAnnouncement client:load />
+    <FeatureAnnouncement client:idle />
     <Toast client:load />
 
     <script>
