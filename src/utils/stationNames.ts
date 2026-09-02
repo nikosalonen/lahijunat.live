@@ -21,9 +21,11 @@ const SWEDISH_STATION_NAMES: Record<string, string> = {
 	TKL: "Dickursby",
 	HKH: "Sandkulla",
 	KVY: "Björkby",
+	RKL: "Räckhals",
 
 	// Espoo line
 	HPL: "Hoplax",
+	VMO: "Gjuteriet",
 	POH: "Norra Haga",
 	KAN: "Gamlas",
 	MLO: "Malmgård",
@@ -49,7 +51,9 @@ const SWEDISH_STATION_NAMES: Record<string, string> = {
 	MRL: "Mårtensdal",
 	LOH: "Louhela",
 	VKS: "Vandaforsen",
+	VEH: "Veckal",
 	LEN: "Flygplatsen",
+	LNÄ: "Lejle",
 
 	// Karjaa line
 	KR: "Karis",

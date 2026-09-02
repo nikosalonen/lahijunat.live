@@ -202,6 +202,14 @@ const metaDescription = description || defaultDescription;
         document.documentElement.classList.add("light");
         document.documentElement.setAttribute("data-theme", "light");
       }
+
+      // The page is built with lang="fi"; follow the reader's saved choice
+      // before paint so assistive tech reads the right language from the start.
+      const savedLang =
+        typeof localStorage !== "undefined" && localStorage.getItem("lang");
+      if (savedLang === "en" || savedLang === "sv") {
+        document.documentElement.lang = savedLang;
+      }
     </script>
          {
        import.meta.env.PROD &&

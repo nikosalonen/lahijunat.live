@@ -12,5 +12,7 @@ export const getCurrentLanguage = (): string => {
 export const switchLanguage = (lang: string): void => {
 	if (typeof window === "undefined") return;
 	window.localStorage.setItem("lang", lang);
+	// Keep <html lang> in step so screen readers switch pronunciation too
+	document.documentElement.lang = lang;
 	window.dispatchEvent(new Event("languagechange"));
 };
