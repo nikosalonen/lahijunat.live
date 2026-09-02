@@ -30,4 +30,8 @@ URL patterns:
 
 ## Optional
 
-- [Author](https://niko.torttu.fi): the site is a personal project by Niko Salonen
+The site is a personal project by Niko Salonen.
+
+- [Threads](https://www.threads.com/@dmni): the author on Threads
+- [Bluesky](https://bsky.app/profile/niko.torttu.fi): the author on Bluesky
+- [LinkedIn](https://www.linkedin.com/in/nikosalonen/): the author on LinkedIn
