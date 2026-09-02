@@ -8,17 +8,18 @@ import { t } from "../utils/translations";
 
 interface Props {
 	stations: Station[];
-	/** Short codes to link, in the order they should appear. */
+	/**
+	 * Short codes to link, in the order they should appear. A ring line's
+	 * route repeats its first stops at the end, so a code may appear twice.
+	 */
 	codes: readonly string[];
 	/** Translation key for the heading and the nav's accessible name. */
 	titleKey: string;
 	/**
-	 * "footer" inherits the footer's white text, "page" flows a long list into
-	 * columns, "sequence" keeps one column so a route reads top to bottom.
+	 * "footer" inherits the footer's white text, "sequence" draws the stations
+	 * as a route diagram, top to bottom.
 	 */
-	variant?: "footer" | "page" | "sequence";
-	/** Sort alphabetically instead of keeping the order of `codes`. */
-	sortByName?: boolean;
+	variant?: "footer" | "sequence";
 	/** Off where the page's own h1 already names the list. */
 	showHeading?: boolean;
 }
@@ -38,7 +39,6 @@ export default function StationLinks({
 	codes,
 	titleKey,
 	variant = "footer",
-	sortByName = false,
 	showHeading = true,
 }: Props) {
 	useLanguageChange();
@@ -57,50 +57,26 @@ export default function StationLinks({
 
 	if (links.length === 0) return null;
 
-	if (sortByName) {
-		links.sort((a, b) => a.label.localeCompare(b.label, "fi"));
+	const title = t(titleKey);
+
+	if (variant === "sequence") {
+		return (
+			<nav aria-label={title} class="text-base dark:text-white w-fit mx-auto">
+				{showHeading && <h2 class="font-semibold mb-2">{title}</h2>}
+				<RouteDiagram links={links} />
+			</nav>
+		);
 	}
 
-	const title = t(titleKey);
-	const isFooter = variant === "footer";
-
 	return (
-		<nav
-			aria-label={title}
-			class={
-				isFooter
-					? "px-4 pb-2 text-sm"
-					: variant === "sequence"
-						? // As wide as its longest station name, centred under the heading
-							"text-sm dark:text-white w-fit mx-auto"
-						: "text-sm dark:text-white"
-			}
-		>
+		<nav aria-label={title} class="px-4 pb-2 text-sm">
 			{showHeading && <h2 class="font-semibold mb-1">{title}</h2>}
-			{/* Columns rather than a grid: they fill top to bottom, so a list reads
-			    down instead of across. A route stays in one column so its order
-			    is unmistakable. */}
-			<ul
-				class={
-					isFooter
-						? "flex flex-wrap justify-center gap-x-3 gap-y-1"
-						: variant === "sequence"
-							? "flex flex-col border-l-2 border-base-300 ml-2 pl-5 py-1"
-							: "columns-2 sm:columns-3 md:columns-4 gap-x-6"
-				}
-			>
+			<ul class="flex flex-wrap justify-center gap-x-3 gap-y-1">
 				{links.map((link) => (
-					<li
-						key={link.href}
-						class={isFooter ? undefined : "break-inside-avoid py-0.5"}
-					>
+					<li key={link.href}>
 						<a
 							href={link.href}
-							class={
-								isFooter
-									? "hover:text-blue-100 hover:underline underline-offset-2 transition-colors"
-									: "link link-hover underline-offset-2"
-							}
+							class="hover:text-blue-100 hover:underline underline-offset-2 transition-colors"
 						>
 							{link.label}
 						</a>
@@ -108,5 +84,64 @@ export default function StationLinks({
 				))}
 			</ul>
 		</nav>
+	);
+}
+
+/** Horizontal centre of the stop markers, in px; the rail runs through it. */
+const RAIL_X = "left-[9px]";
+
+/**
+ * A line's stations drawn as a route diagram: one rail in the brand colour,
+ * a hollow stop at each station and a filled, larger marker at either end.
+ *
+ * The rail is two half-height segments per row (above and below the stop)
+ * rather than one long line, so it still meets each marker exactly when a
+ * long name wraps and makes its row taller.
+ */
+function RouteDiagram({ links }: { links: { href: string; label: string }[] }) {
+	const lastIndex = links.length - 1;
+	return (
+		<ul class="flex flex-col">
+			{links.map((link, index) => {
+				const isTerminus = index === 0 || index === lastIndex;
+				return (
+					<li
+						// A ring passes its first stops twice, so the href is not unique
+						key={`${index}-${link.href}`}
+						data-terminus={isTerminus ? "" : undefined}
+						class="relative flex items-center gap-4 py-2"
+					>
+						{index > 0 && (
+							<span
+								aria-hidden="true"
+								class={`absolute ${RAIL_X} top-0 h-1/2 w-[3px] -translate-x-1/2 bg-primary`}
+							/>
+						)}
+						{index < lastIndex && (
+							<span
+								aria-hidden="true"
+								class={`absolute ${RAIL_X} bottom-0 h-1/2 w-[3px] -translate-x-1/2 bg-primary`}
+							/>
+						)}
+						<span
+							aria-hidden="true"
+							class={
+								isTerminus
+									? "relative z-10 shrink-0 w-[18px] h-[18px] rounded-full bg-primary ring-4 ring-primary/20"
+									: "relative z-10 shrink-0 w-[14px] h-[14px] mx-0.5 rounded-full bg-base-100 border-[3px] border-primary"
+							}
+						/>
+						<a
+							href={link.href}
+							class={`link link-hover underline-offset-2 leading-snug ${
+								isTerminus ? "font-semibold" : ""
+							}`}
+						>
+							{link.label}
+						</a>
+					</li>
+				);
+			})}
+		</ul>
 	);
 }

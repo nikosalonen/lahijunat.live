@@ -1,11 +1,22 @@
 ---
 import PageHeading from "../components/PageHeading";
-import StationLinks from "../components/StationLinks";
+import StationIndex from "../components/StationIndex";
+import { POPULAR_STATIONS } from "../data/popularStations";
+import { getStationStats } from "../data/routeStats";
 import Layout from "../layouts/Layout.astro";
 import { fetchStations } from "../utils/api";
 
 const stations = await fetchStations();
 const codes = stations.map((station) => station.shortCode);
+
+// Which lines call at each station, looked up here so the ~300 kB of route
+// statistics stays out of the browser
+const lines = Object.fromEntries(
+	stations.map((station) => [
+		station.shortCode,
+		getStationStats(station.shortCode, stations)?.lines ?? [],
+	]),
+);
 
 const siteUrl = Astro.site?.toString() || "https://www.lahijunat.live";
 const breadcrumbs = [
@@ -27,14 +38,11 @@ const breadcrumbs = [
 				titleKey="allStations"
 				introKey="allStationsIntro"
 			/>
-			<StationLinks
-				client:visible
+			<StationIndex
+				client:load
 				stations={stations}
-				codes={codes}
-				titleKey="allStations"
-				variant="page"
-				sortByName
-				showHeading={false}
+				lines={lines}
+				popular={POPULAR_STATIONS}
 			/>
 		</div>
 	</div>

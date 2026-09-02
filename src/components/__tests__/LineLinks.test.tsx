@@ -26,6 +26,7 @@ const line = (over: Partial<LineStats> = {}): LineStats => ({
 	endpoints: ["HKI", "KE"],
 	via: null,
 	stations: ["HKI", "KE"],
+	returnStops: [],
 	...over,
 });
 
@@ -50,14 +51,26 @@ describe("LineLinks", () => {
 		expect(container.textContent).toContain("Helsinki – Aviapolis – Helsinki");
 	});
 
-	it("counts stations in the active language", () => {
-		localStorage.setItem("lang", "sv");
+	it("tells screen readers which lines are rings", () => {
+		const ring = line({ endpoints: ["HKI", "HKI"], via: "AVP" });
 		const { container } = render(
 			<LineLinks
 				stations={stations}
-				lines={[{ line: "K", stats: line({ stations: ["HKI", "KE", "AVP"] }) }]}
+				lines={[
+					{ line: "I", stats: ring },
+					{ line: "K", stats: line() },
+				]}
 			/>,
 		);
-		expect(container.textContent).toContain("3 stationer");
+		const [ringLink, plainLink] = container.querySelectorAll("li a");
+		expect(ringLink.textContent).toContain("Rengaslinja");
+		expect(plainLink.textContent).not.toContain("Rengaslinja");
+	});
+
+	it("shows the route without statistics", () => {
+		const { container } = render(
+			<LineLinks stations={stations} lines={[{ line: "K", stats: line() }]} />,
+		);
+		expect(container.textContent).not.toMatch(/\d/);
 	});
 });

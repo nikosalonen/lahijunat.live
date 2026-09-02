@@ -54,6 +54,25 @@ describe("getLines", () => {
 			expect(stats.via !== null, `line ${line}`).toBe(isRing);
 		}
 	});
+
+	it("leads a ring line back to its start and a plain line nowhere", () => {
+		const lines = getLines(allStations);
+		expect(lines.some(({ stats }) => stats.returnStops.length > 0)).toBe(true);
+		for (const { line, stats } of lines) {
+			const isRing = stats.endpoints[0] === stats.endpoints[1];
+			if (isRing) {
+				expect(stats.returnStops.at(-1), `line ${line}`).toBe(
+					stats.endpoints[0],
+				);
+				// The way back only repeats stops already in the list
+				for (const code of stats.returnStops) {
+					expect(stats.stations, `line ${line}`).toContain(code);
+				}
+			} else {
+				expect(stats.returnStops, `line ${line}`).toEqual([]);
+			}
+		}
+	});
 });
 
 describe("getLineStats", () => {

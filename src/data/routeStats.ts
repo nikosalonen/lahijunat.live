@@ -135,6 +135,9 @@ const withOpenStations = (
 			? [stats.endpoints[0], stats.endpoints[0]]
 			: [stations[0], stations[stations.length - 1]],
 		via: isRing ? (via ?? stations[Math.floor(stations.length / 2)]) : null,
+		returnStops: isRing
+			? stats.returnStops.filter((code) => open.has(code))
+			: [],
 	};
 };
 

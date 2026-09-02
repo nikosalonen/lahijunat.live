@@ -74,4 +74,10 @@ export interface LineStats {
 	via: string | null;
 	/** Every station the line calls at, in the order of its longest run. */
 	stations: string[];
+	/**
+	 * Stops a ring line repeats on its way back to where it started, after
+	 * its last new station: for the I train, Pasila then Helsinki. Empty for
+	 * a plain line.
+	 */
+	returnStops: string[];
 }

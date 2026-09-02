@@ -3,7 +3,7 @@
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { LineStats, Station } from "../types";
 import { getLocalizedStationName } from "../utils/stationNames";
-import { t, tf } from "../utils/translations";
+import { t } from "../utils/translations";
 
 interface Props {
 	stations: Station[];
@@ -22,30 +22,49 @@ export default function LineLinks({ stations, lines }: Props) {
 	};
 
 	return (
-		<ul class="flex flex-col gap-2">
-			{lines.map(({ line, stats }) => (
-				<li key={line}>
-					<a
-						href={`/linja/${line.toLowerCase()}/`}
-						class="flex items-center gap-3 p-3 rounded-lg border border-base-300 hover:border-base-400 hover:bg-base-200 transition-colors"
-					>
-						<span class="font-mono font-bold text-lg w-8 text-center shrink-0">
-							{line}
-						</span>
-						<span class="text-sm dark:text-white">
-							{[
-								stationName(stats.endpoints[0]),
-								...(stats.via ? [stationName(stats.via)] : []),
-								stationName(stats.endpoints[1]),
-							].join(" – ")}
-							<span class="opacity-60">
-								{" · "}
-								{tf("stationCount", { count: stats.stations.length })}
+		<ul class="flex flex-col gap-3">
+			{lines.map(({ line, stats }) => {
+				const isRing = stats.endpoints[0] === stats.endpoints[1];
+				const route = [
+					stationName(stats.endpoints[0]),
+					...(stats.via ? [stationName(stats.via)] : []),
+					stationName(stats.endpoints[1]),
+				].join(" – ");
+				return (
+					<li key={line}>
+						<a
+							href={`/linja/${line.toLowerCase()}/`}
+							class="flex items-center gap-4 p-4 rounded-2xl border border-base-300 hover:border-primary/40 hover:bg-base-200 transition-colors"
+						>
+							{/* The same badge the train cards wear, so a line looks alike everywhere */}
+							<span class="flex items-center justify-center w-12 h-12 shrink-0 rounded-2xl bg-primary text-primary-content text-xl font-bold shadow-brand-soft">
+								{line}
 							</span>
-						</span>
-					</a>
-				</li>
-			))}
+							<span class="text-base leading-snug dark:text-white">
+								{route}
+								{isRing && (
+									<>
+										<svg
+											aria-hidden="true"
+											class="inline-block w-4 h-4 ml-1.5 -mt-0.5 text-primary"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2.2"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+										>
+											<path d="M20 12a8 8 0 1 1-2.3-5.7" />
+											<path d="M20 4v4h-4" />
+										</svg>
+										<span class="sr-only"> ({t("ringLine")})</span>
+									</>
+								)}
+							</span>
+						</a>
+					</li>
+				);
+			})}
 			<li class="text-sm text-center mt-4">
 				<a href="/" class="link link-hover">
 					{t("homePage")}

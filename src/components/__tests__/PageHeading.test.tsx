@@ -44,11 +44,11 @@ describe("PageHeading", () => {
 				titleKey="lineHeading"
 				titleValues={{ line: "K" }}
 				introKey="lineIntro"
-				introValues={{ count: 220, first: "04.05", last: "00.51" }}
+				introValues={{ first: "04.05", last: "00.51" }}
 			/>,
 		);
 		expect(getByRole("heading").textContent).toBe("K train");
-		expect(container.textContent).toContain("About 220 trains a day");
+		expect(container.textContent).toContain("Trains run from 04.05 to 00.51");
 		expect(container.textContent).not.toMatch(/[{}]/);
 	});
 
@@ -61,7 +61,7 @@ describe("PageHeading", () => {
 					titleKey="lineHeading"
 					titleValues={{ line: "I" }}
 					introKey="lineIntro"
-					introValues={{ count: 106, first: "04.31", last: "23.36" }}
+					introValues={{ first: "04.31", last: "23.36" }}
 				/>,
 			);
 			expect(container.textContent, lang).not.toMatch(/[{}]/);

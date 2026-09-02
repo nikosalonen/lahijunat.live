@@ -1,5 +1,5 @@
 {
-	"sourceDate": "2026-08-25",
+	"sourceDate": "2026-09-01",
 	"servedWindowDays": 7,
 	"routes": {
 		"AIN-HKH": {
@@ -206,14 +206,14 @@
 			"lines": ["R"]
 		},
 		"AVP-HKH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.49",
 			"lastDeparture": "01.19",
 			"medianDuration": 10,
 			"lines": ["P"]
 		},
 		"AVP-HKI": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.49",
 			"lastDeparture": "01.19",
 			"medianDuration": 32,
@@ -241,77 +241,77 @@
 			"lines": ["I"]
 		},
 		"AVP-KÄP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.49",
 			"lastDeparture": "01.19",
 			"medianDuration": 24,
 			"lines": ["P"]
 		},
 		"AVP-KTÖ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.01",
 			"lastDeparture": "00.06",
 			"medianDuration": 4,
 			"lines": ["I"]
 		},
 		"AVP-LEN": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.49",
 			"lastDeparture": "01.19",
 			"medianDuration": 2,
 			"lines": ["P"]
 		},
 		"AVP-LNÄ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.49",
 			"lastDeparture": "01.19",
 			"medianDuration": 6,
 			"lines": ["P"]
 		},
 		"AVP-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.01",
 			"lastDeparture": "00.06",
 			"medianDuration": 12,
 			"lines": ["I"]
 		},
 		"AVP-ML": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.49",
 			"lastDeparture": "01.19",
 			"medianDuration": 18,
 			"lines": ["P"]
 		},
 		"AVP-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.01",
 			"lastDeparture": "00.06",
 			"medianDuration": 10,
 			"lines": ["I"]
 		},
 		"AVP-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.01",
 			"lastDeparture": "00.06",
 			"medianDuration": 13,
 			"lines": ["I"]
 		},
 		"AVP-OLK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.49",
 			"lastDeparture": "01.19",
 			"medianDuration": 22,
 			"lines": ["P"]
 		},
 		"AVP-PLA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.49",
 			"lastDeparture": "01.19",
 			"medianDuration": 14,
 			"lines": ["P"]
 		},
 		"AVP-PMK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.49",
 			"lastDeparture": "01.19",
 			"medianDuration": 20,
@@ -325,35 +325,35 @@
 			"lines": ["I"]
 		},
 		"AVP-PSL": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.49",
 			"lastDeparture": "01.19",
 			"medianDuration": 27,
 			"lines": ["I", "P"]
 		},
 		"AVP-TKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.49",
 			"lastDeparture": "01.19",
 			"medianDuration": 12,
 			"lines": ["P"]
 		},
 		"AVP-TNA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.49",
 			"lastDeparture": "01.19",
 			"medianDuration": 16,
 			"lines": ["P"]
 		},
 		"AVP-VEH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.01",
 			"lastDeparture": "00.06",
 			"medianDuration": 7,
 			"lines": ["I"]
 		},
 		"AVP-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.01",
 			"lastDeparture": "00.06",
 			"medianDuration": 8,
@@ -525,7 +525,7 @@
 			"firstDeparture": "04.43",
 			"lastDeparture": "00.53",
 			"medianDuration": 22,
-			"lines": ["L"]
+			"lines": ["L", "U"]
 		},
 		"EPO-JRS": {
 			"trainsPerDay": 41,
@@ -598,7 +598,7 @@
 			"lines": ["E", "H", "L", "U", "Y"]
 		},
 		"EPO-MÄK": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.43",
 			"lastDeparture": "00.53",
 			"medianDuration": 15,
@@ -612,7 +612,7 @@
 			"lines": ["H", "L", "U", "Y"]
 		},
 		"EPO-PJM": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.43",
 			"lastDeparture": "00.53",
 			"medianDuration": 16,
@@ -661,7 +661,7 @@
 			"lines": ["L", "U"]
 		},
 		"EPO-VMO": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.43",
 			"lastDeparture": "00.53",
 			"medianDuration": 18,
@@ -675,16 +675,16 @@
 			"lines": ["Z"]
 		},
 		"HAA-HNN": {
-			"trainsPerDay": 18,
+			"trainsPerDay": 19,
 			"firstDeparture": "07.00",
 			"lastDeparture": "00.40",
 			"medianDuration": 21,
-			"lines": ["Z"]
+			"lines": ["V", "Z"]
 		},
 		"HAA-KA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.06",
-			"lastDeparture": "00.40",
+			"lastDeparture": "17.06",
 			"medianDuration": 71,
 			"lines": ["Z"]
 		},
@@ -696,37 +696,37 @@
 			"lines": ["Z"]
 		},
 		"HAA-KRA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.06",
-			"lastDeparture": "00.40",
+			"lastDeparture": "17.06",
 			"medianDuration": 81,
 			"lines": ["Z"]
 		},
 		"HAA-KV": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.06",
-			"lastDeparture": "00.40",
+			"lastDeparture": "17.06",
 			"medianDuration": 87,
 			"lines": ["Z"]
 		},
 		"HAA-LH": {
-			"trainsPerDay": 18,
+			"trainsPerDay": 19,
 			"firstDeparture": "07.00",
 			"lastDeparture": "00.40",
 			"medianDuration": 35,
-			"lines": ["Z"]
+			"lines": ["V", "Z"]
 		},
 		"HAA-MLÄ": {
-			"trainsPerDay": 18,
+			"trainsPerDay": 19,
 			"firstDeparture": "07.00",
 			"lastDeparture": "00.40",
 			"medianDuration": 10,
-			"lines": ["Z"]
+			"lines": ["V", "Z"]
 		},
 		"HAA-NSL": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.06",
-			"lastDeparture": "00.40",
+			"lastDeparture": "17.06",
 			"medianDuration": 55,
 			"lines": ["Z"]
 		},
@@ -745,16 +745,16 @@
 			"lines": ["Z"]
 		},
 		"HAA-UKÄ": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.06",
-			"lastDeparture": "00.40",
+			"lastDeparture": "17.06",
 			"medianDuration": 59,
 			"lines": ["Z"]
 		},
 		"HAA-VLH": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.06",
-			"lastDeparture": "00.40",
+			"lastDeparture": "17.06",
 			"medianDuration": 51,
 			"lines": ["Z"]
 		},
@@ -808,18 +808,18 @@
 			"lines": ["G"]
 		},
 		"HKH-AVP": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.53",
 			"lastDeparture": "23.58",
 			"medianDuration": 8,
 			"lines": ["I"]
 		},
 		"HKH-HKI": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.17",
 			"lastDeparture": "03.53",
 			"medianDuration": 22,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"HKH-HPL": {
 			"trainsPerDay": 56,
@@ -843,102 +843,102 @@
 			"lines": ["I"]
 		},
 		"HKH-KÄP": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.17",
 			"lastDeparture": "03.53",
 			"medianDuration": 14,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"HKH-KE": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.03",
 			"lastDeparture": "02.14",
 			"medianDuration": 12,
 			"lines": ["K", "T"]
 		},
 		"HKH-KRS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.03",
 			"lastDeparture": "02.14",
 			"medianDuration": 6,
 			"lines": ["K", "T"]
 		},
 		"HKH-KTÖ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.53",
 			"lastDeparture": "23.58",
 			"medianDuration": 13,
 			"lines": ["I"]
 		},
 		"HKH-KVY": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.03",
 			"lastDeparture": "02.14",
 			"medianDuration": 2,
 			"lines": ["K", "T"]
 		},
 		"HKH-LEN": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.53",
 			"lastDeparture": "23.58",
 			"medianDuration": 6,
 			"lines": ["I"]
 		},
 		"HKH-LNÄ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.53",
 			"lastDeparture": "23.58",
 			"medianDuration": 3,
 			"lines": ["I"]
 		},
 		"HKH-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.53",
 			"lastDeparture": "23.58",
 			"medianDuration": 20,
 			"lines": ["I"]
 		},
 		"HKH-ML": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.17",
 			"lastDeparture": "03.53",
 			"medianDuration": 8,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"HKH-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.53",
 			"lastDeparture": "23.58",
 			"medianDuration": 18,
 			"lines": ["I"]
 		},
 		"HKH-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.53",
 			"lastDeparture": "23.58",
 			"medianDuration": 22,
 			"lines": ["I"]
 		},
 		"HKH-OLK": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.17",
 			"lastDeparture": "03.53",
 			"medianDuration": 12,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"HKH-PLA": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.17",
 			"lastDeparture": "03.53",
 			"medianDuration": 4,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"HKH-PMK": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.17",
 			"lastDeparture": "03.53",
 			"medianDuration": 10,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"HKH-POH": {
 			"trainsPerDay": 56,
@@ -948,49 +948,49 @@
 			"lines": ["I"]
 		},
 		"HKH-PSL": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.17",
 			"lastDeparture": "03.53",
 			"medianDuration": 17,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"HKH-RKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.03",
 			"lastDeparture": "02.14",
 			"medianDuration": 4,
 			"lines": ["K", "T"]
 		},
 		"HKH-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.03",
 			"lastDeparture": "02.14",
 			"medianDuration": 9,
 			"lines": ["K", "T"]
 		},
 		"HKH-TKL": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.17",
 			"lastDeparture": "03.53",
 			"medianDuration": 2,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"HKH-TNA": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.17",
 			"lastDeparture": "03.53",
 			"medianDuration": 6,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"HKH-VEH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.53",
 			"lastDeparture": "23.58",
 			"medianDuration": 15,
 			"lines": ["I"]
 		},
 		"HKH-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.53",
 			"lastDeparture": "23.58",
 			"medianDuration": 17,
@@ -1004,7 +1004,7 @@
 			"lines": ["R", "T"]
 		},
 		"HKI-AVP": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.18",
 			"lastDeparture": "00.48",
 			"medianDuration": 30,
@@ -1032,7 +1032,7 @@
 			"lines": ["Z"]
 		},
 		"HKI-HKH": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.18",
 			"lastDeparture": "01.51",
 			"medianDuration": 22,
@@ -1123,9 +1123,9 @@
 			"lines": ["L", "U"]
 		},
 		"HKI-KA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.35",
-			"lastDeparture": "00.10",
+			"lastDeparture": "16.35",
 			"medianDuration": 102,
 			"lines": ["Z"]
 		},
@@ -1137,14 +1137,14 @@
 			"lines": ["I", "P"]
 		},
 		"HKI-KÄP": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.18",
 			"lastDeparture": "01.51",
 			"medianDuration": 7,
 			"lines": ["I", "K", "P", "T"]
 		},
 		"HKI-KE": {
-			"trainsPerDay": 171,
+			"trainsPerDay": 172,
 			"firstDeparture": "04.20",
 			"lastDeparture": "03.37",
 			"medianDuration": 34,
@@ -1193,30 +1193,30 @@
 			"lines": ["H"]
 		},
 		"HKI-KRA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.35",
-			"lastDeparture": "00.10",
+			"lastDeparture": "16.35",
 			"medianDuration": 112,
 			"lines": ["Z"]
 		},
 		"HKI-KRS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.51",
 			"medianDuration": 28,
 			"lines": ["K", "T"]
 		},
 		"HKI-KTÖ": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.18",
 			"lastDeparture": "00.48",
 			"medianDuration": 35,
 			"lines": ["I", "P"]
 		},
 		"HKI-KV": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.35",
-			"lastDeparture": "00.10",
+			"lastDeparture": "16.35",
 			"medianDuration": 118,
 			"lines": ["Z"]
 		},
@@ -1228,14 +1228,14 @@
 			"lines": ["E", "L", "U"]
 		},
 		"HKI-KVY": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.51",
 			"medianDuration": 24,
 			"lines": ["K", "T"]
 		},
 		"HKI-LEN": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.18",
 			"lastDeparture": "00.48",
 			"medianDuration": 28,
@@ -1249,14 +1249,14 @@
 			"lines": ["Z"]
 		},
 		"HKI-LNÄ": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.18",
 			"lastDeparture": "00.48",
 			"medianDuration": 25,
 			"lines": ["I", "P"]
 		},
 		"HKI-LOH": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.18",
 			"lastDeparture": "00.48",
 			"medianDuration": 42,
@@ -1298,7 +1298,7 @@
 			"lines": ["H", "L", "U", "Y"]
 		},
 		"HKI-ML": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.18",
 			"lastDeparture": "01.51",
 			"medianDuration": 13,
@@ -1312,28 +1312,28 @@
 			"lines": ["Z"]
 		},
 		"HKI-MRL": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.18",
 			"lastDeparture": "00.48",
 			"medianDuration": 40,
 			"lines": ["I", "P"]
 		},
 		"HKI-MYR": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.18",
 			"lastDeparture": "00.48",
 			"medianDuration": 44,
 			"lines": ["I", "P", "V"]
 		},
 		"HKI-NSL": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.35",
-			"lastDeparture": "00.10",
+			"lastDeparture": "16.35",
 			"medianDuration": 86,
 			"lines": ["Z"]
 		},
 		"HKI-OLK": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.18",
 			"lastDeparture": "01.51",
 			"medianDuration": 9,
@@ -1347,14 +1347,14 @@
 			"lines": ["A", "L"]
 		},
 		"HKI-PLA": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.18",
 			"lastDeparture": "01.51",
 			"medianDuration": 17,
 			"lines": ["I", "K", "P", "T"]
 		},
 		"HKI-PMK": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.18",
 			"lastDeparture": "01.51",
 			"medianDuration": 11,
@@ -1375,7 +1375,7 @@
 			"lines": ["R"]
 		},
 		"HKI-PSL": {
-			"trainsPerDay": 621,
+			"trainsPerDay": 622,
 			"firstDeparture": "04.18",
 			"lastDeparture": "01.51",
 			"medianDuration": 4,
@@ -1389,7 +1389,7 @@
 			"lines": ["D", "R"]
 		},
 		"HKI-RKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.51",
 			"medianDuration": 26,
@@ -1410,7 +1410,7 @@
 			"lines": ["R"]
 		},
 		"HKI-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.51",
 			"medianDuration": 31,
@@ -1438,7 +1438,7 @@
 			"lines": ["H", "L", "Y"]
 		},
 		"HKI-TKL": {
-			"trainsPerDay": 336,
+			"trainsPerDay": 337,
 			"firstDeparture": "04.18",
 			"lastDeparture": "01.51",
 			"medianDuration": 20,
@@ -1459,7 +1459,7 @@
 			"lines": ["H"]
 		},
 		"HKI-TNA": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.18",
 			"lastDeparture": "01.51",
 			"medianDuration": 15,
@@ -1487,14 +1487,14 @@
 			"lines": ["D", "R"]
 		},
 		"HKI-UKÄ": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.35",
-			"lastDeparture": "00.10",
+			"lastDeparture": "16.35",
 			"medianDuration": 90,
 			"lines": ["Z"]
 		},
 		"HKI-VEH": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.18",
 			"lastDeparture": "00.48",
 			"medianDuration": 37,
@@ -1508,16 +1508,16 @@
 			"lines": ["R"]
 		},
 		"HKI-VKS": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.18",
 			"lastDeparture": "00.48",
 			"medianDuration": 39,
 			"lines": ["I", "P"]
 		},
 		"HKI-VLH": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.35",
-			"lastDeparture": "00.10",
+			"lastDeparture": "16.35",
 			"medianDuration": 82,
 			"lines": ["Z"]
 		},
@@ -1921,11 +1921,18 @@
 			"lines": ["Z"]
 		},
 		"HNN-KA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.30",
-			"lastDeparture": "01.01",
+			"lastDeparture": "17.30",
 			"medianDuration": 47,
 			"lines": ["Z"]
+		},
+		"HNN-KÄP": {
+			"trainsPerDay": 2,
+			"firstDeparture": "13.08",
+			"lastDeparture": "19.49",
+			"medianDuration": 57,
+			"lines": ["V"]
 		},
 		"HNN-KE": {
 			"trainsPerDay": 20,
@@ -1935,37 +1942,37 @@
 			"lines": ["Z"]
 		},
 		"HNN-KRA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.30",
-			"lastDeparture": "01.01",
+			"lastDeparture": "17.30",
 			"medianDuration": 57,
 			"lines": ["Z"]
 		},
 		"HNN-KV": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.30",
-			"lastDeparture": "01.01",
+			"lastDeparture": "17.30",
 			"medianDuration": 63,
 			"lines": ["Z"]
 		},
 		"HNN-LH": {
-			"trainsPerDay": 18,
+			"trainsPerDay": 19,
 			"firstDeparture": "07.21",
 			"lastDeparture": "01.01",
 			"medianDuration": 14,
-			"lines": ["Z"]
+			"lines": ["V", "Z"]
 		},
 		"HNN-MLÄ": {
-			"trainsPerDay": 20,
+			"trainsPerDay": 21,
 			"firstDeparture": "04.35",
 			"lastDeparture": "23.27",
 			"medianDuration": 11,
-			"lines": ["Z"]
+			"lines": ["V", "Z"]
 		},
 		"HNN-NSL": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.30",
-			"lastDeparture": "01.01",
+			"lastDeparture": "17.30",
 			"medianDuration": 31,
 			"lines": ["Z"]
 		},
@@ -1984,16 +1991,16 @@
 			"lines": ["Z"]
 		},
 		"HNN-UKÄ": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.30",
-			"lastDeparture": "01.01",
+			"lastDeparture": "17.30",
 			"medianDuration": 35,
 			"lines": ["Z"]
 		},
 		"HNN-VLH": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.30",
-			"lastDeparture": "01.01",
+			"lastDeparture": "17.30",
 			"medianDuration": 27,
 			"lines": ["Z"]
 		},
@@ -2058,7 +2065,7 @@
 			"firstDeparture": "05.03",
 			"lastDeparture": "01.13",
 			"medianDuration": 2,
-			"lines": ["A", "I", "L"]
+			"lines": ["A", "I", "L", "U"]
 		},
 		"HPL-JRS": {
 			"trainsPerDay": 41,
@@ -2737,7 +2744,7 @@
 			"firstDeparture": "04.24",
 			"lastDeparture": "01.15",
 			"medianDuration": 8,
-			"lines": ["A", "I", "L", "P"]
+			"lines": ["A", "I", "L", "P", "U"]
 		},
 		"ILA-HPL": {
 			"trainsPerDay": 152,
@@ -2919,7 +2926,7 @@
 			"firstDeparture": "04.24",
 			"lastDeparture": "01.15",
 			"medianDuration": 2,
-			"lines": ["A", "I", "L", "P"]
+			"lines": ["A", "I", "L", "P", "U"]
 		},
 		"ILA-TKL": {
 			"trainsPerDay": 59,
@@ -3507,7 +3514,7 @@
 			"firstDeparture": "04.32",
 			"lastDeparture": "00.42",
 			"medianDuration": 33,
-			"lines": ["L"]
+			"lines": ["L", "U"]
 		},
 		"JRS-KEA": {
 			"trainsPerDay": 41,
@@ -3559,7 +3566,7 @@
 			"lines": ["L", "U"]
 		},
 		"JRS-MÄK": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.32",
 			"lastDeparture": "00.42",
 			"medianDuration": 25,
@@ -3573,7 +3580,7 @@
 			"lines": ["L", "U"]
 		},
 		"JRS-PJM": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.32",
 			"lastDeparture": "00.42",
 			"medianDuration": 27,
@@ -3594,32 +3601,11 @@
 			"lines": ["L", "U"]
 		},
 		"JRS-VMO": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.32",
 			"lastDeparture": "00.42",
 			"medianDuration": 29,
 			"lines": ["L"]
-		},
-		"KA-HAA": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.01",
-			"lastDeparture": "06.43",
-			"medianDuration": 70,
-			"lines": ["Z"]
-		},
-		"KA-HKI": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.01",
-			"lastDeparture": "06.43",
-			"medianDuration": 101,
-			"lines": ["Z"]
-		},
-		"KA-HNN": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.01",
-			"lastDeparture": "06.43",
-			"medianDuration": 45,
-			"lines": ["Z"]
 		},
 		"KA-IKR": {
 			"trainsPerDay": 4,
@@ -3627,13 +3613,6 @@
 			"lastDeparture": "19.58",
 			"medianDuration": 35,
 			"lines": ["O"]
-		},
-		"KA-KE": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.01",
-			"lastDeparture": "06.43",
-			"medianDuration": 78,
-			"lines": ["Z"]
 		},
 		"KA-KLN": {
 			"trainsPerDay": 4,
@@ -3643,9 +3622,9 @@
 			"lines": ["O"]
 		},
 		"KA-KRA": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.36",
-			"lastDeparture": "01.44",
+			"lastDeparture": "19.58",
 			"medianDuration": 10,
 			"lines": ["O", "Z"]
 		},
@@ -3664,9 +3643,9 @@
 			"lines": ["O"]
 		},
 		"KA-KV": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.36",
-			"lastDeparture": "01.44",
+			"lastDeparture": "19.58",
 			"medianDuration": 15,
 			"lines": ["O", "Z"]
 		},
@@ -3678,8 +3657,8 @@
 			"lines": ["O"]
 		},
 		"KA-LH": {
-			"trainsPerDay": 8,
-			"firstDeparture": "05.01",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.43",
 			"lastDeparture": "18.19",
 			"medianDuration": 28,
 			"lines": ["O", "Z"]
@@ -3691,26 +3670,12 @@
 			"medianDuration": 27,
 			"lines": ["O"]
 		},
-		"KA-MLÄ": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.01",
-			"lastDeparture": "06.43",
-			"medianDuration": 58,
-			"lines": ["Z"]
-		},
 		"KA-NSL": {
-			"trainsPerDay": 8,
-			"firstDeparture": "05.01",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.43",
 			"lastDeparture": "18.19",
 			"medianDuration": 16,
 			"lines": ["O", "Z"]
-		},
-		"KA-PSL": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.01",
-			"lastDeparture": "06.43",
-			"medianDuration": 96,
-			"lines": ["Z"]
 		},
 		"KA-PTI": {
 			"trainsPerDay": 4,
@@ -3718,13 +3683,6 @@
 			"lastDeparture": "19.58",
 			"medianDuration": 58,
 			"lines": ["O"]
-		},
-		"KA-TKL": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.01",
-			"lastDeparture": "06.43",
-			"medianDuration": 87,
-			"lines": ["Z"]
 		},
 		"KA-TSL": {
 			"trainsPerDay": 4,
@@ -3734,15 +3692,15 @@
 			"lines": ["O"]
 		},
 		"KA-UKÄ": {
-			"trainsPerDay": 8,
-			"firstDeparture": "05.01",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.43",
 			"lastDeparture": "18.19",
 			"medianDuration": 12,
 			"lines": ["O", "Z"]
 		},
 		"KA-VLH": {
-			"trainsPerDay": 8,
-			"firstDeparture": "05.01",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.43",
 			"lastDeparture": "18.19",
 			"medianDuration": 21,
 			"lines": ["O", "Z"]
@@ -3902,25 +3860,25 @@
 			"lines": ["P"]
 		},
 		"KÄP-AVP": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.38",
 			"lastDeparture": "23.43",
 			"medianDuration": 23,
 			"lines": ["I"]
 		},
 		"KÄP-HKH": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.58",
 			"medianDuration": 15,
 			"lines": ["I", "K", "T"]
 		},
 		"KÄP-HKI": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.09",
 			"lastDeparture": "01.43",
 			"medianDuration": 8,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"KÄP-HPL": {
 			"trainsPerDay": 56,
@@ -3944,91 +3902,98 @@
 			"lines": ["I"]
 		},
 		"KÄP-KE": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.42",
 			"lastDeparture": "01.58",
 			"medianDuration": 27,
 			"lines": ["K", "T", "V"]
 		},
 		"KÄP-KRS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.48",
 			"lastDeparture": "01.58",
 			"medianDuration": 21,
 			"lines": ["K", "T"]
 		},
 		"KÄP-KTÖ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.38",
 			"lastDeparture": "23.43",
 			"medianDuration": 28,
 			"lines": ["I"]
 		},
 		"KÄP-KVY": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.48",
 			"lastDeparture": "01.58",
 			"medianDuration": 17,
 			"lines": ["K", "T"]
 		},
 		"KÄP-LEN": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.38",
 			"lastDeparture": "23.43",
 			"medianDuration": 21,
 			"lines": ["I"]
 		},
+		"KÄP-LH": {
+			"trainsPerDay": 2,
+			"firstDeparture": "09.00",
+			"lastDeparture": "16.13",
+			"medianDuration": 60,
+			"lines": ["V"]
+		},
 		"KÄP-LNÄ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.38",
 			"lastDeparture": "23.43",
 			"medianDuration": 18,
 			"lines": ["I"]
 		},
 		"KÄP-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.38",
 			"lastDeparture": "23.43",
 			"medianDuration": 35,
 			"lines": ["I"]
 		},
 		"KÄP-ML": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.58",
 			"medianDuration": 6,
 			"lines": ["I", "K", "T"]
 		},
 		"KÄP-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.38",
 			"lastDeparture": "23.43",
 			"medianDuration": 33,
 			"lines": ["I"]
 		},
 		"KÄP-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.38",
 			"lastDeparture": "23.43",
 			"medianDuration": 37,
 			"lines": ["I"]
 		},
 		"KÄP-OLK": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.58",
 			"medianDuration": 2,
 			"lines": ["I", "K", "T"]
 		},
 		"KÄP-PLA": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.58",
 			"medianDuration": 10,
 			"lines": ["I", "K", "T"]
 		},
 		"KÄP-PMK": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.58",
 			"medianDuration": 4,
@@ -4042,49 +4007,49 @@
 			"lines": ["I"]
 		},
 		"KÄP-PSL": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.09",
 			"lastDeparture": "01.43",
 			"medianDuration": 3,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"KÄP-RKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.48",
 			"lastDeparture": "01.58",
 			"medianDuration": 19,
 			"lines": ["K", "T"]
 		},
 		"KÄP-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.48",
 			"lastDeparture": "01.58",
 			"medianDuration": 24,
 			"lines": ["K", "T"]
 		},
 		"KÄP-TKL": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.58",
 			"medianDuration": 13,
 			"lines": ["I", "K", "T"]
 		},
 		"KÄP-TNA": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.58",
 			"medianDuration": 8,
 			"lines": ["I", "K", "T"]
 		},
 		"KÄP-VEH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.38",
 			"lastDeparture": "23.43",
 			"medianDuration": 30,
 			"lines": ["I"]
 		},
 		"KÄP-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.38",
 			"lastDeparture": "23.43",
 			"medianDuration": 32,
@@ -4161,9 +4126,9 @@
 			"lines": ["D", "R", "T"]
 		},
 		"KE-KA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.58",
-			"lastDeparture": "00.33",
+			"lastDeparture": "16.58",
 			"medianDuration": 79,
 			"lines": ["Z"]
 		},
@@ -4175,23 +4140,23 @@
 			"lines": ["K", "T"]
 		},
 		"KE-KRA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.58",
-			"lastDeparture": "00.33",
+			"lastDeparture": "16.58",
 			"medianDuration": 89,
 			"lines": ["Z"]
 		},
 		"KE-KRS": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.05",
 			"lastDeparture": "03.40",
 			"medianDuration": 5,
 			"lines": ["K", "T"]
 		},
 		"KE-KV": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.58",
-			"lastDeparture": "00.33",
+			"lastDeparture": "16.58",
 			"medianDuration": 95,
 			"lines": ["Z"]
 		},
@@ -4231,9 +4196,9 @@
 			"lines": ["Z"]
 		},
 		"KE-NSL": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.58",
-			"lastDeparture": "00.33",
+			"lastDeparture": "16.58",
 			"medianDuration": 63,
 			"lines": ["Z"]
 		},
@@ -4280,7 +4245,7 @@
 			"lines": ["D", "R"]
 		},
 		"KE-RKL": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.05",
 			"lastDeparture": "03.40",
 			"medianDuration": 7,
@@ -4301,7 +4266,7 @@
 			"lines": ["R"]
 		},
 		"KE-SAV": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.05",
 			"lastDeparture": "03.40",
 			"medianDuration": 2,
@@ -4343,9 +4308,9 @@
 			"lines": ["D", "R"]
 		},
 		"KE-UKÄ": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.58",
-			"lastDeparture": "00.33",
+			"lastDeparture": "16.58",
 			"medianDuration": 67,
 			"lines": ["Z"]
 		},
@@ -4357,9 +4322,9 @@
 			"lines": ["R"]
 		},
 		"KE-VLH": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.58",
-			"lastDeparture": "00.33",
+			"lastDeparture": "16.58",
 			"medianDuration": 59,
 			"lines": ["Z"]
 		},
@@ -4389,7 +4354,7 @@
 			"firstDeparture": "04.51",
 			"lastDeparture": "01.01",
 			"medianDuration": 14,
-			"lines": ["L"]
+			"lines": ["L", "U"]
 		},
 		"KEA-JRS": {
 			"trainsPerDay": 41,
@@ -4441,7 +4406,7 @@
 			"lines": ["E", "L", "U"]
 		},
 		"KEA-MÄK": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.51",
 			"lastDeparture": "01.01",
 			"medianDuration": 6,
@@ -4455,7 +4420,7 @@
 			"lines": ["L", "U"]
 		},
 		"KEA-PJM": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.51",
 			"lastDeparture": "01.01",
 			"medianDuration": 8,
@@ -4476,7 +4441,7 @@
 			"lines": ["L", "U"]
 		},
 		"KEA-VMO": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.51",
 			"lastDeparture": "01.01",
 			"medianDuration": 9,
@@ -4508,7 +4473,7 @@
 			"firstDeparture": "04.53",
 			"lastDeparture": "01.03",
 			"medianDuration": 12,
-			"lines": ["L"]
+			"lines": ["L", "U"]
 		},
 		"KIL-JRS": {
 			"trainsPerDay": 41,
@@ -4560,7 +4525,7 @@
 			"lines": ["E", "L", "U"]
 		},
 		"KIL-MÄK": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.53",
 			"lastDeparture": "01.03",
 			"medianDuration": 4,
@@ -4574,7 +4539,7 @@
 			"lines": ["L", "U"]
 		},
 		"KIL-PJM": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.53",
 			"lastDeparture": "01.03",
 			"medianDuration": 6,
@@ -4595,7 +4560,7 @@
 			"lines": ["L", "U"]
 		},
 		"KIL-VMO": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.53",
 			"lastDeparture": "01.03",
 			"medianDuration": 7,
@@ -4655,7 +4620,7 @@
 			"firstDeparture": "04.27",
 			"lastDeparture": "00.37",
 			"medianDuration": 38,
-			"lines": ["L"]
+			"lines": ["L", "U"]
 		},
 		"KKN-JRS": {
 			"trainsPerDay": 41,
@@ -4721,7 +4686,7 @@
 			"lines": ["H", "L", "U", "Y"]
 		},
 		"KKN-MÄK": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.27",
 			"lastDeparture": "00.37",
 			"medianDuration": 31,
@@ -4735,7 +4700,7 @@
 			"lines": ["H", "L", "U", "Y"]
 		},
 		"KKN-PJM": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.27",
 			"lastDeparture": "00.37",
 			"medianDuration": 32,
@@ -4784,7 +4749,7 @@
 			"lines": ["L", "U"]
 		},
 		"KKN-VMO": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.27",
 			"lastDeparture": "00.37",
 			"medianDuration": 34,
@@ -4844,7 +4809,7 @@
 			"firstDeparture": "04.39",
 			"lastDeparture": "00.49",
 			"medianDuration": 26,
-			"lines": ["L"]
+			"lines": ["L", "U"]
 		},
 		"KLH-JRS": {
 			"trainsPerDay": 41,
@@ -4910,7 +4875,7 @@
 			"lines": ["E", "H", "L", "U", "Y"]
 		},
 		"KLH-MÄK": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.39",
 			"lastDeparture": "00.49",
 			"medianDuration": 19,
@@ -4924,7 +4889,7 @@
 			"lines": ["H", "L", "U", "Y"]
 		},
 		"KLH-PJM": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.39",
 			"lastDeparture": "00.49",
 			"medianDuration": 20,
@@ -4973,7 +4938,7 @@
 			"lines": ["L", "U"]
 		},
 		"KLH-VMO": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.39",
 			"lastDeparture": "00.49",
 			"medianDuration": 22,
@@ -5103,7 +5068,7 @@
 			"firstDeparture": "04.49",
 			"lastDeparture": "00.59",
 			"medianDuration": 16,
-			"lines": ["L"]
+			"lines": ["L", "U"]
 		},
 		"KNI-JRS": {
 			"trainsPerDay": 41,
@@ -5155,7 +5120,7 @@
 			"lines": ["E", "L", "U"]
 		},
 		"KNI-MÄK": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.49",
 			"lastDeparture": "00.59",
 			"medianDuration": 8,
@@ -5169,7 +5134,7 @@
 			"lines": ["L", "U"]
 		},
 		"KNI-PJM": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.49",
 			"lastDeparture": "00.59",
 			"medianDuration": 10,
@@ -5190,7 +5155,7 @@
 			"lines": ["L", "U"]
 		},
 		"KNI-VMO": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.49",
 			"lastDeparture": "00.59",
 			"medianDuration": 11,
@@ -5315,27 +5280,6 @@
 			"medianDuration": 12,
 			"lines": ["H"]
 		},
-		"KRA-HAA": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.53",
-			"lastDeparture": "06.33",
-			"medianDuration": 80,
-			"lines": ["Z"]
-		},
-		"KRA-HKI": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.53",
-			"lastDeparture": "06.33",
-			"medianDuration": 111,
-			"lines": ["Z"]
-		},
-		"KRA-HNN": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.53",
-			"lastDeparture": "06.33",
-			"medianDuration": 55,
-			"lines": ["Z"]
-		},
 		"KRA-IKR": {
 			"trainsPerDay": 4,
 			"firstDeparture": "07.46",
@@ -5344,18 +5288,11 @@
 			"lines": ["O"]
 		},
 		"KRA-KA": {
-			"trainsPerDay": 8,
-			"firstDeparture": "04.53",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.33",
 			"lastDeparture": "18.09",
 			"medianDuration": 10,
 			"lines": ["O", "Z"]
-		},
-		"KRA-KE": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.53",
-			"lastDeparture": "06.33",
-			"medianDuration": 88,
-			"lines": ["Z"]
 		},
 		"KRA-KLN": {
 			"trainsPerDay": 4,
@@ -5379,9 +5316,9 @@
 			"lines": ["O"]
 		},
 		"KRA-KV": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.46",
-			"lastDeparture": "01.53",
+			"lastDeparture": "20.08",
 			"medianDuration": 5,
 			"lines": ["O", "Z"]
 		},
@@ -5393,8 +5330,8 @@
 			"lines": ["O"]
 		},
 		"KRA-LH": {
-			"trainsPerDay": 8,
-			"firstDeparture": "04.53",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.33",
 			"lastDeparture": "18.09",
 			"medianDuration": 38,
 			"lines": ["O", "Z"]
@@ -5406,26 +5343,12 @@
 			"medianDuration": 17,
 			"lines": ["O"]
 		},
-		"KRA-MLÄ": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.53",
-			"lastDeparture": "06.33",
-			"medianDuration": 68,
-			"lines": ["Z"]
-		},
 		"KRA-NSL": {
-			"trainsPerDay": 8,
-			"firstDeparture": "04.53",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.33",
 			"lastDeparture": "18.09",
 			"medianDuration": 26,
 			"lines": ["O", "Z"]
-		},
-		"KRA-PSL": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.53",
-			"lastDeparture": "06.33",
-			"medianDuration": 106,
-			"lines": ["Z"]
 		},
 		"KRA-PTI": {
 			"trainsPerDay": 4,
@@ -5433,13 +5356,6 @@
 			"lastDeparture": "20.08",
 			"medianDuration": 48,
 			"lines": ["O"]
-		},
-		"KRA-TKL": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.53",
-			"lastDeparture": "06.33",
-			"medianDuration": 97,
-			"lines": ["Z"]
 		},
 		"KRA-TSL": {
 			"trainsPerDay": 4,
@@ -5449,15 +5365,15 @@
 			"lines": ["O"]
 		},
 		"KRA-UKÄ": {
-			"trainsPerDay": 8,
-			"firstDeparture": "04.53",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.33",
 			"lastDeparture": "18.09",
 			"medianDuration": 22,
 			"lines": ["O", "Z"]
 		},
 		"KRA-VLH": {
-			"trainsPerDay": 8,
-			"firstDeparture": "04.53",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.33",
 			"lastDeparture": "18.09",
 			"medianDuration": 31,
 			"lines": ["O", "Z"]
@@ -5484,7 +5400,7 @@
 			"lines": ["K", "T"]
 		},
 		"KRS-KE": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.09",
 			"lastDeparture": "02.22",
 			"medianDuration": 6,
@@ -5533,14 +5449,14 @@
 			"lines": ["K", "T"]
 		},
 		"KRS-RKL": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.10",
 			"lastDeparture": "03.46",
 			"medianDuration": 2,
 			"lines": ["K", "T"]
 		},
 		"KRS-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.09",
 			"lastDeparture": "02.22",
 			"medianDuration": 2,
@@ -5659,21 +5575,21 @@
 			"lines": ["O"]
 		},
 		"KTÖ-AVP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 5,
 			"lines": ["P"]
 		},
 		"KTÖ-HKH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 15,
 			"lines": ["P"]
 		},
 		"KTÖ-HKI": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 37,
@@ -5701,70 +5617,70 @@
 			"lines": ["I"]
 		},
 		"KTÖ-KÄP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 29,
 			"lines": ["P"]
 		},
 		"KTÖ-LEN": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 7,
 			"lines": ["P"]
 		},
 		"KTÖ-LNÄ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 11,
 			"lines": ["P"]
 		},
 		"KTÖ-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.06",
 			"lastDeparture": "00.11",
 			"medianDuration": 7,
 			"lines": ["I"]
 		},
 		"KTÖ-ML": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 23,
 			"lines": ["P"]
 		},
 		"KTÖ-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.06",
 			"lastDeparture": "00.11",
 			"medianDuration": 5,
 			"lines": ["I"]
 		},
 		"KTÖ-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.06",
 			"lastDeparture": "00.11",
 			"medianDuration": 9,
 			"lines": ["I"]
 		},
 		"KTÖ-OLK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 27,
 			"lines": ["P"]
 		},
 		"KTÖ-PLA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 19,
 			"lines": ["P"]
 		},
 		"KTÖ-PMK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 25,
@@ -5778,35 +5694,35 @@
 			"lines": ["I"]
 		},
 		"KTÖ-PSL": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 32,
 			"lines": ["I", "P"]
 		},
 		"KTÖ-TKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 17,
 			"lines": ["P"]
 		},
 		"KTÖ-TNA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.44",
 			"lastDeparture": "01.14",
 			"medianDuration": 21,
 			"lines": ["P"]
 		},
 		"KTÖ-VEH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.06",
 			"lastDeparture": "00.11",
 			"medianDuration": 2,
 			"lines": ["I"]
 		},
 		"KTÖ-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.06",
 			"lastDeparture": "00.11",
 			"medianDuration": 4,
@@ -5910,27 +5826,6 @@
 			"medianDuration": 86,
 			"lines": ["O"]
 		},
-		"KV-HAA": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.48",
-			"lastDeparture": "06.27",
-			"medianDuration": 86,
-			"lines": ["Z"]
-		},
-		"KV-HKI": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.48",
-			"lastDeparture": "06.27",
-			"medianDuration": 117,
-			"lines": ["Z"]
-		},
-		"KV-HNN": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.48",
-			"lastDeparture": "06.27",
-			"medianDuration": 61,
-			"lines": ["Z"]
-		},
 		"KV-IKR": {
 			"trainsPerDay": 9,
 			"firstDeparture": "05.53",
@@ -5939,18 +5834,11 @@
 			"lines": ["O"]
 		},
 		"KV-KA": {
-			"trainsPerDay": 8,
-			"firstDeparture": "04.48",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.27",
 			"lastDeparture": "18.03",
 			"medianDuration": 16,
 			"lines": ["O", "Z"]
-		},
-		"KV-KE": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.48",
-			"lastDeparture": "06.27",
-			"medianDuration": 94,
-			"lines": ["Z"]
 		},
 		"KV-KLN": {
 			"trainsPerDay": 9,
@@ -5960,8 +5848,8 @@
 			"lines": ["O"]
 		},
 		"KV-KRA": {
-			"trainsPerDay": 8,
-			"firstDeparture": "04.48",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.27",
 			"lastDeparture": "18.03",
 			"medianDuration": 6,
 			"lines": ["O", "Z"]
@@ -5988,11 +5876,11 @@
 			"lines": ["O"]
 		},
 		"KV-LH": {
-			"trainsPerDay": 8,
-			"firstDeparture": "04.48",
-			"lastDeparture": "18.03",
+			"trainsPerDay": 7,
+			"firstDeparture": "06.27",
+			"lastDeparture": "21.46",
 			"medianDuration": 44,
-			"lines": ["O", "Z"]
+			"lines": ["O", "V", "Z"]
 		},
 		"KV-MKI": {
 			"trainsPerDay": 9,
@@ -6001,26 +5889,12 @@
 			"medianDuration": 10,
 			"lines": ["O"]
 		},
-		"KV-MLÄ": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.48",
-			"lastDeparture": "06.27",
-			"medianDuration": 74,
-			"lines": ["Z"]
-		},
 		"KV-NSL": {
-			"trainsPerDay": 8,
-			"firstDeparture": "04.48",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.27",
 			"lastDeparture": "18.03",
 			"medianDuration": 32,
 			"lines": ["O", "Z"]
-		},
-		"KV-PSL": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.48",
-			"lastDeparture": "06.27",
-			"medianDuration": 112,
-			"lines": ["Z"]
 		},
 		"KV-PTI": {
 			"trainsPerDay": 9,
@@ -6028,13 +5902,6 @@
 			"lastDeparture": "20.15",
 			"medianDuration": 41,
 			"lines": ["O"]
-		},
-		"KV-TKL": {
-			"trainsPerDay": 3,
-			"firstDeparture": "04.48",
-			"lastDeparture": "06.27",
-			"medianDuration": 103,
-			"lines": ["Z"]
 		},
 		"KV-TSL": {
 			"trainsPerDay": 9,
@@ -6044,15 +5911,15 @@
 			"lines": ["O"]
 		},
 		"KV-UKÄ": {
-			"trainsPerDay": 8,
-			"firstDeparture": "04.48",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.27",
 			"lastDeparture": "18.03",
 			"medianDuration": 28,
 			"lines": ["O", "Z"]
 		},
 		"KV-VLH": {
-			"trainsPerDay": 8,
-			"firstDeparture": "04.48",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.27",
 			"lastDeparture": "18.03",
 			"medianDuration": 37,
 			"lines": ["O", "Z"]
@@ -6083,7 +5950,7 @@
 			"firstDeparture": "04.47",
 			"lastDeparture": "00.57",
 			"medianDuration": 18,
-			"lines": ["L"]
+			"lines": ["L", "U"]
 		},
 		"KVH-JRS": {
 			"trainsPerDay": 41,
@@ -6135,7 +6002,7 @@
 			"lines": ["E", "L", "U"]
 		},
 		"KVH-MÄK": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.47",
 			"lastDeparture": "00.57",
 			"medianDuration": 11,
@@ -6149,7 +6016,7 @@
 			"lines": ["L", "U"]
 		},
 		"KVH-PJM": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.47",
 			"lastDeparture": "00.57",
 			"medianDuration": 12,
@@ -6170,109 +6037,109 @@
 			"lines": ["L", "U"]
 		},
 		"KVH-VMO": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.47",
 			"lastDeparture": "00.57",
 			"medianDuration": 14,
 			"lines": ["L"]
 		},
 		"KVY-HKH": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.14",
 			"lastDeparture": "03.50",
 			"medianDuration": 2,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"KVY-HKI": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.14",
 			"lastDeparture": "03.50",
 			"medianDuration": 25,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"KVY-KÄP": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.14",
 			"lastDeparture": "03.50",
 			"medianDuration": 17,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"KVY-KE": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.05",
 			"lastDeparture": "02.17",
 			"medianDuration": 10,
 			"lines": ["K", "T"]
 		},
 		"KVY-KRS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.05",
 			"lastDeparture": "02.17",
 			"medianDuration": 4,
 			"lines": ["K", "T"]
 		},
 		"KVY-ML": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.14",
 			"lastDeparture": "03.50",
 			"medianDuration": 10,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"KVY-OLK": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.14",
 			"lastDeparture": "03.50",
 			"medianDuration": 15,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"KVY-PLA": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.14",
 			"lastDeparture": "03.50",
 			"medianDuration": 6,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"KVY-PMK": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.14",
 			"lastDeparture": "03.50",
 			"medianDuration": 12,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"KVY-PSL": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.14",
 			"lastDeparture": "03.50",
 			"medianDuration": 20,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"KVY-RKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.05",
 			"lastDeparture": "02.17",
 			"medianDuration": 1,
 			"lines": ["K", "T"]
 		},
 		"KVY-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.05",
 			"lastDeparture": "02.17",
 			"medianDuration": 6,
 			"lines": ["K", "T"]
 		},
 		"KVY-TKL": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.14",
 			"lastDeparture": "03.50",
 			"medianDuration": 4,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"KVY-TNA": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.14",
 			"lastDeparture": "03.50",
 			"medianDuration": 8,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"KY-IKR": {
 			"trainsPerDay": 9,
@@ -6422,21 +6289,21 @@
 			"lines": ["G"]
 		},
 		"LEN-AVP": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.59",
 			"lastDeparture": "00.04",
 			"medianDuration": 2,
 			"lines": ["I"]
 		},
 		"LEN-HKH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "01.22",
 			"medianDuration": 7,
 			"lines": ["P"]
 		},
 		"LEN-HKI": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.52",
 			"lastDeparture": "01.22",
 			"medianDuration": 29,
@@ -6464,70 +6331,70 @@
 			"lines": ["I"]
 		},
 		"LEN-KÄP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "01.22",
 			"medianDuration": 21,
 			"lines": ["P"]
 		},
 		"LEN-KTÖ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.59",
 			"lastDeparture": "00.04",
 			"medianDuration": 6,
 			"lines": ["I"]
 		},
 		"LEN-LNÄ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "01.22",
 			"medianDuration": 3,
 			"lines": ["P"]
 		},
 		"LEN-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.59",
 			"lastDeparture": "00.04",
 			"medianDuration": 14,
 			"lines": ["I"]
 		},
 		"LEN-ML": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "01.22",
 			"medianDuration": 15,
 			"lines": ["P"]
 		},
 		"LEN-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.59",
 			"lastDeparture": "00.04",
 			"medianDuration": 12,
 			"lines": ["I"]
 		},
 		"LEN-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.59",
 			"lastDeparture": "00.04",
 			"medianDuration": 15,
 			"lines": ["I"]
 		},
 		"LEN-OLK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "01.22",
 			"medianDuration": 19,
 			"lines": ["P"]
 		},
 		"LEN-PLA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "01.22",
 			"medianDuration": 11,
 			"lines": ["P"]
 		},
 		"LEN-PMK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "01.22",
 			"medianDuration": 17,
@@ -6541,35 +6408,35 @@
 			"lines": ["I"]
 		},
 		"LEN-PSL": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.52",
 			"lastDeparture": "01.22",
 			"medianDuration": 24,
 			"lines": ["I", "P"]
 		},
 		"LEN-TKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "01.22",
 			"medianDuration": 9,
 			"lines": ["P"]
 		},
 		"LEN-TNA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "01.22",
 			"medianDuration": 13,
 			"lines": ["P"]
 		},
 		"LEN-VEH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.59",
 			"lastDeparture": "00.04",
 			"medianDuration": 9,
 			"lines": ["I"]
 		},
 		"LEN-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.59",
 			"lastDeparture": "00.04",
 			"medianDuration": 10,
@@ -6597,11 +6464,11 @@
 			"lines": ["Z"]
 		},
 		"LH-HNN": {
-			"trainsPerDay": 20,
+			"trainsPerDay": 22,
 			"firstDeparture": "04.22",
 			"lastDeparture": "23.14",
 			"medianDuration": 13,
-			"lines": ["Z"]
+			"lines": ["V", "Z"]
 		},
 		"LH-HR": {
 			"trainsPerDay": 16,
@@ -6625,11 +6492,18 @@
 			"lines": ["G"]
 		},
 		"LH-KA": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.08",
-			"lastDeparture": "01.17",
+			"lastDeparture": "19.30",
 			"medianDuration": 28,
 			"lines": ["O", "Z"]
+		},
+		"LH-KÄP": {
+			"trainsPerDay": 2,
+			"firstDeparture": "12.53",
+			"lastDeparture": "19.37",
+			"medianDuration": 70,
+			"lines": ["V"]
 		},
 		"LH-KE": {
 			"trainsPerDay": 20,
@@ -6646,9 +6520,9 @@
 			"lines": ["O"]
 		},
 		"LH-KRA": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.08",
-			"lastDeparture": "01.17",
+			"lastDeparture": "19.30",
 			"medianDuration": 38,
 			"lines": ["O", "Z"]
 		},
@@ -6667,9 +6541,9 @@
 			"lines": ["O"]
 		},
 		"LH-KV": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.08",
-			"lastDeparture": "01.17",
+			"lastDeparture": "19.30",
 			"medianDuration": 43,
 			"lines": ["O", "Z"]
 		},
@@ -6702,16 +6576,16 @@
 			"lines": ["G"]
 		},
 		"LH-MLÄ": {
-			"trainsPerDay": 20,
+			"trainsPerDay": 21,
 			"firstDeparture": "04.22",
 			"lastDeparture": "23.14",
 			"medianDuration": 24,
-			"lines": ["Z"]
+			"lines": ["V", "Z"]
 		},
 		"LH-NSL": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.08",
-			"lastDeparture": "01.17",
+			"lastDeparture": "19.30",
 			"medianDuration": 12,
 			"lines": ["O", "Z"]
 		},
@@ -6737,11 +6611,11 @@
 			"lines": ["O"]
 		},
 		"LH-RI": {
-			"trainsPerDay": 16,
+			"trainsPerDay": 18,
 			"firstDeparture": "05.35",
 			"lastDeparture": "22.04",
 			"medianDuration": 42,
-			"lines": ["G"]
+			"lines": ["G", "V"]
 		},
 		"LH-TKL": {
 			"trainsPerDay": 20,
@@ -6758,35 +6632,35 @@
 			"lines": ["O"]
 		},
 		"LH-UKÄ": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.08",
-			"lastDeparture": "01.17",
+			"lastDeparture": "19.30",
 			"medianDuration": 16,
 			"lines": ["O", "Z"]
 		},
 		"LH-VLH": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.08",
-			"lastDeparture": "01.17",
+			"lastDeparture": "19.30",
 			"medianDuration": 8,
 			"lines": ["O", "Z"]
 		},
 		"LNÄ-AVP": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.55",
 			"lastDeparture": "00.00",
 			"medianDuration": 5,
 			"lines": ["I"]
 		},
 		"LNÄ-HKH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.55",
 			"lastDeparture": "01.25",
 			"medianDuration": 3,
 			"lines": ["P"]
 		},
 		"LNÄ-HKI": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.55",
 			"lastDeparture": "01.25",
 			"medianDuration": 26,
@@ -6814,70 +6688,70 @@
 			"lines": ["I"]
 		},
 		"LNÄ-KÄP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.55",
 			"lastDeparture": "01.25",
 			"medianDuration": 18,
 			"lines": ["P"]
 		},
 		"LNÄ-KTÖ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.55",
 			"lastDeparture": "00.00",
 			"medianDuration": 10,
 			"lines": ["I"]
 		},
 		"LNÄ-LEN": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.55",
 			"lastDeparture": "00.00",
 			"medianDuration": 3,
 			"lines": ["I"]
 		},
 		"LNÄ-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.55",
 			"lastDeparture": "00.00",
 			"medianDuration": 17,
 			"lines": ["I"]
 		},
 		"LNÄ-ML": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.55",
 			"lastDeparture": "01.25",
 			"medianDuration": 11,
 			"lines": ["P"]
 		},
 		"LNÄ-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.55",
 			"lastDeparture": "00.00",
 			"medianDuration": 15,
 			"lines": ["I"]
 		},
 		"LNÄ-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.55",
 			"lastDeparture": "00.00",
 			"medianDuration": 19,
 			"lines": ["I"]
 		},
 		"LNÄ-OLK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.55",
 			"lastDeparture": "01.25",
 			"medianDuration": 16,
 			"lines": ["P"]
 		},
 		"LNÄ-PLA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.55",
 			"lastDeparture": "01.25",
 			"medianDuration": 7,
 			"lines": ["P"]
 		},
 		"LNÄ-PMK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.55",
 			"lastDeparture": "01.25",
 			"medianDuration": 13,
@@ -6891,56 +6765,56 @@
 			"lines": ["I"]
 		},
 		"LNÄ-PSL": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.55",
 			"lastDeparture": "01.25",
 			"medianDuration": 21,
 			"lines": ["I", "P"]
 		},
 		"LNÄ-TKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.55",
 			"lastDeparture": "01.25",
 			"medianDuration": 5,
 			"lines": ["P"]
 		},
 		"LNÄ-TNA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.55",
 			"lastDeparture": "01.25",
 			"medianDuration": 9,
 			"lines": ["P"]
 		},
 		"LNÄ-VEH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.55",
 			"lastDeparture": "00.00",
 			"medianDuration": 12,
 			"lines": ["I"]
 		},
 		"LNÄ-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.55",
 			"lastDeparture": "00.00",
 			"medianDuration": 14,
 			"lines": ["I"]
 		},
 		"LOH-AVP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 12,
 			"lines": ["P"]
 		},
 		"LOH-HKH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 22,
 			"lines": ["P"]
 		},
 		"LOH-HKI": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 44,
@@ -6968,70 +6842,70 @@
 			"lines": ["I"]
 		},
 		"LOH-KÄP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 36,
 			"lines": ["P"]
 		},
 		"LOH-KTÖ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 7,
 			"lines": ["P"]
 		},
 		"LOH-LEN": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 14,
 			"lines": ["P"]
 		},
 		"LOH-LNÄ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 18,
 			"lines": ["P"]
 		},
 		"LOH-ML": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 30,
 			"lines": ["P"]
 		},
 		"LOH-MRL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 1,
 			"lines": ["P"]
 		},
 		"LOH-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.13",
 			"lastDeparture": "00.18",
 			"medianDuration": 1,
 			"lines": ["I"]
 		},
 		"LOH-OLK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 34,
 			"lines": ["P"]
 		},
 		"LOH-PLA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 26,
 			"lines": ["P"]
 		},
 		"LOH-PMK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 32,
@@ -7045,35 +6919,35 @@
 			"lines": ["I"]
 		},
 		"LOH-PSL": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 39,
 			"lines": ["I", "P"]
 		},
 		"LOH-TKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 24,
 			"lines": ["P"]
 		},
 		"LOH-TNA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 28,
 			"lines": ["P"]
 		},
 		"LOH-VEH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 5,
 			"lines": ["P"]
 		},
 		"LOH-VKS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.36",
 			"lastDeparture": "01.06",
 			"medianDuration": 3,
@@ -7392,7 +7266,7 @@
 			"firstDeparture": "04.56",
 			"lastDeparture": "01.06",
 			"medianDuration": 9,
-			"lines": ["A", "L"]
+			"lines": ["A", "L", "U"]
 		},
 		"LPV-JRS": {
 			"trainsPerDay": 41,
@@ -7458,7 +7332,7 @@
 			"lines": ["H"]
 		},
 		"LPV-MÄK": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.56",
 			"lastDeparture": "01.06",
 			"medianDuration": 2,
@@ -7472,7 +7346,7 @@
 			"lines": ["H", "L", "U", "Y"]
 		},
 		"LPV-PJM": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.56",
 			"lastDeparture": "01.06",
 			"medianDuration": 3,
@@ -7521,7 +7395,7 @@
 			"lines": ["L", "U"]
 		},
 		"LPV-VMO": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.56",
 			"lastDeparture": "01.06",
 			"medianDuration": 5,
@@ -7535,21 +7409,21 @@
 			"lines": ["L"]
 		},
 		"MÄK-HKI": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.58",
 			"lastDeparture": "01.08",
 			"medianDuration": 15,
 			"lines": ["A", "L"]
 		},
 		"MÄK-HPL": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.58",
 			"lastDeparture": "01.08",
 			"medianDuration": 5,
 			"lines": ["A", "L"]
 		},
 		"MÄK-ILA": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.58",
 			"lastDeparture": "01.08",
 			"medianDuration": 7,
@@ -7619,14 +7493,14 @@
 			"lines": ["L"]
 		},
 		"MÄK-PJM": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.58",
 			"lastDeparture": "01.08",
 			"medianDuration": 1,
 			"lines": ["A", "L"]
 		},
 		"MÄK-PSL": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.58",
 			"lastDeparture": "01.08",
 			"medianDuration": 10,
@@ -7640,7 +7514,7 @@
 			"lines": ["L"]
 		},
 		"MÄK-VMO": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.58",
 			"lastDeparture": "01.08",
 			"medianDuration": 3,
@@ -7700,7 +7574,7 @@
 			"firstDeparture": "04.34",
 			"lastDeparture": "00.44",
 			"medianDuration": 30,
-			"lines": ["L"]
+			"lines": ["L", "U"]
 		},
 		"MAS-JRS": {
 			"trainsPerDay": 41,
@@ -7773,14 +7647,14 @@
 			"lines": ["H", "L", "U", "Y"]
 		},
 		"MAS-MÄK": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.34",
 			"lastDeparture": "00.44",
 			"medianDuration": 23,
 			"lines": ["L"]
 		},
 		"MAS-PJM": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.34",
 			"lastDeparture": "00.44",
 			"medianDuration": 25,
@@ -7829,7 +7703,7 @@
 			"lines": ["L", "U"]
 		},
 		"MAS-VMO": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.34",
 			"lastDeparture": "00.44",
 			"medianDuration": 26,
@@ -7934,25 +7808,25 @@
 			"lines": ["O"]
 		},
 		"ML-AVP": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.44",
 			"lastDeparture": "23.49",
 			"medianDuration": 16,
 			"lines": ["I"]
 		},
 		"ML-HKH": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.44",
 			"lastDeparture": "02.05",
 			"medianDuration": 8,
 			"lines": ["I", "K", "T"]
 		},
 		"ML-HKI": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.02",
 			"lastDeparture": "01.37",
 			"medianDuration": 14,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"ML-HPL": {
 			"trainsPerDay": 56,
@@ -7976,95 +7850,95 @@
 			"lines": ["I"]
 		},
 		"ML-KÄP": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.02",
 			"lastDeparture": "01.37",
 			"medianDuration": 6,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"ML-KE": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.54",
 			"lastDeparture": "02.05",
 			"medianDuration": 21,
 			"lines": ["K", "T"]
 		},
 		"ML-KRS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.54",
 			"lastDeparture": "02.05",
 			"medianDuration": 15,
 			"lines": ["K", "T"]
 		},
 		"ML-KTÖ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.44",
 			"lastDeparture": "23.49",
 			"medianDuration": 21,
 			"lines": ["I"]
 		},
 		"ML-KVY": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.54",
 			"lastDeparture": "02.05",
 			"medianDuration": 11,
 			"lines": ["K", "T"]
 		},
 		"ML-LEN": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.44",
 			"lastDeparture": "23.49",
 			"medianDuration": 14,
 			"lines": ["I"]
 		},
 		"ML-LNÄ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.44",
 			"lastDeparture": "23.49",
 			"medianDuration": 11,
 			"lines": ["I"]
 		},
 		"ML-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.44",
 			"lastDeparture": "23.49",
 			"medianDuration": 28,
 			"lines": ["I"]
 		},
 		"ML-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.44",
 			"lastDeparture": "23.49",
 			"medianDuration": 27,
 			"lines": ["I"]
 		},
 		"ML-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.44",
 			"lastDeparture": "23.49",
 			"medianDuration": 30,
 			"lines": ["I"]
 		},
 		"ML-OLK": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.02",
 			"lastDeparture": "01.37",
 			"medianDuration": 4,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"ML-PLA": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.44",
 			"lastDeparture": "02.05",
 			"medianDuration": 4,
 			"lines": ["I", "K", "T"]
 		},
 		"ML-PMK": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.02",
 			"lastDeparture": "01.37",
 			"medianDuration": 2,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"ML-POH": {
 			"trainsPerDay": 56,
@@ -8074,49 +7948,49 @@
 			"lines": ["I"]
 		},
 		"ML-PSL": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.02",
 			"lastDeparture": "01.37",
 			"medianDuration": 9,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"ML-RKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.54",
 			"lastDeparture": "02.05",
 			"medianDuration": 12,
 			"lines": ["K", "T"]
 		},
 		"ML-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.54",
 			"lastDeparture": "02.05",
 			"medianDuration": 17,
 			"lines": ["K", "T"]
 		},
 		"ML-TKL": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.44",
 			"lastDeparture": "02.05",
 			"medianDuration": 6,
 			"lines": ["I", "K", "T"]
 		},
 		"ML-TNA": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.44",
 			"lastDeparture": "02.05",
 			"medianDuration": 2,
 			"lines": ["I", "K", "T"]
 		},
 		"ML-VEH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.44",
 			"lastDeparture": "23.49",
 			"medianDuration": 23,
 			"lines": ["I"]
 		},
 		"ML-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.44",
 			"lastDeparture": "23.49",
 			"medianDuration": 25,
@@ -8144,11 +8018,11 @@
 			"lines": ["Z"]
 		},
 		"MLÄ-HNN": {
-			"trainsPerDay": 18,
+			"trainsPerDay": 19,
 			"firstDeparture": "07.10",
 			"lastDeparture": "00.50",
 			"medianDuration": 11,
-			"lines": ["Z"]
+			"lines": ["V", "Z"]
 		},
 		"MLA-HR": {
 			"trainsPerDay": 18,
@@ -8165,9 +8039,9 @@
 			"lines": ["G"]
 		},
 		"MLÄ-KA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.18",
-			"lastDeparture": "00.50",
+			"lastDeparture": "17.18",
 			"medianDuration": 59,
 			"lines": ["Z"]
 		},
@@ -8179,16 +8053,16 @@
 			"lines": ["Z"]
 		},
 		"MLÄ-KRA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.18",
-			"lastDeparture": "00.50",
+			"lastDeparture": "17.18",
 			"medianDuration": 69,
 			"lines": ["Z"]
 		},
 		"MLÄ-KV": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.18",
-			"lastDeparture": "00.50",
+			"lastDeparture": "17.18",
 			"medianDuration": 75,
 			"lines": ["Z"]
 		},
@@ -8207,16 +8081,16 @@
 			"lines": ["G"]
 		},
 		"MLÄ-LH": {
-			"trainsPerDay": 18,
+			"trainsPerDay": 19,
 			"firstDeparture": "07.10",
 			"lastDeparture": "00.50",
 			"medianDuration": 25,
-			"lines": ["Z"]
+			"lines": ["V", "Z"]
 		},
 		"MLÄ-NSL": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.18",
-			"lastDeparture": "00.50",
+			"lastDeparture": "17.18",
 			"medianDuration": 43,
 			"lines": ["Z"]
 		},
@@ -8249,35 +8123,35 @@
 			"lines": ["Z"]
 		},
 		"MLÄ-UKÄ": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.18",
-			"lastDeparture": "00.50",
+			"lastDeparture": "17.18",
 			"medianDuration": 47,
 			"lines": ["Z"]
 		},
 		"MLÄ-VLH": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "16.18",
-			"lastDeparture": "00.50",
+			"lastDeparture": "17.18",
 			"medianDuration": 39,
 			"lines": ["Z"]
 		},
 		"MRL-AVP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 10,
 			"lines": ["P"]
 		},
 		"MRL-HKH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 20,
 			"lines": ["P"]
 		},
 		"MRL-HKI": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 43,
@@ -8305,70 +8179,70 @@
 			"lines": ["I"]
 		},
 		"MRL-KÄP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 35,
 			"lines": ["P"]
 		},
 		"MRL-KTÖ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 5,
 			"lines": ["P"]
 		},
 		"MRL-LEN": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 13,
 			"lines": ["P"]
 		},
 		"MRL-LNÄ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 17,
 			"lines": ["P"]
 		},
 		"MRL-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.11",
 			"lastDeparture": "00.16",
 			"medianDuration": 1,
 			"lines": ["I"]
 		},
 		"MRL-ML": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 28,
 			"lines": ["P"]
 		},
 		"MRL-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.11",
 			"lastDeparture": "00.16",
 			"medianDuration": 3,
 			"lines": ["I"]
 		},
 		"MRL-OLK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 33,
 			"lines": ["P"]
 		},
 		"MRL-PLA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 25,
 			"lines": ["P"]
 		},
 		"MRL-PMK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 30,
@@ -8382,56 +8256,56 @@
 			"lines": ["I"]
 		},
 		"MRL-PSL": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 38,
 			"lines": ["I", "P"]
 		},
 		"MRL-TKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 22,
 			"lines": ["P"]
 		},
 		"MRL-TNA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 26,
 			"lines": ["P"]
 		},
 		"MRL-VEH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 3,
 			"lines": ["P"]
 		},
 		"MRL-VKS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.38",
 			"lastDeparture": "01.08",
 			"medianDuration": 1,
 			"lines": ["P"]
 		},
 		"MYR-AVP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 14,
 			"lines": ["P"]
 		},
 		"MYR-HKH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 24,
 			"lines": ["P"]
 		},
 		"MYR-HKI": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 46,
@@ -8459,70 +8333,70 @@
 			"lines": ["I"]
 		},
 		"MYR-KÄP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 38,
 			"lines": ["P"]
 		},
 		"MYR-KTÖ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 9,
 			"lines": ["P"]
 		},
 		"MYR-LEN": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 16,
 			"lines": ["P"]
 		},
 		"MYR-LNÄ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 20,
 			"lines": ["P"]
 		},
 		"MYR-LOH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 1,
 			"lines": ["P"]
 		},
 		"MYR-ML": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 32,
 			"lines": ["P"]
 		},
 		"MYR-MRL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 3,
 			"lines": ["P"]
 		},
 		"MYR-OLK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 36,
 			"lines": ["P"]
 		},
 		"MYR-PLA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 28,
 			"lines": ["P"]
 		},
 		"MYR-PMK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 34,
@@ -8536,35 +8410,35 @@
 			"lines": ["I"]
 		},
 		"MYR-PSL": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 41,
 			"lines": ["I", "P"]
 		},
 		"MYR-TKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 26,
 			"lines": ["P"]
 		},
 		"MYR-TNA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 30,
 			"lines": ["P"]
 		},
 		"MYR-VEH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 6,
 			"lines": ["P"]
 		},
 		"MYR-VKS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.35",
 			"lastDeparture": "01.05",
 			"medianDuration": 5,
@@ -8613,11 +8487,11 @@
 			"lines": ["R"]
 		},
 		"NOA-TL": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 9,
 			"firstDeparture": "07.05",
-			"lastDeparture": "21.05",
+			"lastDeparture": "23.50",
 			"medianDuration": 48,
-			"lines": ["M", "R"]
+			"lines": ["M", "R", "V"]
 		},
 		"NOA-TPE": {
 			"trainsPerDay": 17,
@@ -8647,27 +8521,6 @@
 			"medianDuration": 42,
 			"lines": ["M", "R"]
 		},
-		"NSL-HAA": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.15",
-			"lastDeparture": "06.59",
-			"medianDuration": 53,
-			"lines": ["Z"]
-		},
-		"NSL-HKI": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.15",
-			"lastDeparture": "06.59",
-			"medianDuration": 85,
-			"lines": ["Z"]
-		},
-		"NSL-HNN": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.15",
-			"lastDeparture": "06.59",
-			"medianDuration": 28,
-			"lines": ["Z"]
-		},
 		"NSL-IKR": {
 			"trainsPerDay": 4,
 			"firstDeparture": "07.20",
@@ -8676,18 +8529,11 @@
 			"lines": ["O"]
 		},
 		"NSL-KA": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.20",
-			"lastDeparture": "01.29",
+			"lastDeparture": "19.42",
 			"medianDuration": 15,
 			"lines": ["O", "Z"]
-		},
-		"NSL-KE": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.15",
-			"lastDeparture": "06.59",
-			"medianDuration": 61,
-			"lines": ["Z"]
 		},
 		"NSL-KLN": {
 			"trainsPerDay": 4,
@@ -8697,9 +8543,9 @@
 			"lines": ["O"]
 		},
 		"NSL-KRA": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.20",
-			"lastDeparture": "01.29",
+			"lastDeparture": "19.42",
 			"medianDuration": 25,
 			"lines": ["O", "Z"]
 		},
@@ -8718,9 +8564,9 @@
 			"lines": ["O"]
 		},
 		"NSL-KV": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.20",
-			"lastDeparture": "01.29",
+			"lastDeparture": "19.42",
 			"medianDuration": 31,
 			"lines": ["O", "Z"]
 		},
@@ -8732,8 +8578,8 @@
 			"lines": ["O"]
 		},
 		"NSL-LH": {
-			"trainsPerDay": 8,
-			"firstDeparture": "05.15",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.59",
 			"lastDeparture": "18.35",
 			"medianDuration": 12,
 			"lines": ["O", "Z"]
@@ -8745,33 +8591,12 @@
 			"medianDuration": 42,
 			"lines": ["O"]
 		},
-		"NSL-MLÄ": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.15",
-			"lastDeparture": "06.59",
-			"medianDuration": 41,
-			"lines": ["Z"]
-		},
-		"NSL-PSL": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.15",
-			"lastDeparture": "06.59",
-			"medianDuration": 79,
-			"lines": ["Z"]
-		},
 		"NSL-PTI": {
 			"trainsPerDay": 4,
 			"firstDeparture": "07.20",
 			"lastDeparture": "19.42",
 			"medianDuration": 74,
 			"lines": ["O"]
-		},
-		"NSL-TKL": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.15",
-			"lastDeparture": "06.59",
-			"medianDuration": 70,
-			"lines": ["Z"]
 		},
 		"NSL-TSL": {
 			"trainsPerDay": 4,
@@ -8781,15 +8606,15 @@
 			"lines": ["O"]
 		},
 		"NSL-UKÄ": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.20",
-			"lastDeparture": "01.29",
+			"lastDeparture": "19.42",
 			"medianDuration": 3,
 			"lines": ["O", "Z"]
 		},
 		"NSL-VLH": {
-			"trainsPerDay": 8,
-			"firstDeparture": "05.15",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.59",
 			"lastDeparture": "18.35",
 			"medianDuration": 5,
 			"lines": ["O", "Z"]
@@ -8844,25 +8669,25 @@
 			"lines": ["G"]
 		},
 		"OLK-AVP": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.40",
 			"lastDeparture": "23.45",
 			"medianDuration": 21,
 			"lines": ["I"]
 		},
 		"OLK-HKH": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.40",
 			"lastDeparture": "02.00",
 			"medianDuration": 13,
 			"lines": ["I", "K", "T"]
 		},
 		"OLK-HKI": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.06",
 			"lastDeparture": "01.41",
 			"medianDuration": 10,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"OLK-HPL": {
 			"trainsPerDay": 56,
@@ -8886,91 +8711,91 @@
 			"lines": ["I"]
 		},
 		"OLK-KÄP": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.06",
 			"lastDeparture": "01.41",
 			"medianDuration": 2,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"OLK-KE": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.50",
 			"lastDeparture": "02.00",
 			"medianDuration": 25,
 			"lines": ["K", "T"]
 		},
 		"OLK-KRS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.50",
 			"lastDeparture": "02.00",
 			"medianDuration": 19,
 			"lines": ["K", "T"]
 		},
 		"OLK-KTÖ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.40",
 			"lastDeparture": "23.45",
 			"medianDuration": 26,
 			"lines": ["I"]
 		},
 		"OLK-KVY": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.50",
 			"lastDeparture": "02.00",
 			"medianDuration": 15,
 			"lines": ["K", "T"]
 		},
 		"OLK-LEN": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.40",
 			"lastDeparture": "23.45",
 			"medianDuration": 19,
 			"lines": ["I"]
 		},
 		"OLK-LNÄ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.40",
 			"lastDeparture": "23.45",
 			"medianDuration": 16,
 			"lines": ["I"]
 		},
 		"OLK-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.40",
 			"lastDeparture": "23.45",
 			"medianDuration": 33,
 			"lines": ["I"]
 		},
 		"OLK-ML": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.40",
 			"lastDeparture": "02.00",
 			"medianDuration": 4,
 			"lines": ["I", "K", "T"]
 		},
 		"OLK-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.40",
 			"lastDeparture": "23.45",
 			"medianDuration": 31,
 			"lines": ["I"]
 		},
 		"OLK-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.40",
 			"lastDeparture": "23.45",
 			"medianDuration": 35,
 			"lines": ["I"]
 		},
 		"OLK-PLA": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.40",
 			"lastDeparture": "02.00",
 			"medianDuration": 8,
 			"lines": ["I", "K", "T"]
 		},
 		"OLK-PMK": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.40",
 			"lastDeparture": "02.00",
 			"medianDuration": 2,
@@ -8984,49 +8809,49 @@
 			"lines": ["I"]
 		},
 		"OLK-PSL": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.06",
 			"lastDeparture": "01.41",
 			"medianDuration": 5,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"OLK-RKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.50",
 			"lastDeparture": "02.00",
 			"medianDuration": 17,
 			"lines": ["K", "T"]
 		},
 		"OLK-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.50",
 			"lastDeparture": "02.00",
 			"medianDuration": 22,
 			"lines": ["K", "T"]
 		},
 		"OLK-TKL": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.40",
 			"lastDeparture": "02.00",
 			"medianDuration": 11,
 			"lines": ["I", "K", "T"]
 		},
 		"OLK-TNA": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.40",
 			"lastDeparture": "02.00",
 			"medianDuration": 6,
 			"lines": ["I", "K", "T"]
 		},
 		"OLK-VEH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.40",
 			"lastDeparture": "23.45",
 			"medianDuration": 28,
 			"lines": ["I"]
 		},
 		"OLK-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.40",
 			"lastDeparture": "23.45",
 			"medianDuration": 30,
@@ -9040,21 +8865,21 @@
 			"lines": ["L"]
 		},
 		"PJM-HKI": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.59",
 			"lastDeparture": "01.09",
 			"medianDuration": 13,
 			"lines": ["A", "L"]
 		},
 		"PJM-HPL": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.59",
 			"lastDeparture": "01.09",
 			"medianDuration": 3,
 			"lines": ["A", "L"]
 		},
 		"PJM-ILA": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.59",
 			"lastDeparture": "01.09",
 			"medianDuration": 5,
@@ -9131,7 +8956,7 @@
 			"lines": ["L"]
 		},
 		"PJM-PSL": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.59",
 			"lastDeparture": "01.09",
 			"medianDuration": 8,
@@ -9145,32 +8970,32 @@
 			"lines": ["L"]
 		},
 		"PJM-VMO": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "04.59",
 			"lastDeparture": "01.09",
 			"medianDuration": 1,
 			"lines": ["A", "L"]
 		},
 		"PLA-AVP": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.48",
 			"lastDeparture": "23.53",
 			"medianDuration": 12,
 			"lines": ["I"]
 		},
 		"PLA-HKH": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.48",
 			"lastDeparture": "02.09",
 			"medianDuration": 4,
 			"lines": ["I", "K", "T"]
 		},
 		"PLA-HKI": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.21",
 			"lastDeparture": "03.57",
 			"medianDuration": 18,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"PLA-HPL": {
 			"trainsPerDay": 56,
@@ -9194,95 +9019,95 @@
 			"lines": ["I"]
 		},
 		"PLA-KÄP": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.21",
 			"lastDeparture": "03.57",
 			"medianDuration": 10,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"PLA-KE": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.58",
 			"lastDeparture": "02.09",
 			"medianDuration": 17,
 			"lines": ["K", "T"]
 		},
 		"PLA-KRS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.58",
 			"lastDeparture": "02.09",
 			"medianDuration": 11,
 			"lines": ["K", "T"]
 		},
 		"PLA-KTÖ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.48",
 			"lastDeparture": "23.53",
 			"medianDuration": 17,
 			"lines": ["I"]
 		},
 		"PLA-KVY": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.58",
 			"lastDeparture": "02.09",
 			"medianDuration": 7,
 			"lines": ["K", "T"]
 		},
 		"PLA-LEN": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.48",
 			"lastDeparture": "23.53",
 			"medianDuration": 10,
 			"lines": ["I"]
 		},
 		"PLA-LNÄ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.48",
 			"lastDeparture": "23.53",
 			"medianDuration": 7,
 			"lines": ["I"]
 		},
 		"PLA-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.48",
 			"lastDeparture": "23.53",
 			"medianDuration": 24,
 			"lines": ["I"]
 		},
 		"PLA-ML": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.21",
 			"lastDeparture": "03.57",
 			"medianDuration": 4,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"PLA-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.48",
 			"lastDeparture": "23.53",
 			"medianDuration": 23,
 			"lines": ["I"]
 		},
 		"PLA-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.48",
 			"lastDeparture": "23.53",
 			"medianDuration": 26,
 			"lines": ["I"]
 		},
 		"PLA-OLK": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.21",
 			"lastDeparture": "03.57",
 			"medianDuration": 8,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"PLA-PMK": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.21",
 			"lastDeparture": "03.57",
 			"medianDuration": 6,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"PLA-POH": {
 			"trainsPerDay": 56,
@@ -9292,74 +9117,74 @@
 			"lines": ["I"]
 		},
 		"PLA-PSL": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.21",
 			"lastDeparture": "03.57",
 			"medianDuration": 13,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"PLA-RKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.58",
 			"lastDeparture": "02.09",
 			"medianDuration": 8,
 			"lines": ["K", "T"]
 		},
 		"PLA-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.58",
 			"lastDeparture": "02.09",
 			"medianDuration": 13,
 			"lines": ["K", "T"]
 		},
 		"PLA-TKL": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.48",
 			"lastDeparture": "02.09",
 			"medianDuration": 2,
 			"lines": ["I", "K", "T"]
 		},
 		"PLA-TNA": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.21",
 			"lastDeparture": "03.57",
 			"medianDuration": 2,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"PLA-VEH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.48",
 			"lastDeparture": "23.53",
 			"medianDuration": 19,
 			"lines": ["I"]
 		},
 		"PLA-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.48",
 			"lastDeparture": "23.53",
 			"medianDuration": 21,
 			"lines": ["I"]
 		},
 		"PMK-AVP": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.42",
 			"lastDeparture": "23.47",
 			"medianDuration": 18,
 			"lines": ["I"]
 		},
 		"PMK-HKH": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.42",
 			"lastDeparture": "02.03",
 			"medianDuration": 10,
 			"lines": ["I", "K", "T"]
 		},
 		"PMK-HKI": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.04",
 			"lastDeparture": "01.39",
 			"medianDuration": 12,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"PMK-HPL": {
 			"trainsPerDay": 56,
@@ -9383,91 +9208,91 @@
 			"lines": ["I"]
 		},
 		"PMK-KÄP": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.04",
 			"lastDeparture": "01.39",
 			"medianDuration": 4,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"PMK-KE": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "02.03",
 			"medianDuration": 23,
 			"lines": ["K", "T"]
 		},
 		"PMK-KRS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "02.03",
 			"medianDuration": 17,
 			"lines": ["K", "T"]
 		},
 		"PMK-KTÖ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.42",
 			"lastDeparture": "23.47",
 			"medianDuration": 23,
 			"lines": ["I"]
 		},
 		"PMK-KVY": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "02.03",
 			"medianDuration": 13,
 			"lines": ["K", "T"]
 		},
 		"PMK-LEN": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.42",
 			"lastDeparture": "23.47",
 			"medianDuration": 16,
 			"lines": ["I"]
 		},
 		"PMK-LNÄ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.42",
 			"lastDeparture": "23.47",
 			"medianDuration": 13,
 			"lines": ["I"]
 		},
 		"PMK-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.42",
 			"lastDeparture": "23.47",
 			"medianDuration": 30,
 			"lines": ["I"]
 		},
 		"PMK-ML": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.42",
 			"lastDeparture": "02.03",
 			"medianDuration": 2,
 			"lines": ["I", "K", "T"]
 		},
 		"PMK-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.42",
 			"lastDeparture": "23.47",
 			"medianDuration": 29,
 			"lines": ["I"]
 		},
 		"PMK-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.42",
 			"lastDeparture": "23.47",
 			"medianDuration": 32,
 			"lines": ["I"]
 		},
 		"PMK-OLK": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.04",
 			"lastDeparture": "01.39",
 			"medianDuration": 2,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"PMK-PLA": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.42",
 			"lastDeparture": "02.03",
 			"medianDuration": 6,
@@ -9481,49 +9306,49 @@
 			"lines": ["I"]
 		},
 		"PMK-PSL": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.04",
 			"lastDeparture": "01.39",
 			"medianDuration": 7,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"PMK-RKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "02.03",
 			"medianDuration": 14,
 			"lines": ["K", "T"]
 		},
 		"PMK-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.52",
 			"lastDeparture": "02.03",
 			"medianDuration": 19,
 			"lines": ["K", "T"]
 		},
 		"PMK-TKL": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.42",
 			"lastDeparture": "02.03",
 			"medianDuration": 8,
 			"lines": ["I", "K", "T"]
 		},
 		"PMK-TNA": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.42",
 			"lastDeparture": "02.03",
 			"medianDuration": 4,
 			"lines": ["I", "K", "T"]
 		},
 		"PMK-VEH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.42",
 			"lastDeparture": "23.47",
 			"medianDuration": 25,
 			"lines": ["I"]
 		},
 		"PMK-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.42",
 			"lastDeparture": "23.47",
 			"medianDuration": 27,
@@ -9831,7 +9656,7 @@
 			"lines": ["R", "T"]
 		},
 		"PSL-AVP": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.22",
 			"lastDeparture": "00.52",
 			"medianDuration": 26,
@@ -9859,18 +9684,33 @@
 			"lines": ["Z"]
 		},
 		"PSL-HKH": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.22",
 			"lastDeparture": "01.55",
 			"medianDuration": 18,
 			"lines": ["I", "K", "P", "T"]
 		},
 		"PSL-HKI": {
-			"trainsPerDay": 626,
+			"trainsPerDay": 627,
 			"firstDeparture": "04.12",
 			"lastDeparture": "01.46",
 			"medianDuration": 5,
-			"lines": ["A", "D", "E", "H", "I", "K", "L", "P", "R", "T", "U", "Y", "Z"]
+			"lines": [
+				"A",
+				"D",
+				"E",
+				"H",
+				"I",
+				"K",
+				"L",
+				"P",
+				"R",
+				"T",
+				"U",
+				"V",
+				"Y",
+				"Z"
+			]
 		},
 		"PSL-HKP": {
 			"trainsPerDay": 2,
@@ -9957,9 +9797,9 @@
 			"lines": ["L", "U"]
 		},
 		"PSL-KA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.40",
-			"lastDeparture": "00.15",
+			"lastDeparture": "16.40",
 			"medianDuration": 97,
 			"lines": ["Z"]
 		},
@@ -9971,14 +9811,14 @@
 			"lines": ["I", "P"]
 		},
 		"PSL-KÄP": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.22",
 			"lastDeparture": "01.55",
 			"medianDuration": 3,
 			"lines": ["I", "K", "P", "T"]
 		},
 		"PSL-KE": {
-			"trainsPerDay": 170,
+			"trainsPerDay": 171,
 			"firstDeparture": "04.25",
 			"lastDeparture": "01.55",
 			"medianDuration": 30,
@@ -10027,30 +9867,30 @@
 			"lines": ["H"]
 		},
 		"PSL-KRA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.40",
-			"lastDeparture": "00.15",
+			"lastDeparture": "16.40",
 			"medianDuration": 107,
 			"lines": ["Z"]
 		},
 		"PSL-KRS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.45",
 			"lastDeparture": "01.55",
 			"medianDuration": 24,
 			"lines": ["K", "T"]
 		},
 		"PSL-KTÖ": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.22",
 			"lastDeparture": "00.52",
 			"medianDuration": 31,
 			"lines": ["I", "P"]
 		},
 		"PSL-KV": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.40",
-			"lastDeparture": "00.15",
+			"lastDeparture": "16.40",
 			"medianDuration": 113,
 			"lines": ["Z"]
 		},
@@ -10062,14 +9902,14 @@
 			"lines": ["E", "L", "U"]
 		},
 		"PSL-KVY": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.45",
 			"lastDeparture": "01.55",
 			"medianDuration": 20,
 			"lines": ["K", "T"]
 		},
 		"PSL-LEN": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.22",
 			"lastDeparture": "00.52",
 			"medianDuration": 24,
@@ -10083,14 +9923,14 @@
 			"lines": ["Z"]
 		},
 		"PSL-LNÄ": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.22",
 			"lastDeparture": "00.52",
 			"medianDuration": 20,
 			"lines": ["I", "P"]
 		},
 		"PSL-LOH": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.22",
 			"lastDeparture": "00.52",
 			"medianDuration": 38,
@@ -10132,7 +9972,7 @@
 			"lines": ["H", "L", "U", "Y"]
 		},
 		"PSL-ML": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.22",
 			"lastDeparture": "01.55",
 			"medianDuration": 9,
@@ -10146,28 +9986,28 @@
 			"lines": ["Z"]
 		},
 		"PSL-MRL": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.22",
 			"lastDeparture": "00.52",
 			"medianDuration": 36,
 			"lines": ["I", "P"]
 		},
 		"PSL-MYR": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.22",
 			"lastDeparture": "00.52",
 			"medianDuration": 40,
 			"lines": ["I", "P"]
 		},
 		"PSL-NSL": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.40",
-			"lastDeparture": "00.15",
+			"lastDeparture": "16.40",
 			"medianDuration": 81,
 			"lines": ["Z"]
 		},
 		"PSL-OLK": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.22",
 			"lastDeparture": "01.55",
 			"medianDuration": 5,
@@ -10181,14 +10021,14 @@
 			"lines": ["A", "L"]
 		},
 		"PSL-PLA": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.22",
 			"lastDeparture": "01.55",
 			"medianDuration": 13,
 			"lines": ["I", "K", "P", "T"]
 		},
 		"PSL-PMK": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.22",
 			"lastDeparture": "01.55",
 			"medianDuration": 7,
@@ -10216,7 +10056,7 @@
 			"lines": ["D", "R"]
 		},
 		"PSL-RKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.45",
 			"lastDeparture": "01.55",
 			"medianDuration": 22,
@@ -10237,7 +10077,7 @@
 			"lines": ["R"]
 		},
 		"PSL-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.45",
 			"lastDeparture": "01.55",
 			"medianDuration": 27,
@@ -10265,7 +10105,7 @@
 			"lines": ["H", "L", "Y"]
 		},
 		"PSL-TKL": {
-			"trainsPerDay": 336,
+			"trainsPerDay": 337,
 			"firstDeparture": "04.22",
 			"lastDeparture": "01.55",
 			"medianDuration": 16,
@@ -10286,7 +10126,7 @@
 			"lines": ["H"]
 		},
 		"PSL-TNA": {
-			"trainsPerDay": 276,
+			"trainsPerDay": 277,
 			"firstDeparture": "04.22",
 			"lastDeparture": "01.55",
 			"medianDuration": 11,
@@ -10314,14 +10154,14 @@
 			"lines": ["D", "R"]
 		},
 		"PSL-UKÄ": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.40",
-			"lastDeparture": "00.15",
+			"lastDeparture": "16.40",
 			"medianDuration": 85,
 			"lines": ["Z"]
 		},
 		"PSL-VEH": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.22",
 			"lastDeparture": "00.52",
 			"medianDuration": 33,
@@ -10335,16 +10175,16 @@
 			"lines": ["R"]
 		},
 		"PSL-VKS": {
-			"trainsPerDay": 165,
+			"trainsPerDay": 166,
 			"firstDeparture": "04.22",
 			"lastDeparture": "00.52",
 			"medianDuration": 35,
 			"lines": ["I", "P"]
 		},
 		"PSL-VLH": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.40",
-			"lastDeparture": "00.15",
+			"lastDeparture": "16.40",
 			"medianDuration": 77,
 			"lines": ["Z"]
 		},
@@ -10538,11 +10378,11 @@
 			"lines": ["G"]
 		},
 		"RI-LH": {
-			"trainsPerDay": 18,
+			"trainsPerDay": 20,
 			"firstDeparture": "04.39",
 			"lastDeparture": "22.13",
 			"medianDuration": 43,
-			"lines": ["G"]
+			"lines": ["G", "V"]
 		},
 		"RI-LPÄ": {
 			"trainsPerDay": 12,
@@ -10643,102 +10483,102 @@
 			"lines": ["R"]
 		},
 		"RKL-HKH": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.12",
 			"lastDeparture": "03.48",
 			"medianDuration": 4,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"RKL-HKI": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.12",
 			"lastDeparture": "03.48",
 			"medianDuration": 26,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"RKL-KÄP": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.12",
 			"lastDeparture": "03.48",
 			"medianDuration": 19,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"RKL-KE": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.07",
 			"lastDeparture": "02.19",
 			"medianDuration": 8,
 			"lines": ["K", "T"]
 		},
 		"RKL-KRS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.07",
 			"lastDeparture": "02.19",
 			"medianDuration": 2,
 			"lines": ["K", "T"]
 		},
 		"RKL-KVY": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.12",
 			"lastDeparture": "03.48",
 			"medianDuration": 1,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"RKL-ML": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.12",
 			"lastDeparture": "03.48",
 			"medianDuration": 12,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"RKL-OLK": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.12",
 			"lastDeparture": "03.48",
 			"medianDuration": 17,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"RKL-PLA": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.12",
 			"lastDeparture": "03.48",
 			"medianDuration": 8,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"RKL-PMK": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.12",
 			"lastDeparture": "03.48",
 			"medianDuration": 14,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"RKL-PSL": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.12",
 			"lastDeparture": "03.48",
 			"medianDuration": 22,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"RKL-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.07",
 			"lastDeparture": "02.19",
 			"medianDuration": 5,
 			"lines": ["K", "T"]
 		},
 		"RKL-TKL": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.12",
 			"lastDeparture": "03.48",
 			"medianDuration": 6,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"RKL-TNA": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.12",
 			"lastDeparture": "03.48",
 			"medianDuration": 10,
-			"lines": ["K", "T"]
+			"lines": ["K", "T", "V"]
 		},
 		"RY-AIN": {
 			"trainsPerDay": 10,
@@ -11028,14 +10868,14 @@
 			"lines": ["K", "T"]
 		},
 		"SAV-KE": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.12",
 			"lastDeparture": "02.25",
 			"medianDuration": 3,
 			"lines": ["K", "T"]
 		},
 		"SAV-KRS": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.07",
 			"lastDeparture": "03.43",
 			"medianDuration": 2,
@@ -11084,7 +10924,7 @@
 			"lines": ["K", "T"]
 		},
 		"SAV-RKL": {
-			"trainsPerDay": 111,
+			"trainsPerDay": 112,
 			"firstDeparture": "04.07",
 			"lastDeparture": "03.43",
 			"medianDuration": 5,
@@ -11469,7 +11309,7 @@
 			"lines": ["R", "T"]
 		},
 		"TKL-AVP": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.51",
 			"lastDeparture": "23.56",
 			"medianDuration": 10,
@@ -11483,18 +11323,18 @@
 			"lines": ["Z"]
 		},
 		"TKL-HKH": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.51",
 			"lastDeparture": "02.12",
 			"medianDuration": 2,
 			"lines": ["I", "K", "T"]
 		},
 		"TKL-HKI": {
-			"trainsPerDay": 339,
+			"trainsPerDay": 340,
 			"firstDeparture": "04.19",
 			"lastDeparture": "03.55",
 			"medianDuration": 20,
-			"lines": ["D", "I", "K", "P", "R", "T", "Z"]
+			"lines": ["D", "I", "K", "P", "R", "T", "V", "Z"]
 		},
 		"TKL-HL": {
 			"trainsPerDay": 11,
@@ -11553,9 +11393,9 @@
 			"lines": ["D", "R", "T"]
 		},
 		"TKL-KA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.49",
-			"lastDeparture": "00.24",
+			"lastDeparture": "16.49",
 			"medianDuration": 88,
 			"lines": ["Z"]
 		},
@@ -11567,56 +11407,56 @@
 			"lines": ["I"]
 		},
 		"TKL-KÄP": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.19",
 			"lastDeparture": "03.55",
 			"medianDuration": 12,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"TKL-KE": {
-			"trainsPerDay": 170,
+			"trainsPerDay": 171,
 			"firstDeparture": "04.34",
 			"lastDeparture": "02.12",
 			"medianDuration": 14,
 			"lines": ["D", "K", "R", "T", "Z"]
 		},
 		"TKL-KRA": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.49",
-			"lastDeparture": "00.24",
+			"lastDeparture": "16.49",
 			"medianDuration": 98,
 			"lines": ["Z"]
 		},
 		"TKL-KRS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.01",
 			"lastDeparture": "02.12",
 			"medianDuration": 8,
 			"lines": ["K", "T"]
 		},
 		"TKL-KTÖ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.51",
 			"lastDeparture": "23.56",
 			"medianDuration": 15,
 			"lines": ["I"]
 		},
 		"TKL-KV": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.49",
-			"lastDeparture": "00.24",
+			"lastDeparture": "16.49",
 			"medianDuration": 104,
 			"lines": ["Z"]
 		},
 		"TKL-KVY": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.01",
 			"lastDeparture": "02.12",
 			"medianDuration": 4,
 			"lines": ["K", "T"]
 		},
 		"TKL-LEN": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.51",
 			"lastDeparture": "23.56",
 			"medianDuration": 8,
@@ -11630,14 +11470,14 @@
 			"lines": ["Z"]
 		},
 		"TKL-LNÄ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.51",
 			"lastDeparture": "23.56",
 			"medianDuration": 5,
 			"lines": ["I"]
 		},
 		"TKL-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.51",
 			"lastDeparture": "23.56",
 			"medianDuration": 22,
@@ -11651,11 +11491,11 @@
 			"lines": ["R"]
 		},
 		"TKL-ML": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.19",
 			"lastDeparture": "03.55",
 			"medianDuration": 6,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"TKL-MLÄ": {
 			"trainsPerDay": 18,
@@ -11665,46 +11505,46 @@
 			"lines": ["Z"]
 		},
 		"TKL-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.51",
 			"lastDeparture": "23.56",
 			"medianDuration": 20,
 			"lines": ["I"]
 		},
 		"TKL-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.51",
 			"lastDeparture": "23.56",
 			"medianDuration": 24,
 			"lines": ["I"]
 		},
 		"TKL-NSL": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.49",
-			"lastDeparture": "00.24",
+			"lastDeparture": "16.49",
 			"medianDuration": 72,
 			"lines": ["Z"]
 		},
 		"TKL-OLK": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.19",
 			"lastDeparture": "03.55",
 			"medianDuration": 10,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"TKL-PLA": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.19",
 			"lastDeparture": "03.55",
 			"medianDuration": 2,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"TKL-PMK": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.19",
 			"lastDeparture": "03.55",
 			"medianDuration": 8,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"TKL-POH": {
 			"trainsPerDay": 56,
@@ -11721,11 +11561,11 @@
 			"lines": ["R"]
 		},
 		"TKL-PSL": {
-			"trainsPerDay": 339,
+			"trainsPerDay": 340,
 			"firstDeparture": "04.19",
 			"lastDeparture": "03.55",
 			"medianDuration": 15,
-			"lines": ["D", "I", "K", "P", "R", "T", "Z"]
+			"lines": ["D", "I", "K", "P", "R", "T", "V", "Z"]
 		},
 		"TKL-RI": {
 			"trainsPerDay": 41,
@@ -11735,7 +11575,7 @@
 			"lines": ["D", "R"]
 		},
 		"TKL-RKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.01",
 			"lastDeparture": "02.12",
 			"medianDuration": 6,
@@ -11756,7 +11596,7 @@
 			"lines": ["R"]
 		},
 		"TKL-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "05.01",
 			"lastDeparture": "02.12",
 			"medianDuration": 11,
@@ -11770,11 +11610,11 @@
 			"lines": ["R"]
 		},
 		"TKL-TNA": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.19",
 			"lastDeparture": "03.55",
 			"medianDuration": 4,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"TKL-TPE": {
 			"trainsPerDay": 10,
@@ -11791,14 +11631,14 @@
 			"lines": ["D", "R"]
 		},
 		"TKL-UKÄ": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.49",
-			"lastDeparture": "00.24",
+			"lastDeparture": "16.49",
 			"medianDuration": 76,
 			"lines": ["Z"]
 		},
 		"TKL-VEH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.51",
 			"lastDeparture": "23.56",
 			"medianDuration": 17,
@@ -11812,16 +11652,16 @@
 			"lines": ["R"]
 		},
 		"TKL-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.51",
 			"lastDeparture": "23.56",
 			"medianDuration": 19,
 			"lines": ["I"]
 		},
 		"TKL-VLH": {
-			"trainsPerDay": 3,
+			"trainsPerDay": 2,
 			"firstDeparture": "15.49",
-			"lastDeparture": "00.24",
+			"lastDeparture": "16.49",
 			"medianDuration": 68,
 			"lines": ["Z"]
 		},
@@ -11896,11 +11736,11 @@
 			"lines": ["M", "R"]
 		},
 		"TL-PRL": {
-			"trainsPerDay": 13,
+			"trainsPerDay": 12,
 			"firstDeparture": "06.59",
 			"lastDeparture": "23.59",
 			"medianDuration": 17,
-			"lines": ["R", "V"]
+			"lines": ["R"]
 		},
 		"TL-PSL": {
 			"trainsPerDay": 9,
@@ -12085,25 +11925,25 @@
 			"lines": ["H"]
 		},
 		"TNA-AVP": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.46",
 			"lastDeparture": "23.51",
 			"medianDuration": 14,
 			"lines": ["I"]
 		},
 		"TNA-HKH": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.46",
 			"lastDeparture": "02.07",
 			"medianDuration": 6,
 			"lines": ["I", "K", "T"]
 		},
 		"TNA-HKI": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.00",
 			"lastDeparture": "01.35",
 			"medianDuration": 16,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"TNA-HPL": {
 			"trainsPerDay": 56,
@@ -12127,102 +11967,102 @@
 			"lines": ["I"]
 		},
 		"TNA-KÄP": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.00",
 			"lastDeparture": "01.35",
 			"medianDuration": 8,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"TNA-KE": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.56",
 			"lastDeparture": "02.07",
 			"medianDuration": 19,
 			"lines": ["K", "T"]
 		},
 		"TNA-KRS": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.56",
 			"lastDeparture": "02.07",
 			"medianDuration": 13,
 			"lines": ["K", "T"]
 		},
 		"TNA-KTÖ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.46",
 			"lastDeparture": "23.51",
 			"medianDuration": 19,
 			"lines": ["I"]
 		},
 		"TNA-KVY": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.56",
 			"lastDeparture": "02.07",
 			"medianDuration": 9,
 			"lines": ["K", "T"]
 		},
 		"TNA-LEN": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.46",
 			"lastDeparture": "23.51",
 			"medianDuration": 12,
 			"lines": ["I"]
 		},
 		"TNA-LNÄ": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.46",
 			"lastDeparture": "23.51",
 			"medianDuration": 9,
 			"lines": ["I"]
 		},
 		"TNA-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.46",
 			"lastDeparture": "23.51",
 			"medianDuration": 26,
 			"lines": ["I"]
 		},
 		"TNA-ML": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.00",
 			"lastDeparture": "01.35",
 			"medianDuration": 2,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"TNA-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.46",
 			"lastDeparture": "23.51",
 			"medianDuration": 25,
 			"lines": ["I"]
 		},
 		"TNA-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.46",
 			"lastDeparture": "23.51",
 			"medianDuration": 28,
 			"lines": ["I"]
 		},
 		"TNA-OLK": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.00",
 			"lastDeparture": "01.35",
 			"medianDuration": 6,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"TNA-PLA": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.46",
 			"lastDeparture": "02.07",
 			"medianDuration": 2,
 			"lines": ["I", "K", "T"]
 		},
 		"TNA-PMK": {
-			"trainsPerDay": 222,
+			"trainsPerDay": 223,
 			"firstDeparture": "04.00",
 			"lastDeparture": "01.35",
 			"medianDuration": 4,
-			"lines": ["K", "P", "T"]
+			"lines": ["K", "P", "T", "V"]
 		},
 		"TNA-POH": {
 			"trainsPerDay": 56,
@@ -12232,42 +12072,42 @@
 			"lines": ["I"]
 		},
 		"TNA-PSL": {
-			"trainsPerDay": 278,
+			"trainsPerDay": 279,
 			"firstDeparture": "04.00",
 			"lastDeparture": "01.35",
 			"medianDuration": 11,
-			"lines": ["I", "K", "P", "T"]
+			"lines": ["I", "K", "P", "T", "V"]
 		},
 		"TNA-RKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.56",
 			"lastDeparture": "02.07",
 			"medianDuration": 10,
 			"lines": ["K", "T"]
 		},
 		"TNA-SAV": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.56",
 			"lastDeparture": "02.07",
 			"medianDuration": 15,
 			"lines": ["K", "T"]
 		},
 		"TNA-TKL": {
-			"trainsPerDay": 217,
+			"trainsPerDay": 218,
 			"firstDeparture": "04.46",
 			"lastDeparture": "02.07",
 			"medianDuration": 4,
 			"lines": ["I", "K", "T"]
 		},
 		"TNA-VEH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.46",
 			"lastDeparture": "23.51",
 			"medianDuration": 21,
 			"lines": ["I"]
 		},
 		"TNA-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.46",
 			"lastDeparture": "23.51",
 			"medianDuration": 23,
@@ -12299,7 +12139,7 @@
 			"firstDeparture": "04.29",
 			"lastDeparture": "00.39",
 			"medianDuration": 36,
-			"lines": ["L"]
+			"lines": ["L", "U"]
 		},
 		"TOL-JRS": {
 			"trainsPerDay": 41,
@@ -12358,7 +12198,7 @@
 			"lines": ["L", "U"]
 		},
 		"TOL-MÄK": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.29",
 			"lastDeparture": "00.39",
 			"medianDuration": 28,
@@ -12372,7 +12212,7 @@
 			"lines": ["L", "U"]
 		},
 		"TOL-PJM": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.29",
 			"lastDeparture": "00.39",
 			"medianDuration": 30,
@@ -12386,7 +12226,7 @@
 			"lines": ["L", "U"]
 		},
 		"TOL-VMO": {
-			"trainsPerDay": 7,
+			"trainsPerDay": 4,
 			"firstDeparture": "04.29",
 			"lastDeparture": "00.39",
 			"medianDuration": 31,
@@ -12847,27 +12687,6 @@
 			"medianDuration": 36,
 			"lines": ["R"]
 		},
-		"UKÄ-HAA": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.12",
-			"lastDeparture": "06.55",
-			"medianDuration": 57,
-			"lines": ["Z"]
-		},
-		"UKÄ-HKI": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.12",
-			"lastDeparture": "06.55",
-			"medianDuration": 88,
-			"lines": ["Z"]
-		},
-		"UKÄ-HNN": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.12",
-			"lastDeparture": "06.55",
-			"medianDuration": 32,
-			"lines": ["Z"]
-		},
 		"UKÄ-IKR": {
 			"trainsPerDay": 4,
 			"firstDeparture": "07.24",
@@ -12876,18 +12695,11 @@
 			"lines": ["O"]
 		},
 		"UKÄ-KA": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.24",
-			"lastDeparture": "01.33",
+			"lastDeparture": "19.46",
 			"medianDuration": 12,
 			"lines": ["O", "Z"]
-		},
-		"UKÄ-KE": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.12",
-			"lastDeparture": "06.55",
-			"medianDuration": 65,
-			"lines": ["Z"]
 		},
 		"UKÄ-KLN": {
 			"trainsPerDay": 4,
@@ -12897,9 +12709,9 @@
 			"lines": ["O"]
 		},
 		"UKÄ-KRA": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.24",
-			"lastDeparture": "01.33",
+			"lastDeparture": "19.46",
 			"medianDuration": 22,
 			"lines": ["O", "Z"]
 		},
@@ -12918,9 +12730,9 @@
 			"lines": ["O"]
 		},
 		"UKÄ-KV": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.24",
-			"lastDeparture": "01.33",
+			"lastDeparture": "19.46",
 			"medianDuration": 27,
 			"lines": ["O", "Z"]
 		},
@@ -12932,8 +12744,8 @@
 			"lines": ["O"]
 		},
 		"UKÄ-LH": {
-			"trainsPerDay": 8,
-			"firstDeparture": "05.12",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.55",
 			"lastDeparture": "18.31",
 			"medianDuration": 16,
 			"lines": ["O", "Z"]
@@ -12945,26 +12757,12 @@
 			"medianDuration": 39,
 			"lines": ["O"]
 		},
-		"UKÄ-MLÄ": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.12",
-			"lastDeparture": "06.55",
-			"medianDuration": 45,
-			"lines": ["Z"]
-		},
 		"UKÄ-NSL": {
-			"trainsPerDay": 8,
-			"firstDeparture": "05.12",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.55",
 			"lastDeparture": "18.31",
 			"medianDuration": 3,
 			"lines": ["O", "Z"]
-		},
-		"UKÄ-PSL": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.12",
-			"lastDeparture": "06.55",
-			"medianDuration": 83,
-			"lines": ["Z"]
 		},
 		"UKÄ-PTI": {
 			"trainsPerDay": 4,
@@ -12972,13 +12770,6 @@
 			"lastDeparture": "19.46",
 			"medianDuration": 70,
 			"lines": ["O"]
-		},
-		"UKÄ-TKL": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.12",
-			"lastDeparture": "06.55",
-			"medianDuration": 74,
-			"lines": ["Z"]
 		},
 		"UKÄ-TSL": {
 			"trainsPerDay": 4,
@@ -12988,28 +12779,28 @@
 			"lines": ["O"]
 		},
 		"UKÄ-VLH": {
-			"trainsPerDay": 8,
-			"firstDeparture": "05.12",
+			"trainsPerDay": 6,
+			"firstDeparture": "06.55",
 			"lastDeparture": "18.31",
 			"medianDuration": 8,
 			"lines": ["O", "Z"]
 		},
 		"VEH-AVP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 7,
 			"lines": ["P"]
 		},
 		"VEH-HKH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 17,
 			"lines": ["P"]
 		},
 		"VEH-HKI": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 39,
@@ -13037,77 +12828,77 @@
 			"lines": ["I"]
 		},
 		"VEH-KÄP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 32,
 			"lines": ["P"]
 		},
 		"VEH-KTÖ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 2,
 			"lines": ["P"]
 		},
 		"VEH-LEN": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 9,
 			"lines": ["P"]
 		},
 		"VEH-LNÄ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 14,
 			"lines": ["P"]
 		},
 		"VEH-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.08",
 			"lastDeparture": "00.13",
 			"medianDuration": 5,
 			"lines": ["I"]
 		},
 		"VEH-ML": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 25,
 			"lines": ["P"]
 		},
 		"VEH-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.08",
 			"lastDeparture": "00.13",
 			"medianDuration": 3,
 			"lines": ["I"]
 		},
 		"VEH-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.08",
 			"lastDeparture": "00.13",
 			"medianDuration": 6,
 			"lines": ["I"]
 		},
 		"VEH-OLK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 30,
 			"lines": ["P"]
 		},
 		"VEH-PLA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 21,
 			"lines": ["P"]
 		},
 		"VEH-PMK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 27,
@@ -13121,28 +12912,28 @@
 			"lines": ["I"]
 		},
 		"VEH-PSL": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 35,
 			"lines": ["I", "P"]
 		},
 		"VEH-TKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 19,
 			"lines": ["P"]
 		},
 		"VEH-TNA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.41",
 			"lastDeparture": "01.11",
 			"medianDuration": 23,
 			"lines": ["P"]
 		},
 		"VEH-VKS": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.08",
 			"lastDeparture": "00.13",
 			"medianDuration": 1,
@@ -13289,21 +13080,21 @@
 			"lines": ["R"]
 		},
 		"VKS-AVP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 9,
 			"lines": ["P"]
 		},
 		"VKS-HKH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 19,
 			"lines": ["P"]
 		},
 		"VKS-HKI": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 41,
@@ -13331,77 +13122,77 @@
 			"lines": ["I"]
 		},
 		"VKS-KÄP": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 33,
 			"lines": ["P"]
 		},
 		"VKS-KTÖ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 4,
 			"lines": ["P"]
 		},
 		"VKS-LEN": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 11,
 			"lines": ["P"]
 		},
 		"VKS-LNÄ": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 15,
 			"lines": ["P"]
 		},
 		"VKS-LOH": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.10",
 			"lastDeparture": "00.15",
 			"medianDuration": 3,
 			"lines": ["I"]
 		},
 		"VKS-ML": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 27,
 			"lines": ["P"]
 		},
 		"VKS-MRL": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.10",
 			"lastDeparture": "00.15",
 			"medianDuration": 1,
 			"lines": ["I"]
 		},
 		"VKS-MYR": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "05.10",
 			"lastDeparture": "00.15",
 			"medianDuration": 5,
 			"lines": ["I"]
 		},
 		"VKS-OLK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 31,
 			"lines": ["P"]
 		},
 		"VKS-PLA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 23,
 			"lines": ["P"]
 		},
 		"VKS-PMK": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 29,
@@ -13415,53 +13206,32 @@
 			"lines": ["I"]
 		},
 		"VKS-PSL": {
-			"trainsPerDay": 166,
+			"trainsPerDay": 167,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 36,
 			"lines": ["I", "P"]
 		},
 		"VKS-TKL": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 21,
 			"lines": ["P"]
 		},
 		"VKS-TNA": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 25,
 			"lines": ["P"]
 		},
 		"VKS-VEH": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.40",
 			"lastDeparture": "01.10",
 			"medianDuration": 1,
 			"lines": ["P"]
-		},
-		"VLH-HAA": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.20",
-			"lastDeparture": "07.04",
-			"medianDuration": 49,
-			"lines": ["Z"]
-		},
-		"VLH-HKI": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.20",
-			"lastDeparture": "07.04",
-			"medianDuration": 80,
-			"lines": ["Z"]
-		},
-		"VLH-HNN": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.20",
-			"lastDeparture": "07.04",
-			"medianDuration": 24,
-			"lines": ["Z"]
 		},
 		"VLH-IKR": {
 			"trainsPerDay": 4,
@@ -13471,18 +13241,11 @@
 			"lines": ["O"]
 		},
 		"VLH-KA": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.16",
-			"lastDeparture": "01.24",
+			"lastDeparture": "19.38",
 			"medianDuration": 20,
 			"lines": ["O", "Z"]
-		},
-		"VLH-KE": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.20",
-			"lastDeparture": "07.04",
-			"medianDuration": 57,
-			"lines": ["Z"]
 		},
 		"VLH-KLN": {
 			"trainsPerDay": 4,
@@ -13492,9 +13255,9 @@
 			"lines": ["O"]
 		},
 		"VLH-KRA": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.16",
-			"lastDeparture": "01.24",
+			"lastDeparture": "19.38",
 			"medianDuration": 30,
 			"lines": ["O", "Z"]
 		},
@@ -13513,9 +13276,9 @@
 			"lines": ["O"]
 		},
 		"VLH-KV": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.16",
-			"lastDeparture": "01.24",
+			"lastDeparture": "19.38",
 			"medianDuration": 35,
 			"lines": ["O", "Z"]
 		},
@@ -13527,8 +13290,8 @@
 			"lines": ["O"]
 		},
 		"VLH-LH": {
-			"trainsPerDay": 8,
-			"firstDeparture": "05.20",
+			"trainsPerDay": 6,
+			"firstDeparture": "07.04",
 			"lastDeparture": "18.40",
 			"medianDuration": 7,
 			"lines": ["O", "Z"]
@@ -13540,26 +13303,12 @@
 			"medianDuration": 47,
 			"lines": ["O"]
 		},
-		"VLH-MLÄ": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.20",
-			"lastDeparture": "07.04",
-			"medianDuration": 37,
-			"lines": ["Z"]
-		},
 		"VLH-NSL": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.16",
-			"lastDeparture": "01.24",
+			"lastDeparture": "19.38",
 			"medianDuration": 4,
 			"lines": ["O", "Z"]
-		},
-		"VLH-PSL": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.20",
-			"lastDeparture": "07.04",
-			"medianDuration": 75,
-			"lines": ["Z"]
 		},
 		"VLH-PTI": {
 			"trainsPerDay": 4,
@@ -13567,13 +13316,6 @@
 			"lastDeparture": "19.38",
 			"medianDuration": 78,
 			"lines": ["O"]
-		},
-		"VLH-TKL": {
-			"trainsPerDay": 3,
-			"firstDeparture": "05.20",
-			"lastDeparture": "07.04",
-			"medianDuration": 66,
-			"lines": ["Z"]
 		},
 		"VLH-TSL": {
 			"trainsPerDay": 4,
@@ -13583,9 +13325,9 @@
 			"lines": ["O"]
 		},
 		"VLH-UKÄ": {
-			"trainsPerDay": 8,
+			"trainsPerDay": 7,
 			"firstDeparture": "07.16",
-			"lastDeparture": "01.24",
+			"lastDeparture": "19.38",
 			"medianDuration": 8,
 			"lines": ["O", "Z"]
 		},
@@ -13597,21 +13339,21 @@
 			"lines": ["L"]
 		},
 		"VMO-HKI": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "05.01",
 			"lastDeparture": "01.11",
 			"medianDuration": 12,
 			"lines": ["A", "L"]
 		},
 		"VMO-HPL": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "05.01",
 			"lastDeparture": "01.11",
 			"medianDuration": 1,
 			"lines": ["A", "L"]
 		},
 		"VMO-ILA": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "05.01",
 			"lastDeparture": "01.11",
 			"medianDuration": 4,
@@ -13695,7 +13437,7 @@
 			"lines": ["A", "L"]
 		},
 		"VMO-PSL": {
-			"trainsPerDay": 94,
+			"trainsPerDay": 91,
 			"firstDeparture": "05.01",
 			"lastDeparture": "01.11",
 			"medianDuration": 6,
@@ -13716,7 +13458,8 @@
 			"lastDeparture": "23.26",
 			"endpoints": ["HKI", "LPV"],
 			"via": null,
-			"stations": ["HKI", "PSL", "ILA", "HPL", "VMO", "PJM", "MÄK", "LPV"]
+			"stations": ["HKI", "PSL", "ILA", "HPL", "VMO", "PJM", "MÄK", "LPV"],
+			"returnStops": []
 		},
 		"D": {
 			"trainsPerDay": 2,
@@ -13735,7 +13478,8 @@
 				"RY",
 				"TU",
 				"HL"
-			]
+			],
+			"returnStops": []
 		},
 		"E": {
 			"trainsPerDay": 69,
@@ -13754,7 +13498,8 @@
 				"KVH",
 				"EPO",
 				"KLH"
-			]
+			],
+			"returnStops": []
 		},
 		"G": {
 			"trainsPerDay": 34,
@@ -13762,7 +13507,8 @@
 			"lastDeparture": "22.13",
 			"endpoints": ["RI", "LH"],
 			"via": null,
-			"stations": ["RI", "HK", "OI", "MLA", "LAA", "JR", "HR", "LH"]
+			"stations": ["RI", "HK", "OI", "MLA", "LAA", "JR", "HR", "LH"],
+			"returnStops": []
 		},
 		"H": {
 			"trainsPerDay": 16,
@@ -13789,10 +13535,11 @@
 				"STA",
 				"HKP",
 				"HNK"
-			]
+			],
+			"returnStops": []
 		},
 		"I": {
-			"trainsPerDay": 106,
+			"trainsPerDay": 107,
 			"firstDeparture": "04.31",
 			"lastDeparture": "23.36",
 			"endpoints": ["HKI", "HKI"],
@@ -13821,7 +13568,8 @@
 				"POH",
 				"HPL",
 				"ILA"
-			]
+			],
+			"returnStops": ["PSL", "HKI"]
 		},
 		"K": {
 			"trainsPerDay": 220,
@@ -13845,10 +13593,11 @@
 				"KRS",
 				"SAV",
 				"KE"
-			]
+			],
+			"returnStops": []
 		},
 		"L": {
-			"trainsPerDay": 14,
+			"trainsPerDay": 11,
 			"firstDeparture": "04.27",
 			"lastDeparture": "00.37",
 			"endpoints": ["HKI", "KKN"],
@@ -13873,7 +13622,8 @@
 				"TOL",
 				"KKN",
 				"STI"
-			]
+			],
+			"returnStops": []
 		},
 		"M": {
 			"trainsPerDay": 32,
@@ -13881,7 +13631,8 @@
 			"lastDeparture": "22.06",
 			"endpoints": ["TPE", "NOA"],
 			"via": null,
-			"stations": ["TL", "VIA", "LPÄ", "TPE", "TSO", "NOA"]
+			"stations": ["TL", "VIA", "LPÄ", "TPE", "TSO", "NOA"],
+			"returnStops": []
 		},
 		"O": {
 			"trainsPerDay": 20,
@@ -13905,10 +13656,11 @@
 				"NSL",
 				"VLH",
 				"LH"
-			]
+			],
+			"returnStops": []
 		},
 		"P": {
-			"trainsPerDay": 110,
+			"trainsPerDay": 111,
 			"firstDeparture": "04.18",
 			"lastDeparture": "00.48",
 			"endpoints": ["HKI", "HKI"],
@@ -13937,7 +13689,8 @@
 				"PMK",
 				"OLK",
 				"KÄP"
-			]
+			],
+			"returnStops": ["PSL", "HKI"]
 		},
 		"R": {
 			"trainsPerDay": 88,
@@ -13967,7 +13720,8 @@
 				"TPE",
 				"TSO",
 				"NOA"
-			]
+			],
+			"returnStops": []
 		},
 		"T": {
 			"trainsPerDay": 5,
@@ -13997,17 +13751,19 @@
 				"JK",
 				"HY",
 				"RI"
-			]
+			],
+			"returnStops": []
 		},
 		"U": {
-			"trainsPerDay": 68,
+			"trainsPerDay": 71,
 			"firstDeparture": "06.07",
-			"lastDeparture": "23.12",
+			"lastDeparture": "00.07",
 			"endpoints": ["HKI", "KKN"],
 			"via": null,
 			"stations": [
 				"HKI",
 				"PSL",
+				"ILA",
 				"HPL",
 				"LPV",
 				"KIL",
@@ -14020,7 +13776,8 @@
 				"JRS",
 				"TOL",
 				"KKN"
-			]
+			],
+			"returnStops": []
 		},
 		"Y": {
 			"trainsPerDay": 14,
@@ -14038,7 +13795,8 @@
 				"MAS",
 				"KKN",
 				"STI"
-			]
+			],
+			"returnStops": []
 		},
 		"Z": {
 			"trainsPerDay": 38,
@@ -14061,7 +13819,8 @@
 				"KA",
 				"KRA",
 				"KV"
-			]
+			],
+			"returnStops": []
 		}
 	},
 	"served": [
@@ -15022,6 +14781,7 @@
 		"KÄP-MLÄ",
 		"KÄP-MRL",
 		"KÄP-MYR",
+		"KÄP-NOA",
 		"KÄP-OLK",
 		"KÄP-PLA",
 		"KÄP-PMK",

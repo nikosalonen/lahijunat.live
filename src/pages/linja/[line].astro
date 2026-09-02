@@ -44,7 +44,7 @@ const breadcrumbs = [
 
 <Layout
 	title={`${line}-juna – aikataulu ja asemat | Lähijunat Live`}
-	description={`${line}-juna ${route}: asemat ja reaaliaikaiset lähtöajat. Junia noin ${stats.trainsPerDay} vuorokaudessa, ensimmäinen ${stats.firstDeparture} ja viimeinen ${stats.lastDeparture}.`}
+	description={`${line}-juna ${route}: asemat ja reaaliaikaiset lähtöajat. Junat kulkevat klo ${stats.firstDeparture}–${stats.lastDeparture}.`}
 	breadcrumbs={breadcrumbs}
 	stations={stations}
 >
@@ -62,7 +62,6 @@ const breadcrumbs = [
 				stations={stations}
 				introKey="lineIntro"
 				introValues={{
-					count: stats.trainsPerDay,
 					first: stats.firstDeparture,
 					last: stats.lastDeparture,
 				}}
@@ -70,7 +69,7 @@ const breadcrumbs = [
 			<StationLinks
 				client:visible
 				stations={stations}
-				codes={stats.stations}
+				codes={[...stats.stations, ...stats.returnStops]}
 				titleKey="allStations"
 				variant="sequence"
 				showHeading={false}

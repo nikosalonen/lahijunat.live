@@ -278,6 +278,21 @@ function orderLineStations(runs: string[][]): string[] {
 }
 
 /**
+ * The stops a run repeats after its last new station: how a ring line gets
+ * back to where it started. Empty for a run that never revisits a stop.
+ */
+function returnStops(run: string[]): string[] {
+	const seen = new Set<string>();
+	let lastNew = -1;
+	run.forEach((code, index) => {
+		if (seen.has(code)) return;
+		seen.add(code);
+		lastNew = index;
+	});
+	return run.slice(lastNew + 1);
+}
+
+/**
  * What each commuter line looks like on this day: how many trains it runs, when
  * they start and finish, and every run it makes grouped by where it starts and
  * ends. Runs are grouped rather than merged because the longest run of the day
@@ -453,6 +468,9 @@ async function main(): Promise<void> {
 					? (typicalRun[Math.floor(typicalRun.length / 2)] ?? null)
 					: null,
 			stations,
+			// Deduplicating the list above loses the way back round a ring; keep
+			// it so the line page can draw the whole loop
+			returnStops: pairEnds[0] === pairEnds[1] ? returnStops(typicalRun) : [],
 		};
 	}
 

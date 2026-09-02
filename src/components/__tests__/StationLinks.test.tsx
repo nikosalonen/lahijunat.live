@@ -74,25 +74,6 @@ describe("StationLinks", () => {
 });
 
 describe("StationLinks on a page", () => {
-	it("sorts alphabetically and omits the heading when asked", () => {
-		const { container, queryByRole } = render(
-			<StationLinks
-				stations={stations}
-				codes={["KÄP", "HKI", "KE"]}
-				titleKey="allStations"
-				variant="page"
-				sortByName
-				showHeading={false}
-			/>,
-		);
-
-		const labels = [...container.querySelectorAll("a")].map(
-			(a) => a.textContent,
-		);
-		expect(labels).toEqual(["Helsinki", "Kerava", "Käpylä"]);
-		expect(queryByRole("heading")).toBeNull();
-	});
-
 	it("keeps the given order by default", () => {
 		const { container } = render(
 			<StationLinks
@@ -106,5 +87,57 @@ describe("StationLinks on a page", () => {
 			(a) => a.textContent,
 		);
 		expect(labels).toEqual(["Kerava", "Helsinki"]);
+	});
+});
+
+describe("StationLinks as a route", () => {
+	it("marks the ends of the line and keeps travel order", () => {
+		const { container } = render(
+			<StationLinks
+				stations={stations}
+				codes={["HKI", "KÄP", "KE"]}
+				titleKey="allStations"
+				variant="sequence"
+				showHeading={false}
+			/>,
+		);
+
+		const items = [...container.querySelectorAll("li")];
+		expect(items.map((li) => li.textContent)).toEqual([
+			"Helsinki",
+			"Käpylä",
+			"Kerava",
+		]);
+		expect(items.map((li) => li.hasAttribute("data-terminus"))).toEqual([
+			true,
+			false,
+			true,
+		]);
+	});
+
+	it("draws a ring all the way back to its first station", () => {
+		const { container } = render(
+			<StationLinks
+				stations={stations}
+				codes={["HKI", "KÄP", "KE", "HKI"]}
+				titleKey="allStations"
+				variant="sequence"
+				showHeading={false}
+			/>,
+		);
+
+		const items = [...container.querySelectorAll("li")];
+		expect(items.map((li) => li.textContent)).toEqual([
+			"Helsinki",
+			"Käpylä",
+			"Kerava",
+			"Helsinki",
+		]);
+		expect(items.map((li) => li.hasAttribute("data-terminus"))).toEqual([
+			true,
+			false,
+			false,
+			true,
+		]);
 	});
 });
