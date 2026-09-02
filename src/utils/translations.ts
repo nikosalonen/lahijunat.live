@@ -42,6 +42,9 @@ export const translations = {
 		filterStations: "Suodata asemia…",
 		ringLine: "Rengaslinja",
 		homePage: "Etusivulle",
+		notFoundPageTitle: "Sivua ei löytynyt",
+		notFoundPageMessage:
+			"Osoite voi olla kirjoitettu väärin tai sivu on siirretty.",
 		lineHeading: "{line}-juna",
 		lineIntro:
 			"Junat kulkevat klo {first}–{last}. Valitse asema nähdäksesi sen reaaliaikaiset lähdöt.",
@@ -190,6 +193,8 @@ export const translations = {
 		filterStations: "Filter stations…",
 		ringLine: "Loop line",
 		homePage: "Home",
+		notFoundPageTitle: "Page not found",
+		notFoundPageMessage: "The address may be mistyped, or the page has moved.",
 		lineHeading: "{line} train",
 		lineIntro:
 			"Trains run from {first} to {last}. Choose a station to see its live departures.",
@@ -337,6 +342,9 @@ export const translations = {
 		filterStations: "Filtrera stationer…",
 		ringLine: "Ringlinje",
 		homePage: "Till startsidan",
+		notFoundPageTitle: "Sidan hittades inte",
+		notFoundPageMessage:
+			"Adressen kan vara felskriven eller sidan har flyttats.",
 		lineHeading: "{line}-tåget",
 		lineIntro:
 			"Tågen går kl. {first}–{last}. Välj en station för att se dess avgångar i realtid.",
