@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { fetchWithRetry } from "./fetchWithRetry";
 
 /**
  * Regenerates src/data/stations-snapshot.json from the live STATION_QUERY in
@@ -47,7 +48,7 @@ interface GraphQLStation {
 
 async function main(): Promise<void> {
 	const query = extractStationQuery();
-	const response = await fetch(GRAPHQL_URL, {
+	const response = await fetchWithRetry(GRAPHQL_URL, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",

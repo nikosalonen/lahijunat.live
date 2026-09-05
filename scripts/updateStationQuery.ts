@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { fetchWithRetry } from "./fetchWithRetry";
 
 // Read package.json dynamically for version
 function getVersion(): string {
@@ -51,7 +52,7 @@ function delay(ms: number): Promise<void> {
 async function fetchAllStations(): Promise<Station[]> {
 	console.log("Fetching all stations from GraphQL API...");
 
-	const response = await fetch(
+	const response = await fetchWithRetry(
 		"https://rata.digitraffic.fi/api/v2/graphql/graphql",
 		{
 			method: "POST",
@@ -106,12 +107,18 @@ async function fetchAllStations(): Promise<Station[]> {
 async function hasCommuterTrains(stationCode: string): Promise<boolean | null> {
 	try {
 		const url = `https://rata.digitraffic.fi/api/v1/live-trains/station/${stationCode}?minutes_before_departure=1440&minutes_after_departure=0&minutes_before_arrival=0&minutes_after_arrival=0&train_categories=Commuter`;
-		const response = await fetch(url, {
-			headers: {
-				"Accept-Encoding": "gzip",
-				"User-Agent": USER_AGENT,
+		// A failed check only preserves the station's current status, so one
+		// quick retry is enough here; the long backoff is for the one-shot calls.
+		const response = await fetchWithRetry(
+			url,
+			{
+				headers: {
+					"Accept-Encoding": "gzip",
+					"User-Agent": USER_AGENT,
+				},
 			},
-		});
+			{ attempts: 2 },
+		);
 
 		if (!response.ok) {
 			console.error(`Error checking ${stationCode}: HTTP ${response.status}`);
