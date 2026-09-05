@@ -28,6 +28,10 @@ import {
 	partitionActiveMessages,
 	trainMessageKey,
 } from "../utils/passengerInfo";
+import {
+	getAdaptiveRefreshInterval,
+	REFRESH_INTERVALS,
+} from "../utils/refreshInterval";
 import { getLocalizedStationName } from "../utils/stationNames";
 import { getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
@@ -49,85 +53,9 @@ const INITIAL_TRAIN_COUNT = 15;
 const DEPARTED_GRACE_MINUTES = -2; // How long to keep showing a train after departure
 const TIME_UPDATE_INTERVAL = 1000; // Update current time every 1 seconds when visible
 
-// Adaptive refresh intervals
-const REFRESH_INTERVALS = {
-	URGENT: 15000, // 15 seconds - trains departing within 5 minutes
-	HIGH: 30000, // 30 seconds - trains departing within 15 minutes or late trains
-	MEDIUM: 45000, // 45 seconds - normal operations
-	LOW: 90000, // 90 seconds - no immediate trains
-} as const;
-
-// Urgency thresholds (in minutes)
-const URGENCY_THRESHOLDS = {
-	URGENT: 5, // Trains departing within 5 minutes
-	IMMINENT: 15, // Trains departing within 15 minutes
-	NEARBY: 30, // Trains departing within 30 minutes
-} as const;
-
-// Calculate appropriate refresh interval based on train data
-function getAdaptiveRefreshInterval(
-	trains: Train[],
-	currentTime: Date,
-): number {
-	if (!trains?.length) return REFRESH_INTERVALS.LOW;
-
-	const now = currentTime.getTime();
-	let hasUrgentTrains = false;
-	let hasImminentTrains = false;
-	let hasLateTrains = false;
-
-	for (const train of trains) {
-		const departureRow = train.timeTableRows.find(
-			(row) => row.type === "DEPARTURE",
-		);
-
-		if (!departureRow) continue;
-
-		const departureTime = getDepartureDate(departureRow).getTime();
-		const minutesToDeparture = Math.round((departureTime - now) / (1000 * 60));
-
-		// Check if train is late
-		const isLate = (departureRow.differenceInMinutes ?? 0) > 1;
-
-		if (
-			minutesToDeparture > 0 &&
-			minutesToDeparture <= URGENCY_THRESHOLDS.URGENT
-		) {
-			hasUrgentTrains = true;
-		} else if (
-			minutesToDeparture > 0 &&
-			minutesToDeparture <= URGENCY_THRESHOLDS.IMMINENT
-		) {
-			hasImminentTrains = true;
-		}
-
-		if (
-			isLate &&
-			minutesToDeparture > 0 &&
-			minutesToDeparture <= URGENCY_THRESHOLDS.NEARBY
-		) {
-			hasLateTrains = true;
-		}
-	}
-
-	if (hasUrgentTrains) return REFRESH_INTERVALS.URGENT;
-	if (hasImminentTrains || hasLateTrains) return REFRESH_INTERVALS.HIGH;
-
-	// Check if we have any trains in the next 30 minutes
-	const hasNearbyTrains = trains.some((train) => {
-		const departureRow = train.timeTableRows.find(
-			(row) => row.type === "DEPARTURE",
-		);
-		if (!departureRow) return false;
-		const departureTime = getDepartureDate(departureRow).getTime();
-		const minutesToDeparture = Math.round((departureTime - now) / (1000 * 60));
-		return (
-			minutesToDeparture > 0 && minutesToDeparture <= URGENCY_THRESHOLDS.NEARBY
-		);
-	});
-
-	return hasNearbyTrains ? REFRESH_INTERVALS.MEDIUM : REFRESH_INTERVALS.LOW;
-}
+// Notices change on a scale of hours when nothing runs; poll them gently then
+const NOTICE_POLL_MS = 60_000;
+const NOTICE_POLL_IDLE_MS = 5 * 60_000;
 
 export default function TrainList({
 	stationCode,
@@ -781,6 +709,9 @@ export default function TrainList({
 
 	const uniqueDatesKey = uniqueDepartureDates.join(",");
 
+	// Tests mock fetchTrains without a return value, so trains can be undefined
+	const hasNoTrains = !state.trains?.length;
+
 	useEffect(() => {
 		if (!stationCode || !destinationCode) return;
 		if (!isPageVisible) return;
@@ -819,7 +750,10 @@ export default function TrainList({
 		const tick = async () => {
 			await loadMessages();
 			if (!cancelled) {
-				timeoutId = setTimeout(tick, 60_000);
+				timeoutId = setTimeout(
+					tick,
+					hasNoTrains ? NOTICE_POLL_IDLE_MS : NOTICE_POLL_MS,
+				);
 			}
 		};
 		void tick();
@@ -828,16 +762,19 @@ export default function TrainList({
 			cancelled = true;
 			if (timeoutId) clearTimeout(timeoutId);
 		};
-	}, [stationCode, destinationCode, uniqueDatesKey, isPageVisible]);
+	}, [
+		stationCode,
+		destinationCode,
+		uniqueDatesKey,
+		isPageVisible,
+		hasNoTrains,
+	]);
 
 	const stationsByCode = useMemo(() => {
 		const map = new Map<string, Station>();
 		for (const s of stations) map.set(s.shortCode, s);
 		return map;
 	}, [stations]);
-
-	// Tests mock fetchTrains without a return value, so trains can be undefined
-	const hasNoTrains = !state.trains?.length;
 
 	const { generalMessages, perTrainMessages } = useMemo(() => {
 		const lang = getCurrentLanguage();
@@ -938,48 +875,52 @@ export default function TrainList({
 								</span>
 							</label>
 						)}
-						<ProgressCircle progress={refreshProgress} size="w-8 h-8" />
+						{!hasNoTrains && (
+							<ProgressCircle progress={refreshProgress} size="w-8 h-8" />
+						)}
 					</div>
 				</div>
 
 				{/* Mobile horizontal progress bar and filter toggle */}
-				<div class="sm:hidden w-full mb-4 flex items-center gap-3">
-					<button
-						type="button"
-						onClick={() => void loadTrains()}
-						class="flex-grow cursor-pointer bg-transparent border-0 p-0 text-left touch-manipulation"
-						aria-label={t("tapToRefresh")}
-					>
-						<LinearProgress
-							progress={refreshProgress}
-							heightClass="h-1.5"
-							widthClass="w-full"
-							direction="rtl"
-						/>
-					</button>
-					{hasSlowTrains && (
-						<label
-							class="flex items-center gap-1.5 cursor-pointer select-none flex-shrink-0 text-xs text-gray-500 dark:text-gray-400"
-							title={t("hideSlowTrains")}
+				{!hasNoTrains && (
+					<div class="sm:hidden w-full mb-4 flex items-center gap-3">
+						<button
+							type="button"
+							onClick={() => void loadTrains()}
+							class="flex-grow cursor-pointer bg-transparent border-0 p-0 text-left touch-manipulation"
+							aria-label={t("tapToRefresh")}
 						>
-							<input
-								type="checkbox"
-								checked={hideSlowTrains}
-								onChange={toggleHideSlowTrains}
-								class="checkbox checkbox-xs checkbox-primary"
+							<LinearProgress
+								progress={refreshProgress}
+								heightClass="h-1.5"
+								widthClass="w-full"
+								direction="rtl"
 							/>
-							<span class="sr-only">{t("hideSlowTrains")}</span>
-							<svg
-								class="w-3.5 h-3.5"
-								viewBox="0 0 24 24"
-								fill="currentColor"
-								aria-hidden="true"
+						</button>
+						{hasSlowTrains && (
+							<label
+								class="flex items-center gap-1.5 cursor-pointer select-none flex-shrink-0 text-xs text-gray-500 dark:text-gray-400"
+								title={t("hideSlowTrains")}
 							>
-								<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-							</svg>
-						</label>
-					)}
-				</div>
+								<input
+									type="checkbox"
+									checked={hideSlowTrains}
+									onChange={toggleHideSlowTrains}
+									class="checkbox checkbox-xs checkbox-primary"
+								/>
+								<span class="sr-only">{t("hideSlowTrains")}</span>
+								<svg
+									class="w-3.5 h-3.5"
+									viewBox="0 0 24 24"
+									fill="currentColor"
+									aria-hidden="true"
+								>
+									<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+								</svg>
+							</label>
+						)}
+					</div>
+				)}
 				{generalMessages.length > 0 && (
 					<PassengerInfoBanner messages={generalMessages} />
 				)}
