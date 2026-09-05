@@ -1,11 +1,10 @@
 /** @format */
 
 import { describe, expect, it } from "vitest";
+import { stations as allStations } from "@/__tests__/fixtures/stations";
 import type { Station } from "../../types";
 import { getLineStats, getLines, getStationStats } from "../routeStats";
-import stationsSnapshot from "../stations-snapshot.json";
 
-const allStations = stationsSnapshot as Station[];
 const withoutStation = (shortCode: string): Station[] =>
 	allStations.filter((station) => station.shortCode !== shortCode);
 
