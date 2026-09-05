@@ -976,6 +976,15 @@ export default function TrainList({
 				{generalMessages.length > 0 && (
 					<PassengerInfoBanner messages={generalMessages} />
 				)}
+				{state.trains.length === 0 && (
+					<p
+						class="py-10 text-center text-base-content/60"
+						role="status"
+						data-testid="no-trains"
+					>
+						{t("noTrainsInWindow")}
+					</p>
+				)}
 				<div ref={listContainerRef} class="flex flex-col gap-4">
 					{displayedTrains.map((train, index) => {
 						const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;

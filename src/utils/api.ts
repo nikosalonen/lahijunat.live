@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/security/noGlobalEval: we're intentionally using it to avoid bundling issues */
 import type { Station, Train } from "../types";
+import { parseLiveTrainsResponse } from "./liveTrainsResponse";
 import type { PassengerInformationMessage } from "./passengerInfo";
 import { getDepartureDate } from "./trainUtils";
 
@@ -845,7 +846,8 @@ export async function fetchTrains(
 				);
 			}
 
-			const data = await response.json();
+			// A route with no trains comes back as an error object, not []
+			const data = parseLiveTrainsResponse<Train>(await response.json());
 
 			// Use server time from Date header to reduce client clock skew
 			const serverDateHeader = response.headers.get("date");
@@ -856,11 +858,6 @@ export async function fetchTrains(
 				if (Number.isFinite(parsedMs)) {
 					serverNowMs = parsedMs;
 				}
-			}
-
-			if (!Array.isArray(data)) {
-				console.error("Invalid API response format:", data);
-				throw new Error("Invalid API response format: expected an array");
 			}
 
 			console.log(`Received ${data.length} trains from API`);
