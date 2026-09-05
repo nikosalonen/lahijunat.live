@@ -1,6 +1,12 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fetchWithRetry } from "./fetchWithRetry";
+import {
+	type ApiTrain,
+	decideExclusions,
+	servedStations,
+	upcomingDates,
+} from "./stationTraffic";
 
 // Read package.json dynamically for version
 function getVersion(): string {
@@ -17,12 +23,24 @@ function getVersion(): string {
 
 /**
  * Automated script to find stations without commuter traffic and update STATION_QUERY.
- * Self-contained — calls the Digitraffic REST API directly instead of importing from api.ts.
+ *
+ * A station counts as served when any commuter train stops there during the
+ * next LOOKAHEAD_DAYS days. The window is a full week so that a weekend track
+ * closure or a weekday-only line does not drop a station from the site.
+ * Stations closed for longer, such as months of renovation, are excluded.
+ *
+ * The timetable comes from one request per day rather than one per station:
+ * the per-station live-trains endpoint caps its look-ahead at about a day.
+ *
+ * Run with `--dry-run` to see what would change without touching any file.
+ *
+ * Self-contained — calls the Digitraffic API directly instead of importing from api.ts.
  */
 
 const API_FILE_PATH = join(process.cwd(), "src/utils/api.ts");
-const DELAY_BETWEEN_REQUESTS = 2000;
-const SANITY_THRESHOLD = 0.3; // abort if >30% of stations change status or fail
+const TRAINS_URL = "https://rata.digitraffic.fi/api/v1/trains";
+const LOOKAHEAD_DAYS = 7;
+const SANITY_THRESHOLD = 0.3; // abort if >30% of stations change status
 const STATION_QUERY_REGEX =
 	/const STATION_QUERY = `query GetStations \{[\s\S]*?\}`;/;
 
@@ -43,10 +61,6 @@ const ALL_STATIONS_QUERY = `query GetAllStations {
 interface Station {
 	name: string;
 	shortCode: string;
-}
-
-function delay(ms: number): Promise<void> {
-	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function fetchAllStations(): Promise<Station[]> {
@@ -104,94 +118,67 @@ async function fetchAllStations(): Promise<Station[]> {
 	return stations;
 }
 
-async function hasCommuterTrains(stationCode: string): Promise<boolean | null> {
-	try {
-		const url = `https://rata.digitraffic.fi/api/v1/live-trains/station/${stationCode}?minutes_before_departure=1440&minutes_after_departure=0&minutes_before_arrival=0&minutes_after_arrival=0&train_categories=Commuter`;
-		// A failed check only preserves the station's current status, so one
-		// quick retry is enough here; the long backoff is for the one-shot calls.
-		const response = await fetchWithRetry(
-			url,
-			{
-				headers: {
-					"Accept-Encoding": "gzip",
-					"User-Agent": USER_AGENT,
-				},
-			},
-			{ attempts: 2 },
+/** Every train of one day. About 1 MB gzipped, so one request per day is cheap. */
+async function fetchTrainsForDate(date: string): Promise<ApiTrain[]> {
+	const response = await fetchWithRetry(`${TRAINS_URL}/${date}`, {
+		headers: {
+			"Accept-Encoding": "gzip",
+			"User-Agent": USER_AGENT,
+		},
+	});
+
+	if (!response.ok) {
+		throw new Error(
+			`Train request for ${date} failed: ${response.status} ${response.statusText}`,
 		);
-
-		if (!response.ok) {
-			console.error(`Error checking ${stationCode}: HTTP ${response.status}`);
-			return null;
-		}
-
-		const trains = await response.json();
-		return Array.isArray(trains) && trains.length > 0;
-	} catch (error) {
-		const errorType =
-			error instanceof SyntaxError
-				? "JSON parse error"
-				: error instanceof TypeError
-					? "Network/fetch error"
-					: "Unexpected error";
-		console.error(`${errorType} checking ${stationCode}:`, error);
-		return null;
 	}
+
+	const trains = await response.json();
+	if (!Array.isArray(trains)) {
+		throw new Error(`Train request for ${date} returned a non-array response`);
+	}
+	return trains as ApiTrain[];
 }
 
 async function findStationsWithoutTrains(
 	currentExcluded: string[],
 ): Promise<string[]> {
-	console.log("Checking stations for commuter train traffic...");
-
 	const allStations = await fetchAllStations();
-	const excluded: string[] = [];
-	let errorCount = 0;
+	const dates = upcomingDates(LOOKAHEAD_DAYS);
+	console.log(
+		`Checking commuter traffic from ${dates[0]} to ${dates[dates.length - 1]}...`,
+	);
 
-	for (const [index, station] of allStations.entries()) {
-		if (index > 0) {
-			await delay(DELAY_BETWEEN_REQUESTS);
-		}
+	const served = new Set<string>();
+	let failedDays = 0;
 
-		console.log(
-			`[${index + 1}/${allStations.length}] ${station.name} (${station.shortCode})`,
-		);
-
-		const result = await hasCommuterTrains(station.shortCode);
-
-		if (result === null) {
-			errorCount++;
-			// Preserve current status: keep excluded stations excluded, keep included stations included
-			if (currentExcluded.includes(station.shortCode)) {
-				excluded.push(station.shortCode);
-				console.warn(
-					`  Keeping ${station.shortCode} excluded (check failed, preserving current status)`,
-				);
-			} else {
-				console.warn(
-					`  Keeping ${station.shortCode} included (check failed, preserving current status)`,
-				);
-			}
-		} else if (!result) {
-			excluded.push(station.shortCode);
+	for (const date of dates) {
+		try {
+			const trains = await fetchTrainsForDate(date);
+			const servedToday = servedStations(trains);
+			for (const code of servedToday) served.add(code);
+			console.log(`  ${date}: ${servedToday.size} stations served`);
+		} catch (error) {
+			failedDays++;
+			console.error(`  ${date}: check failed:`, error);
 		}
 	}
 
-	if (errorCount > 0) {
+	if (failedDays === dates.length) {
+		throw new Error("No timetable day could be fetched. Aborting.");
+	}
+	if (failedDays > 0) {
 		console.warn(
-			`\n${errorCount}/${allStations.length} station checks failed — preserving their current status`,
+			`\n${failedDays}/${dates.length} days failed — stations without trains keep their current status`,
 		);
 	}
 
-	// Abort if too many errors — likely an API outage
-	const errorRate = errorCount / allStations.length;
-	if (errorRate > SANITY_THRESHOLD) {
-		throw new Error(
-			`Too many stations failed to check: ${errorCount}/${allStations.length} (${Math.round(errorRate * 100)}%). Aborting.`,
-		);
-	}
-
-	return excluded;
+	return decideExclusions({
+		allStations: allStations.map((station) => station.shortCode),
+		served,
+		currentExcluded,
+		complete: failedDays === 0,
+	});
 }
 
 function generateStationQuery(excludedStations: string[]): string {
@@ -243,7 +230,12 @@ function getCurrentExcludedStations(): string[] {
 }
 
 async function main(): Promise<void> {
-	console.log("Starting station query update...");
+	const dryRun = process.argv.includes("--dry-run");
+	console.log(
+		dryRun
+			? "Starting station query check (dry run, no files will change)..."
+			: "Starting station query update...",
+	);
 
 	const currentExcluded = getCurrentExcludedStations();
 	console.log(`Currently excluded: ${currentExcluded.length} stations`);
@@ -280,6 +272,13 @@ async function main(): Promise<void> {
 		);
 	}
 
+	if (dryRun) {
+		console.log(
+			`\nDry run: would set excluded stations to ${newExcluded.length} (was ${currentExcluded.length})`,
+		);
+		return;
+	}
+
 	const newQuery = generateStationQuery(newExcluded);
 	updateApiFile(newQuery);
 
@@ -294,5 +293,3 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 		process.exit(1);
 	});
 }
-
-export { main as updateStationQuery };

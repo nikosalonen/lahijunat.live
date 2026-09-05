@@ -19,7 +19,7 @@
 		"update-station-query": "pnpm tsx scripts/updateStationQuery.ts",
 		"update-stations-snapshot": "pnpm tsx scripts/updateStationsSnapshot.ts",
 		"update-route-stats": "pnpm tsx scripts/updateRouteStats.ts && biome check --write src/data/route-stats.json",
-		"test-station-query": "pnpm tsx scripts/testStationQuery.ts",
+		"test-station-query": "pnpm tsx scripts/updateStationQuery.ts --dry-run",
 		"test": "vitest run",
 		"test:watch": "vitest watch",
 		"prepare": "husky"
