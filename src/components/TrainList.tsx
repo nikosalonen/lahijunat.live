@@ -836,6 +836,9 @@ export default function TrainList({
 		return map;
 	}, [stations]);
 
+	// Tests mock fetchTrains without a return value, so trains can be undefined
+	const hasNoTrains = !state.trains?.length;
+
 	const { generalMessages, perTrainMessages } = useMemo(() => {
 		const lang = getCurrentLanguage();
 		const resolveStationName = (code: string) => {
@@ -854,10 +857,14 @@ export default function TrainList({
 			lang,
 			displayedTrainKeys,
 			resolveStationName,
+			// With nothing to show, a closure notice is the whole story: keep it
+			// visible even outside the hours the station screens would show it
+			{ ignoreDeliveryWindow: hasNoTrains },
 		);
 		return { generalMessages: general, perTrainMessages: perTrain };
 	}, [
 		rawPassengerMessages,
+		hasNoTrains,
 		currentTime,
 		languageVersion,
 		displayedTrainKeys,
@@ -976,7 +983,7 @@ export default function TrainList({
 				{generalMessages.length > 0 && (
 					<PassengerInfoBanner messages={generalMessages} />
 				)}
-				{state.trains.length === 0 && (
+				{hasNoTrains && (
 					<p
 						class="py-10 text-center text-base-content/60"
 						role="status"

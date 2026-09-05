@@ -201,6 +201,16 @@ function byTimeCriticality(a: ActiveMessage, b: ActiveMessage): number {
 	return startA - startB;
 }
 
+export interface PartitionOptions {
+	/**
+	 * Keep a message even outside its video deliveryRules window. Station
+	 * screens show track-work notices only at set hours, but when a station has
+	 * no departures at all the traveller needs the reason at any hour. The
+	 * server already limits results to messages within their validity dates.
+	 */
+	ignoreDeliveryWindow?: boolean;
+}
+
 /**
  * Filter raw messages down to the active set and route them into the
  * general-banner pool and a per-train key map.
@@ -211,6 +221,7 @@ export function partitionActiveMessages(
 	lang: string,
 	displayedTrainKeys: Set<string>,
 	resolveStationName?: (code: string) => string,
+	options: PartitionOptions = {},
 ): {
 	general: ActiveMessage[];
 	perTrain: Map<string, ActiveMessage[]>;
@@ -225,7 +236,9 @@ export function partitionActiveMessages(
 
 		const display = pickDisplay(msg, lang);
 		if (!display) continue;
-		if (!isWithinRules(display.rules, now)) continue;
+		if (!options.ignoreDeliveryWindow && !isWithinRules(display.rules, now)) {
+			continue;
+		}
 
 		const stationNames =
 			resolveStationName && msg.stations.length > 0

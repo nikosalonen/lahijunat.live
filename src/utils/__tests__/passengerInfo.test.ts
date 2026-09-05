@@ -829,3 +829,78 @@ describe("fetchActivePassengerMessages resilience", () => {
 		nowSpy.mockRestore();
 	});
 });
+
+describe("partitionActiveMessages with an empty departure list", () => {
+	// Station screens show track-work notices only in the evening, but a
+	// traveller looking at an empty list needs the reason at any hour.
+	const noon = new Date("2026-09-05T10:00:00Z"); // Sat 13:00 Helsinki
+
+	const eveningOnlyNotice = makeMessage({
+		id: "shm1",
+		startValidity: "2026-09-03T21:00:00Z",
+		endValidity: "2026-09-07T20:59:00Z",
+		stations: ["EPO", "KNI"],
+		video: {
+			text: {
+				fi: "Ratatyötiedote: junat korvattu busseilla",
+				sv: null,
+				en: null,
+			},
+			deliveryRules: {
+				deliveryType: "WHEN",
+				startDateTime: "2026-09-03T21:00:00Z",
+				endDateTime: "2026-09-06T20:59:00Z",
+				startTime: "18:00",
+				endTime: "3:30",
+				weekDays: [
+					"MONDAY",
+					"TUESDAY",
+					"WEDNESDAY",
+					"THURSDAY",
+					"FRIDAY",
+					"SATURDAY",
+					"SUNDAY",
+				],
+			},
+		},
+	});
+
+	it("hides an evening-only notice at noon by default", () => {
+		const { general } = partitionActiveMessages(
+			[eveningOnlyNotice],
+			noon,
+			"fi",
+			new Set(),
+		);
+		expect(general).toHaveLength(0);
+	});
+
+	it("shows it when asked to ignore the delivery window", () => {
+		const { general } = partitionActiveMessages(
+			[eveningOnlyNotice],
+			noon,
+			"fi",
+			new Set(),
+			undefined,
+			{
+				ignoreDeliveryWindow: true,
+			},
+		);
+		expect(general.map((m) => m.id)).toEqual(["shm1"]);
+	});
+
+	it("still shows it once the screen schedule has ended but the notice is valid", () => {
+		const sundayEvening = new Date("2026-09-06T21:30:00Z"); // after the rules' endDateTime
+		const { general } = partitionActiveMessages(
+			[eveningOnlyNotice],
+			sundayEvening,
+			"fi",
+			new Set(),
+			undefined,
+			{
+				ignoreDeliveryWindow: true,
+			},
+		);
+		expect(general).toHaveLength(1);
+	});
+});
