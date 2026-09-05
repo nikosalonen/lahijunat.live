@@ -24,6 +24,14 @@
 		}
 	},
 	{
+		"name": "Espoo",
+		"shortCode": "EPO",
+		"location": {
+			"latitude": 60.205067,
+			"longitude": 24.655992
+		}
+	},
+	{
 		"name": "Haarajoki",
 		"shortCode": "HAA",
 		"location": {
@@ -168,6 +176,14 @@
 		}
 	},
 	{
+		"name": "Jorvas",
+		"shortCode": "JRS",
+		"location": {
+			"latitude": 60.137885,
+			"longitude": 24.512776
+		}
+	},
+	{
 		"name": "Kausala",
 		"shortCode": "KA",
 		"location": {
@@ -192,6 +208,22 @@
 		}
 	},
 	{
+		"name": "Kera",
+		"shortCode": "KEA",
+		"location": {
+			"latitude": 60.216573,
+			"longitude": 24.75564
+		}
+	},
+	{
+		"name": "Kilo",
+		"shortCode": "KIL",
+		"location": {
+			"latitude": 60.217939,
+			"longitude": 24.782393
+		}
+	},
+	{
 		"name": "Kirkkonummi",
 		"shortCode": "KKN",
 		"location": {
@@ -200,11 +232,27 @@
 		}
 	},
 	{
+		"name": "Kauklahti",
+		"shortCode": "KLH",
+		"location": {
+			"latitude": 60.189456,
+			"longitude": 24.600354
+		}
+	},
+	{
 		"name": "Kyminlinna",
 		"shortCode": "KLN",
 		"location": {
 			"latitude": 60.508258,
 			"longitude": 26.895812
+		}
+	},
+	{
+		"name": "Kauniainen",
+		"shortCode": "KNI",
+		"location": {
+			"latitude": 60.211939,
+			"longitude": 24.730884
 		}
 	},
 	{
@@ -261,6 +309,14 @@
 		"location": {
 			"latitude": 60.865613,
 			"longitude": 26.704588
+		}
+	},
+	{
+		"name": "Koivuhovi",
+		"shortCode": "KVH",
+		"location": {
+			"latitude": 60.207144,
+			"longitude": 24.701273
 		}
 	},
 	{
@@ -352,6 +408,14 @@
 		}
 	},
 	{
+		"name": "Masala",
+		"shortCode": "MAS",
+		"location": {
+			"latitude": 60.158661,
+			"longitude": 24.539106
+		}
+	},
+	{
 		"name": "Myllykoski",
 		"shortCode": "MKI",
 		"location": {
@@ -373,6 +437,14 @@
 		"location": {
 			"latitude": 60.821177,
 			"longitude": 25.075141
+		}
+	},
+	{
+		"name": "Malminkartano",
+		"shortCode": "MLO",
+		"location": {
+			"latitude": 60.249316,
+			"longitude": 24.861283
 		}
 	},
 	{
@@ -405,6 +477,14 @@
 		"location": {
 			"latitude": 60.22131,
 			"longitude": 24.842976
+		}
+	},
+	{
+		"name": "Nokia",
+		"shortCode": "NOA",
+		"location": {
+			"latitude": 61.481059,
+			"longitude": 23.49917
 		}
 	},
 	{
@@ -584,6 +664,14 @@
 		}
 	},
 	{
+		"name": "Tolsa",
+		"shortCode": "TOL",
+		"location": {
+			"latitude": 60.118558,
+			"longitude": 24.472724
+		}
+	},
+	{
 		"name": "Tampere",
 		"shortCode": "TPE",
 		"location": {
@@ -597,6 +685,14 @@
 		"location": {
 			"latitude": 60.573333,
 			"longitude": 26.954701
+		}
+	},
+	{
+		"name": "Tesoma",
+		"shortCode": "TSO",
+		"location": {
+			"latitude": 61.503363,
+			"longitude": 23.630271
 		}
 	},
 	{
