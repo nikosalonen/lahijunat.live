@@ -55,6 +55,33 @@ export const isServedRoute = (
 	return servedRoutes.has(`${from}-${to}`);
 };
 
+/**
+ * Trains a route needs on a normal day to be listed in the sitemap.
+ *
+ * Every served route stays indexable; this only decides what the sitemap asks
+ * Google to crawl. Listing all ~2,090 of them meant handing a small site two
+ * thousand pages that differ by a station name, and Google answered by
+ * marking most of them "discovered, currently not indexed" instead of
+ * crawling them. Advertising the routes people actually travel spends the
+ * crawl budget on the pages worth having; the rest are still reachable from
+ * the station and line pages.
+ */
+const MIN_SITEMAP_TRAINS_PER_DAY = 6;
+
+/**
+ * The route pages worth asking Google to crawl, as "FROM-TO" keys.
+ *
+ * Read at build time by the sitemap filter in astro.config.mjs. A route
+ * served only at the weekend has no summary of its own, so its page has no
+ * facts to show either and is left out along with the quiet ones.
+ */
+export const getSitemapRouteKeys = (): string[] => {
+	const routes = routeStatsData.routes as Record<string, RouteStats>;
+	return [...servedRoutes].filter(
+		(key) => (routes[key]?.trainsPerDay ?? 0) >= MIN_SITEMAP_TRAINS_PER_DAY,
+	);
+};
+
 /** Earliest and latest times of a service day, which starts at 04:00. */
 const compareServiceDay = (a: string, b: string): number => {
 	const offset = (time: string) => {

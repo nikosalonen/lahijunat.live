@@ -1,6 +1,5 @@
 // @ts-check
 
-import { readFileSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,22 +7,22 @@ import preact from "@astrojs/preact";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
+import { getSitemapRouteKeys } from "./src/data/routeStats.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Station pairs with direct commuter service, as "/from/to/" paths. Pairs
-// without one are served with noindex (see src/pages/[...stations].astro), so
-// listing them in the sitemap would contradict that.
-const servedRoutePaths = new Set(
-	JSON.parse(
-		readFileSync(path.resolve(__dirname, "src/data/route-stats.json"), "utf8"),
-	).served.map((/** @type {string} */ key) => {
+// The route pages the sitemap asks Google to crawl, as "/from/to/" paths.
+// A pair with no direct service is served with noindex (see
+// src/pages/[...stations].astro), and a route too quiet to be worth the crawl
+// is left out as well — see getSitemapRouteKeys for why.
+const sitemapRoutePaths = new Set(
+	getSitemapRouteKeys().map((key) => {
 		const [from, to] = key.split("-");
 		return `/${from.toLowerCase()}/${to.toLowerCase()}/`;
 	}),
 );
 
-/** Keeps the home page, index pages, line pages, station pages and served routes. */
+/** Keeps the home page, index pages, line pages, station pages and busy routes. */
 const isSitemapPage = (/** @type {string} */ pageUrl) => {
 	let pathname = new URL(pageUrl).pathname;
 	try {
@@ -34,7 +33,7 @@ const isSitemapPage = (/** @type {string} */ pageUrl) => {
 	const segments = pathname.split("/").filter(Boolean);
 	if (segments.length < 2) return true;
 	if (segments[0] === "linja") return true;
-	return servedRoutePaths.has(pathname);
+	return sitemapRoutePaths.has(pathname);
 };
 
 const mySwPlugin = () => {

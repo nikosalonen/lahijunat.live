@@ -2,7 +2,11 @@
 
 import { describe, expect, it } from "vitest";
 import routeStatsData from "../route-stats.json";
-import { getRouteStats, isServedRoute } from "../routeStats";
+import {
+	getRouteStats,
+	getSitemapRouteKeys,
+	isServedRoute,
+} from "../routeStats";
 
 describe("isServedRoute", () => {
 	it("recognises a route with direct trains", () => {
@@ -32,6 +36,44 @@ describe("getRouteStats", () => {
 	it("returns null when there are no statistics", () => {
 		expect(getRouteStats("KKN", "RI")).toBeNull();
 		expect(getRouteStats("KE", null)).toBeNull();
+	});
+});
+
+describe("getSitemapRouteKeys", () => {
+	const keys = getSitemapRouteKeys();
+	const served = new Set(routeStatsData.served);
+	const routes = routeStatsData.routes as Record<
+		string,
+		{ trainsPerDay: number }
+	>;
+
+	it("lists a route the whole network runs on", () => {
+		expect(keys).toContain("HKI-KE");
+		expect(keys).toContain("KE-HKI");
+	});
+
+	it("lists only served routes", () => {
+		expect(keys.filter((key) => !served.has(key))).toEqual([]);
+	});
+
+	it("leaves out routes with no summary of their own", () => {
+		expect(keys.filter((key) => !routes[key])).toEqual([]);
+	});
+
+	it("leaves out the quietest routes", () => {
+		const quietest = Math.min(...keys.map((key) => routes[key].trainsPerDay));
+		expect(quietest).toBeGreaterThanOrEqual(6);
+
+		const dropped = [...served].filter((key) => !keys.includes(key));
+		expect(dropped.length).toBeGreaterThan(0);
+		for (const key of dropped) {
+			expect(routes[key]?.trainsPerDay ?? 0).toBeLessThan(6);
+		}
+	});
+
+	it("still keeps most of the network, so the trim is not a collapse", () => {
+		expect(keys.length).toBeGreaterThan(1000);
+		expect(keys.length).toBeLessThan(served.size);
 	});
 });
 
