@@ -136,23 +136,31 @@ const robots =
 // line calling at a single station.
 const servingLines = routeStats?.lines ?? stationStats?.lines ?? [];
 
+const findStation = (shortCode: string | null) =>
+	shortCode
+		? stations.find((station) => station.shortCode === shortCode)
+		: undefined;
+
 // Where the reader has to get to in order to catch the train, so a route page
 // points at its departure station rather than its destination.
-const originStation = validFromStation
-	? stations.find((station) => station.shortCode === validFromStation)
-	: undefined;
+const originStation = findStation(validFromStation);
+const destinationStation = findStation(validToStation);
 
 // Only offer the journey back when a direct train runs it, so the link
 // points at a route with real departures. isServedRoute covers a full week
 // (see its own note), so a weekend-only reverse can still be quiet midweek.
+// The two stations travel as objects because RouteLinks localises their
+// names, and shipping the whole list to do that cost ~18 kB a page.
 const reverseRoute =
+	originStation &&
+	destinationStation &&
 	validFromStation &&
 	validToStation &&
 	isServedRoute(validToStation, validFromStation)
 		? {
 				href: buildRoutePath(validToStation, validFromStation),
-				from: validToStation,
-				to: validFromStation,
+				from: destinationStation,
+				to: originStation,
 			}
 		: undefined;
 
@@ -175,7 +183,6 @@ const breadcrumbs = generateBreadcrumbs();
 				lines={servingLines}
 				reverse={reverseRoute}
 				origin={originStation}
-				stations={stations}
 			/>
 		)}
 	</div>
