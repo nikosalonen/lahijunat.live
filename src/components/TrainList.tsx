@@ -501,7 +501,10 @@ export default function TrainList({
 	const fromStation = stations.find((s) => s.shortCode === stationCode);
 	const toStation = stations.find((s) => s.shortCode === destinationCode);
 
-	// Calculate duration comparison for color coding
+	// The median every fast/slow label is measured against. Number.isFinite
+	// drops both the nulls below and a NaN from an unparseable scheduledTime,
+	// which would otherwise land on the median and turn the label off for the
+	// whole route.
 	const allTrainDurations = useMemo(() => {
 		return (state.trains || [])
 			.map((train) => {
@@ -527,7 +530,7 @@ export default function TrainList({
 						(1000 * 60),
 				);
 			})
-			.filter((duration): duration is number => duration !== null)
+			.filter((duration): duration is number => Number.isFinite(duration))
 			.sort((a, b) => a - b);
 	}, [state.trains, stationCode, destinationCode]);
 
@@ -537,9 +540,9 @@ export default function TrainList({
 		[allTrainDurations],
 	);
 
-	// Whether the "hide slow trains" filter should hide this one. Reads the
-	// same rule as the duration colouring, so the checkbox cannot appear for a
-	// train the list shows as normal.
+	// Whether the "hide slow trains" filter should hide this one. Uses the same
+	// classifier and the same scheduled-time input as the duration colouring in
+	// TrainCard, so the filter and the colour cannot disagree about a train.
 	const isTrainSlow = useCallback(
 		(train: Train) => {
 			const departureRow = train.timeTableRows.find(
