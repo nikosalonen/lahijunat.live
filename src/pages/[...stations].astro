@@ -1,4 +1,5 @@
 ---
+import RouteLinks from "../components/RouteLinks";
 import StationManager from "../components/StationManager";
 import Layout from "../layouts/Layout.astro";
 import {
@@ -117,8 +118,8 @@ const generateBreadcrumbs = () => {
 	return breadcrumbs;
 };
 
-// Used for the meta description only: each page describes itself with its own
-// numbers, while the page body stays uncluttered.
+// Each page describes itself with its own numbers, in the meta description
+// and again in the body below the live trains.
 const routeStats = getRouteStats(validFromStation, validToStation);
 const stationStats = validToStation
 	? null
@@ -130,6 +131,29 @@ const robots =
 	validFromStation && validToStation && !isServedRoute(validFromStation, validToStation)
 		? "noindex, follow"
 		: "index, follow";
+
+// The lines a reader can actually board here: a pair's own lines, or every
+// line calling at a single station.
+const servingLines = routeStats?.lines ?? stationStats?.lines ?? [];
+
+// Where the reader has to get to in order to catch the train, so a route page
+// points at its departure station rather than its destination.
+const originStation = validFromStation
+	? stations.find((station) => station.shortCode === validFromStation)
+	: undefined;
+
+// Only offer the journey back when a direct train actually runs it, so the
+// link never lands on a page showing nothing but an empty state.
+const reverseRoute =
+	validFromStation &&
+	validToStation &&
+	isServedRoute(validToStation, validFromStation)
+		? {
+				href: buildRoutePath(validToStation, validFromStation),
+				from: validToStation,
+				to: validFromStation,
+			}
+		: undefined;
 
 const pageTitle = generateTitle();
 const pageDescription = generateDescription();
@@ -144,5 +168,14 @@ const breadcrumbs = generateBreadcrumbs();
 			initialFromStation={validFromStation}
 			initialToStation={validToStation}
 		/>
+		{(servingLines.length > 0 || reverseRoute || originStation) && (
+			<RouteLinks
+				client:idle
+				lines={servingLines}
+				reverse={reverseRoute}
+				origin={originStation}
+				stations={stations}
+			/>
+		)}
 	</div>
 </Layout>

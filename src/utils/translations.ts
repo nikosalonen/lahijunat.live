@@ -48,6 +48,8 @@ export const translations = {
 		lineHeading: "{line}-juna",
 		lineIntro:
 			"Junat kulkevat klo {first}–{last}. Valitse asema nähdäksesi sen reaaliaikaiset lähdöt.",
+		reverseDirection: "Vastakkainen suunta",
+		navigateToStation: "Navigoi asemalle",
 		placeholder: "Valitse asema...",
 		swapDirection: "Vaihda suunta",
 		hint: "Määränpäät on suodatettu näyttämään vain asemat, joihin on suoria junayhteyksiä valitulta lähtöasemalta.",
@@ -200,6 +202,8 @@ export const translations = {
 		lineHeading: "{line} train",
 		lineIntro:
 			"Trains run from {first} to {last}. Choose a station to see its live departures.",
+		reverseDirection: "Opposite direction",
+		navigateToStation: "Navigate to station",
 		placeholder: "Select a station...",
 		swapDirection: "Swap direction",
 		hint: "The destinations are filtered to show only stations with direct train connections from the selected departure station.",
@@ -352,6 +356,8 @@ export const translations = {
 		lineHeading: "{line}-tåget",
 		lineIntro:
 			"Tågen går kl. {first}–{last}. Välj en station för att se dess avgångar i realtid.",
+		reverseDirection: "Motsatt riktning",
+		navigateToStation: "Navigera till stationen",
 		placeholder: "Välj station...",
 		swapDirection: "Byt riktning",
 		hint: "Destinationerna är filtrerade för att endast visa stationer med direkta tågförbindelser från den valda avgångsstationen.",
