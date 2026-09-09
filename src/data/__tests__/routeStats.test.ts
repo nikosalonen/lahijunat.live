@@ -1,8 +1,10 @@
 /** @format */
 
 import { describe, expect, it } from "vitest";
+import { stations as allStations } from "@/__tests__/fixtures/stations";
 import routeStatsData from "../route-stats.json";
 import {
+	getLines,
 	getRouteStats,
 	getSitemapRouteKeys,
 	isServedRoute,
@@ -27,15 +29,39 @@ describe("isServedRoute", () => {
 
 describe("getRouteStats", () => {
 	it("returns the summary for a served route", () => {
-		const stats = getRouteStats("KE", "HKI");
+		const stats = getRouteStats("KE", "HKI", allStations);
 		expect(stats?.trainsPerDay).toBeGreaterThan(0);
 		expect(stats?.lines.length).toBeGreaterThan(0);
 		expect(stats?.firstDeparture).toMatch(/^\d{2}\.\d{2}$/);
 	});
 
 	it("returns null when there are no statistics", () => {
-		expect(getRouteStats("KKN", "RI")).toBeNull();
-		expect(getRouteStats("KE", null)).toBeNull();
+		expect(getRouteStats("KKN", "RI", allStations)).toBeNull();
+		expect(getRouteStats("KE", null, allStations)).toBeNull();
+	});
+
+	it("names only lines that have a page to link to", () => {
+		// Line V runs in 92 route summaries but has no line page, so a chip
+		// linking to /linja/v/ was a hard 404 on every one of them
+		const pageable = new Set(getLines(allStations).map(({ line }) => line));
+		const served = routeStatsData.served as string[];
+
+		for (const key of served) {
+			const [from, to] = key.split("-");
+			const lines = getRouteStats(from, to, allStations)?.lines ?? [];
+			expect(
+				lines.filter((line) => !pageable.has(line)),
+				`route ${key}`,
+			).toEqual([]);
+		}
+	});
+
+	it("keeps the lines that do have pages", () => {
+		// The filter must not empty the list: HKI-KE is run by real, pageable
+		// lines and has to keep every one of them
+		const stats = getRouteStats("HKI", "KE", allStations);
+		expect(stats?.lines).toContain("K");
+		expect(stats?.lines.length).toBeGreaterThan(1);
 	});
 });
 

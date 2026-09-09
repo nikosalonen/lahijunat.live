@@ -118,9 +118,9 @@ const generateBreadcrumbs = () => {
 	return breadcrumbs;
 };
 
-// Each page describes itself with its own numbers, in the meta description
-// and again in the body below the live trains.
-const routeStats = getRouteStats(validFromStation, validToStation);
+// Feeds the meta description's numbers and the line chips below the live
+// trains. The body itself shows no figures.
+const routeStats = getRouteStats(validFromStation, validToStation, stations);
 const stationStats = validToStation
 	? null
 	: getStationStats(validFromStation, stations);
@@ -142,8 +142,9 @@ const originStation = validFromStation
 	? stations.find((station) => station.shortCode === validFromStation)
 	: undefined;
 
-// Only offer the journey back when a direct train actually runs it, so the
-// link never lands on a page showing nothing but an empty state.
+// Only offer the journey back when a direct train runs it, so the link
+// points at a route with real departures. isServedRoute covers a full week
+// (see its own note), so a weekend-only reverse can still be quiet midweek.
 const reverseRoute =
 	validFromStation &&
 	validToStation &&

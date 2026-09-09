@@ -13,10 +13,17 @@ import routeStatsData from "./route-stats.json";
 export const getRouteStats = (
 	from: string | null,
 	to: string | null,
+	stations: Station[],
 ): RouteStats | null => {
 	if (!from || !to) return null;
 	const routes = routeStatsData.routes as Record<string, RouteStats>;
-	return routes[`${from}-${to}`] ?? null;
+	const stats = routes[`${from}-${to}`];
+	if (!stats) return null;
+	// A route summary keeps every line ever seen running it, including lines
+	// too quiet to get a page of their own. Chips pointing at those 404, so
+	// only the lines a reader can actually open are worth handing back.
+	const pageable = linesWithPages(stations);
+	return { ...stats, lines: stats.lines.filter((line) => pageable.has(line)) };
 };
 
 /** The timetable date the statistics were derived from, "YYYY-MM-DD". */
@@ -63,17 +70,25 @@ export const isServedRoute = (
  * thousand pages that differ by a station name, and Google answered by
  * marking most of them "discovered, currently not indexed" instead of
  * crawling them. Advertising the routes people actually travel spends the
- * crawl budget on the pages worth having; the rest are still reachable from
- * the station and line pages.
+ * crawl budget on the pages worth having.
+ *
+ * Be clear about the cost: the dropped pages keep `index, follow`, but no
+ * page links to them. Station and line pages link only to single-station
+ * pages, so of the 567 routes this threshold drops, 30 are reachable via a
+ * reverse link on a kept route's page and 537 have no inbound link at all —
+ * they are reachable only through the client-side station picker. Expect
+ * Google to find few of them. Raise the threshold knowing that; lower it, or
+ * link the routes from somewhere, if that trade stops being worth it.
  */
 const MIN_SITEMAP_TRAINS_PER_DAY = 6;
 
 /**
  * The route pages worth asking Google to crawl, as "FROM-TO" keys.
  *
- * Read at build time by the sitemap filter in astro.config.mjs. A route
- * served only at the weekend has no summary of its own, so its page has no
- * facts to show either and is left out along with the quiet ones.
+ * Read at build time by the sitemap filter in astro.config.mjs. A route with
+ * no summary of its own — weekend-only, or down to a single train on the
+ * reference day — has no facts to show either, so `?? 0` leaves it out along
+ * with the quiet ones.
  */
 export const getSitemapRouteKeys = (): string[] => {
 	const routes = routeStatsData.routes as Record<string, RouteStats>;
@@ -126,9 +141,10 @@ export const getStationStats = (
 	if (destinations.size === 0) return null;
 
 	departures.sort(compareServiceDay);
+	const pageable = linesWithPages(stations);
 	return {
 		destinations: destinations.size,
-		lines: [...lines].sort(),
+		lines: [...lines].filter((line) => pageable.has(line)).sort(),
 		firstDeparture: departures[0],
 		lastDeparture: departures[departures.length - 1],
 	};
@@ -181,6 +197,19 @@ export const getLines = (
 		)
 		.sort((a, b) => a.line.localeCompare(b.line));
 };
+
+/**
+ * Line letters that have a page of their own, so a chip can safely link out.
+ *
+ * route-stats.json records lines in two places that disagree: a route summary
+ * keeps every `commuterLineID` seen on it, while the `lines` object holds only
+ * lines busy enough to describe. Line V, for one, runs in 92 route summaries
+ * and has no entry — and `src/pages/linja/[line].astro` builds its paths from
+ * that object, so `/linja/v/` is never emitted. Filtering through getLines
+ * also drops a line left with too few open stations to keep its page.
+ */
+const linesWithPages = (stations: Station[]): Set<string> =>
+	new Set(getLines(stations).map((entry) => entry.line));
 
 /** One line's facts, or null if it no longer runs. Case-insensitive. */
 export const getLineStats = (
