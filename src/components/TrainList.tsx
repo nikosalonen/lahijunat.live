@@ -33,7 +33,7 @@ import {
 	REFRESH_INTERVALS,
 } from "../utils/refreshInterval";
 import { getLocalizedStationName } from "../utils/stationNames";
-import { getDepartureDate } from "../utils/trainUtils";
+import { classifyDuration, getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
 import LinearProgress from "./LinearProgress";
@@ -532,26 +532,16 @@ export default function TrainList({
 	}, [state.trains, stationCode, destinationCode]);
 
 	const getDurationSpeedType = useCallback(
-		(durationMinutes: number) => {
-			if (allTrainDurations.length < 2) return "normal";
-
-			const median =
-				allTrainDurations[Math.floor(allTrainDurations.length / 2)];
-			const fastThreshold = median * 0.85; // 15% faster than median
-			const slowThreshold = median * 1.15; // 15% slower than median
-
-			if (durationMinutes <= fastThreshold) return "fast";
-			if (durationMinutes >= slowThreshold) return "slow";
-			return "normal";
-		},
+		(durationMinutes: number) =>
+			classifyDuration(durationMinutes, allTrainDurations),
 		[allTrainDurations],
 	);
 
-	// Helper to check if a train is slow
+	// Whether the "hide slow trains" filter should hide this one. Reads the
+	// same rule as the duration colouring, so the checkbox cannot appear for a
+	// train the list shows as normal.
 	const isTrainSlow = useCallback(
 		(train: Train) => {
-			if (allTrainDurations.length < 2) return false;
-
 			const departureRow = train.timeTableRows.find(
 				(row) =>
 					row.stationShortCode === stationCode && row.type === "DEPARTURE",
@@ -563,20 +553,15 @@ export default function TrainList({
 
 			if (!departureRow || !arrivalRow) return false;
 
-			// Use scheduled times to determine if a train is slow (route speed),
-			// not live estimates which include delays
-			const arrivalTime = arrivalRow.scheduledTime;
-			const departureTime = departureRow.scheduledTime;
+			// Use scheduled times to judge route speed, not live estimates,
+			// which include delays
 			const durationMinutes = Math.round(
-				(new Date(arrivalTime).getTime() - new Date(departureTime).getTime()) /
+				(new Date(arrivalRow.scheduledTime).getTime() -
+					new Date(departureRow.scheduledTime).getTime()) /
 					(1000 * 60),
 			);
 
-			const median =
-				allTrainDurations[Math.floor(allTrainDurations.length / 2)];
-			const slowThreshold = median * 1.15;
-
-			return durationMinutes >= slowThreshold;
+			return classifyDuration(durationMinutes, allTrainDurations) === "slow";
 		},
 		[allTrainDurations, stationCode, destinationCode],
 	);
