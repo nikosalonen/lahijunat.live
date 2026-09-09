@@ -33,7 +33,7 @@ import {
 	REFRESH_INTERVALS,
 } from "../utils/refreshInterval";
 import { getLocalizedStationName } from "../utils/stationNames";
-import { getDepartureDate } from "../utils/trainUtils";
+import { classifyDuration, getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
 import LinearProgress from "./LinearProgress";
@@ -501,7 +501,10 @@ export default function TrainList({
 	const fromStation = stations.find((s) => s.shortCode === stationCode);
 	const toStation = stations.find((s) => s.shortCode === destinationCode);
 
-	// Calculate duration comparison for color coding
+	// The median every fast/slow label is measured against. Number.isFinite
+	// drops both the nulls below and a NaN from an unparseable scheduledTime,
+	// which would otherwise land on the median and turn the label off for the
+	// whole route.
 	const allTrainDurations = useMemo(() => {
 		return (state.trains || [])
 			.map((train) => {
@@ -527,31 +530,21 @@ export default function TrainList({
 						(1000 * 60),
 				);
 			})
-			.filter((duration): duration is number => duration !== null)
+			.filter((duration): duration is number => Number.isFinite(duration))
 			.sort((a, b) => a - b);
 	}, [state.trains, stationCode, destinationCode]);
 
 	const getDurationSpeedType = useCallback(
-		(durationMinutes: number) => {
-			if (allTrainDurations.length < 2) return "normal";
-
-			const median =
-				allTrainDurations[Math.floor(allTrainDurations.length / 2)];
-			const fastThreshold = median * 0.85; // 15% faster than median
-			const slowThreshold = median * 1.15; // 15% slower than median
-
-			if (durationMinutes <= fastThreshold) return "fast";
-			if (durationMinutes >= slowThreshold) return "slow";
-			return "normal";
-		},
+		(durationMinutes: number) =>
+			classifyDuration(durationMinutes, allTrainDurations),
 		[allTrainDurations],
 	);
 
-	// Helper to check if a train is slow
+	// Whether the "hide slow trains" filter should hide this one. Uses the same
+	// classifier and the same scheduled-time input as the duration colouring in
+	// TrainCard, so the filter and the colour cannot disagree about a train.
 	const isTrainSlow = useCallback(
 		(train: Train) => {
-			if (allTrainDurations.length < 2) return false;
-
 			const departureRow = train.timeTableRows.find(
 				(row) =>
 					row.stationShortCode === stationCode && row.type === "DEPARTURE",
@@ -563,20 +556,15 @@ export default function TrainList({
 
 			if (!departureRow || !arrivalRow) return false;
 
-			// Use scheduled times to determine if a train is slow (route speed),
-			// not live estimates which include delays
-			const arrivalTime = arrivalRow.scheduledTime;
-			const departureTime = departureRow.scheduledTime;
+			// Use scheduled times to judge route speed, not live estimates,
+			// which include delays
 			const durationMinutes = Math.round(
-				(new Date(arrivalTime).getTime() - new Date(departureTime).getTime()) /
+				(new Date(arrivalRow.scheduledTime).getTime() -
+					new Date(departureRow.scheduledTime).getTime()) /
 					(1000 * 60),
 			);
 
-			const median =
-				allTrainDurations[Math.floor(allTrainDurations.length / 2)];
-			const slowThreshold = median * 1.15;
-
-			return durationMinutes >= slowThreshold;
+			return classifyDuration(durationMinutes, allTrainDurations) === "slow";
 		},
 		[allTrainDurations, stationCode, destinationCode],
 	);

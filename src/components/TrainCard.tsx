@@ -240,9 +240,19 @@ export default function TrainCard({
 			? calculateDuration(getDepartureDate(departureRow), arrivalTime)
 			: null;
 
+		// Judge route speed on scheduled times, never the live duration above.
+		// The median it is compared against is built from scheduled times
+		// (see TrainList's allTrainDurations), so feeding it a delayed live
+		// duration turns somebody else's delay into a "slow" route.
+		const scheduledDuration = arrivalRow
+			? calculateDuration(departureRow.scheduledTime, arrivalRow.scheduledTime)
+			: null;
+
 		const durationSpeedType =
-			duration && getDurationSpeedType
-				? getDurationSpeedType(duration.hours * 60 + duration.minutes)
+			scheduledDuration && getDurationSpeedType
+				? getDurationSpeedType(
+						scheduledDuration.hours * 60 + scheduledDuration.minutes,
+					)
 				: "normal";
 
 		const cardStyle = getCardStyle(

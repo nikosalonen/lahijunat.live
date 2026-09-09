@@ -48,6 +48,22 @@ export const translations = {
 		lineHeading: "{line}-juna",
 		lineIntro:
 			"Junat kulkevat klo {first}–{last}. Valitse asema nähdäksesi sen reaaliaikaiset lähdöt.",
+		reverseDirection: "Vastakkainen suunta",
+		navigateToStation: "Navigoi asemalle",
+		routeSummaryHeading: "Junayhteydet välillä {from}–{to}",
+		routeSummaryTrains:
+			"Välillä {from}–{to} kulkee arkivuorokaudessa {trains} lähijunaa.",
+		summaryHours:
+			"Ensimmäinen juna lähtee klo {first} ja viimeinen klo {last}.",
+		routeSummaryDuration: "Matka kestää tyypillisesti {duration} minuuttia.",
+		routeSummaryLinesOne: "Reittiä liikennöi linja {lines}.",
+		routeSummaryLinesMany: "Reittiä liikennöivät linjat {lines}.",
+		stationSummaryHeading: "Junayhteydet asemalta {station}",
+		stationSummaryDestinations:
+			"Asemalta {station} on suoria lähijunayhteyksiä {count} asemalle.",
+		stationSummaryLinesOne: "Asemalla liikennöi linja {lines}.",
+		stationSummaryLinesMany: "Asemalla liikennöivät linjat {lines}.",
+		listConjunction: "ja",
 		placeholder: "Valitse asema...",
 		swapDirection: "Vaihda suunta",
 		hint: "Määränpäät on suodatettu näyttämään vain asemat, joihin on suoria junayhteyksiä valitulta lähtöasemalta.",
@@ -200,6 +216,21 @@ export const translations = {
 		lineHeading: "{line} train",
 		lineIntro:
 			"Trains run from {first} to {last}. Choose a station to see its live departures.",
+		reverseDirection: "Opposite direction",
+		navigateToStation: "Navigate to station",
+		routeSummaryHeading: "Train service from {from} to {to}",
+		routeSummaryTrains:
+			"{trains} commuter trains run from {from} to {to} on a weekday.",
+		summaryHours: "The first train leaves at {first} and the last at {last}.",
+		routeSummaryDuration: "The journey usually takes {duration} minutes.",
+		routeSummaryLinesOne: "The route is served by line {lines}.",
+		routeSummaryLinesMany: "The route is served by lines {lines}.",
+		stationSummaryHeading: "Train service from {station}",
+		stationSummaryDestinations:
+			"{station} has direct commuter trains to {count} stations.",
+		stationSummaryLinesOne: "The station is served by line {lines}.",
+		stationSummaryLinesMany: "The station is served by lines {lines}.",
+		listConjunction: "and",
 		placeholder: "Select a station...",
 		swapDirection: "Swap direction",
 		hint: "The destinations are filtered to show only stations with direct train connections from the selected departure station.",
@@ -352,6 +383,21 @@ export const translations = {
 		lineHeading: "{line}-tåget",
 		lineIntro:
 			"Tågen går kl. {first}–{last}. Välj en station för att se dess avgångar i realtid.",
+		reverseDirection: "Motsatt riktning",
+		navigateToStation: "Navigera till stationen",
+		routeSummaryHeading: "Tågförbindelser {from}–{to}",
+		routeSummaryTrains:
+			"Mellan {from} och {to} går {trains} pendeltåg per vardag.",
+		summaryHours: "Första tåget går kl. {first} och det sista kl. {last}.",
+		routeSummaryDuration: "Resan tar vanligtvis {duration} minuter.",
+		routeSummaryLinesOne: "Sträckan trafikeras av linje {lines}.",
+		routeSummaryLinesMany: "Sträckan trafikeras av linjerna {lines}.",
+		stationSummaryHeading: "Tågförbindelser från {station}",
+		stationSummaryDestinations:
+			"Från {station} finns direkta pendeltåg till {count} stationer.",
+		stationSummaryLinesOne: "Stationen trafikeras av linje {lines}.",
+		stationSummaryLinesMany: "Stationen trafikeras av linjerna {lines}.",
+		listConjunction: "och",
 		placeholder: "Välj station...",
 		swapDirection: "Byt riktning",
 		hint: "Destinationerna är filtrerade för att endast visa stationer med direkta tågförbindelser från den valda avgångsstationen.",

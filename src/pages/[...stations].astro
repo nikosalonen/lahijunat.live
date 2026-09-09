@@ -1,4 +1,6 @@
 ---
+import RouteLinks from "../components/RouteLinks";
+import RouteSummary from "../components/RouteSummary";
 import StationManager from "../components/StationManager";
 import Layout from "../layouts/Layout.astro";
 import {
@@ -117,9 +119,9 @@ const generateBreadcrumbs = () => {
 	return breadcrumbs;
 };
 
-// Used for the meta description only: each page describes itself with its own
-// numbers, while the page body stays uncluttered.
-const routeStats = getRouteStats(validFromStation, validToStation);
+// Feeds the meta description's numbers and the line chips below the live
+// trains. The body itself shows no figures.
+const routeStats = getRouteStats(validFromStation, validToStation, stations);
 const stationStats = validToStation
 	? null
 	: getStationStats(validFromStation, stations);
@@ -130,6 +132,38 @@ const robots =
 	validFromStation && validToStation && !isServedRoute(validFromStation, validToStation)
 		? "noindex, follow"
 		: "index, follow";
+
+// The lines a reader can actually board here: a pair's own lines, or every
+// line calling at a single station.
+const servingLines = routeStats?.lines ?? stationStats?.lines ?? [];
+
+const findStation = (shortCode: string | null) =>
+	shortCode
+		? stations.find((station) => station.shortCode === shortCode)
+		: undefined;
+
+// Where the reader has to get to in order to catch the train, so a route page
+// points at its departure station rather than its destination.
+const originStation = findStation(validFromStation);
+const destinationStation = findStation(validToStation);
+
+// Only offer the journey back when a direct train runs it, so the link
+// points at a route with real departures. isServedRoute covers a full week
+// (see its own note), so a weekend-only reverse can still be quiet midweek.
+// The two stations travel as objects because RouteLinks localises their
+// names, and shipping the whole list to do that cost ~18 kB a page.
+const reverseRoute =
+	originStation &&
+	destinationStation &&
+	validFromStation &&
+	validToStation &&
+	isServedRoute(validToStation, validFromStation)
+		? {
+				href: buildRoutePath(validToStation, validFromStation),
+				from: destinationStation,
+				to: originStation,
+			}
+		: undefined;
 
 const pageTitle = generateTitle();
 const pageDescription = generateDescription();
@@ -144,5 +178,22 @@ const breadcrumbs = generateBreadcrumbs();
 			initialFromStation={validFromStation}
 			initialToStation={validToStation}
 		/>
+		{originStation && (routeStats || stationStats) && (
+			<RouteSummary
+				client:idle
+				from={originStation}
+				to={destinationStation}
+				route={routeStats}
+				station={stationStats}
+			/>
+		)}
+		{(servingLines.length > 0 || reverseRoute || originStation) && (
+			<RouteLinks
+				client:idle
+				lines={servingLines}
+				reverse={reverseRoute}
+				origin={originStation}
+			/>
+		)}
 	</div>
 </Layout>
