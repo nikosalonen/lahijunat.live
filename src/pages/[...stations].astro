@@ -1,5 +1,6 @@
 ---
 import RouteLinks from "../components/RouteLinks";
+import RouteSummary from "../components/RouteSummary";
 import StationManager from "../components/StationManager";
 import Layout from "../layouts/Layout.astro";
 import {
@@ -177,6 +178,15 @@ const breadcrumbs = generateBreadcrumbs();
 			initialFromStation={validFromStation}
 			initialToStation={validToStation}
 		/>
+		{originStation && (routeStats || stationStats) && (
+			<RouteSummary
+				client:idle
+				from={originStation}
+				to={destinationStation}
+				route={routeStats}
+				station={stationStats}
+			/>
+		)}
 		{(servingLines.length > 0 || reverseRoute || originStation) && (
 			<RouteLinks
 				client:idle
