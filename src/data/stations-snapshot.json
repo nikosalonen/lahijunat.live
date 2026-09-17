@@ -3,48 +3,48 @@
 		"name": "Ainola",
 		"shortCode": "AIN",
 		"location": {
-			"latitude": 60.456897,
-			"longitude": 25.102001
+			"latitude": 60.453853,
+			"longitude": 25.102241
 		}
 	},
 	{
 		"name": "Aviapolis",
 		"shortCode": "AVP",
 		"location": {
-			"latitude": 60.308114,
-			"longitude": 24.942162
+			"latitude": 60.30435,
+			"longitude": 24.956191
 		}
 	},
 	{
 		"name": "Dragsvik",
 		"shortCode": "DRA",
 		"location": {
-			"latitude": 59.990186,
-			"longitude": 23.488483
+			"latitude": 59.990199,
+			"longitude": 23.488607
 		}
 	},
 	{
 		"name": "Espoo",
 		"shortCode": "EPO",
 		"location": {
-			"latitude": 60.205108,
-			"longitude": 24.656296
+			"latitude": 60.205067,
+			"longitude": 24.655992
 		}
 	},
 	{
 		"name": "Haarajoki",
 		"shortCode": "HAA",
 		"location": {
-			"latitude": 60.496412,
-			"longitude": 25.134321
+			"latitude": 60.496261,
+			"longitude": 25.13382
 		}
 	},
 	{
 		"name": "Hikiä",
 		"shortCode": "HK",
 		"location": {
-			"latitude": 60.752846,
-			"longitude": 24.919625
+			"latitude": 60.752588,
+			"longitude": 24.919201
 		}
 	},
 	{
@@ -75,8 +75,8 @@
 		"name": "Hämeenlinna",
 		"shortCode": "HL",
 		"location": {
-			"latitude": 61.002982,
-			"longitude": 24.478543
+			"latitude": 61.002368,
+			"longitude": 24.478851
 		}
 	},
 	{
@@ -91,24 +91,24 @@
 		"name": "Henna",
 		"shortCode": "HNN",
 		"location": {
-			"latitude": 60.799409,
-			"longitude": 25.495037
+			"latitude": 60.799132,
+			"longitude": 25.494389
 		}
 	},
 	{
 		"name": "Huopalahti",
 		"shortCode": "HPL",
 		"location": {
-			"latitude": 60.218409,
-			"longitude": 24.893862
+			"latitude": 60.21835,
+			"longitude": 24.893523
 		}
 	},
 	{
 		"name": "Herrala",
 		"shortCode": "HR",
 		"location": {
-			"latitude": 60.897256,
-			"longitude": 25.476272
+			"latitude": 60.896944,
+			"longitude": 25.475624
 		}
 	},
 	{
@@ -123,16 +123,16 @@
 		"name": "Inkoo",
 		"shortCode": "IKO",
 		"location": {
-			"latitude": 60.061502,
-			"longitude": 23.935833
+			"latitude": 60.061511,
+			"longitude": 23.93585
 		}
 	},
 	{
 		"name": "Inkeroinen",
 		"shortCode": "IKR",
 		"location": {
-			"latitude": 60.697016,
-			"longitude": 26.840184
+			"latitude": 60.696674,
+			"longitude": 26.839178
 		}
 	},
 	{
@@ -147,16 +147,16 @@
 		"name": "Iittala",
 		"shortCode": "ITA",
 		"location": {
-			"latitude": 61.090979,
-			"longitude": 24.140942
+			"latitude": 61.090616,
+			"longitude": 24.140789
 		}
 	},
 	{
 		"name": "Jokela",
 		"shortCode": "JK",
 		"location": {
-			"latitude": 60.553027,
-			"longitude": 24.970995
+			"latitude": 60.552798,
+			"longitude": 24.970682
 		}
 	},
 	{
@@ -171,32 +171,32 @@
 		"name": "Järvelä",
 		"shortCode": "JR",
 		"location": {
-			"latitude": 60.867629,
-			"longitude": 25.275232
+			"latitude": 60.867325,
+			"longitude": 25.274659
 		}
 	},
 	{
 		"name": "Jorvas",
 		"shortCode": "JRS",
 		"location": {
-			"latitude": 60.137908,
-			"longitude": 24.513027
+			"latitude": 60.137885,
+			"longitude": 24.512776
 		}
 	},
 	{
 		"name": "Kausala",
 		"shortCode": "KA",
 		"location": {
-			"latitude": 60.885622,
-			"longitude": 26.330577
+			"latitude": 60.885347,
+			"longitude": 26.329366
 		}
 	},
 	{
 		"name": "Kannelmäki",
 		"shortCode": "KAN",
 		"location": {
-			"latitude": 60.239614,
-			"longitude": 24.877398
+			"latitude": 60.239562,
+			"longitude": 24.877004
 		}
 	},
 	{
@@ -211,72 +211,72 @@
 		"name": "Kera",
 		"shortCode": "KEA",
 		"location": {
-			"latitude": 60.216615,
-			"longitude": 24.75598
+			"latitude": 60.216573,
+			"longitude": 24.75564
 		}
 	},
 	{
 		"name": "Kilo",
 		"shortCode": "KIL",
 		"location": {
-			"latitude": 60.217981,
-			"longitude": 24.782751
+			"latitude": 60.217939,
+			"longitude": 24.782393
 		}
 	},
 	{
 		"name": "Kirkkonummi",
 		"shortCode": "KKN",
 		"location": {
-			"latitude": 60.119647,
-			"longitude": 24.43921
+			"latitude": 60.119648,
+			"longitude": 24.438814
 		}
 	},
 	{
 		"name": "Kauklahti",
 		"shortCode": "KLH",
 		"location": {
-			"latitude": 60.189488,
-			"longitude": 24.600622
+			"latitude": 60.189456,
+			"longitude": 24.600354
 		}
 	},
 	{
 		"name": "Kyminlinna",
 		"shortCode": "KLN",
 		"location": {
-			"latitude": 60.508488,
-			"longitude": 26.896776
+			"latitude": 60.508258,
+			"longitude": 26.895812
 		}
 	},
 	{
 		"name": "Kauniainen",
 		"shortCode": "KNI",
 		"location": {
-			"latitude": 60.21198,
-			"longitude": 24.731206
+			"latitude": 60.211939,
+			"longitude": 24.730884
 		}
 	},
 	{
 		"name": "Karjaa",
 		"shortCode": "KR",
 		"location": {
-			"latitude": 60.068798,
-			"longitude": 23.661342
+			"latitude": 60.068724,
+			"longitude": 23.66126
 		}
 	},
 	{
 		"name": "Koria",
 		"shortCode": "KRA",
 		"location": {
-			"latitude": 60.847728,
-			"longitude": 26.603362
+			"latitude": 60.847067,
+			"longitude": 26.60131
 		}
 	},
 	{
 		"name": "Korso",
 		"shortCode": "KRS",
 		"location": {
-			"latitude": 60.351033,
-			"longitude": 25.078703
+			"latitude": 60.35129,
+			"longitude": 25.078507
 		}
 	},
 	{
@@ -299,8 +299,8 @@
 		"name": "Kivistö",
 		"shortCode": "KTÖ",
 		"location": {
-			"latitude": 60.311373,
-			"longitude": 24.864106
+			"latitude": 60.314607,
+			"longitude": 24.846938
 		}
 	},
 	{
@@ -315,24 +315,24 @@
 		"name": "Koivuhovi",
 		"shortCode": "KVH",
 		"location": {
-			"latitude": 60.207186,
-			"longitude": 24.701595
+			"latitude": 60.207144,
+			"longitude": 24.701273
 		}
 	},
 	{
 		"name": "Koivukylä",
 		"shortCode": "KVY",
 		"location": {
-			"latitude": 60.323609,
-			"longitude": 25.060484
+			"latitude": 60.323284,
+			"longitude": 25.059797
 		}
 	},
 	{
 		"name": "Kymi",
 		"shortCode": "KY",
 		"location": {
-			"latitude": 60.539275,
-			"longitude": 26.908215
+			"latitude": 60.539229,
+			"longitude": 26.90714
 		}
 	},
 	{
@@ -347,152 +347,152 @@
 		"name": "Lappila",
 		"shortCode": "LAA",
 		"location": {
-			"latitude": 60.849249,
-			"longitude": 25.174766
+			"latitude": 60.848954,
+			"longitude": 25.17423
 		}
 	},
 	{
 		"name": "Lentoasema",
 		"shortCode": "LEN",
 		"location": {
-			"latitude": 60.317753,
-			"longitude": 24.985015
+			"latitude": 60.315732,
+			"longitude": 24.968343
 		}
 	},
 	{
 		"name": "Lahti",
 		"shortCode": "LH",
 		"location": {
-			"latitude": 60.976817,
-			"longitude": 25.657992
+			"latitude": 60.97647,
+			"longitude": 25.657397
 		}
 	},
 	{
 		"name": "Leinelä",
 		"shortCode": "LNÄ",
 		"location": {
-			"latitude": 60.319086,
-			"longitude": 25.013906
+			"latitude": 60.322641,
+			"longitude": 25.039419
 		}
 	},
 	{
 		"name": "Louhela",
 		"shortCode": "LOH",
 		"location": {
-			"latitude": 60.270867,
-			"longitude": 24.853674
+			"latitude": 60.270798,
+			"longitude": 24.853299
 		}
 	},
 	{
 		"name": "Lappohja",
 		"shortCode": "LPO",
 		"location": {
-			"latitude": 59.90398,
-			"longitude": 23.236483
+			"latitude": 59.904082,
+			"longitude": 23.236919
 		}
 	},
 	{
 		"name": "Leppävaara",
 		"shortCode": "LPV",
 		"location": {
-			"latitude": 60.219521,
-			"longitude": 24.813828
+			"latitude": 60.21948,
+			"longitude": 24.813541
 		}
 	},
 	{
 		"name": "Lempäälä",
 		"shortCode": "LPÄ",
 		"location": {
-			"latitude": 61.31478,
-			"longitude": 23.755037
+			"latitude": 61.314233,
+			"longitude": 23.755094
 		}
 	},
 	{
 		"name": "Masala",
 		"shortCode": "MAS",
 		"location": {
-			"latitude": 60.158684,
-			"longitude": 24.539356
+			"latitude": 60.158661,
+			"longitude": 24.539106
 		}
 	},
 	{
 		"name": "Myllykoski",
 		"shortCode": "MKI",
 		"location": {
-			"latitude": 60.77028,
-			"longitude": 26.788787
+			"latitude": 60.771013,
+			"longitude": 26.78669
 		}
 	},
 	{
 		"name": "Malmi",
 		"shortCode": "ML",
 		"location": {
-			"latitude": 60.251924,
-			"longitude": 25.012284
+			"latitude": 60.25166,
+			"longitude": 25.011468
 		}
 	},
 	{
 		"name": "Mommila",
 		"shortCode": "MLA",
 		"location": {
-			"latitude": 60.821462,
-			"longitude": 25.075621
+			"latitude": 60.821177,
+			"longitude": 25.075141
 		}
 	},
 	{
 		"name": "Malminkartano",
 		"shortCode": "MLO",
 		"location": {
-			"latitude": 60.249376,
-			"longitude": 24.861659
+			"latitude": 60.249316,
+			"longitude": 24.861283
 		}
 	},
 	{
 		"name": "Mäntsälä",
 		"shortCode": "MLÄ",
 		"location": {
-			"latitude": 60.647472,
-			"longitude": 25.308049
+			"latitude": 60.647258,
+			"longitude": 25.307475
 		}
 	},
 	{
 		"name": "Martinlaakso",
 		"shortCode": "MRL",
 		"location": {
-			"latitude": 60.278149,
-			"longitude": 24.85298
+			"latitude": 60.27808,
+			"longitude": 24.852604
 		}
 	},
 	{
 		"name": "Myyrmäki",
 		"shortCode": "MYR",
 		"location": {
-			"latitude": 60.261387,
-			"longitude": 24.855126
+			"latitude": 60.261327,
+			"longitude": 24.854751
 		}
 	},
 	{
 		"name": "Mäkkylä",
 		"shortCode": "MÄK",
 		"location": {
-			"latitude": 60.221352,
-			"longitude": 24.843353
+			"latitude": 60.22131,
+			"longitude": 24.842976
 		}
 	},
 	{
 		"name": "Nokia",
 		"shortCode": "NOA",
 		"location": {
-			"latitude": 61.481621,
-			"longitude": 23.499013
+			"latitude": 61.481059,
+			"longitude": 23.49917
 		}
 	},
 	{
 		"name": "Nastola",
 		"shortCode": "NSL",
 		"location": {
-			"latitude": 60.935888,
-			"longitude": 25.936305
+			"latitude": 60.935567,
+			"longitude": 25.935467
 		}
 	},
 	{
@@ -515,40 +515,40 @@
 		"name": "Pitäjänmäki",
 		"shortCode": "PJM",
 		"location": {
-			"latitude": 60.223438,
-			"longitude": 24.860171
+			"latitude": 60.223412,
+			"longitude": 24.859649
 		}
 	},
 	{
 		"name": "Puistola",
 		"shortCode": "PLA",
 		"location": {
-			"latitude": 60.276663,
-			"longitude": 25.037259
+			"latitude": 60.276313,
+			"longitude": 25.036683
 		}
 	},
 	{
 		"name": "Pukinmäki",
 		"shortCode": "PMK",
 		"location": {
-			"latitude": 60.242471,
-			"longitude": 24.994104
+			"latitude": 60.242216,
+			"longitude": 24.993288
 		}
 	},
 	{
 		"name": "Pohjois-Haaga",
 		"shortCode": "POH",
 		"location": {
-			"latitude": 60.230129,
-			"longitude": 24.883646
+			"latitude": 60.230156,
+			"longitude": 24.883319
 		}
 	},
 	{
 		"name": "Parola",
 		"shortCode": "PRL",
 		"location": {
-			"latitude": 61.050408,
-			"longitude": 24.366531
+			"latitude": 61.049922,
+			"longitude": 24.366497
 		}
 	},
 	{
@@ -579,16 +579,16 @@
 		"name": "Rekola",
 		"shortCode": "RKL",
 		"location": {
-			"latitude": 60.333194,
-			"longitude": 25.069299
+			"latitude": 60.332871,
+			"longitude": 25.068666
 		}
 	},
 	{
 		"name": "Ryttylä",
 		"shortCode": "RY",
 		"location": {
-			"latitude": 60.81844,
-			"longitude": 24.75849
+			"latitude": 60.818048,
+			"longitude": 24.758186
 		}
 	},
 	{
@@ -603,32 +603,32 @@
 		"name": "Savio",
 		"shortCode": "SAV",
 		"location": {
-			"latitude": 60.381537,
-			"longitude": 25.098333
+			"latitude": 60.381296,
+			"longitude": 25.097803
 		}
 	},
 	{
 		"name": "Skogby",
 		"shortCode": "SGY",
 		"location": {
-			"latitude": 59.925945,
-			"longitude": 23.310384
+			"latitude": 59.926668,
+			"longitude": 23.312403
 		}
 	},
 	{
 		"name": "Santala",
 		"shortCode": "STA",
 		"location": {
-			"latitude": 59.87498,
-			"longitude": 23.121002
+			"latitude": 59.875008,
+			"longitude": 23.121052
 		}
 	},
 	{
 		"name": "Siuntio",
 		"shortCode": "STI",
 		"location": {
-			"latitude": 60.140671,
-			"longitude": 24.221885
+			"latitude": 60.140648,
+			"longitude": 24.221671
 		}
 	},
 	{
@@ -643,32 +643,32 @@
 		"name": "Toijala",
 		"shortCode": "TL",
 		"location": {
-			"latitude": 61.171022,
-			"longitude": 23.860827
+			"latitude": 61.170611,
+			"longitude": 23.860905
 		}
 	},
 	{
 		"name": "Tammisaari",
 		"shortCode": "TMS",
 		"location": {
-			"latitude": 59.979501,
-			"longitude": 23.443238
+			"latitude": 59.979553,
+			"longitude": 23.443501
 		}
 	},
 	{
 		"name": "Tapanila",
 		"shortCode": "TNA",
 		"location": {
-			"latitude": 60.264207,
-			"longitude": 25.030719
+			"latitude": 60.2639,
+			"longitude": 25.030033
 		}
 	},
 	{
 		"name": "Tolsa",
 		"shortCode": "TOL",
 		"location": {
-			"latitude": 60.117644,
-			"longitude": 24.47049
+			"latitude": 60.118558,
+			"longitude": 24.472724
 		}
 	},
 	{
@@ -683,72 +683,72 @@
 		"name": "Tavastila",
 		"shortCode": "TSL",
 		"location": {
-			"latitude": 60.573058,
-			"longitude": 26.955483
+			"latitude": 60.573333,
+			"longitude": 26.954701
 		}
 	},
 	{
 		"name": "Tesoma",
 		"shortCode": "TSO",
 		"location": {
-			"latitude": 61.503156,
-			"longitude": 23.623809
+			"latitude": 61.503363,
+			"longitude": 23.630271
 		}
 	},
 	{
 		"name": "Turenki",
 		"shortCode": "TU",
 		"location": {
-			"latitude": 60.918795,
-			"longitude": 24.638878
+			"latitude": 60.918387,
+			"longitude": 24.63865
 		}
 	},
 	{
 		"name": "Uusikylä",
 		"shortCode": "UKÄ",
 		"location": {
-			"latitude": 60.928121,
-			"longitude": 26.017813
+			"latitude": 60.927722,
+			"longitude": 25.993966
 		}
 	},
 	{
 		"name": "Vehkala",
 		"shortCode": "VEH",
 		"location": {
-			"latitude": 60.297681,
-			"longitude": 24.850522
+			"latitude": 60.295054,
+			"longitude": 24.843716
 		}
 	},
 	{
 		"name": "Viiala",
 		"shortCode": "VIA",
 		"location": {
-			"latitude": 61.212173,
-			"longitude": 23.77068
+			"latitude": 61.211787,
+			"longitude": 23.770683
 		}
 	},
 	{
 		"name": "Vantaankoski",
 		"shortCode": "VKS",
 		"location": {
-			"latitude": 60.28575,
-			"longitude": 24.848646
+			"latitude": 60.286119,
+			"longitude": 24.847966
 		}
 	},
 	{
 		"name": "Villähde",
 		"shortCode": "VLH",
 		"location": {
-			"latitude": 60.962431,
-			"longitude": 25.797731
+			"latitude": 60.946379,
+			"longitude": 25.833724
 		}
 	},
 	{
 		"name": "Valimo",
 		"shortCode": "VMO",
 		"location": {
-			"latitude": 60.222214,
-			"longitude": 24.876212
+			"latitude": 60.222028,
+			"longitude": 24.87583
 		}
 	}
 ]
