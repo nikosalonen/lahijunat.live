@@ -619,24 +619,20 @@ describe("StationManager", () => {
 	});
 
 	describe("PWA and URL handling", () => {
-		let originalLocation: Location;
+		let originalHistory: History;
 		let originalVisibilityState: string;
+		// window.location is non-configurable under the vmThreads pool, so set
+		// the real jsdom URL through the real History API instead of mocking it.
+		let setUrl: (url: string) => void;
 
 		beforeEach(() => {
-			originalLocation = window.location;
+			originalHistory = window.history;
 			originalVisibilityState = document.visibilityState;
 
-			// Mock window.location
-			Object.defineProperty(window, "location", {
-				value: {
-					...originalLocation,
-					search: "",
-					pathname: "/",
-					reload: vi.fn(),
-				} as Location,
-				writable: true,
-				configurable: true,
-			});
+			const realReplaceState =
+				originalHistory.replaceState.bind(originalHistory);
+			setUrl = (url) => realReplaceState({}, "", url);
+			setUrl("/");
 
 			// Mock document.visibilityState
 			Object.defineProperty(document, "visibilityState", {
@@ -657,11 +653,12 @@ describe("StationManager", () => {
 		});
 
 		afterEach(() => {
-			Object.defineProperty(window, "location", {
-				value: originalLocation,
+			Object.defineProperty(window, "history", {
+				value: originalHistory,
 				writable: true,
 				configurable: true,
 			});
+			setUrl("/");
 			Object.defineProperty(document, "visibilityState", {
 				value: originalVisibilityState,
 				writable: true,
@@ -671,7 +668,7 @@ describe("StationManager", () => {
 
 		it("restores route from localStorage on PWA launch", async () => {
 			// Set PWA launch parameters
-			window.location.search = "?source=pwa";
+			setUrl("/?source=pwa");
 			localStorageMock.setItem("selectedOrigin", "HKI");
 			localStorageMock.setItem("selectedDestination", "TPE");
 
@@ -777,7 +774,7 @@ describe("StationManager", () => {
 			render(<StationManager stations={mockStations} />);
 
 			// Simulate back button (popstate event)
-			window.location.pathname = "/hki/tpe/";
+			setUrl("/hki/tpe/");
 			fireEvent(window, new PopStateEvent("popstate"));
 
 			await waitFor(() => {
@@ -794,7 +791,7 @@ describe("StationManager", () => {
 
 		it("does not update URL during PWA launch", async () => {
 			// Set PWA launch parameters
-			window.location.search = "?source=pwa";
+			setUrl("/?source=pwa");
 
 			// Mock document as hidden during PWA launch
 			Object.defineProperty(document, "visibilityState", {
