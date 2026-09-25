@@ -4,6 +4,11 @@ import { defineConfig } from "vitest/config";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// Tests assert Finnish local times. vmThreads workers share this process's
+// timezone, and setting TZ inside a worker thread has no effect, so set it
+// here before any workers start instead of through `test.env`.
+process.env.TZ = "Europe/Helsinki";
+
 export default defineConfig({
 	test: {
 		globals: true,
@@ -17,9 +22,6 @@ export default defineConfig({
 			"src/**/*.{test,spec}.{js,ts,jsx,tsx}",
 			"scripts/**/*.{test,spec}.ts",
 		],
-		env: {
-			TZ: "Europe/Helsinki",
-		},
 		coverage: {
 			provider: "v8",
 			include: ["src/**/*.{ts,tsx}"],
