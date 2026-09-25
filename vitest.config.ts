@@ -8,6 +8,10 @@ export default defineConfig({
 	test: {
 		globals: true,
 		environment: "jsdom",
+		// Creates jsdom once per worker instead of once per test file, while
+		// still giving each file its own module graph. Much faster on
+		// low-core machines such as CI runners.
+		pool: "vmThreads",
 		setupFiles: ["./src/__tests__/setup.ts"],
 		include: [
 			"src/**/*.{test,spec}.{js,ts,jsx,tsx}",
