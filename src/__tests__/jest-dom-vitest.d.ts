@@ -4,9 +4,17 @@
 // for custom matcher types. Remove this once jest-dom ships Vitest 5 types.
 import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
 
+// Shape of an asymmetric matcher such as `expect.stringContaining(...)`.
+// Text matchers like `toHaveAccessibleName` accept `string | RegExp | E`, so
+// this keeps them from accepting arbitrary values such as numbers.
+interface AsymmetricMatcherLike {
+	asymmetricMatch: (other: unknown) => boolean;
+	toString: () => string;
+}
+
 declare module "vitest" {
 	interface Matchers<
 		R extends void | Promise<void> = void | Promise<void>,
 		T = unknown,
-	> extends TestingLibraryMatchers<unknown, R> {}
+	> extends TestingLibraryMatchers<AsymmetricMatcherLike, R> {}
 }
