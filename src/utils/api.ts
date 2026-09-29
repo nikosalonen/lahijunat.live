@@ -545,7 +545,6 @@ const STATION_QUERY = `query GetStations {
 			{shortCode:{unequals:"TKU"}},
 			{shortCode:{unequals:"TOR"}},
 			{shortCode:{unequals:"TRI"}},
-			{shortCode:{unequals:"TRL"}},
 			{shortCode:{unequals:"TRV"}},
 			{shortCode:{unequals:"TUS"}},
 			{shortCode:{unequals:"TUU"}},

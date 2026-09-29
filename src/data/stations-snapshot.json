@@ -680,6 +680,14 @@
 		}
 	},
 	{
+		"name": "Tuomarila",
+		"shortCode": "TRL",
+		"location": {
+			"latitude": 60.20605,
+			"longitude": 24.681767
+		}
+	},
+	{
 		"name": "Tavastila",
 		"shortCode": "TSL",
 		"location": {
