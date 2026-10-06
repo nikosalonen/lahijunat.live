@@ -904,3 +904,119 @@ describe("partitionActiveMessages with an empty departure list", () => {
 		expect(general).toHaveLength(1);
 	});
 });
+
+describe("partitionActiveMessages duplicate handling", () => {
+	const now = new Date("2026-06-03T09:00:00Z");
+	// Real notice that Digitraffic published under two ids (HKI/PSL and TKL).
+	const trackWork =
+		"Ratatyötiedote: K-junien vuoroväli on tavallista harvempi 25.10. asti. P- ja I-junia perutaan osittain iltaisin ja öisin 5.-9.10. Arkiöisin R- ja T-junia korvataan osittain busseilla 969X 30.10. asti. Lisätietoja: hsl.fi tai vr.fi.";
+	const resolveName = (code: string) => `Station ${code}`;
+
+	function general(id: string, fi: string, stations: string[] = []) {
+		return makeMessage({
+			id,
+			stations,
+			video: { text: { fi, sv: null, en: null } },
+		});
+	}
+
+	it("shows one copy of messages with the same text and flags the rest", () => {
+		const { general: g } = partitionActiveMessages(
+			[
+				general("hki", trackWork, ["HKI", "PSL"]),
+				general("tkl", trackWork, ["TKL"]),
+			],
+			now,
+			"fi",
+			new Set(),
+			resolveName,
+		);
+		expect(g.map((m) => m.id)).toEqual(["hki"]);
+		expect(g[0].duplicateIds).toEqual(["tkl"]);
+		expect(g[0].stationNames).toEqual([
+			"Station HKI",
+			"Station PSL",
+			"Station TKL",
+		]);
+	});
+
+	it("treats case, punctuation and whitespace differences as the same text", () => {
+		const { general: g } = partitionActiveMessages(
+			[
+				general("a", trackWork),
+				general(
+					"b",
+					`  ${trackWork.toUpperCase().replace(": ", " – ").replace(/\.$/, "")}\n`,
+				),
+			],
+			now,
+			"fi",
+			new Set(),
+		);
+		expect(g.map((m) => m.id)).toEqual(["a"]);
+	});
+
+	it("treats a small wording change as a duplicate", () => {
+		const { general: g } = partitionActiveMessages(
+			[
+				general("a", trackWork),
+				general("b", trackWork.replace("tavallista", "normaalia")),
+			],
+			now,
+			"fi",
+			new Set(),
+		);
+		expect(g.map((m) => m.id)).toEqual(["a"]);
+	});
+
+	it("keeps messages whose numbers differ, such as dates or tracks", () => {
+		const { general: g } = partitionActiveMessages(
+			[
+				general("a", trackWork),
+				general("b", trackWork.replace("25.10", "26.10")),
+			],
+			now,
+			"fi",
+			new Set(),
+		);
+		expect(g.map((m) => m.id).sort()).toEqual(["a", "b"]);
+		expect(g.every((m) => m.duplicateIds === undefined)).toBe(true);
+	});
+
+	it("keeps messages with clearly different text", () => {
+		const { general: g } = partitionActiveMessages(
+			[
+				general(
+					"a",
+					"Ratatyötiedote: Raide 1 on suljettu, minkä lisäksi K-junien vuoroväli on tavallista harvempi 25.10. asti.",
+				),
+				general(
+					"b",
+					"Huomioittehan että raide 1 on suljettu 25.10. asti ratatöiden vuoksi.",
+				),
+			],
+			now,
+			"fi",
+			new Set(),
+		);
+		expect(g).toHaveLength(2);
+	});
+
+	it("removes duplicates within one train's messages", () => {
+		const train = (id: string) =>
+			makeMessage({
+				id,
+				trainNumber: 1234,
+				trainDepartureDate: "2026-06-03",
+				video: { text: { fi: "Juna on myöhässä.", sv: null, en: null } },
+			});
+		const key = trainMessageKey(1234, "2026-06-03");
+		const { perTrain } = partitionActiveMessages(
+			[train("t1"), train("t2")],
+			now,
+			"fi",
+			new Set([key]),
+		);
+		expect(perTrain.get(key)?.map((m) => m.id)).toEqual(["t1"]);
+	});
+});

@@ -41,6 +41,8 @@ export interface ActiveMessage {
 	startValidity: string;
 	endValidity: string;
 	stationNames?: string[];
+	/** Ids of other messages with the same content, hidden in favour of this one. */
+	duplicateIds?: string[];
 }
 
 /**
@@ -201,6 +203,64 @@ function byTimeCriticality(a: ActiveMessage, b: ActiveMessage): number {
 	return startA - startB;
 }
 
+/** Word overlap above which two messages count as the same announcement. */
+const DUPLICATE_WORD_OVERLAP = 0.9;
+
+/** Lowercase words with punctuation removed, so formatting does not matter. */
+function contentWords(text: string): string[] {
+	return text
+		.normalize("NFKC")
+		.toLowerCase()
+		.split(/[^\p{L}\p{N}]+/u)
+		.filter(Boolean);
+}
+
+/**
+ * Two messages are duplicates when their words are the same, or nearly the
+ * same with identical numbers. Numbers carry dates, times and track numbers,
+ * so a message that differs in any of them is kept as its own message.
+ */
+function isSameContent(a: string[], b: string[]): boolean {
+	if (a.join(" ") === b.join(" ")) return true;
+
+	const numbers = (words: string[]) =>
+		words.filter((w) => /\p{N}/u.test(w)).join(" ");
+	if (numbers(a) !== numbers(b)) return false;
+
+	const setA = new Set(a);
+	const setB = new Set(b);
+	let shared = 0;
+	for (const word of setA) if (setB.has(word)) shared++;
+	const union = setA.size + setB.size - shared;
+	return union > 0 && shared / union >= DUPLICATE_WORD_OVERLAP;
+}
+
+/**
+ * Drop messages that repeat an earlier message's content. Digitraffic often
+ * publishes the same notice under separate ids for different stations, so a
+ * route query returns several copies. The first copy is kept, lists the ids
+ * of the hidden copies in `duplicateIds`, and gets their station names.
+ */
+function removeDuplicates(messages: ActiveMessage[]): ActiveMessage[] {
+	const kept: { message: ActiveMessage; words: string[] }[] = [];
+	for (const message of messages) {
+		const words = contentWords(message.text);
+		const original = kept.find((k) => isSameContent(k.words, words));
+		if (!original) {
+			kept.push({ message, words });
+			continue;
+		}
+		const target = original.message;
+		target.duplicateIds = [...(target.duplicateIds ?? []), message.id];
+		if (message.stationNames) {
+			target.stationNames = Array.from(
+				new Set([...(target.stationNames ?? []), ...message.stationNames]),
+			);
+		}
+	}
+	return kept.map((k) => k.message);
+}
+
 export interface PartitionOptions {
 	/**
 	 * Keep a message even outside its video deliveryRules window. Station
@@ -272,9 +332,12 @@ export function partitionActiveMessages(
 	}
 
 	general.sort(byTimeCriticality);
-	for (const arr of perTrain.values()) arr.sort(byTimeCriticality);
+	for (const [key, arr] of perTrain) {
+		arr.sort(byTimeCriticality);
+		perTrain.set(key, removeDuplicates(arr));
+	}
 
-	return { general, perTrain };
+	return { general: removeDuplicates(general), perTrain };
 }
 
 /**
