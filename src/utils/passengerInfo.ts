@@ -201,6 +201,53 @@ function byTimeCriticality(a: ActiveMessage, b: ActiveMessage): number {
 	return startA - startB;
 }
 
+/**
+ * Message text as lowercase words split on anything that is not a letter or
+ * digit, so case, punctuation and spacing do not matter. Any other difference,
+ * even one word such as a station name or "ei", keeps two messages apart.
+ */
+function contentKey(text: string): string {
+	return text
+		.normalize("NFKC")
+		.toLowerCase()
+		.split(/[^\p{L}\p{N}]+/u)
+		.filter(Boolean)
+		.join(" ");
+}
+
+/** A copy without stations applies everywhere, so the merged message does too. */
+function mergeStationNames(
+	a: string[] | undefined,
+	b: string[] | undefined,
+): string[] | undefined {
+	if (!a || !b) return undefined;
+	return Array.from(new Set([...a, ...b]));
+}
+
+/**
+ * Drop messages whose text repeats an earlier message. Digitraffic often
+ * publishes the same notice under separate ids for different stations, so a
+ * route query returns several copies. The first copy in the given order is
+ * kept and takes over the station names of the dropped copies (it is updated
+ * in place, so pass freshly built messages).
+ */
+function removeDuplicates(messages: ActiveMessage[]): ActiveMessage[] {
+	const kept = new Map<string, ActiveMessage>();
+	for (const message of messages) {
+		const key = contentKey(message.text);
+		const original = kept.get(key);
+		if (original) {
+			original.stationNames = mergeStationNames(
+				original.stationNames,
+				message.stationNames,
+			);
+		} else {
+			kept.set(key, message);
+		}
+	}
+	return [...kept.values()];
+}
+
 export interface PartitionOptions {
 	/**
 	 * Keep a message even outside its video deliveryRules window. Station
@@ -213,7 +260,9 @@ export interface PartitionOptions {
 
 /**
  * Filter raw messages down to the active set and route them into the
- * general-banner pool and a per-train key map.
+ * general-banner pool and a per-train key map. Each list is sorted by
+ * time-criticality and then deduplicated, so the copy with the shortest
+ * validity window is the one shown.
  */
 export function partitionActiveMessages(
 	messages: PassengerInformationMessage[],
@@ -272,9 +321,12 @@ export function partitionActiveMessages(
 	}
 
 	general.sort(byTimeCriticality);
-	for (const arr of perTrain.values()) arr.sort(byTimeCriticality);
+	for (const [key, arr] of perTrain) {
+		arr.sort(byTimeCriticality);
+		perTrain.set(key, removeDuplicates(arr));
+	}
 
-	return { general, perTrain };
+	return { general: removeDuplicates(general), perTrain };
 }
 
 /**
