@@ -33,7 +33,7 @@
 		"@astrojs/preact": "^6.0.5",
 		"@astrojs/sitemap": "^3.7.4",
 		"@tailwindcss/vite": "^4.3.3",
-		"astro": "^7.3.4",
+		"astro": "^7.3.5",
 		"preact": "^10.29.8",
 		"qrcode-generator": "^2.0.4",
 		"tailwindcss": "^4.3.3",
@@ -47,18 +47,18 @@
 	"devDependencies": {
 		"@astrojs/check": "^0.9.10",
 		"@babel/plugin-bugfix-firefox-class-in-computed-class-key": "^7.29.7",
-		"@biomejs/biome": "^2.5.14",
+		"@biomejs/biome": "^2.5.15",
 		"@testing-library/dom": "^10.4.2",
 		"@testing-library/jest-dom": "^7.0.1",
 		"@testing-library/preact": "^3.2.4",
-		"@types/node": "^24.13.3",
-		"daisyui": "^5.7.46",
+		"@types/node": "^24.19.1",
+		"daisyui": "^5.7.47",
 		"husky": "^9.1.7",
-		"jsdom": "^30.1.1",
-		"lint-staged": "^17.5.1",
+		"jsdom": "^30.1.2",
+		"lint-staged": "^17.6.0",
 		"tsx": "^4.23.15",
 		"typescript": "^6.0.3",
-		"vitest": "^5.0.1",
+		"vitest": "^5.0.3",
 		"workbox-cli": "^7.4.1"
 	}
 }
