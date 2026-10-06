@@ -41,8 +41,6 @@ export interface ActiveMessage {
 	startValidity: string;
 	endValidity: string;
 	stationNames?: string[];
-	/** Ids of other messages with the same content, hidden in favour of this one. */
-	duplicateIds?: string[];
 }
 
 /**
@@ -203,62 +201,51 @@ function byTimeCriticality(a: ActiveMessage, b: ActiveMessage): number {
 	return startA - startB;
 }
 
-/** Word overlap above which two messages count as the same announcement. */
-const DUPLICATE_WORD_OVERLAP = 0.9;
-
-/** Lowercase words with punctuation removed, so formatting does not matter. */
-function contentWords(text: string): string[] {
+/**
+ * Message text as lowercase words split on anything that is not a letter or
+ * digit, so case, punctuation and spacing do not matter. Any other difference,
+ * even one word such as a station name or "ei", keeps two messages apart.
+ */
+function contentKey(text: string): string {
 	return text
 		.normalize("NFKC")
 		.toLowerCase()
 		.split(/[^\p{L}\p{N}]+/u)
-		.filter(Boolean);
+		.filter(Boolean)
+		.join(" ");
+}
+
+/** A copy without stations applies everywhere, so the merged message does too. */
+function mergeStationNames(
+	a: string[] | undefined,
+	b: string[] | undefined,
+): string[] | undefined {
+	if (!a || !b) return undefined;
+	return Array.from(new Set([...a, ...b]));
 }
 
 /**
- * Two messages are duplicates when their words are the same, or nearly the
- * same with identical numbers. Numbers carry dates, times and track numbers,
- * so a message that differs in any of them is kept as its own message.
- */
-function isSameContent(a: string[], b: string[]): boolean {
-	if (a.join(" ") === b.join(" ")) return true;
-
-	const numbers = (words: string[]) =>
-		words.filter((w) => /\p{N}/u.test(w)).join(" ");
-	if (numbers(a) !== numbers(b)) return false;
-
-	const setA = new Set(a);
-	const setB = new Set(b);
-	let shared = 0;
-	for (const word of setA) if (setB.has(word)) shared++;
-	const union = setA.size + setB.size - shared;
-	return union > 0 && shared / union >= DUPLICATE_WORD_OVERLAP;
-}
-
-/**
- * Drop messages that repeat an earlier message's content. Digitraffic often
+ * Drop messages whose text repeats an earlier message. Digitraffic often
  * publishes the same notice under separate ids for different stations, so a
- * route query returns several copies. The first copy is kept, lists the ids
- * of the hidden copies in `duplicateIds`, and gets their station names.
+ * route query returns several copies. The first copy in the given order is
+ * kept and takes over the station names of the dropped copies (it is updated
+ * in place, so pass freshly built messages).
  */
 function removeDuplicates(messages: ActiveMessage[]): ActiveMessage[] {
-	const kept: { message: ActiveMessage; words: string[] }[] = [];
+	const kept = new Map<string, ActiveMessage>();
 	for (const message of messages) {
-		const words = contentWords(message.text);
-		const original = kept.find((k) => isSameContent(k.words, words));
-		if (!original) {
-			kept.push({ message, words });
-			continue;
-		}
-		const target = original.message;
-		target.duplicateIds = [...(target.duplicateIds ?? []), message.id];
-		if (message.stationNames) {
-			target.stationNames = Array.from(
-				new Set([...(target.stationNames ?? []), ...message.stationNames]),
+		const key = contentKey(message.text);
+		const original = kept.get(key);
+		if (original) {
+			original.stationNames = mergeStationNames(
+				original.stationNames,
+				message.stationNames,
 			);
+		} else {
+			kept.set(key, message);
 		}
 	}
-	return kept.map((k) => k.message);
+	return [...kept.values()];
 }
 
 export interface PartitionOptions {
@@ -273,7 +260,9 @@ export interface PartitionOptions {
 
 /**
  * Filter raw messages down to the active set and route them into the
- * general-banner pool and a per-train key map.
+ * general-banner pool and a per-train key map. Each list is sorted by
+ * time-criticality and then deduplicated, so the copy with the shortest
+ * validity window is the one shown.
  */
 export function partitionActiveMessages(
 	messages: PassengerInformationMessage[],

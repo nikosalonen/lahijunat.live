@@ -912,15 +912,30 @@ describe("partitionActiveMessages duplicate handling", () => {
 		"Ratatyötiedote: K-junien vuoroväli on tavallista harvempi 25.10. asti. P- ja I-junia perutaan osittain iltaisin ja öisin 5.-9.10. Arkiöisin R- ja T-junia korvataan osittain busseilla 969X 30.10. asti. Lisätietoja: hsl.fi tai vr.fi.";
 	const resolveName = (code: string) => `Station ${code}`;
 
-	function general(id: string, fi: string, stations: string[] = []) {
+	function general(
+		id: string,
+		fi: string,
+		stations: string[] = [],
+		validity: { startValidity?: string; endValidity?: string } = {},
+	) {
 		return makeMessage({
 			id,
 			stations,
 			video: { text: { fi, sv: null, en: null } },
+			...validity,
 		});
 	}
 
-	it("shows one copy of messages with the same text and flags the rest", () => {
+	function train(id: string, trainNumber: number, fi: string) {
+		return makeMessage({
+			id,
+			trainNumber,
+			trainDepartureDate: "2026-06-03",
+			video: { text: { fi, sv: null, en: null } },
+		});
+	}
+
+	it("shows one copy of messages with the same text", () => {
 		const { general: g } = partitionActiveMessages(
 			[
 				general("hki", trackWork, ["HKI", "PSL"]),
@@ -932,7 +947,6 @@ describe("partitionActiveMessages duplicate handling", () => {
 			resolveName,
 		);
 		expect(g.map((m) => m.id)).toEqual(["hki"]);
-		expect(g[0].duplicateIds).toEqual(["tkl"]);
 		expect(g[0].stationNames).toEqual([
 			"Station HKI",
 			"Station PSL",
@@ -956,31 +970,38 @@ describe("partitionActiveMessages duplicate handling", () => {
 		expect(g.map((m) => m.id)).toEqual(["a"]);
 	});
 
-	it("treats a small wording change as a duplicate", () => {
+	it.each([
+		["a date", trackWork.replace("25.10", "26.10")],
+		["a line letter", trackWork.replace("K-junien", "N-junien")],
+		["a negation", trackWork.replace("perutaan", "ei peruta")],
+		["one word", trackWork.replace("tavallista", "normaalia")],
+	])("keeps messages that differ by %s", (_, changed) => {
 		const { general: g } = partitionActiveMessages(
-			[
-				general("a", trackWork),
-				general("b", trackWork.replace("tavallista", "normaalia")),
-			],
-			now,
-			"fi",
-			new Set(),
-		);
-		expect(g.map((m) => m.id)).toEqual(["a"]);
-	});
-
-	it("keeps messages whose numbers differ, such as dates or tracks", () => {
-		const { general: g } = partitionActiveMessages(
-			[
-				general("a", trackWork),
-				general("b", trackWork.replace("25.10", "26.10")),
-			],
+			[general("a", trackWork), general("b", changed)],
 			now,
 			"fi",
 			new Set(),
 		);
 		expect(g.map((m) => m.id).sort()).toEqual(["a", "b"]);
-		expect(g.every((m) => m.duplicateIds === undefined)).toBe(true);
+	});
+
+	it("keeps per-station notices that differ only by the station name", () => {
+		const notice = (station: string) =>
+			`Ratatyön vuoksi lähijunat eivät pysähdy ${station} iltaisin. Matkustajia pyydetään käyttämään korvaavia busseja, jotka lähtevät aseman edestä. Lisätietoja saat osoitteesta hsl.fi.`;
+		const { general: g } = partitionActiveMessages(
+			[
+				general("psl", notice("Pasilassa"), ["PSL"]),
+				general("tkl", notice("Tikkurilassa"), ["TKL"]),
+			],
+			now,
+			"fi",
+			new Set(),
+			resolveName,
+		);
+		expect(g).toHaveLength(2);
+		expect(g.find((m) => m.id === "psl")?.stationNames).toEqual([
+			"Station PSL",
+		]);
 	});
 
 	it("keeps messages with clearly different text", () => {
@@ -1002,21 +1023,88 @@ describe("partitionActiveMessages duplicate handling", () => {
 		expect(g).toHaveLength(2);
 	});
 
+	it("merges the station names of every copy", () => {
+		const { general: g } = partitionActiveMessages(
+			[
+				general("a", trackWork, ["HKI"]),
+				general("b", trackWork, ["TKL"]),
+				general("c", trackWork, ["HKI", "PSL"]),
+			],
+			now,
+			"fi",
+			new Set(),
+			resolveName,
+		);
+		expect(g.map((m) => m.id)).toEqual(["a"]);
+		expect(g[0].stationNames).toEqual([
+			"Station HKI",
+			"Station TKL",
+			"Station PSL",
+		]);
+	});
+
+	it("shows no stations when one copy has none, as that copy applies everywhere", () => {
+		const { general: g } = partitionActiveMessages(
+			[general("a", trackWork), general("b", trackWork, ["TKL"])],
+			now,
+			"fi",
+			new Set(),
+			resolveName,
+		);
+		expect(g.map((m) => m.id)).toEqual(["a"]);
+		expect(g[0].stationNames).toBeUndefined();
+	});
+
+	it("keeps the copy with the shortest validity window", () => {
+		const { general: g } = partitionActiveMessages(
+			[
+				general("long", trackWork, ["HKI"], {
+					startValidity: "2026-01-01T00:00:00Z",
+					endValidity: "2027-01-01T00:00:00Z",
+				}),
+				general("short", trackWork, ["TKL"], {
+					startValidity: "2026-06-03T08:00:00Z",
+					endValidity: "2026-06-03T10:00:00Z",
+				}),
+			],
+			now,
+			"fi",
+			new Set(),
+			resolveName,
+		);
+		expect(g.map((m) => m.id)).toEqual(["short"]);
+		expect(g[0].stationNames).toEqual(["Station TKL", "Station HKI"]);
+	});
+
 	it("removes duplicates within one train's messages", () => {
-		const train = (id: string) =>
-			makeMessage({
-				id,
-				trainNumber: 1234,
-				trainDepartureDate: "2026-06-03",
-				video: { text: { fi: "Juna on myöhässä.", sv: null, en: null } },
-			});
 		const key = trainMessageKey(1234, "2026-06-03");
 		const { perTrain } = partitionActiveMessages(
-			[train("t1"), train("t2")],
+			[
+				train("t1", 1234, "Juna on myöhässä."),
+				train("t2", 1234, "Juna on myöhässä."),
+			],
 			now,
 			"fi",
 			new Set([key]),
 		);
 		expect(perTrain.get(key)?.map((m) => m.id)).toEqual(["t1"]);
+	});
+
+	it("keeps the same text for different trains and for the general banner", () => {
+		const key1 = trainMessageKey(1234, "2026-06-03");
+		const key2 = trainMessageKey(5678, "2026-06-03");
+		const { general: g, perTrain } = partitionActiveMessages(
+			[
+				train("t1", 1234, "Juna on myöhässä."),
+				train("t2", 5678, "Juna on myöhässä."),
+				general("g", "Juna on myöhässä."),
+			],
+			now,
+			"fi",
+			new Set([key1, key2]),
+		);
+		expect(perTrain.get(key1)?.map((m) => m.id)).toEqual(["t1"]);
+		expect(perTrain.get(key2)?.map((m) => m.id)).toEqual(["t2"]);
+		expect(g.map((m) => m.id)).toEqual(["g"]);
 	});
 });
