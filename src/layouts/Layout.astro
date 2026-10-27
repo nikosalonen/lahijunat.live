@@ -418,10 +418,16 @@ const metaDescription = description || defaultDescription;
   html {
     font-family: var(--font-body);
     scroll-behavior: smooth;
-    /* The page colour. iOS paints the Home Screen app's status bar with it,
-       and it shows when the page is pulled past the purple nav or footer.
-       The content wrapper in <body> paints the theme background. */
-    background-color: #8c4799;
+  }
+
+  /* The page colour in the installed app. iOS paints the Home Screen app's
+     status bar with it, and it shows when the page is pulled past the purple
+     nav or footer. The content wrapper in <body> paints the theme background.
+     Browser tabs keep the theme colour, so Safari's own bars stay as they were. */
+  @media (display-mode: standalone) {
+    html {
+      background-color: #8c4799;
+    }
   }
 
   /* Only apps added to the Home Screen before the status bar change need
