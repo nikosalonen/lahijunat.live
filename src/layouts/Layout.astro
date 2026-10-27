@@ -123,12 +123,13 @@ const metaDescription = description || defaultDescription;
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/Juna.png" />
 
-    <!-- iOS meta tags -->
+    <!-- iOS meta tags.
+         No apple-mobile-web-app-status-bar-style on purpose. With
+         "black-translucent" the Home Screen app draws the page under the
+         status bar, and iOS 26 blurs the top ~40pt of it, header included.
+         WebKit calls that style deprecated. Without it the page starts below
+         an opaque status bar that iOS colours to match the page (purple). -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
     <meta name="apple-mobile-web-app-title" content="Lähijunat Live" />
     <link rel="apple-touch-icon" href="/Juna.png" />
 
@@ -267,14 +268,14 @@ const metaDescription = description || defaultDescription;
          )
      }
   </head>
-  <body class="min-h-screen bg-base-100">
+  <body class="min-h-screen">
     <a
       href="#main-content"
       class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-[#8c4799] focus:text-white focus:rounded-lg focus:shadow-lg focus:text-sm focus:font-medium"
     >
       {t("skipToContent")}
     </a>
-    <div class="min-h-screen flex flex-col">
+    <div class="min-h-screen flex flex-col bg-base-100">
       <nav class="py-3 sm:py-4 bg-[#8c4799] text-white w-full shadow-lg">
         <div class="container mx-auto px-3 sm:px-4">
           <div class="flex items-center justify-between">
@@ -419,13 +420,33 @@ const metaDescription = description || defaultDescription;
     scroll-behavior: smooth;
   }
 
-  /* iOS status bar fix */
+  /* The page colour in the installed app. iOS paints the Home Screen app's
+     status bar with it, and it shows when the page is pulled past the purple
+     nav or footer. The content wrapper in <body> paints the theme background.
+     Browser tabs keep the theme colour, so Safari's own bars stay as they were. */
+  @media (display-mode: standalone) {
+    html {
+      background-color: #8c4799;
+    }
+  }
+
+  /* Only apps added to the Home Screen before the status bar change need
+     these: iOS keeps the status bar style it saw at install time, so those
+     still draw under a translucent status bar. Everywhere else the inset is
+     0 and the rules change nothing.
+     iOS 26+ also blurs the strip just below the status bar in those apps,
+     so the nav adds up to 1.5rem more space when there is a top inset. */
   body {
     padding-top: env(safe-area-inset-top);
   }
 
   nav {
-    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-top: max(
+      1rem,
+      calc(
+        env(safe-area-inset-top) + min(env(safe-area-inset-top), 1.5rem)
+      )
+    );
     margin-top: calc(-1 * env(safe-area-inset-top));
   }
 </style>
