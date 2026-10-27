@@ -36,19 +36,11 @@
 		"astro": "^7.4.2",
 		"preact": "^11.0.2",
 		"qrcode-generator": "^2.0.4",
-		"tailwindcss": "^4.3.3",
-		"workbox-cacheable-response": "^7.4.1",
-		"workbox-core": "^7.4.1",
-		"workbox-expiration": "^7.4.1",
-		"workbox-precaching": "^7.4.1",
-		"workbox-routing": "^7.4.1",
-		"workbox-strategies": "^7.4.1"
+		"tailwindcss": "^4.3.3"
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.12",
-		"@babel/plugin-bugfix-firefox-class-in-computed-class-key": "^7.29.7",
 		"@biomejs/biome": "^2.6.3",
-		"@testing-library/dom": "^10.4.2",
 		"@testing-library/jest-dom": "^7.0.1",
 		"@testing-library/preact": "^3.2.6",
 		"@types/node": "^24.19.2",
