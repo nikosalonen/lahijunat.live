@@ -29,5 +29,3 @@ coverage/
 
 # Playwright MCP session artifacts
 .playwright-mcp/
-# Added by code-review-graph
-.code-review-graph/
