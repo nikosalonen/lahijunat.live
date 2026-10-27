@@ -1,6 +1,6 @@
 /** @format */
 
-import type { MutableRef } from "preact/hooks";
+import type { RefObject } from "preact";
 import {
 	useCallback,
 	useEffect,
@@ -31,7 +31,7 @@ interface Props {
 	selectedValue?: string | null;
 	isOpen: boolean;
 	onOpenChange: (isOpen: boolean) => void;
-	inputRef?: MutableRef<HTMLInputElement | null>;
+	inputRef?: RefObject<HTMLInputElement | null>;
 	isLoading?: boolean;
 	onFocus?: () => void;
 	labelId?: string;
