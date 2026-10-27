@@ -168,6 +168,17 @@ describe("isBaseline", () => {
 		const audioOnly = msg({ video: undefined, audio: { text: videoText } });
 		expect(isBaseline(audioOnly, marked())).toBe(false);
 	});
+	it("is not baseline when it was not valid yet at createdAt", () => {
+		const scheduled = msg({
+			creationDateTime: "2026-10-26T20:00:00Z",
+			startValidity: "2026-10-27T07:00:00Z",
+		});
+		expect(isBaseline(scheduled, marked())).toBe(false);
+	});
+	it("is not baseline when it had already ended at createdAt", () => {
+		const ended = msg({ endValidity: "2026-10-27T06:20:00Z" });
+		expect(isBaseline(ended, marked())).toBe(false);
+	});
 });
 
 describe("config", () => {

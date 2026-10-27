@@ -82,8 +82,8 @@ export function messagesForTrain(
 
 /**
  * A message the train card could already show when the train was marked is
- * not pushed. The card shows a train's message only when it lists the
- * rider's `from` or `to` station, has video text and is inside its video
+ * not pushed. The card shows a train's message only while it is valid, lists
+ * the rider's `from` or `to` station, has video text and is inside its video
  * delivery window. Anything else the rider has not seen, so it is pushed.
  * The grace period covers the app's own polling lag.
  */
@@ -95,6 +95,10 @@ export function isBaseline(
 	const createdAt = Date.parse(record.createdAt);
 	const liveBeforeMarking = versionTime <= createdAt - BASELINE_GRACE_MS;
 	if (!liveBeforeMarking) return false;
+	const validAtMarking =
+		Date.parse(msg.startValidity) <= createdAt &&
+		Date.parse(msg.endValidity) > createdAt;
+	if (!validAtMarking) return false;
 	if (
 		!msg.stations.includes(record.from) &&
 		!msg.stations.includes(record.to)
