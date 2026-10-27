@@ -23,7 +23,7 @@ import { calculateDuration, getDepartureDate } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import { getDebugMode, subscribeToDebugMode } from "./DebugToggle";
 import TimeDisplay from "./TimeDisplay";
-import TrainMessagePanel from "./TrainMessagePanel";
+import TrainAnnouncements from "./TrainAnnouncements";
 
 // Fixed reference point for animation sync - captured once at module load
 const ANIMATION_SYNC_BASELINE = Date.now();
@@ -45,6 +45,10 @@ interface Props {
 	) => "fast" | "slow" | "normal";
 	messages?: ActiveMessage[];
 }
+
+// Track, cancelled and countdown badges share one size so they line up
+const CARD_BADGE_SIZE =
+	"h-7 px-2.5 text-sm sm:h-8 sm:px-3 sm:text-base font-semibold";
 
 // Swipe gesture constants
 const SWIPE_THRESHOLD = 60; // px required to trigger action
@@ -152,23 +156,7 @@ export default function TrainCard({
 	// Swipe gesture state
 	const [swipeOffset, setSwipeOffset] = useState(0);
 	const [isTransitioning, setIsTransitioning] = useState(false);
-	const [messagesOpen, setMessagesOpen] = useState(false);
-	const messagesPanelId = `train-${train.trainNumber}-${stationCode}-${destinationCode}-messages`;
 	const hasMessages = (messages?.length ?? 0) > 0;
-
-	useEffect(() => {
-		if (!messagesOpen) return;
-		const handleKey = (event: KeyboardEvent) => {
-			if (event.key === "Escape") setMessagesOpen(false);
-		};
-		window.addEventListener("keydown", handleKey);
-		return () => window.removeEventListener("keydown", handleKey);
-	}, [messagesOpen]);
-
-	// Auto-close panel if messages disappear (e.g. delivery window ended).
-	useEffect(() => {
-		if (!hasMessages && messagesOpen) setMessagesOpen(false);
-	}, [hasMessages, messagesOpen]);
 	const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 	const isSwipingRef = useRef(false);
 	const hasTriggeredRef = useRef(false);
@@ -803,39 +791,6 @@ export default function TrainCard({
 	const visualOffset = swipeOffset * SWIPE_RESISTANCE;
 	const isSwipeActive = Math.abs(swipeOffset) > 0;
 
-	const messagesButton = hasMessages && (
-		<button
-			type="button"
-			class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-100 dark:bg-amber-900/70 text-amber-700 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800 transition-colors shadow-sm flex-shrink-0"
-			aria-label={
-				messages && messages.length > 1
-					? `${t("passengerInfoTrainButton")} (${messages.length})`
-					: t("passengerInfoTrainButton")
-			}
-			aria-expanded={messagesOpen}
-			aria-controls={messagesPanelId}
-			onClick={(event) => {
-				event.stopPropagation();
-				setMessagesOpen((v) => !v);
-			}}
-		>
-			<svg
-				class="w-4 h-4"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"
-			>
-				<circle cx="12" cy="12" r="10" />
-				<line x1="12" y1="8" x2="12" y2="12" />
-				<line x1="12" y1="16" x2="12.01" y2="16" />
-			</svg>
-		</button>
-	);
-
 	return (
 		<>
 			<div
@@ -941,9 +896,11 @@ export default function TrainCard({
 						}
 					>
 						<div class="card-body p-3 sm:p-4">
-							<div class="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-3 sm:gap-x-4 gap-y-1.5 sm:gap-y-2 items-center">
-								{/* Row 1+2, Col 1: Line badge (row-span-2 wrapper always rendered) */}
-								<div class="row-span-2">
+							<div class="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-2.5 sm:gap-x-4 gap-y-1.5 sm:gap-y-2 items-center">
+								{/* Col 1: Line badge, spanning every row (wrapper always rendered) */}
+								<div
+									class={hasMessages ? "row-span-3 self-start" : "row-span-2"}
+								>
 									{train.commuterLineID && (
 										<button
 											onClick={handleFavorite}
@@ -951,7 +908,7 @@ export default function TrainCard({
 												isHighlighted ? t("unfavorite") : t("favorite")
 											}
 											type="button"
-											class={`flex-shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center text-xl font-bold rounded-2xl shadow-brand-medium transition-transform duration-300 relative group touch-manipulation select-none focus:outline-none border-none ring-0 ${
+											class={`flex-shrink-0 h-12 w-12 sm:h-16 sm:w-16 flex items-center justify-center text-lg sm:text-xl font-bold rounded-2xl shadow-brand-medium transition-transform duration-300 relative group touch-manipulation select-none focus:outline-none border-none ring-0 ${
 												train.cancelled
 													? "bg-gradient-to-br from-red-500 to-red-600 text-white"
 													: "bg-[#8c4799] text-white"
@@ -980,7 +937,7 @@ export default function TrainCard({
 								</div>
 
 								{/* Row 1, Col 2: Times */}
-								<div class="card-title p-0 min-w-0 overflow-hidden">
+								<div class="card-title p-0 min-w-0">
 									<TimeDisplay
 										departureRow={departureRow}
 										arrivalRow={arrivalRow}
@@ -991,15 +948,13 @@ export default function TrainCard({
 								{/* Row 1, Col 3: Track badge (or cancelled badge) */}
 								<div class="flex items-center justify-self-end gap-1.5">
 									{train.cancelled ? (
-										<>
-											{messagesButton}
-											<span class="badge badge-error badge-lg text-white">
-												{t("cancelled")}
-											</span>
-										</>
+										<span
+											class={`badge badge-error text-white ${CARD_BADGE_SIZE}`}
+										>
+											{t("cancelled")}
+										</span>
 									) : (
 										<>
-											{messagesButton}
 											{/* Interactive Flippable Track Badge */}
 											<div class="indicator">
 												<button
@@ -1018,7 +973,6 @@ export default function TrainCard({
 														class="relative inline-block"
 														style={{
 															perspective: "1000px",
-															minHeight: "32px",
 														}}
 													>
 														<div
@@ -1029,12 +983,11 @@ export default function TrainCard({
 																	: "rotateY(0deg)",
 																transition: "transform 0.4s ease-out",
 																position: "relative",
-																minHeight: "32px",
 															}}
 														>
 															{/* Front face - Departure Track */}
 															<div
-																class={`badge badge-lg font-semibold transition-[color,background-color,border-color,transform,opacity] duration-200 ${getTrackBadgeClass(
+																class={`badge ${CARD_BADGE_SIZE} transition-[color,background-color,border-color,transform,opacity] duration-200 ${getTrackBadgeClass(
 																	"departure",
 																)} whitespace-nowrap`}
 																style={{
@@ -1045,7 +998,7 @@ export default function TrainCard({
 																{t("track")} {departureRow.commercialTrack}
 																{arrivalRow && (
 																	<svg
-																		class="inline-block w-3 h-3 ml-1.5 opacity-60"
+																		class="hidden min-[360px]:inline-block w-3 h-3 ml-1.5 opacity-60"
 																		fill="currentColor"
 																		viewBox="0 0 512 512"
 																		aria-hidden="true"
@@ -1056,7 +1009,7 @@ export default function TrainCard({
 															</div>
 															{/* Back face - Arrival Track */}
 															<div
-																class={`badge badge-lg font-semibold transition-[color,background-color,border-color,transform,opacity] duration-200 ${getTrackBadgeClass(
+																class={`badge ${CARD_BADGE_SIZE} transition-[color,background-color,border-color,transform,opacity] duration-200 ${getTrackBadgeClass(
 																	"arrival",
 																)} whitespace-nowrap`}
 																style={{
@@ -1108,10 +1061,24 @@ export default function TrainCard({
 									)}
 								</div>
 
-								{/* Row 2, Col 2: Duration */}
+								{/* Row 2, Col 2–3: Train announcements. Always visible, without
+								    validity dates: they only matter for this trip. */}
+								{hasMessages && messages && (
+									<section
+										class="col-start-2 col-span-2"
+										aria-label={t("passengerInfoTrainAnnouncements")}
+									>
+										<TrainAnnouncements
+											messages={messages}
+											listId={`train-${train.trainNumber}-${stationCode}-${destinationCode}-messages`}
+										/>
+									</section>
+								)}
+
+								{/* Row 3 with announcements, otherwise row 2, Col 2: Duration */}
 								{duration && (
 									<output
-										class={`col-start-2 text-sm sm:text-base font-medium flex items-center truncate ${
+										class={`col-start-2 text-sm font-medium flex items-center gap-1.5 truncate ${
 											durationSpeedType === "fast"
 												? "text-success"
 												: durationSpeedType === "slow"
@@ -1126,7 +1093,7 @@ export default function TrainCard({
 										}
 									>
 										<svg
-											class="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1"
+											class="w-4 h-4 flex-shrink-0"
 											fill="currentColor"
 											viewBox="0 0 512 512"
 											aria-hidden="true"
@@ -1139,10 +1106,10 @@ export default function TrainCard({
 									</output>
 								)}
 
-								{/* Row 2, Col 3: Countdown */}
+								{/* Same row as the duration, Col 3: Countdown */}
 								{!train.cancelled && (
 									<div
-										class={`col-start-3 justify-self-end badge badge-success badge-lg gap-2 font-semibold sm:h-8 sm:px-4 ${
+										class={`col-start-3 justify-self-end badge badge-success ${CARD_BADGE_SIZE} ${
 											!hasDerivedActualDeparture &&
 											minutesToDeparture !== null &&
 											minutesToDeparture <= 30 &&
@@ -1174,12 +1141,6 @@ export default function TrainCard({
 										? t("departingSoon")
 										: ""}
 							</div>
-							{messagesOpen && messages && messages.length > 0 && (
-								<TrainMessagePanel
-									messages={messages}
-									panelId={messagesPanelId}
-								/>
-							)}
 						</div>
 					</div>
 				</div>

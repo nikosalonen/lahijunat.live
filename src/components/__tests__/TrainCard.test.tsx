@@ -1,6 +1,7 @@
 import { fireEvent, render, waitFor } from "@testing-library/preact";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getRelevantTrackInfo } from "@/utils/api";
+import type { ActiveMessage } from "@/utils/passengerInfo";
 import { showToast } from "@/utils/toast";
 import type { Train } from "../../types";
 import TrainCard from "../TrainCard";
@@ -294,6 +295,70 @@ describe("TrainCard", () => {
 
 		// Duration should be 1 hour
 		expect(getByLabelText("Kesto 1 tuntia 0 minuuttia")).toBeInTheDocument();
+	});
+
+	describe("train announcements", () => {
+		const announcement: ActiveMessage = {
+			id: "msg-1",
+			text: "Ajetaan poikkeuksellisesti vain yhdellä junayksiköllä.",
+			trainNumber: 123,
+			trainDepartureDate: "2024-03-20",
+			startValidity: "2024-03-20T08:00:00.000Z",
+			endValidity: "2024-03-22T00:00:00.000Z",
+		};
+
+		it("shows the announcement text without a tap", () => {
+			const { getByText } = render(
+				<TrainCard {...defaultProps} messages={[announcement]} />,
+			);
+
+			expect(getByText(announcement.text)).toBeInTheDocument();
+		});
+
+		it("places the announcement between the times and the duration", () => {
+			const { getByText, getByLabelText } = render(
+				<TrainCard {...defaultProps} messages={[announcement]} />,
+			);
+
+			const text = getByText(announcement.text);
+			const track = getByText("Raide 1");
+			const duration = getByLabelText("Kesto 1 tuntia 0 minuuttia");
+			expect(
+				track.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING,
+			).toBeTruthy();
+			expect(
+				text.compareDocumentPosition(duration) &
+					Node.DOCUMENT_POSITION_FOLLOWING,
+			).toBeTruthy();
+		});
+
+		it("does not show validity dates", () => {
+			const { queryByText } = render(
+				<TrainCard {...defaultProps} messages={[announcement]} />,
+			);
+
+			expect(queryByText(/passengerInfoValidity/)).not.toBeInTheDocument();
+		});
+
+		it("shows the first of several announcements with a +N chip", () => {
+			const second: ActiveMessage = {
+				...announcement,
+				id: "msg-2",
+				text: "Juna on myöhässä teknisen vian vuoksi.",
+			};
+			const { getByText } = render(
+				<TrainCard {...defaultProps} messages={[announcement, second]} />,
+			);
+
+			expect(getByText(announcement.text)).toBeInTheDocument();
+			expect(getByText("+1")).toBeInTheDocument();
+		});
+
+		it("renders no announcement list without messages", () => {
+			const { queryByRole } = render(<TrainCard {...defaultProps} />);
+
+			expect(queryByRole("list")).not.toBeInTheDocument();
+		});
 	});
 
 	it("handles delayed trains correctly", () => {
