@@ -21,6 +21,7 @@ export default defineConfig({
 		include: [
 			"src/**/*.{test,spec}.{js,ts,jsx,tsx}",
 			"scripts/**/*.{test,spec}.ts",
+			"netlify/**/*.{test,spec}.ts",
 		],
 		coverage: {
 			provider: "v8",
