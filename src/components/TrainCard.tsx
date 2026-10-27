@@ -19,7 +19,11 @@ import type { Train } from "../types";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
 import type { ActiveMessage } from "../utils/passengerInfo";
-import { calculateDuration, getDepartureDate } from "../utils/trainUtils";
+import {
+	calculateDuration,
+	formatTime,
+	getDepartureDate,
+} from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import { getDebugMode, subscribeToDebugMode } from "./DebugToggle";
 import TimeDisplay from "./TimeDisplay";
@@ -1141,6 +1145,14 @@ export default function TrainCard({
 										? t("departingSoon")
 										: ""}
 							</div>
+							{/* Always rendered, so a screen reader notices when an
+							    announcement arrives. The text only changes when the most
+							    urgent announcement does, so polling does not repeat it. */}
+							<p role="status" aria-live="polite" class="sr-only">
+								{hasMessages && messages
+									? `${t("passengerInfoTrainAnnouncements")}, ${train.commuterLineID ?? ""} ${formatTime(departureRow.scheduledTime)}: ${messages[0].text}`
+									: ""}
+							</p>
 						</div>
 					</div>
 				</div>

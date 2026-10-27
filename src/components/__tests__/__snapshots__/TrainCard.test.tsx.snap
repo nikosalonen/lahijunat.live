@@ -155,6 +155,13 @@ exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
         >
           Peruttu
         </div>
+        <p
+          aria-live="polite"
+          class="sr-only"
+          role="status"
+        >
+          
+        </p>
       </div>
     </div>
   </div>
@@ -394,6 +401,13 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
         >
           Lähtee pian
         </div>
+        <p
+          aria-live="polite"
+          class="sr-only"
+          role="status"
+        >
+          
+        </p>
       </div>
     </div>
   </div>
@@ -614,6 +628,13 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
         >
           Lähtee pian
         </div>
+        <p
+          aria-live="polite"
+          class="sr-only"
+          role="status"
+        >
+          
+        </p>
       </div>
     </div>
   </div>

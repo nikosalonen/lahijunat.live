@@ -354,6 +354,24 @@ describe("TrainCard", () => {
 			expect(getByText("+1")).toBeInTheDocument();
 		});
 
+		it("announces the most urgent announcement in a status region that is always there", () => {
+			const { container, rerender } = render(<TrainCard {...defaultProps} />);
+			const region = container.querySelector(
+				'[role="status"][aria-live="polite"]',
+			);
+			// Present and empty before any announcement arrives, so screen readers
+			// notice when text is added to it
+			expect(region).toBeInTheDocument();
+			expect(region?.textContent).toBe("");
+
+			rerender(<TrainCard {...defaultProps} messages={[announcement]} />);
+
+			expect(
+				container.querySelector('[role="status"][aria-live="polite"]'),
+			).toBe(region);
+			expect(region).toHaveTextContent(announcement.text);
+		});
+
 		it("renders no announcement list without messages", () => {
 			const { queryByRole } = render(<TrainCard {...defaultProps} />);
 
