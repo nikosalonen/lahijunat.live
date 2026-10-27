@@ -963,6 +963,8 @@ export default function TrainList({
 									onReappear={() => handleTrainReappear(journeyKey)}
 									getDurationSpeedType={getDurationSpeedType}
 									messages={trainMessages}
+									fromName={fromStation?.name}
+									toName={toStation?.name}
 								/>
 							</div>
 						);

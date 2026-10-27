@@ -668,6 +668,39 @@ describe("TrainCard", () => {
 			);
 		});
 
+		it("still saves the favorite when building the alert target throws", async () => {
+			vi.mocked(buildAlertTarget).mockImplementationOnce(() => {
+				throw new TypeError("boom");
+			});
+			const { getByLabelText } = render(<TrainCard {...defaultProps} />);
+
+			fireEvent.click(getByLabelText("favorite"));
+			await vi.advanceTimersByTimeAsync(0);
+
+			expect(setFavorite).toHaveBeenCalledWith(
+				"123",
+				expect.not.objectContaining({ alertTarget: expect.anything() }),
+			);
+			expect(onFavoriteAdded).not.toHaveBeenCalled();
+			expect(getByLabelText("unfavorite")).toBeInTheDocument();
+		});
+
+		it("passes the route's station names to the alert target", async () => {
+			const { getByLabelText } = render(
+				<TrainCard {...defaultProps} fromName="Helsinki" toName="Tampere" />,
+			);
+
+			fireEvent.click(getByLabelText("favorite"));
+			await vi.advanceTimersByTimeAsync(0);
+
+			expect(buildAlertTarget).toHaveBeenCalledWith(
+				expect.anything(),
+				"HKI",
+				"TPE",
+				{ from: "Helsinki", to: "Tampere" },
+			);
+		});
+
 		it("does not call onFavoriteAdded when there is no alert target", async () => {
 			vi.mocked(buildAlertTarget).mockReturnValueOnce(null);
 			const { getByLabelText } = render(<TrainCard {...defaultProps} />);
