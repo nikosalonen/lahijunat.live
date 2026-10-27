@@ -7,6 +7,8 @@ import { t } from "../utils/translations";
 interface Props {
 	messages: ActiveMessage[];
 	listId: string;
+	/** Pulse the strip because an announcement just went live. */
+	justArrived?: boolean;
 }
 
 /**
@@ -15,7 +17,11 @@ interface Props {
  * Opening it lists every announcement in full. Validity dates are left out
  * because a train announcement only concerns this trip.
  */
-export default function TrainAnnouncements({ messages, listId }: Props) {
+export default function TrainAnnouncements({
+	messages,
+	listId,
+	justArrived = false,
+}: Props) {
 	const [open, setOpen] = useState(false);
 	const [isCutOff, setIsCutOff] = useState(false);
 	const firstTextRef = useRef<HTMLParagraphElement>(null);
@@ -48,7 +54,9 @@ export default function TrainAnnouncements({ messages, listId }: Props) {
 			: t("passengerInfoExpand");
 
 	return (
-		<div class="relative flex items-start gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-2 py-1.5 dark:border-amber-900/60 dark:bg-amber-950/40">
+		<div
+			class={`relative flex items-start gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-2 py-1.5 dark:border-amber-900/60 dark:bg-amber-950/40 ${justArrived ? "animate-announcement-arrive" : ""}`}
+		>
 			<svg
 				class="mt-px h-4 w-4 flex-shrink-0 text-amber-600 dark:text-amber-400"
 				viewBox="0 0 24 24"

@@ -16,11 +16,13 @@ import {
 } from "@/utils/storage";
 import { showToast } from "@/utils/toast";
 import type { Train } from "../types";
+import { takeNewArrivals } from "../utils/announcementArrivals";
 import { getRelevantTrackInfo } from "../utils/api";
 import { hapticImpact } from "../utils/haptics";
 import type { ActiveMessage } from "../utils/passengerInfo";
 import {
 	calculateDuration,
+	formatDuration,
 	formatTime,
 	getDepartureDate,
 } from "../utils/trainUtils";
@@ -49,6 +51,15 @@ interface Props {
 	) => "fast" | "slow" | "normal";
 	messages?: ActiveMessage[];
 }
+
+// How long a newly arrived announcement's strip pulses (two 0.8 s rings)
+const ANNOUNCEMENT_PULSE_MS = 2000;
+const TOAST_TEXT_MAX_LENGTH = 100;
+
+const shortenForToast = (text: string) =>
+	text.length > TOAST_TEXT_MAX_LENGTH
+		? `${text.slice(0, TOAST_TEXT_MAX_LENGTH - 1).trimEnd()}…`
+		: text;
 
 // Track, cancelled and countdown badges share one size so they line up
 const CARD_BADGE_SIZE =
@@ -608,6 +619,43 @@ export default function TrainCard({
 		prevTrackChangedRef.current = !!isTrackChanged;
 	}, [isTrackChanged, isHighlighted, train, stationCode, destinationCode]);
 
+	// An announcement that goes live while the app is open, often only minutes
+	// before departure, is easy to miss. Pulse its strip, and on a favorite
+	// train also show a toast.
+	const [arrivedMessages, setArrivedMessages] = useState<ActiveMessage[]>([]);
+	useEffect(() => {
+		if (!messages || messages.length === 0) return;
+		const arrivals = takeNewArrivals(messages);
+		if (arrivals.length > 0) setArrivedMessages(arrivals);
+	}, [messages]);
+
+	useEffect(() => {
+		if (arrivedMessages.length === 0) return;
+		const timeout = setTimeout(
+			() => setArrivedMessages([]),
+			ANNOUNCEMENT_PULSE_MS,
+		);
+		return () => clearTimeout(timeout);
+	}, [arrivedMessages]);
+
+	// Favorite status loads after the first render, so the toast waits for it
+	// instead of firing in the same effect that detects the arrival.
+	const toastedArrivalsRef = useRef<ActiveMessage[] | null>(null);
+	useEffect(() => {
+		if (!isHighlighted || arrivedMessages.length === 0) return;
+		if (toastedArrivalsRef.current === arrivedMessages) return;
+		toastedArrivalsRef.current = arrivedMessages;
+		const departure = train.timeTableRows.find(
+			(row) => row.stationShortCode === stationCode && row.type === "DEPARTURE",
+		);
+		const time = departure ? ` ${formatTime(departure.scheduledTime)}` : "";
+		showToast(
+			`${t("newAnnouncementNotification")}: ${train.commuterLineID ?? ""}${time} – ${shortenForToast(arrivedMessages[0].text)}`,
+			"warning",
+			8000,
+		);
+	}, [arrivedMessages, isHighlighted, train, stationCode]);
+
 	// Handler for flipping the track badge
 	const handleTrackFlip = () => {
 		setIsTrackFlipped((prev) => !prev);
@@ -1000,14 +1048,22 @@ export default function TrainCard({
 																}}
 															>
 																{t("track")} {departureRow.commercialTrack}
+																{/* Swap arrows: a tap shows the arrival track */}
 																{arrivalRow && (
 																	<svg
-																		class="hidden min-[360px]:inline-block w-3 h-3 ml-1.5 opacity-60"
-																		fill="currentColor"
-																		viewBox="0 0 512 512"
+																		class="hidden min-[360px]:inline-block w-3.5 h-3.5 ml-1.5 opacity-60"
+																		viewBox="0 0 24 24"
+																		fill="none"
+																		stroke="currentColor"
+																		stroke-width="2.5"
+																		stroke-linecap="round"
+																		stroke-linejoin="round"
 																		aria-hidden="true"
 																	>
-																		<path d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3-163.8-62.5-226.3 0L125.7 160z" />
+																		<path d="M7 3 3 7l4 4" />
+																		<path d="M3 7h14" />
+																		<path d="m17 21 4-4-4-4" />
+																		<path d="M21 17H7" />
 																	</svg>
 																)}
 															</div>
@@ -1075,6 +1131,7 @@ export default function TrainCard({
 										<TrainAnnouncements
 											messages={messages}
 											listId={`train-${train.trainNumber}-${stationCode}-${destinationCode}-messages`}
+											justArrived={arrivedMessages.length > 0}
 										/>
 									</section>
 								)}
@@ -1104,9 +1161,7 @@ export default function TrainCard({
 										>
 											<path d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
 										</svg>
-										<span>
-											{duration.hours}h {duration.minutes}m
-										</span>
+										<span>{formatDuration(duration)}</span>
 									</output>
 								)}
 

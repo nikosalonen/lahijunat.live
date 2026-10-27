@@ -142,10 +142,7 @@ exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
               />
             </svg>
             <span>
-              1
-              h 
-              0
-              m
+              1 h
             </span>
           </output>
         </div>
@@ -333,12 +330,25 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
                       1
                       <svg
                         aria-hidden="true"
-                        class="hidden min-[360px]:inline-block w-3 h-3 ml-1.5 opacity-60"
-                        fill="currentColor"
-                        viewBox="0 0 512 512"
+                        class="hidden min-[360px]:inline-block w-3.5 h-3.5 ml-1.5 opacity-60"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.5"
+                        viewBox="0 0 24 24"
                       >
                         <path
-                          d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3-163.8-62.5-226.3 0L125.7 160z"
+                          d="M7 3 3 7l4 4"
+                        />
+                        <path
+                          d="M3 7h14"
+                        />
+                        <path
+                          d="m17 21 4-4-4-4"
+                        />
+                        <path
+                          d="M21 17H7"
                         />
                       </svg>
                     </div>
@@ -380,10 +390,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
               />
             </svg>
             <span>
-              1
-              h 
-              0
-              m
+              1 h
             </span>
           </output>
           <div
@@ -560,12 +567,25 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
                       1
                       <svg
                         aria-hidden="true"
-                        class="hidden min-[360px]:inline-block w-3 h-3 ml-1.5 opacity-60"
-                        fill="currentColor"
-                        viewBox="0 0 512 512"
+                        class="hidden min-[360px]:inline-block w-3.5 h-3.5 ml-1.5 opacity-60"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.5"
+                        viewBox="0 0 24 24"
                       >
                         <path
-                          d="M125.7 160H176c17.7 0 32 14.3 32 32s-14.3 32-32 32H48c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32s32 14.3 32 32v51.2L97.6 97.6c87.5-87.5 229.3-87.5 316.8 0s87.5 229.3 0 316.8-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3-163.8-62.5-226.3 0L125.7 160z"
+                          d="M7 3 3 7l4 4"
+                        />
+                        <path
+                          d="M3 7h14"
+                        />
+                        <path
+                          d="m17 21 4-4-4-4"
+                        />
+                        <path
+                          d="M21 17H7"
                         />
                       </svg>
                     </div>
@@ -607,10 +627,7 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
               />
             </svg>
             <span>
-              1
-              h 
-              0
-              m
+              1 h
             </span>
           </output>
           <div

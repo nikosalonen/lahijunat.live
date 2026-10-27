@@ -150,6 +150,7 @@ export const translations = {
 		tapToRefresh: "Päivitä napauttamalla",
 		// Toast
 		trackChangedNotification: "Raide muuttunut",
+		newAnnouncementNotification: "Uusi tiedote",
 		connectionIssue: "Yhteysongelma, näytetään viimeisin tieto",
 		close: "Sulje",
 		// Passenger information messages
@@ -316,6 +317,7 @@ export const translations = {
 		tapToRefresh: "Tap to refresh",
 		// Toast
 		trackChangedNotification: "Track changed",
+		newAnnouncementNotification: "New announcement",
 		connectionIssue: "Connection issue, showing last known data",
 		close: "Close",
 		// Passenger information messages
@@ -483,6 +485,7 @@ export const translations = {
 		tapToRefresh: "Tryck för att uppdatera",
 		// Toast
 		trackChangedNotification: "Spår ändrat",
+		newAnnouncementNotification: "Nytt meddelande",
 		connectionIssue: "Anslutningsproblem, visar senast kända data",
 		close: "Stäng",
 		// Passenger information messages

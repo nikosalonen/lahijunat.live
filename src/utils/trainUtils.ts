@@ -32,6 +32,16 @@ export const calculateDuration = (
 };
 
 /**
+ * Format a duration for display: "54 min", "1 h 5 min" or "2 h". The units
+ * read the same in Finnish, Swedish and English.
+ */
+export const formatDuration = ({ hours, minutes }: Duration): string => {
+	if (hours === 0) return `${minutes} min`;
+	if (minutes === 0) return `${hours} h`;
+	return `${hours} h ${minutes} min`;
+};
+
+/**
  * Resolve a timetable row into an accurate departure moment prioritising realtime data.
  */
 export const getDepartureDate = (row: Train["timeTableRows"][0]): Date => {

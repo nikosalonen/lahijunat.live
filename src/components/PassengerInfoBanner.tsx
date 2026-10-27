@@ -167,11 +167,19 @@ export default function PassengerInfoBanner({ messages }: Props) {
 						<line x1="12" y1="8" x2="12" y2="12" />
 						<line x1="12" y1="16" x2="12.01" y2="16" />
 					</svg>
-					<span class="flex-1 font-medium text-gray-800 dark:text-gray-100 truncate">
-						{t("passengerInfoBannerTitle")}
-						<span class="ml-2 inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-amber-200 dark:bg-amber-800 text-xs text-amber-900 dark:text-amber-100">
-							{count}
+					<span class="flex-1 min-w-0">
+						<span class="flex items-center font-medium text-gray-800 dark:text-gray-100">
+							{t("passengerInfoBannerTitle")}
+							<span class="ml-2 inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-amber-200 dark:bg-amber-800 text-xs text-amber-900 dark:text-amber-100">
+								{count}
+							</span>
 						</span>
+						{/* A one-line preview so the closed banner still says something */}
+						{!expanded && (
+							<span class="mt-0.5 block truncate text-sm text-gray-600 dark:text-gray-300">
+								{messages[0].text}
+							</span>
+						)}
 					</span>
 					<svg
 						class={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${expanded ? "rotate-180" : ""}`}
