@@ -427,13 +427,20 @@ const metaDescription = description || defaultDescription;
   /* Only apps added to the Home Screen before the status bar change need
      these: iOS keeps the status bar style it saw at install time, so those
      still draw under a translucent status bar. Everywhere else the inset is
-     0 and the rules change nothing. */
+     0 and the rules change nothing.
+     iOS 26+ also blurs the strip just below the status bar in those apps,
+     so the nav adds up to 1.5rem more space when there is a top inset. */
   body {
     padding-top: env(safe-area-inset-top);
   }
 
   nav {
-    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-top: max(
+      1rem,
+      calc(
+        env(safe-area-inset-top) + min(env(safe-area-inset-top), 1.5rem)
+      )
+    );
     margin-top: calc(-1 * env(safe-area-inset-top));
   }
 </style>
