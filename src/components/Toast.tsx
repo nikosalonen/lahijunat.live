@@ -55,8 +55,10 @@ export default function Toast() {
 
 	if (toasts.length === 0) return null;
 
+	// Above the what's-new banner (z-[1000]), which sits in the same spot,
+	// so a track or announcement toast is never hidden behind it
 	return (
-		<div class="toast toast-bottom toast-center z-[100] pb-safe mb-4">
+		<div class="toast toast-bottom toast-center z-[1100] pb-safe mb-4">
 			{toasts.map((toast) => (
 				<div
 					key={toast.id}

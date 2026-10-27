@@ -3,7 +3,7 @@
 exports[`Toast > caps at 4 visible toasts 1`] = `
 <div>
   <div
-    class="toast toast-bottom toast-center z-[100] pb-safe mb-4"
+    class="toast toast-bottom toast-center z-[1100] pb-safe mb-4"
   >
     <div
       class="alert alert-info shadow-lg toast-enter text-sm py-2 px-4 min-h-0"
