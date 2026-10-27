@@ -54,7 +54,11 @@ export function createBlobAlertStore(): AlertStore {
 					? undefined
 					: { onlyIfMatch: opts.onlyIfMatch },
 			);
-			return result.modified;
+			if (!result.modified) return false;
+			// @netlify/blobs reports any failed conditional write except a 412 as
+			// modified; only a write that really landed returns an etag.
+			if (!result.etag) throw new Error("Blobs write failed");
+			return true;
 		},
 		async delete(key) {
 			await store.delete(key);

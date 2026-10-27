@@ -44,6 +44,28 @@ describe("fetchActiveMessages", () => {
 			/not an array/,
 		);
 	});
+
+	it("drops malformed elements and keeps nullable train fields", async () => {
+		const valid = {
+			id: "MVM1",
+			startValidity: "2026-10-27T06:19:00Z",
+			endValidity: "2026-10-29T00:00:00Z",
+			trainNumber: null,
+			trainDepartureDate: null,
+			stations: ["RI"],
+		};
+		const fetchImpl = stub(
+			jsonResponse([
+				null,
+				5,
+				"text",
+				{ ...valid, id: 7 },
+				{ ...valid, id: "MVM2", stations: null },
+				valid,
+			]),
+		);
+		await expect(fetchActiveMessages(fetchImpl)).resolves.toEqual([valid]);
+	});
 });
 
 describe("buildTrainStatusQuery", () => {

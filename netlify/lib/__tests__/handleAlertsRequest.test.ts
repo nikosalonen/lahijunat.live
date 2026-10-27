@@ -58,6 +58,32 @@ const stored = (overrides: Partial<AlertRecord> = {}): AlertRecord => ({
 
 const myKey = recordKey(endpoint, { trainNumber: 9638, departureDate: today });
 
+describe("body size", () => {
+	it("stops reading a body once it is over the limit", async () => {
+		const chunk = new TextEncoder().encode("x".repeat(4096));
+		let pulled = 0;
+		const stream = new ReadableStream<Uint8Array>({
+			pull(controller) {
+				pulled++;
+				if (pulled > 10) controller.close();
+				else controller.enqueue(chunk);
+			},
+		});
+		const response = await handleAlertsRequest(
+			new Request("https://www.lahijunat.live/api/alerts", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: stream,
+				duplex: "half",
+			} as RequestInit),
+			{ store: createMemoryAlertStore(), now, enabled: true },
+		);
+		expect(response.status).toBe(413);
+		// 8192 bytes is passed during the third chunk; the rest is never read.
+		expect(pulled).toBeLessThan(10);
+	});
+});
+
 /** Fills the store with other devices' records, one per index. */
 async function fill(
 	store: AlertStore,

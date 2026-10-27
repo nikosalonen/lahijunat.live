@@ -38,7 +38,14 @@ export async function fetchActiveMessages(
 	if (!Array.isArray(body)) {
 		throw new Error("Digitraffic messages response is not an array");
 	}
-	return body as DigitrafficMessage[];
+	// One malformed element would otherwise throw later in decideAlerts.
+	return body.filter(isMessageShape);
+}
+
+function isMessageShape(value: unknown): value is DigitrafficMessage {
+	if (typeof value !== "object" || value === null) return false;
+	const message = value as { id?: unknown; stations?: unknown };
+	return typeof message.id === "string" && Array.isArray(message.stations);
 }
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;

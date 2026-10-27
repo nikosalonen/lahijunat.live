@@ -1,7 +1,43 @@
 // @vitest-environment node
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createMemoryAlertStore } from "../memoryStore";
-import { endpointPrefix, recordKey, trainOfKey } from "../store";
+import {
+	createBlobAlertStore,
+	endpointPrefix,
+	recordKey,
+	trainOfKey,
+} from "../store";
+
+const setJSON = vi.fn();
+vi.mock("@netlify/blobs", () => ({
+	getStore: () => ({ setJSON }),
+}));
+
+describe("createBlobAlertStore put", () => {
+	// @netlify/blobs reports every conditional write that isn't a 412 as
+	// modified, even a failed one; only a real write comes back with an etag.
+	it("returns true for a write that came back with an etag", async () => {
+		setJSON.mockResolvedValueOnce({ etag: "abc", modified: true });
+		await expect(
+			createBlobAlertStore().put("k", record(), { onlyIfMatch: "e1" }),
+		).resolves.toBe(true);
+	});
+
+	it("returns false for an etag conflict", async () => {
+		setJSON.mockResolvedValueOnce({ modified: false });
+		await expect(
+			createBlobAlertStore().put("k", record(), { onlyIfMatch: "e1" }),
+		).resolves.toBe(false);
+	});
+
+	it("throws when a write reports success without an etag", async () => {
+		setJSON.mockResolvedValueOnce({ etag: "", modified: true });
+		await expect(
+			createBlobAlertStore().put("k", record(), { onlyIfMatch: "e1" }),
+		).rejects.toThrow(/write failed/);
+	});
+});
+
 import type { AlertRecord } from "../types";
 
 const record = (title = "IC 9638"): AlertRecord => ({
