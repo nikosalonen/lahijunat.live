@@ -193,6 +193,32 @@ describe("buildAlertTarget", () => {
 		expect(buildAlertTarget(makeTrain(), "RI", "TPE")).toBeNull();
 	});
 
+	// The live-trains feed sends stationShortCode only, no station object.
+	function makeLiveTrain(): Train {
+		const train = makeTrain();
+		return {
+			...train,
+			timeTableRows: train.timeTableRows.map(
+				({ station: _station, ...row }) => row,
+			),
+		};
+	}
+
+	it("takes station names from the caller for live rows", () => {
+		const built = buildAlertTarget(makeLiveTrain(), "RI", "HKI", {
+			from: "Riihimäki",
+			to: "Helsinki",
+		});
+		expect(built?.title).toBe("R 08:25 Riihimäki → Helsinki");
+		expect(built?.fromName).toBe("Riihimäki");
+	});
+
+	it("falls back to station codes when no names are known", () => {
+		expect(buildAlertTarget(makeLiveTrain(), "RI", "HKI")?.title).toBe(
+			"R 08:25 RI → HKI",
+		);
+	});
+
 	it("takes the title time from the second Pasila departure of a ring train", () => {
 		const row = makeTrain().timeTableRows[0];
 		const at = (
@@ -205,7 +231,11 @@ describe("buildAlertTarget", () => {
 			type,
 			stationShortCode: code,
 			scheduledTime,
-			station: { ...row.station, name, shortCode: code },
+			station: {
+				name,
+				shortCode: code,
+				location: { latitude: 0, longitude: 0 },
+			},
 		});
 		const ring = makeTrain({
 			commuterLineID: "I",

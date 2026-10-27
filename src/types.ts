@@ -35,7 +35,8 @@ export interface TimeTableRow {
 	actualTime?: string;
 	differenceInMinutes?: number;
 	unknownDelay?: boolean;
-	station: Station;
+	// The live-trains feed sends stationShortCode only, so this is often absent.
+	station?: Station;
 }
 
 export type Duration = {

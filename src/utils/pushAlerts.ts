@@ -123,12 +123,15 @@ function findSegment(
 
 /**
  * Describe the journey a favorite alert is about. Returns null when the
- * train does not call at both stations in the right order.
+ * train does not call at both stations in the right order. `names` holds the
+ * Finnish station names; live rows carry no station object, so without them
+ * the title falls back to the station codes.
  */
 export function buildAlertTarget(
 	train: Train,
 	from: string,
 	to: string,
+	names: { from?: string; to?: string } = {},
 ): AlertTarget | null {
 	const segment = findSegment(train.timeTableRows, from, to);
 	if (!segment) return null;
@@ -139,8 +142,14 @@ export function buildAlertTarget(
 	const departureDate = helsinkiParts(
 		new Date(train.originDepartureTime ?? train.timeTableRows[0].scheduledTime),
 	).date;
-	const fromName = getLocalizedStationName(fromRow.station.name, from);
-	const toName = getLocalizedStationName(toRow.station.name, to);
+	const fromName = getLocalizedStationName(
+		names.from ?? fromRow.station?.name ?? from,
+		from,
+	);
+	const toName = getLocalizedStationName(
+		names.to ?? toRow.station?.name ?? to,
+		to,
+	);
 	const line =
 		train.commuterLineID || `${train.trainType} ${train.trainNumber}`;
 	const time = helsinkiParts(new Date(fromRow.scheduledTime)).time;
