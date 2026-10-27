@@ -175,6 +175,19 @@ export const translations = {
 		passengerInfoStation: "Asema",
 		passengerInfoStations: "Asemat",
 		newFeaturesPassengerInfo: "Aseman tiedotteet näkyvillä",
+		alertsHomeScreenHint:
+			"Lisää Lähijunat Koti-valikkoon, niin saat ilmoitukset junista.",
+		alertsFull: "Ilmoituksia ei juuri nyt voi lisätä. Suosikki tallennettiin.",
+		alertsPromptTitle: "Ilmoitukset junan muutoksista?",
+		alertsPromptBody:
+			"Saat ilmoituksen, jos suosikkijunastasi tulee tiedote tai se perutaan.",
+		alertsPromptPrivacy:
+			"Palvelimelle tallentuu laitteesi ilmoitusosoite ja tämä juna. Tiedot poistetaan 10 minuuttia lähdön jälkeen.",
+		alertsPromptYes: "Kyllä",
+		alertsPromptNotNow: "Ei nyt",
+		alertsToggleOn: "Junailmoitukset päällä",
+		alertsToggleOff: "Junailmoitukset pois",
+		alertsBlocked: "Ilmoitukset on estetty. Salli ne laitteen asetuksista.",
 	},
 	en: {
 		title: "Local Trains Live | Real-time schedules for local trains",
@@ -346,6 +359,19 @@ export const translations = {
 		passengerInfoStation: "Station",
 		passengerInfoStations: "Stations",
 		newFeaturesPassengerInfo: "Live station announcements",
+		alertsHomeScreenHint: "Add Lähijunat to your Home Screen to get alerts.",
+		alertsFull: "Alerts are full right now. Your favorite was saved.",
+		alertsPromptTitle: "Get alerts if this train changes?",
+		alertsPromptBody:
+			"You'll get a notification if a favorite train gets an announcement or is cancelled.",
+		alertsPromptPrivacy:
+			"The server stores your device's notification address and this train. It is deleted 10 minutes after departure.",
+		alertsPromptYes: "Yes",
+		alertsPromptNotNow: "Not now",
+		alertsToggleOn: "Train alerts on",
+		alertsToggleOff: "Train alerts off",
+		alertsBlocked:
+			"Notifications are blocked. Allow them in your device settings.",
 	},
 	sv: {
 		title: "Lokaltåg Live | Tidtabeller för lokaltåg i realtid",
@@ -516,6 +542,20 @@ export const translations = {
 		passengerInfoStation: "Station",
 		passengerInfoStations: "Stationer",
 		newFeaturesPassengerInfo: "Stationsmeddelanden i realtid",
+		alertsHomeScreenHint:
+			"Lägg till Lähijunat på hemskärmen för att få aviseringar.",
+		alertsFull: "Aviseringar kan inte läggas till just nu. Favoriten sparades.",
+		alertsPromptTitle: "Få aviseringar om tåget ändras?",
+		alertsPromptBody:
+			"Du får en avisering om ett favorittåg får ett meddelande eller ställs in.",
+		alertsPromptPrivacy:
+			"Servern sparar enhetens aviseringsadress och detta tåg. Uppgifterna raderas 10 minuter efter avgång.",
+		alertsPromptYes: "Ja",
+		alertsPromptNotNow: "Inte nu",
+		alertsToggleOn: "Tågaviseringar på",
+		alertsToggleOff: "Tågaviseringar av",
+		alertsBlocked:
+			"Aviseringar är blockerade. Tillåt dem i enhetens inställningar.",
 	},
 };
 

@@ -5,12 +5,15 @@
  * Used for persisting favorite trains with support for auto-expiration.
  */
 
+import type { AlertTarget } from "./pushAlerts";
+
 export interface FavoriteTrainData {
 	highlighted: boolean;
 	removeAfter?: string; // ISO timestamp - auto-remove 10 min after departure
 	journeyKey: string; // Unique key for train journey
 	track?: string; // Track information
 	trackChanged?: boolean; // Whether track has changed
+	alertTarget?: AlertTarget; // Set when push alerts are wanted for this train
 }
 
 type FavoritesMap = Record<string, FavoriteTrainData>;
