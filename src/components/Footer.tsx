@@ -1,4 +1,4 @@
-import pkg from "../../package.json";
+import { version } from "../../package.json";
 import { POPULAR_STATIONS } from "../data/popularStations";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station } from "../types";
@@ -46,7 +46,7 @@ export default function Footer({ stations = [] }: Props) {
 						🦋 niko.torttu.fi
 					</a>
 				</p>
-				<p class="text-sm">v{pkg.version}</p>
+				<p class="text-sm">v{version}</p>
 				<p class="text-sm">
 					{t("dataSource")}:{" "}
 					<a
