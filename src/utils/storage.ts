@@ -222,6 +222,29 @@ async function deleteFromIndexedDB(trainNumber: string): Promise<void> {
 }
 
 /**
+ * Convert a favorite read from localStorage, in the old or current format.
+ * Shared by the fallback load and the IndexedDB migration so neither drops
+ * a field.
+ */
+function fromStoredFavorite(key: string, value: object): FavoriteTrainData {
+	const oldData = value as {
+		highlighted?: boolean;
+		removeAfter?: string;
+		track?: string;
+		trackChanged?: boolean;
+		alertTarget?: AlertTarget;
+	};
+	return {
+		highlighted: oldData.highlighted ?? true,
+		removeAfter: oldData.removeAfter,
+		journeyKey: key,
+		track: oldData.track,
+		trackChanged: oldData.trackChanged,
+		...(oldData.alertTarget && { alertTarget: oldData.alertTarget }),
+	};
+}
+
+/**
  * Load favorites from localStorage.
  */
 function loadFromLocalStorage(): FavoritesMap {
@@ -235,19 +258,7 @@ function loadFromLocalStorage(): FavoritesMap {
 		const result: FavoritesMap = {};
 		for (const [key, value] of Object.entries(parsed)) {
 			if (value && typeof value === "object") {
-				const oldData = value as {
-					highlighted?: boolean;
-					removeAfter?: string;
-					track?: string;
-					trackChanged?: boolean;
-				};
-				result[key] = {
-					highlighted: oldData.highlighted ?? true,
-					removeAfter: oldData.removeAfter,
-					journeyKey: key,
-					track: oldData.track,
-					trackChanged: oldData.trackChanged,
-				};
+				result[key] = fromStoredFavorite(key, value);
 			}
 		}
 		return result;
@@ -291,20 +302,7 @@ async function migrateFromLocalStorage(): Promise<void> {
 		// Migrate each entry
 		for (const [trainNumber, value] of Object.entries(parsed)) {
 			if (value && typeof value === "object") {
-				const oldData = value as {
-					highlighted?: boolean;
-					removeAfter?: string;
-					track?: string;
-					trackChanged?: boolean;
-				};
-
-				const newData: FavoriteTrainData = {
-					highlighted: oldData.highlighted ?? true,
-					removeAfter: oldData.removeAfter,
-					journeyKey: trainNumber,
-					track: oldData.track,
-					trackChanged: oldData.trackChanged,
-				};
+				const newData = fromStoredFavorite(trainNumber, value);
 
 				// Only add if not already in IndexedDB
 				if (!favoritesCache[trainNumber]) {
