@@ -24,8 +24,10 @@ import "../styles/global.css";
 import DebugToggle from "../components/DebugToggle";
 import FeatureAnnouncement from "../components/FeatureAnnouncement";
 import Footer from "../components/Footer";
+import AlertsToggle from "../components/AlertsToggle";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import ShareButton from "../components/ShareButton";
+import PushAlerts from "../components/PushAlerts";
 import Toast from "../components/Toast";
 import { POPULAR_STATIONS } from "../data/popularStations";
 import type { Station } from "../types";
@@ -302,6 +304,7 @@ const metaDescription = description || defaultDescription;
               <div class="relative z-10">
                 <LanguageSwitcher client:load />
               </div>
+              <AlertsToggle client:idle />
               <ShareButton client:idle />
               <label
                 id="theme-toggle"
@@ -364,6 +367,7 @@ const metaDescription = description || defaultDescription;
     </div>
     <FeatureAnnouncement client:idle />
     <Toast client:load />
+    <PushAlerts client:idle />
 
     <script>
       const themeToggleBtn = document.getElementById("theme-toggle");

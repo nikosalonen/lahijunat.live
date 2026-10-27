@@ -8,6 +8,11 @@ import {
 	useState,
 } from "preact/hooks";
 import {
+	buildAlertTarget,
+	onFavoriteAdded,
+	unsubscribeTrainAlerts,
+} from "@/utils/pushAlerts";
+import {
 	getFavoritesSync,
 	initStorage,
 	removeFavorite,
@@ -697,21 +702,46 @@ export default function TrainCard({
 				const removeAfter = new Date(departureTime.getTime() + 10 * 60 * 1000); // 10 minutes after departure
 				const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
 
+				const alertTarget = buildAlertTarget(
+					train,
+					stationCode,
+					destinationCode,
+				);
+
 				setFavorite(train.trainNumber, {
 					highlighted: true,
 					removeAfter: removeAfter.toISOString(),
 					journeyKey,
 					track: departureRow.commercialTrack,
-				}).catch((err) => {
-					console.warn("[TrainCard] Failed to save favorite, reverting:", err);
-					setIsHighlighted(false);
-				});
+					...(alertTarget && { alertTarget }),
+				})
+					.then(() => {
+						if (alertTarget) {
+							void onFavoriteAdded(alertTarget, removeAfter.toISOString());
+						}
+					})
+					.catch((err) => {
+						console.warn(
+							"[TrainCard] Failed to save favorite, reverting:",
+							err,
+						);
+						setIsHighlighted(false);
+					});
 			}
 		} else {
-			removeFavorite(train.trainNumber).catch((err) => {
-				console.warn("[TrainCard] Failed to remove favorite, reverting:", err);
-				setIsHighlighted(true);
-			});
+			// Read the saved target before the favorite is removed.
+			const alertTarget = getFavoritesSync()[train.trainNumber]?.alertTarget;
+			removeFavorite(train.trainNumber)
+				.then(() => {
+					if (alertTarget) void unsubscribeTrainAlerts(alertTarget);
+				})
+				.catch((err) => {
+					console.warn(
+						"[TrainCard] Failed to remove favorite, reverting:",
+						err,
+					);
+					setIsHighlighted(true);
+				});
 		}
 	}, [isHighlighted, train, stationCode, destinationCode]);
 
