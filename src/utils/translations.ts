@@ -135,6 +135,9 @@ export const translations = {
 		newFeaturesShare: "Jaa sivusto kaverille QR-koodilla",
 		newFeaturesLinePages: "Oma sivu jokaiselle lähijunalinjalle",
 		newFeaturesStationList: "Kaikki asemat ja linjat yhdeltä sivulta",
+		newFeaturesTrainAnnouncements: "Junan tiedotteet näkyvät junakortissa",
+		newFeaturesAnnouncementAlerts:
+			"Ilmoitus, kun suosikkijunalle tulee uusi tiedote",
 		newFeaturesDismiss: "Selvä!",
 		// Accessibility
 		skipToContent: "Siirry sisältöön",
@@ -301,6 +304,10 @@ export const translations = {
 		newFeaturesShare: "Share the site with a friend via QR code",
 		newFeaturesLinePages: "A page of its own for every commuter line",
 		newFeaturesStationList: "Every station and line on one page",
+		newFeaturesTrainAnnouncements:
+			"Train announcements right on the train card",
+		newFeaturesAnnouncementAlerts:
+			"A heads-up when a favorite train gets a new announcement",
 		newFeaturesDismiss: "Got it!",
 		// Accessibility
 		skipToContent: "Skip to content",
@@ -469,6 +476,9 @@ export const translations = {
 		newFeaturesShare: "Dela webbplatsen med en vän via QR-kod",
 		newFeaturesLinePages: "En egen sida för varje lokaltågslinje",
 		newFeaturesStationList: "Alla stationer och linjer på en sida",
+		newFeaturesTrainAnnouncements: "Tågmeddelanden direkt på tågkortet",
+		newFeaturesAnnouncementAlerts:
+			"En avisering när ett favorittåg får ett nytt meddelande",
 		newFeaturesDismiss: "Uppfattat!",
 		// Accessibility
 		skipToContent: "Hoppa till innehåll",
