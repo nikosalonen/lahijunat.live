@@ -67,7 +67,9 @@ export interface TrainRef {
 }
 
 export type PushMark =
-	| { kind: "message"; id: string; hash: string }
+	// previousHash is set when the message was edited, so a failed send can
+	// put the old hash back instead of forgetting the message.
+	| { kind: "message"; id: string; hash: string; previousHash?: string }
 	| { kind: "cancel" };
 
 export interface AlertPush {

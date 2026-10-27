@@ -45,7 +45,8 @@ export function isExpired(record: AlertRecord, now: Date): boolean {
 export function withoutMark(record: AlertRecord, mark: PushMark): AlertRecord {
 	if (mark.kind === "cancel") return { ...record, cancelSent: false };
 	const sent = { ...record.sent };
-	delete sent[mark.id];
+	if (mark.previousHash === undefined) delete sent[mark.id];
+	else sent[mark.id] = mark.previousHash;
 	return { ...record, sent };
 }
 
@@ -190,10 +191,15 @@ export function decideAlerts(input: {
 				if (text === null) continue;
 				const hash = messageTextHash(msg);
 				if (record.sent[msg.id] === hash) continue;
-				const isNew = !(msg.id in record.sent);
+				const previousHash = record.sent[msg.id];
 				record.sent[msg.id] = hash;
-				if (isNew && isBaseline(msg, record)) continue;
-				push(msg.id, text, { kind: "message", id: msg.id, hash });
+				if (previousHash === undefined && isBaseline(msg, record)) continue;
+				push(msg.id, text, {
+					kind: "message",
+					id: msg.id,
+					hash,
+					...(previousHash !== undefined && { previousHash }),
+				});
 			}
 		}
 

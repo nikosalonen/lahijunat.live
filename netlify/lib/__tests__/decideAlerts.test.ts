@@ -123,6 +123,14 @@ describe("decideAlerts messages", () => {
 		);
 		expect(edited.pushes).toHaveLength(1);
 		expect(edited.pushes[0].body).toBe("Uusi");
+		// The old hash rides along so a failed send can be undone exactly.
+		expect(edited.pushes[0].mark).toEqual(
+			expect.objectContaining({
+				kind: "message",
+				previousHash: stored.record.sent.MVM1,
+			}),
+		);
+		expect(first.pushes[0].mark).not.toHaveProperty("previousHash");
 	});
 
 	it("pushes a message the card could not show yet when the train was marked", () => {
@@ -401,6 +409,16 @@ describe("withoutMark", () => {
 		const out = withoutMark(r, { kind: "message", id: "MVM1", hash: "h" });
 		expect(out.sent).toEqual({ MVM2: "h2" });
 		expect(r.sent.MVM1).toBe("h");
+	});
+	it("restores the previous hash of an edited message", () => {
+		const r = rec({ sent: { MVM1: "new" } }).record;
+		const out = withoutMark(r, {
+			kind: "message",
+			id: "MVM1",
+			hash: "new",
+			previousHash: "old",
+		});
+		expect(out.sent).toEqual({ MVM1: "old" });
 	});
 	it("resets cancelSent for a cancel mark", () => {
 		const r = rec({ cancelSent: true }).record;
