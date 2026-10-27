@@ -37,6 +37,8 @@
 	--animate-bounce-subtle: bounce-subtle 0.6s ease-in-out;
 	--animate-time-update: time-update 0.6s ease-out;
 	--animate-track-flash: track-flash 0.8s ease-out;
+	/* Same amber ring as a track change, played twice */
+	--animate-announcement-arrive: track-flash 0.8s ease-out 2;
 	--animate-favorite-pop: favorite-pop 0.25s var(--ease-spring) both;
 
 	@keyframes scale-in {

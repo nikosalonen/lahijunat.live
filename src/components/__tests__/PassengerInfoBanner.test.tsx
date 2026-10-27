@@ -45,15 +45,32 @@ describe("PassengerInfoBanner", () => {
 		expect(container.textContent).toContain("2");
 	});
 
-	it("expands to reveal the message when the header is clicked", () => {
-		const { getByText, container } = render(
+	it("previews the first message on one line while collapsed", () => {
+		const { getByText, queryByText } = render(
+			<PassengerInfoBanner
+				messages={[
+					msg({ id: "a", text: "Hello" }),
+					msg({ id: "b", text: "Second" }),
+				]}
+			/>,
+		);
+
+		expect(getByText("Hello")).toHaveClass("truncate");
+		expect(queryByText("Second")).not.toBeInTheDocument();
+	});
+
+	it("expands to the full message panel when the header is clicked", () => {
+		const { getByText, getByRole, container } = render(
 			<PassengerInfoBanner messages={[msg({ id: "a", text: "Hello" })]} />,
 		);
-		expect(container.textContent).not.toContain("Hello");
 		act(() => {
 			getByText("passengerInfoBannerTitle").click();
 		});
-		expect(container.textContent).toContain("Hello");
+
+		expect(getByRole("button", { expanded: true })).toBeInTheDocument();
+		// The one-line preview gives way to the full text in the panel
+		expect(getByText("Hello")).not.toHaveClass("truncate");
+		expect(container.textContent?.match(/Hello/g)).toHaveLength(1);
 	});
 
 	describe("dismissal flow", () => {

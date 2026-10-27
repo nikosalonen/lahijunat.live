@@ -1,6 +1,8 @@
 import { fireEvent, render, waitFor } from "@testing-library/preact";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { __resetAnnouncementArrivalsForTests } from "@/utils/announcementArrivals";
 import { getRelevantTrackInfo } from "@/utils/api";
+import type { ActiveMessage } from "@/utils/passengerInfo";
 import { showToast } from "@/utils/toast";
 import type { Train } from "../../types";
 import TrainCard from "../TrainCard";
@@ -290,10 +292,156 @@ describe("TrainCard", () => {
 	});
 
 	it("shows correct duration between stations", () => {
-		const { getByLabelText } = render(<TrainCard {...defaultProps} />);
+		const { getByLabelText, getByText } = render(
+			<TrainCard {...defaultProps} />,
+		);
 
 		// Duration should be 1 hour
 		expect(getByLabelText("Kesto 1 tuntia 0 minuuttia")).toBeInTheDocument();
+		expect(getByText("1 h")).toBeInTheDocument();
+	});
+
+	describe("train announcements", () => {
+		const announcement: ActiveMessage = {
+			id: "msg-1",
+			text: "Ajetaan poikkeuksellisesti vain yhdellä junayksiköllä.",
+			trainNumber: 123,
+			trainDepartureDate: "2024-03-20",
+			startValidity: "2024-03-20T08:00:00.000Z",
+			endValidity: "2024-03-22T00:00:00.000Z",
+		};
+
+		it("shows the announcement text without a tap", () => {
+			const { getByText } = render(
+				<TrainCard {...defaultProps} messages={[announcement]} />,
+			);
+
+			expect(getByText(announcement.text)).toBeInTheDocument();
+		});
+
+		it("places the announcement between the times and the duration", () => {
+			const { getByText, getByLabelText } = render(
+				<TrainCard {...defaultProps} messages={[announcement]} />,
+			);
+
+			const text = getByText(announcement.text);
+			const track = getByText("Raide 1");
+			const duration = getByLabelText("Kesto 1 tuntia 0 minuuttia");
+			expect(
+				track.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING,
+			).toBeTruthy();
+			expect(
+				text.compareDocumentPosition(duration) &
+					Node.DOCUMENT_POSITION_FOLLOWING,
+			).toBeTruthy();
+		});
+
+		it("does not show validity dates", () => {
+			const { queryByText } = render(
+				<TrainCard {...defaultProps} messages={[announcement]} />,
+			);
+
+			expect(queryByText(/passengerInfoValidity/)).not.toBeInTheDocument();
+		});
+
+		it("shows the first of several announcements with a +N chip", () => {
+			const second: ActiveMessage = {
+				...announcement,
+				id: "msg-2",
+				text: "Juna on myöhässä teknisen vian vuoksi.",
+			};
+			const { getByText } = render(
+				<TrainCard {...defaultProps} messages={[announcement, second]} />,
+			);
+
+			expect(getByText(announcement.text)).toBeInTheDocument();
+			expect(getByText("+1")).toBeInTheDocument();
+		});
+
+		it("announces the most urgent announcement in a status region that is always there", () => {
+			const { container, rerender } = render(<TrainCard {...defaultProps} />);
+			const region = container.querySelector(
+				'[role="status"][aria-live="polite"]',
+			);
+			// Present and empty before any announcement arrives, so screen readers
+			// notice when text is added to it
+			expect(region).toBeInTheDocument();
+			expect(region?.textContent).toBe("");
+
+			rerender(<TrainCard {...defaultProps} messages={[announcement]} />);
+
+			expect(
+				container.querySelector('[role="status"][aria-live="polite"]'),
+			).toBe(region);
+			expect(region).toHaveTextContent(announcement.text);
+		});
+
+		it("renders no announcement list without messages", () => {
+			const { queryByRole } = render(<TrainCard {...defaultProps} />);
+
+			expect(queryByRole("list")).not.toBeInTheDocument();
+		});
+
+		describe("when an announcement goes live while the app is open", () => {
+			const mockedShowToast = vi.mocked(showToast);
+			// Starts long after the test run began, so it counts as newly arrived
+			const arrived: ActiveMessage = {
+				...announcement,
+				id: "msg-arrived",
+				startValidity: "2099-01-01T00:00:00.000Z",
+			};
+
+			afterEach(() => {
+				__resetAnnouncementArrivalsForTests();
+			});
+
+			it("tells the user with a toast on a favorite train", () => {
+				localStorageMock.setItem(
+					"highlightedTrains",
+					JSON.stringify({
+						"123": {
+							highlighted: true,
+							removeAfter: new Date("2024-03-20T10:10:00.000Z").toISOString(),
+							journeyKey: "123-HKI-TPE",
+						},
+					}),
+				);
+
+				render(<TrainCard {...defaultProps} messages={[arrived]} />);
+
+				expect(mockedShowToast).toHaveBeenCalledWith(
+					expect.stringContaining(arrived.text),
+					"warning",
+					expect.any(Number),
+				);
+			});
+
+			it("shows no toast for a train that is not a favorite", () => {
+				render(<TrainCard {...defaultProps} messages={[arrived]} />);
+
+				expect(mockedShowToast).not.toHaveBeenCalled();
+			});
+
+			it("pulses the announcement strip", () => {
+				const { container } = render(
+					<TrainCard {...defaultProps} messages={[arrived]} />,
+				);
+
+				expect(container.querySelector("section > div")).toHaveClass(
+					"animate-announcement-arrive",
+				);
+			});
+
+			it("does not pulse for announcements that were already live", () => {
+				const { container } = render(
+					<TrainCard {...defaultProps} messages={[announcement]} />,
+				);
+
+				expect(container.querySelector("section > div")).not.toHaveClass(
+					"animate-announcement-arrive",
+				);
+			});
+		});
 	});
 
 	it("handles delayed trains correctly", () => {

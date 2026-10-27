@@ -135,6 +135,9 @@ export const translations = {
 		newFeaturesShare: "Jaa sivusto kaverille QR-koodilla",
 		newFeaturesLinePages: "Oma sivu jokaiselle lähijunalinjalle",
 		newFeaturesStationList: "Kaikki asemat ja linjat yhdeltä sivulta",
+		newFeaturesTrainAnnouncements: "Junan tiedotteet näkyvät junakortissa",
+		newFeaturesAnnouncementAlerts:
+			"Ilmoitus, kun suosikkijunalle tulee uusi tiedote",
 		newFeaturesDismiss: "Selvä!",
 		// Accessibility
 		skipToContent: "Siirry sisältöön",
@@ -150,13 +153,14 @@ export const translations = {
 		tapToRefresh: "Päivitä napauttamalla",
 		// Toast
 		trackChangedNotification: "Raide muuttunut",
+		newAnnouncementNotification: "Uusi tiedote",
 		connectionIssue: "Yhteysongelma, näytetään viimeisin tieto",
 		close: "Sulje",
 		// Passenger information messages
 		passengerInfoBannerTitle: "Tiedotteet",
 		passengerInfoExpand: "Näytä tiedotteet",
 		passengerInfoCollapse: "Piilota tiedotteet",
-		passengerInfoTrainButton: "Näytä junan tiedote",
+		passengerInfoTrainAnnouncements: "Junan tiedotteet",
 		passengerInfoPrev: "Edellinen tiedote",
 		passengerInfoNext: "Seuraava tiedote",
 		passengerInfoIndicator: "Tiedote",
@@ -300,6 +304,10 @@ export const translations = {
 		newFeaturesShare: "Share the site with a friend via QR code",
 		newFeaturesLinePages: "A page of its own for every commuter line",
 		newFeaturesStationList: "Every station and line on one page",
+		newFeaturesTrainAnnouncements:
+			"Train announcements right on the train card",
+		newFeaturesAnnouncementAlerts:
+			"A heads-up when a favorite train gets a new announcement",
 		newFeaturesDismiss: "Got it!",
 		// Accessibility
 		skipToContent: "Skip to content",
@@ -316,13 +324,14 @@ export const translations = {
 		tapToRefresh: "Tap to refresh",
 		// Toast
 		trackChangedNotification: "Track changed",
+		newAnnouncementNotification: "New announcement",
 		connectionIssue: "Connection issue, showing last known data",
 		close: "Close",
 		// Passenger information messages
 		passengerInfoBannerTitle: "Announcements",
 		passengerInfoExpand: "Show announcements",
 		passengerInfoCollapse: "Hide announcements",
-		passengerInfoTrainButton: "Show train announcement",
+		passengerInfoTrainAnnouncements: "Train announcements",
 		passengerInfoPrev: "Previous announcement",
 		passengerInfoNext: "Next announcement",
 		passengerInfoIndicator: "Announcement",
@@ -467,6 +476,9 @@ export const translations = {
 		newFeaturesShare: "Dela webbplatsen med en vän via QR-kod",
 		newFeaturesLinePages: "En egen sida för varje lokaltågslinje",
 		newFeaturesStationList: "Alla stationer och linjer på en sida",
+		newFeaturesTrainAnnouncements: "Tågmeddelanden direkt på tågkortet",
+		newFeaturesAnnouncementAlerts:
+			"En avisering när ett favorittåg får ett nytt meddelande",
 		newFeaturesDismiss: "Uppfattat!",
 		// Accessibility
 		skipToContent: "Hoppa till innehåll",
@@ -483,13 +495,14 @@ export const translations = {
 		tapToRefresh: "Tryck för att uppdatera",
 		// Toast
 		trackChangedNotification: "Spår ändrat",
+		newAnnouncementNotification: "Nytt meddelande",
 		connectionIssue: "Anslutningsproblem, visar senast kända data",
 		close: "Stäng",
 		// Passenger information messages
 		passengerInfoBannerTitle: "Meddelanden",
 		passengerInfoExpand: "Visa meddelanden",
 		passengerInfoCollapse: "Dölj meddelanden",
-		passengerInfoTrainButton: "Visa tågmeddelande",
+		passengerInfoTrainAnnouncements: "Tågets meddelanden",
 		passengerInfoPrev: "Föregående meddelande",
 		passengerInfoNext: "Nästa meddelande",
 		passengerInfoIndicator: "Meddelande",

@@ -128,10 +128,10 @@ describe("TimeDisplay", () => {
 			/>,
 		);
 
-		// The delay badge is always present but invisible when not needed
+		// The delay badge stays in the DOM but takes no space when not needed
 		const delayBadge = queryByText("+0 min");
 		expect(delayBadge).toBeInTheDocument();
-		expect(delayBadge).toHaveClass("invisible");
+		expect(delayBadge).toHaveClass("hidden");
 	});
 
 	it("does not show delay indicator when train is cancelled", () => {
@@ -150,10 +150,10 @@ describe("TimeDisplay", () => {
 			/>,
 		);
 
-		// The delay badge is always present but invisible for cancelled trains
+		// The delay badge stays in the DOM but takes no space for cancelled trains
 		const delayIndicator = queryByText("+15 min");
 		expect(delayIndicator).toBeInTheDocument();
-		expect(delayIndicator).toHaveClass("invisible");
+		expect(delayIndicator).toHaveClass("hidden");
 	});
 
 	it("should show unknown delay badge when unknownDelay is true", () => {
@@ -202,9 +202,9 @@ describe("TimeDisplay", () => {
 		);
 
 		expect(queryByText("unknownDelay")).not.toBeInTheDocument();
-		// The delay badge is always present but invisible for cancelled trains
+		// The delay badge stays in the DOM but takes no space for cancelled trains
 		const delayBadge = queryByText("+5 min");
 		expect(delayBadge).toBeInTheDocument();
-		expect(delayBadge).toHaveClass("invisible");
+		expect(delayBadge).toHaveClass("hidden");
 	});
 });

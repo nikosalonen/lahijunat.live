@@ -29,14 +29,15 @@ const TimeDisplay = ({
 
 	return (
 		<span
-			class={`text-xl sm:text-2xl font-medium ${rowIsCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"} min-w-0 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2 sm:flex-wrap`}
+			class={`text-base min-[360px]:text-lg sm:text-xl font-semibold tabular-nums ${rowIsCancelled ? "line-through text-gray-500 dark:text-gray-300" : "text-gray-900 dark:text-gray-50"} min-w-0 flex flex-wrap items-center gap-x-2 gap-y-1`}
 		>
 			<TimeRow
 				departureRow={departureRow}
 				arrivalRow={arrivalRow}
 				isCancelled={rowIsCancelled}
 			/>
-			{/* Always reserve space for delay badge to maintain consistent card height */}
+			{/* Takes no space until there is a delay, so on-time cards have no
+			    empty row. On narrow phones a delay badge wraps under the times. */}
 			<output
 				aria-label={
 					showUnknownDelay
@@ -47,7 +48,7 @@ const TimeDisplay = ({
 				}
 				aria-live="polite"
 				aria-hidden={!showUnknownDelay && !showSpecificDelay}
-				class={`badge badge-warning badge-sm font-semibold ${!showUnknownDelay && !showSpecificDelay ? "invisible" : ""}`}
+				class={`badge badge-warning badge-sm font-semibold ${!showUnknownDelay && !showSpecificDelay ? "hidden" : ""}`}
 			>
 				{showUnknownDelay
 					? t("unknownDelay")

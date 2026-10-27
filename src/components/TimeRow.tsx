@@ -38,28 +38,32 @@ const TimeRow = ({
 	const departureTimeChanged = useValueChanged(displayedTime);
 	const arrivalTimeChanged = useValueChanged(arrivalDisplayedTime);
 
+	// Size and color come from the parent. Each time stays on one line, but
+	// the arrival may wrap below the departure instead of being cut off.
 	return (
-		<span class="text-base-content/70 text-sm sm:text-xl whitespace-nowrap">
-			{useLiveEstimate && <span aria-hidden="true">~</span>}
-			<time
-				key={displayedTime}
-				datetime={displayedTime}
-				class={departureTimeChanged ? "animate-time-update" : undefined}
-			>
-				{formatTime(displayedTime)}
-			</time>
-			{arrivalRow && (
-				<svg
-					class="inline-block w-3 h-3 sm:w-4 sm:h-4 mx-1 sm:mx-2"
-					fill="currentColor"
-					viewBox="0 0 448 512"
-					aria-hidden="true"
+		<span class="inline-flex flex-wrap items-center">
+			<span class="whitespace-nowrap">
+				{useLiveEstimate && <span aria-hidden="true">~</span>}
+				<time
+					key={displayedTime}
+					datetime={displayedTime}
+					class={departureTimeChanged ? "animate-time-update" : undefined}
 				>
-					<path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h306.7L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
-				</svg>
-			)}
+					{formatTime(displayedTime)}
+				</time>
+				{arrivalRow && (
+					<svg
+						class="inline-block w-3.5 h-3.5 sm:w-4 sm:h-4 mx-1.5 sm:mx-2 opacity-60 align-[-0.05em]"
+						fill="currentColor"
+						viewBox="0 0 448 512"
+						aria-hidden="true"
+					>
+						<path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h306.7L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+					</svg>
+				)}
+			</span>
 			{arrivalRow && arrivalDisplayedTime && (
-				<>
+				<span class="whitespace-nowrap">
 					{useArrivalLiveEstimate && <span aria-hidden="true">~</span>}
 					<time
 						key={arrivalDisplayedTime}
@@ -68,7 +72,7 @@ const TimeRow = ({
 					>
 						{formatTime(arrivalDisplayedTime)}
 					</time>
-				</>
+				</span>
 			)}
 		</span>
 	);
