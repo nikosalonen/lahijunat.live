@@ -26,6 +26,9 @@ export default function AlertsToggle() {
 	// server/client mismatch.
 	const [available, setAvailable] = useState(false);
 	const [isOn, setIsOn] = useState(false);
+	// A second tap while the first is still talking to the server could turn
+	// alerts back on before the device is unsubscribed, so wait for it.
+	const [busy, setBusy] = useState(false);
 	useLanguageChange();
 
 	useEffect(() => {
@@ -42,17 +45,23 @@ export default function AlertsToggle() {
 	if (!available) return null;
 
 	const handleClick = async () => {
-		if (isOn) {
-			setIsOn(false);
-			await disableAllAlerts();
-			return;
-		}
-		const result = await enableAlerts();
-		if (result === "granted") {
-			setIsOn(true);
-			await resyncAlerts();
-		} else if (result === "denied") {
-			showToast(t("alertsBlocked"), "warning");
+		if (busy) return;
+		setBusy(true);
+		try {
+			if (isOn) {
+				setIsOn(false);
+				await disableAllAlerts();
+				return;
+			}
+			const result = await enableAlerts();
+			if (result === "granted") {
+				setIsOn(true);
+				await resyncAlerts();
+			} else if (result === "denied") {
+				showToast(t("alertsBlocked"), "warning");
+			}
+		} finally {
+			setBusy(false);
 		}
 	};
 
@@ -60,6 +69,7 @@ export default function AlertsToggle() {
 		<button
 			type="button"
 			onClick={handleClick}
+			disabled={busy}
 			aria-pressed={isOn}
 			aria-label={isOn ? t("alertsToggleOn") : t("alertsToggleOff")}
 			className="min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center rounded-lg text-white hover:bg-white/10 active:bg-white/20 cursor-pointer transition-colors"

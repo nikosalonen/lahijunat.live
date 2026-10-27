@@ -367,7 +367,9 @@ const metaDescription = description || defaultDescription;
     </div>
     <FeatureAnnouncement client:idle />
     <Toast client:load />
-    <PushAlerts client:idle />
+    <!-- client:load, not idle: it listens for the opt-in event a favorite
+         can fire as soon as the train list hydrates. -->
+    <PushAlerts client:load />
 
     <script>
       const themeToggleBtn = document.getElementById("theme-toggle");

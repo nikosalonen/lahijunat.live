@@ -103,6 +103,32 @@ describe("AlertsToggle", () => {
 		});
 	});
 
+	it("ignores clicks while turning alerts off is still running", async () => {
+		let finishDisable: () => void = () => {};
+		vi.mocked(disableAllAlerts).mockImplementationOnce(
+			() =>
+				new Promise<void>((resolve) => {
+					finishDisable = resolve;
+				}),
+		);
+		const { getByRole } = render(<AlertsToggle />);
+		const button = getByRole("button");
+
+		act(() => {
+			button.click();
+		});
+		expect(button).toBeDisabled();
+		act(() => {
+			button.click();
+		});
+		expect(enableAlerts).not.toHaveBeenCalled();
+
+		await act(async () => {
+			finishDisable();
+		});
+		expect(button).not.toBeDisabled();
+	});
+
 	it("turns alerts on and resyncs when off", async () => {
 		vi.mocked(getAlertsPreference).mockReturnValue("off");
 		vi.mocked(enableAlerts).mockResolvedValue("granted");
