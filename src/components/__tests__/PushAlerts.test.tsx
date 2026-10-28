@@ -36,6 +36,7 @@ const target: AlertTarget = {
 	fromName: "Helsinki",
 	toName: "Tampere",
 	title: "A 12:00 Helsinki → Tampere",
+	lang: "fi",
 	cancelled: false,
 };
 const removeAfter = "2024-03-20T10:10:00.000Z";
