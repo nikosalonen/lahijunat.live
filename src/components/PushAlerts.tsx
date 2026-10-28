@@ -10,6 +10,7 @@ import {
 	snoozeOptIn,
 	subscribeTrainAlerts,
 } from "../utils/pushAlerts";
+import { showToast } from "../utils/toast";
 import { t } from "../utils/translations";
 
 interface OptIn {
@@ -48,6 +49,9 @@ export default function PushAlerts() {
 		const { target, removeAfter } = optIn;
 		close();
 		const result = await enableAlerts();
+		// The browser won't ask again and this prompt won't open again, so say
+		// where to turn alerts back on.
+		if (result === "denied") showToast(t("alertsBlocked"), "warning");
 		if (result !== "granted") return;
 		const subscribed = await subscribeTrainAlerts(target, removeAfter);
 		// Favorites saved before alerts were on need registering too. Skip it
