@@ -24,7 +24,8 @@ const DelayBadge = ({
 		!hasUnknownDelay;
 
 	// Always rendered, so a screen reader notices when a train turns late.
-	// It takes no space until there is a delay.
+	// It takes no space until there is a delay. Below 400 px it shows "+27"
+	// without the unit, so a long trip's duration beside it is not cut off.
 	return (
 		<output
 			aria-label={
@@ -38,9 +39,16 @@ const DelayBadge = ({
 			aria-hidden={!showUnknownDelay && !showSpecificDelay}
 			class={`badge badge-warning badge-sm font-semibold shrink-0 whitespace-nowrap ${!showUnknownDelay && !showSpecificDelay ? "hidden" : ""}`}
 		>
-			{showUnknownDelay
-				? t("unknownDelay")
-				: `+${timeDifferenceMinutes || 0} ${t("minutesShort")}`}
+			{showUnknownDelay ? (
+				t("unknownDelay")
+			) : (
+				// One wrapper, so the unit stays inline text instead of becoming its
+				// own item in the badge's flex box (which drops the space)
+				<span>
+					{`+${timeDifferenceMinutes || 0}`}
+					<span class="hidden min-[400px]:inline">{` ${t("minutesShort")}`}</span>
+				</span>
+			)}
 		</output>
 	);
 };

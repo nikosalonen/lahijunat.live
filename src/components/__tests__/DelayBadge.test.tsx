@@ -48,43 +48,56 @@ describe("DelayBadge", () => {
 		differenceInMinutes: 15,
 	};
 
-	it("shows the delay in minutes for a late train", () => {
-		const { getByText } = render(
+	const renderBadge = (
+		departureRow: Train["timeTableRows"][0],
+		timeDifferenceMinutes: number,
+		isCancelled?: boolean,
+	) => {
+		const { container } = render(
 			<DelayBadge
-				departureRow={delayedDepartureRow}
-				timeDifferenceMinutes={15}
+				departureRow={departureRow}
+				timeDifferenceMinutes={timeDifferenceMinutes}
+				isCancelled={isCancelled}
 			/>,
 		);
+		return container.querySelector("output") as HTMLElement;
+	};
 
-		const badge = getByText("+15 min");
+	it("shows the delay in minutes for a late train", () => {
+		const badge = renderBadge(delayedDepartureRow, 15);
+
+		expect(badge).toHaveTextContent("+15 min");
 		expect(badge).not.toHaveClass("hidden");
 		expect(badge).toHaveAttribute("aria-label", "Myöhässä 15 minuuttia");
 	});
 
+	// Beside the duration on narrow phones, "+15 min" left no room for a long
+	// trip's duration ("1 h 15 …"), so the unit only shows from 400 px up.
+	it("shows the minutes unit only from 400 px up", () => {
+		const badge = renderBadge(delayedDepartureRow, 15);
+		const unit = badge.querySelector("span span");
+
+		expect(unit).toHaveTextContent("min");
+		expect(unit).toHaveClass("hidden", "min-[400px]:inline");
+		// Not a direct child: the badge is a flex box, which would make the unit
+		// its own item and swap the space for the badge's wider gap.
+		expect(unit?.parentElement).not.toBe(badge);
+	});
+
 	it("does not show delay indicator when train is on time", () => {
-		const { queryByText } = render(
-			<DelayBadge departureRow={mockDepartureRow} timeDifferenceMinutes={0} />,
-		);
+		const badge = renderBadge(mockDepartureRow, 0);
 
 		// The delay badge stays in the DOM but takes no space when not needed
-		const delayBadge = queryByText("+0 min");
-		expect(delayBadge).toBeInTheDocument();
-		expect(delayBadge).toHaveClass("hidden");
+		expect(badge).toHaveTextContent("+0 min");
+		expect(badge).toHaveClass("hidden");
 	});
 
 	it("does not show delay indicator when train is cancelled", () => {
-		const { queryByText } = render(
-			<DelayBadge
-				departureRow={delayedDepartureRow}
-				timeDifferenceMinutes={15}
-				isCancelled={true}
-			/>,
-		);
+		const badge = renderBadge(delayedDepartureRow, 15, true);
 
 		// The delay badge stays in the DOM but takes no space for cancelled trains
-		const delayIndicator = queryByText("+15 min");
-		expect(delayIndicator).toBeInTheDocument();
-		expect(delayIndicator).toHaveClass("hidden");
+		expect(badge).toHaveTextContent("+15 min");
+		expect(badge).toHaveClass("hidden");
 	});
 
 	it("should show unknown delay badge when unknownDelay is true", () => {
@@ -95,12 +108,10 @@ describe("DelayBadge", () => {
 			unknownDelay: true,
 		};
 
-		const { getByText, queryByText } = render(
-			<DelayBadge departureRow={departureRow} timeDifferenceMinutes={5} />,
-		);
+		const badge = renderBadge(departureRow, 5);
 
-		expect(getByText("unknownDelay")).toBeInTheDocument();
-		expect(queryByText("+5 min")).not.toBeInTheDocument();
+		expect(badge).toHaveTextContent("unknownDelay");
+		expect(badge).not.toHaveTextContent("+5 min");
 	});
 
 	it("should not show unknown delay badge when unknownDelay is false", () => {
@@ -111,12 +122,10 @@ describe("DelayBadge", () => {
 			unknownDelay: false,
 		};
 
-		const { getByText, queryByText } = render(
-			<DelayBadge departureRow={departureRow} timeDifferenceMinutes={5} />,
-		);
+		const badge = renderBadge(departureRow, 5);
 
-		expect(queryByText("unknownDelay")).not.toBeInTheDocument();
-		expect(getByText("+5 min")).toBeInTheDocument();
+		expect(badge).not.toHaveTextContent("unknownDelay");
+		expect(badge).toHaveTextContent("+5 min");
 	});
 
 	it("should not show unknown delay badge when train is cancelled", () => {
@@ -128,14 +137,11 @@ describe("DelayBadge", () => {
 			unknownDelay: true,
 		};
 
-		const { queryByText } = render(
-			<DelayBadge departureRow={departureRow} timeDifferenceMinutes={5} />,
-		);
+		const badge = renderBadge(departureRow, 5);
 
-		expect(queryByText("unknownDelay")).not.toBeInTheDocument();
+		expect(badge).not.toHaveTextContent("unknownDelay");
 		// The delay badge stays in the DOM but takes no space for cancelled trains
-		const delayBadge = queryByText("+5 min");
-		expect(delayBadge).toBeInTheDocument();
-		expect(delayBadge).toHaveClass("hidden");
+		expect(badge).toHaveTextContent("+5 min");
+		expect(badge).toHaveClass("hidden");
 	});
 });

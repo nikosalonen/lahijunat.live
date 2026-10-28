@@ -457,11 +457,13 @@ describe("TrainCard", () => {
 			],
 		};
 
-		const { getByText } = render(
+		const { container } = render(
 			<TrainCard {...defaultProps} train={delayedTrain} />,
 		);
 
-		expect(getByText("+15 min")).toBeInTheDocument();
+		expect(container.querySelector("output.badge-warning")).toHaveTextContent(
+			"+15 min",
+		);
 	});
 
 	// Beside the times, the badge wrapped onto a line of its own on phones,
@@ -479,11 +481,14 @@ describe("TrainCard", () => {
 			],
 		};
 
-		const { getByText, container } = render(
+		const { container } = render(
 			<TrainCard {...defaultProps} train={delayedTrain} />,
 		);
 
-		const badge = getByText("+15 min");
+		const badge = container.querySelector(
+			"output.badge-warning",
+		) as HTMLElement;
+		expect(badge).toHaveTextContent("+15 min");
 		const duration = container.querySelector('output[aria-label^="Kesto"]');
 		expect(container.querySelector(".card-title")).not.toContainElement(badge);
 		expect(duration).not.toBeNull();
