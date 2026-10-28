@@ -142,13 +142,22 @@ likely, not certain.
   - `removeAfter`: the same value saved to the favorite (departure + 10 min)
   - `lang` and a ready-made `title` (line, time, station names in that language),
     so the server needs no station list
-- **Re-sync on app open:** after `initStorage()`, for every live favorite with
-  alerts on, POST again with the current subscription (the server upserts). This
+- **Re-sync on app open:** after `initStorage()`, while alerts are on for the
+  device, POST every live favorite that has an `alertTarget` again with the
+  current subscription (the server upserts). This
   covers endpoint rotation and iOS silently dropping subscriptions (WebKit bug
   273063). It also pushes the client's drift-corrected `removeAfter`
   (TrainCard already updates it when the departure estimate moves).
-- `FavoriteTrainData` in `src/utils/storage.ts` gets an optional `alerts?: boolean`,
-  so re-sync and the UI know which favorites were subscribed.
+- `FavoriteTrainData` in `src/utils/storage.ts` gets an optional `alertTarget`
+  with the fields the POST needs: `trainNumber`, `departureDate`, `from`, `to`,
+  the station names, `title`, the title's `lang`, and whether the train was
+  already cancelled. Re-sync posts it as stored, so it needs no train data.
+  - It is saved with every new favorite whose route is found in the timetable,
+    whether alerts are on or not. Alerts are on or off for the whole device, not
+    per favorite.
+  - A favorite without one (saved before this feature, or with a route that
+    wasn't found) is never posted. Removing the heart and adding it again
+    subscribes it.
 - Opt-in prompt: a small new component (`AlertOptInPrompt.tsx`), built on daisyUI
   like the rest of the app. New strings go in `src/utils/translations.ts` for fi, sv
   and en.
@@ -179,6 +188,11 @@ iOS, Android and desktop deliver it to the `push` listener above, which reads th
 same `notification` object. Check on a real iPhone that a service-worker
 subscription still gets the declarative fallback.
 
+The browser spots a declarative message by the `web_push: 8030` key in the
+decrypted payload (the Push API spec's declarative push message parser, and
+Safari's shipping version). It does not look at the request's `Content-Type`, so
+the `application/octet-stream` that `web-push` always sends is fine.
+
 ### 3. Subscribe API (`netlify/functions/alerts.mts`, new)
 
 - `config = { path: "/api/alerts" }`. `POST` upserts a record; `DELETE` removes one
@@ -186,7 +200,9 @@ subscription still gets the declarative fallback.
   the settings toggle).
 - Validation:
   - `trainNumber` is 1–5 digits.
-  - `departureDate` is today or tomorrow in Helsinki.
+  - `departureDate` is yesterday, today or tomorrow by the Helsinki calendar.
+    Yesterday is needed for a train that left its first station before
+    midnight.
   - `removeAfter` is within the next 36 hours.
   - Station codes are short uppercase letters.
   - `title` is capped at 120 characters.
@@ -268,6 +284,12 @@ each run. These caps keep the job short and the function count predictable:
   take a few seconds at most.
 - Fake endpoints on an allowed push host get a 404 or 410 on their first push and
   are deleted in that run.
+- **Known risk, accepted for v1:** the endpoint can't prove that a subscription
+  belongs to a real browser. Someone could post made-up subscriptions, within the
+  rate limit, until the global caps are full. Real users would then see "Alerts
+  are full right now" until those records expire (36 hours at most). The caps
+  still bound the cost: at most 40 trains per run. The off switch stops it if it
+  happens. A follow-up could cap records per client IP.
 
 ### 5. Storage (Netlify Blobs)
 

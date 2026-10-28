@@ -42,14 +42,18 @@
 
 The spec fetches a baseline of live announcements inside the subscribe call. This plan works the baseline out in the job instead, from the record's `createdAt`:
 
-- A message the record hasn't seen counts as already seen if its version time (`creationDateTime ?? startValidity`) is at or before `createdAt − 2 minutes`.
-- Newer messages are pushed.
+- A message the record hasn't seen counts as already seen only if the card could have shown it when the train was marked. All of these must hold (`isBaseline` in `netlify/lib/messages.ts`):
+  - its version time (`creationDateTime ?? startValidity`) is at or before `createdAt − 2 minutes`
+  - it was valid at `createdAt` (`startValidity <= createdAt < endValidity`)
+  - it lists the record's `from` or `to` station
+  - it has video text, and `createdAt` is inside its video display hours
+- Every other message is pushed.
 
 Why:
 - The subscribe call then never calls Digitraffic, and a failed Digitraffic call can't lose the baseline.
 - The 2-minute grace covers the app's own polling lag, like `ARRIVAL_GRACE_MS` in `src/utils/announcementArrivals.ts`.
 
-The spec's intent is kept: anything that was live when the train was marked is not pushed.
+**Accepted trade-off:** a message that went live less than 2 minutes before the mark is pushed, even if the card had already fetched it. The card may not have fetched it yet, and we can't tell which. A repeated alert costs less than a missed one, so the anti-goal ("no announcements the user already saw") holds except for this 2-minute window. The `isBaseline` tests pin the boundary (`06:21:00Z` is baseline and `06:20:59Z` is not, for a message created at `06:19:00Z`).
 
 ## Review Focus
 
@@ -521,7 +525,7 @@ Map each alias `tN` back to `trains[N]` for `departureDate`. Skip aliases whose 
 
 **Flow:**
 
-1. If disabled, return `{ skipped: "disabled" }`.
+1. If disabled: list the records, delete the expired ones (`isExpired`: past `removeAfter`, or past the hard cap), then return `{ skipped: "disabled" }`. Do not fetch Digitraffic, send pushes or write meta. The privacy promise holds while alerts are off.
 2. Call `list("sub/")`. If it is empty, return `{ skipped: "empty" }` without writing meta.
 3. `get` every record.
 4. Fetch messages and trains with `Promise.allSettled`; a rejected call becomes `null`. Train refs are the distinct records' trains, the first `MAX_TRAINS` of them in key order.
@@ -537,7 +541,8 @@ Map each alias `tN` back to `trains[N]` for `departureDate`. Skip aliases whose 
 
 - [ ] **Step 1: Write the failing tests:**
   - `skips without fetching when there are no records`: the fetch stubs are not called and no meta is written.
-  - `skips everything when disabled`.
+  - `still deletes expired records when disabled`: one live record, one past `removeAfter` and one from before yesterday; only the live one is kept, and the summary says `skipped: "disabled"`.
+  - `fetches, sends and writes meta for nothing when disabled`: the fetch and send stubs are not called and no meta is written.
   - `sends a push and stores the sent mark`.
   - `deletes all records of an endpoint that returns gone`: two trains on one endpoint, both deleted.
   - `keeps the mark off after a failed send so the next run retries`: run twice; the second run sends again.
@@ -602,6 +607,7 @@ Map each alias `tN` back to `trains[N]` for `departureDate`. Skip aliases whose 
   export interface AlertTarget {
     trainNumber: number; departureDate: string; from: string; to: string;
     fromName: string; toName: string; title: string;
+    lang: string; // the language the title's station names are in
   }
   export type PushSupport = "supported" | "needs-home-screen" | "unsupported";
   export const ALERT_OPT_IN_EVENT = "alert-opt-in"; // CustomEvent detail: { target: AlertTarget; removeAfter: string }
@@ -631,10 +637,11 @@ Map each alias `tN` back to `trains[N]` for `departureDate`. Skip aliases whose 
     - `line` is `commuterLineID`, or `` `${trainType} ${trainNumber}` `` when that is empty
     - the time is the Helsinki `scheduledTime` of the `DEPARTURE` row at `from`
     - names come from `getLocalizedStationName(row.station.name, code)` for the `from` departure row and the `to` arrival row
+  - **lang:** `getCurrentLanguage()` at build time, the language of those names.
   - Returns `null` when either row is missing.
 - localStorage keys: `pushAlerts` (`"on"`/`"off"`), `pushAlertsSnoozeUntil` (ISO), `pushAlertsHomeScreenHintShown` (`"1"`). Wrap every access in try/catch.
 - `enableAlerts`: calls `Notification.requestPermission()`. On `"granted"`, it gets or creates the subscription with `pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: <PUBLIC_VAPID_PUBLIC_KEY as Uint8Array> })` and sets the preference to `"on"`.
-- `subscribeTrainAlerts`: POSTs `{ subscription: sub.toJSON(), ...target, lang: getCurrentLanguage(), removeAfter }` to `/api/alerts`.
+- `subscribeTrainAlerts`: POSTs `{ subscription: sub.toJSON(), ...target, removeAfter }` to `/api/alerts`. The `lang` comes from the target, not the current language. A re-sync after a language switch then keeps the stored title and the pushed body in the same language.
   - 204 → `"ok"`.
   - 503 with `{error:"full"}` → `"full"` and `showToast(t("alertsFull"), "info")`.
   - Anything else → `"error"`. Never throw.
