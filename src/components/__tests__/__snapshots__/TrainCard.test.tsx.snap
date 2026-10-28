@@ -128,11 +128,13 @@ exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
               aria-live="polite"
               class="badge badge-warning badge-sm font-semibold shrink-0 whitespace-nowrap hidden"
             >
-              +0
-              <span
-                class="hidden min-[400px]:inline"
-              >
-                 min
+              <span>
+                +0
+                <span
+                  class="hidden min-[400px]:inline"
+                >
+                   min
+                </span>
               </span>
             </output>
             <output
@@ -387,11 +389,13 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
               aria-live="polite"
               class="badge badge-warning badge-sm font-semibold shrink-0 whitespace-nowrap hidden"
             >
-              +0
-              <span
-                class="hidden min-[400px]:inline"
-              >
-                 min
+              <span>
+                +0
+                <span
+                  class="hidden min-[400px]:inline"
+                >
+                   min
+                </span>
               </span>
             </output>
             <output
@@ -635,11 +639,13 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
               aria-live="polite"
               class="badge badge-warning badge-sm font-semibold shrink-0 whitespace-nowrap hidden"
             >
-              +0
-              <span
-                class="hidden min-[400px]:inline"
-              >
-                 min
+              <span>
+                +0
+                <span
+                  class="hidden min-[400px]:inline"
+                >
+                   min
+                </span>
               </span>
             </output>
             <output
