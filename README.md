@@ -45,6 +45,38 @@ Real-time commuter train schedules for Finnish trains.
    npm run build
    ```
 
+## Push alerts
+
+Push alerts tell users about announcements for their favorite trains. They use Web Push. A scheduled Netlify function checks Digitraffic every minute and sends the alerts.
+
+### Setup
+
+1. Make a VAPID key pair on your machine:
+   ```bash
+   pnpm dlx web-push generate-vapid-keys
+   ```
+2. In Netlify, add these environment variables to the site:
+   - `PUBLIC_VAPID_PUBLIC_KEY`: the public key. Set it for all scopes. The build and the functions both read it.
+   - `VAPID_PRIVATE_KEY`: the private key. Set it for the Functions scope only. Keep it secret.
+   - `PUBLIC_PUSH_ALERTS_ENABLED`: `true`. Set it for all scopes.
+3. Redeploy the site.
+
+For local work, copy `.env.example` to `.env` and fill in the values. Git ignores `.env`.
+
+### Off switch
+
+To turn alerts off, set `PUBLIC_PUSH_ALERTS_ENABLED` to `false` in Netlify and redeploy. The browser reads this value at build time, so the redeploy is needed. The job then calls no Digitraffic API and sends no alerts. It still deletes saved alerts once they expire, as the privacy text promises.
+
+Remove `schedule` from `netlify/functions/check-alerts.mts` to stop the job entirely; then also clear the `push-alerts` store in the Netlify UI, because nothing will delete the records.
+
+### Checking that it runs
+
+- In the Netlify Functions tab, `check-alerts` should show the schedule `* * * * *`.
+- In Netlify Blobs, open the `push-alerts` store. The `meta/last-run` key shows the last run time and counts. It updates only while alerts are on and at least one favorite train is saved. Keys starting with `sub/` are the saved alerts.
+- On the Netlify usage page, expect about 1,440 function calls a day from the job.
+
+Scheduled functions run only on the production site, not on deploy previews.
+
 ## Scripts
 
 - `dev`: Start development server

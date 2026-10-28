@@ -3,6 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { __resetAnnouncementArrivalsForTests } from "@/utils/announcementArrivals";
 import { getRelevantTrackInfo } from "@/utils/api";
 import type { ActiveMessage } from "@/utils/passengerInfo";
+import {
+	buildAlertTarget,
+	onFavoriteAdded,
+	unsubscribeTrainAlerts,
+} from "@/utils/pushAlerts";
+import { removeFavorite, setFavorite } from "@/utils/storage";
 import { showToast } from "@/utils/toast";
 import type { Train } from "../../types";
 import TrainCard from "../TrainCard";
@@ -63,6 +69,22 @@ vi.mock("../../utils/storage", () => ({
 	setFavorite: vi.fn(() => Promise.resolve()),
 	removeFavorite: vi.fn(() => Promise.resolve()),
 	updateFavorite: vi.fn(() => Promise.resolve()),
+}));
+
+const mockAlertTarget = vi.hoisted(() => ({
+	trainNumber: 123,
+	departureDate: "2024-03-20",
+	from: "HKI",
+	to: "TPE",
+	fromName: "Helsinki",
+	toName: "Tampere",
+	title: "A 12:00 Helsinki → Tampere",
+}));
+
+vi.mock("@/utils/pushAlerts", () => ({
+	buildAlertTarget: vi.fn(() => mockAlertTarget),
+	onFavoriteAdded: vi.fn(() => Promise.resolve()),
+	unsubscribeTrainAlerts: vi.fn(() => Promise.resolve()),
 }));
 
 // Mock localStorage
@@ -625,6 +647,110 @@ describe("TrainCard", () => {
 			);
 
 			expect(mockedShowToast).not.toHaveBeenCalled();
+		});
+	});
+
+	describe("push alerts", () => {
+		it("hearting a train calls onFavoriteAdded with its alert target", async () => {
+			const { getByLabelText } = render(<TrainCard {...defaultProps} />);
+
+			fireEvent.click(getByLabelText("favorite"));
+			await vi.advanceTimersByTimeAsync(0);
+
+			const removeAfter = new Date("2024-03-20T10:10:00.000Z").toISOString();
+			expect(setFavorite).toHaveBeenCalledWith(
+				"123",
+				expect.objectContaining({ alertTarget: mockAlertTarget, removeAfter }),
+			);
+			expect(onFavoriteAdded).toHaveBeenCalledWith(
+				mockAlertTarget,
+				removeAfter,
+			);
+		});
+
+		it("still saves the favorite when building the alert target throws", async () => {
+			vi.mocked(buildAlertTarget).mockImplementationOnce(() => {
+				throw new TypeError("boom");
+			});
+			const { getByLabelText } = render(<TrainCard {...defaultProps} />);
+
+			fireEvent.click(getByLabelText("favorite"));
+			await vi.advanceTimersByTimeAsync(0);
+
+			expect(setFavorite).toHaveBeenCalledWith(
+				"123",
+				expect.not.objectContaining({ alertTarget: expect.anything() }),
+			);
+			expect(onFavoriteAdded).not.toHaveBeenCalled();
+			expect(getByLabelText("unfavorite")).toBeInTheDocument();
+		});
+
+		it("passes the route's station names to the alert target", async () => {
+			const { getByLabelText } = render(
+				<TrainCard {...defaultProps} fromName="Helsinki" toName="Tampere" />,
+			);
+
+			fireEvent.click(getByLabelText("favorite"));
+			await vi.advanceTimersByTimeAsync(0);
+
+			expect(buildAlertTarget).toHaveBeenCalledWith(
+				expect.anything(),
+				"HKI",
+				"TPE",
+				{ from: "Helsinki", to: "Tampere" },
+			);
+		});
+
+		it("does not call onFavoriteAdded when there is no alert target", async () => {
+			vi.mocked(buildAlertTarget).mockReturnValueOnce(null);
+			const { getByLabelText } = render(<TrainCard {...defaultProps} />);
+
+			fireEvent.click(getByLabelText("favorite"));
+			await vi.advanceTimersByTimeAsync(0);
+
+			expect(setFavorite).toHaveBeenCalled();
+			expect(onFavoriteAdded).not.toHaveBeenCalled();
+		});
+
+		it("un-hearting calls unsubscribeTrainAlerts with the saved target", async () => {
+			localStorageMock.setItem(
+				"highlightedTrains",
+				JSON.stringify({
+					"123": {
+						highlighted: true,
+						removeAfter: new Date("2024-03-20T10:10:00.000Z").toISOString(),
+						journeyKey: "123-HKI-TPE",
+						alertTarget: mockAlertTarget,
+					},
+				}),
+			);
+			const { getByLabelText } = render(<TrainCard {...defaultProps} />);
+
+			fireEvent.click(getByLabelText("unfavorite"));
+			await vi.advanceTimersByTimeAsync(0);
+
+			expect(removeFavorite).toHaveBeenCalledWith("123");
+			expect(unsubscribeTrainAlerts).toHaveBeenCalledWith(mockAlertTarget);
+		});
+
+		it("un-hearting a train without an alert target skips unsubscribe", async () => {
+			localStorageMock.setItem(
+				"highlightedTrains",
+				JSON.stringify({
+					"123": {
+						highlighted: true,
+						removeAfter: new Date("2024-03-20T10:10:00.000Z").toISOString(),
+						journeyKey: "123-HKI-TPE",
+					},
+				}),
+			);
+			const { getByLabelText } = render(<TrainCard {...defaultProps} />);
+
+			fireEvent.click(getByLabelText("unfavorite"));
+			await vi.advanceTimersByTimeAsync(0);
+
+			expect(removeFavorite).toHaveBeenCalledWith("123");
+			expect(unsubscribeTrainAlerts).not.toHaveBeenCalled();
 		});
 	});
 

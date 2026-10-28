@@ -8,6 +8,11 @@ import {
 	useState,
 } from "preact/hooks";
 import {
+	buildAlertTarget,
+	onFavoriteAdded,
+	unsubscribeTrainAlerts,
+} from "@/utils/pushAlerts";
+import {
 	getFavoritesSync,
 	initStorage,
 	removeFavorite,
@@ -50,6 +55,9 @@ interface Props {
 		durationMinutes: number,
 	) => "fast" | "slow" | "normal";
 	messages?: ActiveMessage[];
+	/** Finnish names of the route's stations, for the push alert title. */
+	fromName?: string;
+	toName?: string;
 }
 
 // How long a newly arrived announcement's strip pulses (two 0.8 s rings)
@@ -144,6 +152,8 @@ export default function TrainCard({
 	onReappear,
 	getDurationSpeedType,
 	messages,
+	fromName,
+	toName,
 }: Props) {
 	const [, setLanguageChange] = useState(0);
 	const [isHighlighted, setIsHighlighted] = useState(false);
@@ -697,23 +707,54 @@ export default function TrainCard({
 				const removeAfter = new Date(departureTime.getTime() + 10 * 60 * 1000); // 10 minutes after departure
 				const journeyKey = `${train.trainNumber}-${stationCode}-${destinationCode}`;
 
+				// Alerts are optional; a failure there must never stop the favorite
+				// from being saved.
+				let alertTarget: ReturnType<typeof buildAlertTarget> = null;
+				try {
+					alertTarget = buildAlertTarget(train, stationCode, destinationCode, {
+						from: fromName,
+						to: toName,
+					});
+				} catch (err) {
+					console.warn("[TrainCard] Failed to build alert target:", err);
+				}
+
 				setFavorite(train.trainNumber, {
 					highlighted: true,
 					removeAfter: removeAfter.toISOString(),
 					journeyKey,
 					track: departureRow.commercialTrack,
-				}).catch((err) => {
-					console.warn("[TrainCard] Failed to save favorite, reverting:", err);
-					setIsHighlighted(false);
-				});
+					...(alertTarget && { alertTarget }),
+				})
+					.then(() => {
+						if (alertTarget) {
+							void onFavoriteAdded(alertTarget, removeAfter.toISOString());
+						}
+					})
+					.catch((err) => {
+						console.warn(
+							"[TrainCard] Failed to save favorite, reverting:",
+							err,
+						);
+						setIsHighlighted(false);
+					});
 			}
 		} else {
-			removeFavorite(train.trainNumber).catch((err) => {
-				console.warn("[TrainCard] Failed to remove favorite, reverting:", err);
-				setIsHighlighted(true);
-			});
+			// Read the saved target before the favorite is removed.
+			const alertTarget = getFavoritesSync()[train.trainNumber]?.alertTarget;
+			removeFavorite(train.trainNumber)
+				.then(() => {
+					if (alertTarget) void unsubscribeTrainAlerts(alertTarget);
+				})
+				.catch((err) => {
+					console.warn(
+						"[TrainCard] Failed to remove favorite, reverting:",
+						err,
+					);
+					setIsHighlighted(true);
+				});
 		}
-	}, [isHighlighted, train, stationCode, destinationCode]);
+	}, [isHighlighted, train, stationCode, destinationCode, fromName, toName]);
 
 	// Swipe gesture handlers (touch-only)
 	const handleTouchStart = useCallback((e: TouchEvent) => {

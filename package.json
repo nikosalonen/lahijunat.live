@@ -11,8 +11,8 @@
 		"build": "astro build && node scripts/stampSwVersion.mjs && workbox generateSW workbox-config.cjs",
 		"preview": "astro preview",
 		"astro": "astro",
-		"lint": "biome check --write src",
-		"lint:check": "biome check src",
+		"lint": "biome check --write src netlify",
+		"lint:check": "biome check src netlify",
 		"format": "biome format --write src",
 		"typecheck": "astro check",
 		"check-stations": "pnpm tsx scripts/findStationsWithoutDestinations.ts",
@@ -32,11 +32,14 @@
 	"dependencies": {
 		"@astrojs/preact": "^6.1.1",
 		"@astrojs/sitemap": "^3.7.4",
+		"@netlify/blobs": "^11.1.6",
+		"@netlify/functions": "^6.0.3",
 		"@tailwindcss/vite": "^4.3.3",
 		"astro": "^7.4.2",
 		"preact": "^11.0.2",
 		"qrcode-generator": "^2.0.4",
-		"tailwindcss": "^4.3.3"
+		"tailwindcss": "^4.3.3",
+		"web-push": "^3.6.7"
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.12",
@@ -44,6 +47,7 @@
 		"@testing-library/jest-dom": "^7.0.1",
 		"@testing-library/preact": "^3.2.6",
 		"@types/node": "^24.19.2",
+		"@types/web-push": "^3.6.4",
 		"daisyui": "^5.7.50",
 		"husky": "^9.1.7",
 		"jsdom": "^30.1.3",
