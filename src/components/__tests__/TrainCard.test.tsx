@@ -464,6 +464,32 @@ describe("TrainCard", () => {
 		expect(getByText("+15 min")).toBeInTheDocument();
 	});
 
+	// Beside the times, the badge wrapped onto a line of its own on phones,
+	// so a late train's card grew taller than an on-time one.
+	it("shows the delay badge in the duration row, not beside the times", () => {
+		const delayedTrain = {
+			...mockTrain,
+			timeTableRows: [
+				{
+					...mockTrain.timeTableRows[0],
+					differenceInMinutes: 15,
+					liveEstimateTime: "2024-03-20T10:15:00.000Z",
+				},
+				mockTrain.timeTableRows[1],
+			],
+		};
+
+		const { getByText, container } = render(
+			<TrainCard {...defaultProps} train={delayedTrain} />,
+		);
+
+		const badge = getByText("+15 min");
+		const duration = container.querySelector('output[aria-label^="Kesto"]');
+		expect(container.querySelector(".card-title")).not.toContainElement(badge);
+		expect(duration).not.toBeNull();
+		expect(badge.parentElement).toContainElement(duration as HTMLElement);
+	});
+
 	it("restores card when estimate jumps forward after being negative", async () => {
 		const pastTime = new Date("2024-03-20T10:01:00.000Z");
 		const departedTrain = {

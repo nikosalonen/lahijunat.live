@@ -75,7 +75,7 @@ exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
             class="card-title p-0 min-w-0"
           >
             <span
-              class="text-base min-[360px]:text-lg sm:text-xl font-semibold tabular-nums text-gray-900 dark:text-gray-50 min-w-0 flex flex-wrap items-center gap-x-2 gap-y-1"
+              class="text-base min-[360px]:text-lg sm:text-xl font-semibold tabular-nums text-gray-900 dark:text-gray-50 min-w-0 flex items-center"
             >
               <span
                 class="inline-flex flex-wrap items-center"
@@ -109,13 +109,6 @@ exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
                   </time>
                 </span>
               </span>
-              <output
-                aria-hidden="true"
-                aria-live="polite"
-                class="badge badge-warning badge-sm font-semibold hidden"
-              >
-                +0 min
-              </output>
             </span>
           </div>
           <div
@@ -127,24 +120,37 @@ exports[`TrainCard > snapshots > matches snapshot for cancelled train 1`] = `
               Peruttu
             </span>
           </div>
-          <output
-            aria-hidden="true"
-            class="col-start-2 text-sm font-medium flex items-center gap-1.5 truncate text-base-content/60 opacity-0 pointer-events-none select-none"
+          <div
+            class="col-start-2 flex items-center gap-2 min-w-0"
           >
-            <svg
+            <output
               aria-hidden="true"
-              class="w-4 h-4 flex-shrink-0"
-              fill="currentColor"
-              viewBox="0 0 512 512"
+              aria-live="polite"
+              class="badge badge-warning badge-sm font-semibold shrink-0 whitespace-nowrap hidden"
             >
-              <path
-                d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"
-              />
-            </svg>
-            <span>
-              1 h
-            </span>
-          </output>
+              +0 min
+            </output>
+            <output
+              aria-hidden="true"
+              class="min-w-0 text-sm font-medium flex items-center gap-1.5 truncate text-base-content/60 opacity-0 pointer-events-none select-none"
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 512 512"
+              >
+                <path
+                  d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                1 h
+              </span>
+            </output>
+          </div>
         </div>
         <div
           aria-live="polite"
@@ -259,7 +265,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
             class="card-title p-0 min-w-0"
           >
             <span
-              class="text-base min-[360px]:text-lg sm:text-xl font-semibold tabular-nums text-gray-900 dark:text-gray-50 min-w-0 flex flex-wrap items-center gap-x-2 gap-y-1"
+              class="text-base min-[360px]:text-lg sm:text-xl font-semibold tabular-nums text-gray-900 dark:text-gray-50 min-w-0 flex items-center"
             >
               <span
                 class="inline-flex flex-wrap items-center"
@@ -293,13 +299,6 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
                   </time>
                 </span>
               </span>
-              <output
-                aria-hidden="true"
-                aria-live="polite"
-                class="badge badge-warning badge-sm font-semibold hidden"
-              >
-                +0 min
-              </output>
             </span>
           </div>
           <div
@@ -330,7 +329,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
                       1
                       <svg
                         aria-hidden="true"
-                        class="hidden min-[360px]:inline-block w-3.5 h-3.5 ml-1.5 opacity-60"
+                        class="hidden min-[390px]:inline-block w-3.5 h-3.5 ml-1.5 opacity-60"
                         fill="none"
                         stroke="currentColor"
                         stroke-linecap="round"
@@ -375,24 +374,37 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
               </button>
             </div>
           </div>
-          <output
-            aria-label="Kesto 1 tuntia 0 minuuttia"
-            class="col-start-2 text-sm font-medium flex items-center gap-1.5 truncate text-base-content/60 "
+          <div
+            class="col-start-2 flex items-center gap-2 min-w-0"
           >
-            <svg
+            <output
               aria-hidden="true"
-              class="w-4 h-4 flex-shrink-0"
-              fill="currentColor"
-              viewBox="0 0 512 512"
+              aria-live="polite"
+              class="badge badge-warning badge-sm font-semibold shrink-0 whitespace-nowrap hidden"
             >
-              <path
-                d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"
-              />
-            </svg>
-            <span>
-              1 h
-            </span>
-          </output>
+              +0 min
+            </output>
+            <output
+              aria-label="Kesto 1 tuntia 0 minuuttia"
+              class="min-w-0 text-sm font-medium flex items-center gap-1.5 truncate text-base-content/60 "
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 512 512"
+              >
+                <path
+                  d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                1 h
+              </span>
+            </output>
+          </div>
           <div
             aria-hidden="false"
             class="col-start-3 justify-self-end badge badge-success h-7 px-2.5 text-sm sm:h-8 sm:px-3 sm:text-base font-semibold "
@@ -496,7 +508,7 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
             class="card-title p-0 min-w-0"
           >
             <span
-              class="text-base min-[360px]:text-lg sm:text-xl font-semibold tabular-nums text-gray-900 dark:text-gray-50 min-w-0 flex flex-wrap items-center gap-x-2 gap-y-1"
+              class="text-base min-[360px]:text-lg sm:text-xl font-semibold tabular-nums text-gray-900 dark:text-gray-50 min-w-0 flex items-center"
             >
               <span
                 class="inline-flex flex-wrap items-center"
@@ -530,13 +542,6 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
                   </time>
                 </span>
               </span>
-              <output
-                aria-hidden="true"
-                aria-live="polite"
-                class="badge badge-warning badge-sm font-semibold hidden"
-              >
-                +0 min
-              </output>
             </span>
           </div>
           <div
@@ -567,7 +572,7 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
                       1
                       <svg
                         aria-hidden="true"
-                        class="hidden min-[360px]:inline-block w-3.5 h-3.5 ml-1.5 opacity-60"
+                        class="hidden min-[390px]:inline-block w-3.5 h-3.5 ml-1.5 opacity-60"
                         fill="none"
                         stroke="currentColor"
                         stroke-linecap="round"
@@ -612,24 +617,37 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
               </button>
             </div>
           </div>
-          <output
-            aria-label="Kesto 1 tuntia 0 minuuttia"
-            class="col-start-2 text-sm font-medium flex items-center gap-1.5 truncate text-base-content/60 "
+          <div
+            class="col-start-2 flex items-center gap-2 min-w-0"
           >
-            <svg
+            <output
               aria-hidden="true"
-              class="w-4 h-4 flex-shrink-0"
-              fill="currentColor"
-              viewBox="0 0 512 512"
+              aria-live="polite"
+              class="badge badge-warning badge-sm font-semibold shrink-0 whitespace-nowrap hidden"
             >
-              <path
-                d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"
-              />
-            </svg>
-            <span>
-              1 h
-            </span>
-          </output>
+              +0 min
+            </output>
+            <output
+              aria-label="Kesto 1 tuntia 0 minuuttia"
+              class="min-w-0 text-sm font-medium flex items-center gap-1.5 truncate text-base-content/60 "
+            >
+              <svg
+                aria-hidden="true"
+                class="w-4 h-4 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 512 512"
+              >
+                <path
+                  d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                1 h
+              </span>
+            </output>
+          </div>
           <div
             aria-hidden="false"
             class="col-start-3 justify-self-end badge badge-success h-7 px-2.5 text-sm sm:h-8 sm:px-3 sm:text-base font-semibold "

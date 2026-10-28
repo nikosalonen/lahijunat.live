@@ -3,7 +3,7 @@
 exports[`TimeDisplay > renders without arrival row 1`] = `
 <div>
   <span
-    class="text-base min-[360px]:text-lg sm:text-xl font-semibold tabular-nums text-gray-900 dark:text-gray-50 min-w-0 flex flex-wrap items-center gap-x-2 gap-y-1"
+    class="text-base min-[360px]:text-lg sm:text-xl font-semibold tabular-nums text-gray-900 dark:text-gray-50 min-w-0 flex items-center"
   >
     <span
       class="inline-flex flex-wrap items-center"
@@ -18,13 +18,6 @@ exports[`TimeDisplay > renders without arrival row 1`] = `
         </time>
       </span>
     </span>
-    <output
-      aria-hidden="true"
-      aria-live="polite"
-      class="badge badge-warning badge-sm font-semibold hidden"
-    >
-      +0 min
-    </output>
   </span>
 </div>
 `;

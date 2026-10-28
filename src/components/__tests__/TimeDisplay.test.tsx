@@ -1,26 +1,7 @@
 import { render } from "@testing-library/preact";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { Train } from "../../types";
 import TimeDisplay from "../TimeDisplay";
-
-// Mock translations
-vi.mock("../../utils/translations", () => ({
-	t: (key: string) => {
-		const translations: Record<string, string> = {
-			late: "Myöhässä",
-			minutes: "minuuttia",
-			minutesShort: "min",
-			departure: "Lähtöaika",
-			cancelled: "Peruttu",
-		};
-		return translations[key] || key;
-	},
-}));
-
-// Mock useLanguageChange hook
-vi.mock("../../hooks/useLanguageChange", () => ({
-	useLanguageChange: vi.fn(),
-}));
 
 describe("TimeDisplay", () => {
 	const mockDepartureRow: Train["timeTableRows"][0] = {
@@ -70,7 +51,6 @@ describe("TimeDisplay", () => {
 			<TimeDisplay
 				departureRow={mockDepartureRow}
 				arrivalRow={mockArrivalRow}
-				timeDifferenceMinutes={0}
 			/>,
 		);
 
@@ -86,15 +66,16 @@ describe("TimeDisplay", () => {
 			differenceInMinutes: 15,
 		};
 
-		const { getByText } = render(
+		const { getByText, queryByText } = render(
 			<TimeDisplay
 				departureRow={delayedDepartureRow}
 				arrivalRow={mockArrivalRow}
-				timeDifferenceMinutes={15}
 			/>,
 		);
 
-		expect(getByText("+15 min")).toBeInTheDocument();
+		// Shows the estimate; the delay badge lives in the card's duration row
+		getByText("12.15");
+		expect(queryByText("+15 min")).not.toBeInTheDocument();
 	});
 
 	it("renders cancelled train correctly", () => {
@@ -102,7 +83,6 @@ describe("TimeDisplay", () => {
 			<TimeDisplay
 				departureRow={mockDepartureRow}
 				arrivalRow={mockArrivalRow}
-				timeDifferenceMinutes={0}
 				isCancelled={true}
 			/>,
 		);
@@ -113,98 +93,9 @@ describe("TimeDisplay", () => {
 
 	it("renders without arrival row", () => {
 		const { container } = render(
-			<TimeDisplay departureRow={mockDepartureRow} timeDifferenceMinutes={0} />,
+			<TimeDisplay departureRow={mockDepartureRow} />,
 		);
 
 		expect(container).toMatchSnapshot();
-	});
-
-	it("does not show delay indicator when train is on time", () => {
-		const { queryByText } = render(
-			<TimeDisplay
-				departureRow={mockDepartureRow}
-				arrivalRow={mockArrivalRow}
-				timeDifferenceMinutes={0}
-			/>,
-		);
-
-		// The delay badge stays in the DOM but takes no space when not needed
-		const delayBadge = queryByText("+0 min");
-		expect(delayBadge).toBeInTheDocument();
-		expect(delayBadge).toHaveClass("hidden");
-	});
-
-	it("does not show delay indicator when train is cancelled", () => {
-		const delayedDepartureRow = {
-			...mockDepartureRow,
-			liveEstimateTime: "2024-03-20T10:15:00.000Z",
-			differenceInMinutes: 15,
-		};
-
-		const { queryByText } = render(
-			<TimeDisplay
-				departureRow={delayedDepartureRow}
-				arrivalRow={mockArrivalRow}
-				timeDifferenceMinutes={15}
-				isCancelled={true}
-			/>,
-		);
-
-		// The delay badge stays in the DOM but takes no space for cancelled trains
-		const delayIndicator = queryByText("+15 min");
-		expect(delayIndicator).toBeInTheDocument();
-		expect(delayIndicator).toHaveClass("hidden");
-	});
-
-	it("should show unknown delay badge when unknownDelay is true", () => {
-		const departureRow = {
-			...mockDepartureRow,
-			liveEstimateTime: "2024-01-01T10:05:00Z",
-			differenceInMinutes: 5,
-			unknownDelay: true,
-		};
-
-		const { getByText, queryByText } = render(
-			<TimeDisplay departureRow={departureRow} timeDifferenceMinutes={5} />,
-		);
-
-		expect(getByText("unknownDelay")).toBeInTheDocument();
-		expect(queryByText("+5 min")).not.toBeInTheDocument();
-	});
-
-	it("should not show unknown delay badge when unknownDelay is false", () => {
-		const departureRow = {
-			...mockDepartureRow,
-			liveEstimateTime: "2024-01-01T10:05:00Z",
-			differenceInMinutes: 5,
-			unknownDelay: false,
-		};
-
-		const { getByText, queryByText } = render(
-			<TimeDisplay departureRow={departureRow} timeDifferenceMinutes={5} />,
-		);
-
-		expect(queryByText("unknownDelay")).not.toBeInTheDocument();
-		expect(getByText("+5 min")).toBeInTheDocument();
-	});
-
-	it("should not show unknown delay badge when train is cancelled", () => {
-		const departureRow = {
-			...mockDepartureRow,
-			liveEstimateTime: "2024-01-01T10:05:00Z",
-			differenceInMinutes: 5,
-			cancelled: true,
-			unknownDelay: true,
-		};
-
-		const { queryByText } = render(
-			<TimeDisplay departureRow={departureRow} timeDifferenceMinutes={5} />,
-		);
-
-		expect(queryByText("unknownDelay")).not.toBeInTheDocument();
-		// The delay badge stays in the DOM but takes no space for cancelled trains
-		const delayBadge = queryByText("+5 min");
-		expect(delayBadge).toBeInTheDocument();
-		expect(delayBadge).toHaveClass("hidden");
 	});
 });

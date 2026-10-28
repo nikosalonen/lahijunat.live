@@ -28,6 +28,7 @@ import {
 } from "../utils/trainUtils";
 import { t } from "../utils/translations";
 import { getDebugMode, subscribeToDebugMode } from "./DebugToggle";
+import DelayBadge from "./DelayBadge";
 import TimeDisplay from "./TimeDisplay";
 import TrainAnnouncements from "./TrainAnnouncements";
 
@@ -993,7 +994,6 @@ export default function TrainCard({
 									<TimeDisplay
 										departureRow={departureRow}
 										arrivalRow={arrivalRow}
-										timeDifferenceMinutes={timeDifferenceMinutes}
 									/>
 								</div>
 
@@ -1048,10 +1048,13 @@ export default function TrainCard({
 																}}
 															>
 																{t("track")} {departureRow.commercialTrack}
-																{/* Swap arrows: a tap shows the arrival track */}
+																{/* Swap arrows: a tap shows the arrival track. Hidden
+																    on narrow phones, where the times need the room:
+																    a late train's ~ marks would push its arrival time
+																    onto a second line and make the card taller. */}
 																{arrivalRow && (
 																	<svg
-																		class="hidden min-[360px]:inline-block w-3.5 h-3.5 ml-1.5 opacity-60"
+																		class="hidden min-[390px]:inline-block w-3.5 h-3.5 ml-1.5 opacity-60"
 																		viewBox="0 0 24 24"
 																		fill="none"
 																		stroke="currentColor"
@@ -1136,33 +1139,45 @@ export default function TrainCard({
 									</section>
 								)}
 
-								{/* Row 3 with announcements, otherwise row 2, Col 2: Duration */}
-								{duration && (
-									<output
-										class={`col-start-2 text-sm font-medium flex items-center gap-1.5 truncate ${
-											durationSpeedType === "fast"
-												? "text-success"
-												: durationSpeedType === "slow"
-													? "text-warning"
-													: "text-base-content/60"
-										} ${train.cancelled ? "opacity-0 pointer-events-none select-none" : ""}`}
-										aria-hidden={train.cancelled ? "true" : undefined}
-										aria-label={
-											!train.cancelled
-												? `${t("duration")} ${duration.hours} ${t("hours")} ${duration.minutes} ${t("minutes")}`
-												: undefined
-										}
-									>
-										<svg
-											class="w-4 h-4 flex-shrink-0"
-											fill="currentColor"
-											viewBox="0 0 512 512"
-											aria-hidden="true"
-										>
-											<path d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
-										</svg>
-										<span>{formatDuration(duration)}</span>
-									</output>
+								{/* Row 3 with announcements, otherwise row 2, Col 2: Delay and
+								    duration. The countdown badge sets this row's height, so a
+								    delay badge here does not make a late train's card taller.
+								    Rendered whenever the countdown is, so cancelled cards
+								    without a duration gain no row. */}
+								{(duration || !train.cancelled) && (
+									<div class="col-start-2 flex items-center gap-2 min-w-0">
+										<DelayBadge
+											departureRow={departureRow}
+											timeDifferenceMinutes={timeDifferenceMinutes}
+										/>
+										{duration && (
+											<output
+												class={`min-w-0 text-sm font-medium flex items-center gap-1.5 truncate ${
+													durationSpeedType === "fast"
+														? "text-success"
+														: durationSpeedType === "slow"
+															? "text-warning"
+															: "text-base-content/60"
+												} ${train.cancelled ? "opacity-0 pointer-events-none select-none" : ""}`}
+												aria-hidden={train.cancelled ? "true" : undefined}
+												aria-label={
+													!train.cancelled
+														? `${t("duration")} ${duration.hours} ${t("hours")} ${duration.minutes} ${t("minutes")}`
+														: undefined
+												}
+											>
+												<svg
+													class="w-4 h-4 flex-shrink-0"
+													fill="currentColor"
+													viewBox="0 0 512 512"
+													aria-hidden="true"
+												>
+													<path d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+												</svg>
+												<span class="truncate">{formatDuration(duration)}</span>
+											</output>
+										)}
+									</div>
 								)}
 
 								{/* Same row as the duration, Col 3: Countdown */}
