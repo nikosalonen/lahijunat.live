@@ -30,6 +30,7 @@ const target: AlertTarget = {
 	fromName: "Riihimäki",
 	toName: "Helsinki",
 	title: "R 08:25 Riihimäki → Helsinki",
+	lang: "fi",
 	cancelled: false,
 };
 const removeAfter = "2026-10-27T08:40:00.000Z";
@@ -159,8 +160,14 @@ describe("buildAlertTarget", () => {
 			fromName: "Riihimäki",
 			toName: "Helsinki",
 			title: "R 08:25 Riihimäki → Helsinki",
+			lang: "fi",
 			cancelled: false,
 		});
+	});
+
+	it("records the language the title was built in", () => {
+		window.localStorage.setItem("lang", "en");
+		expect(buildAlertTarget(makeTrain(), "RI", "HKI")?.lang).toBe("en");
 	});
 
 	it("marks the target cancelled when the train or its segment is cancelled", () => {
@@ -375,6 +382,17 @@ describe("subscribeTrainAlerts", () => {
 		stubPush("granted");
 		stubFetch(204);
 		expect(await subscribeTrainAlerts(target, removeAfter)).toBe("ok");
+	});
+
+	it("posts the target's language, not the current one, so title and body match", async () => {
+		stubPush("granted");
+		const fetchMock = stubFetch(204);
+		window.localStorage.setItem("lang", "sv");
+		await subscribeTrainAlerts(target, removeAfter);
+		expect(lastRequest(fetchMock).body).toMatchObject({
+			lang: "fi",
+			title: target.title,
+		});
 	});
 
 	it("sends the POST as JSON", async () => {

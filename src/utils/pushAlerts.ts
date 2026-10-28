@@ -23,6 +23,11 @@ export interface AlertTarget {
 	toName: string;
 	title: string;
 	/**
+	 * The language the title's station names are in. Re-syncs send this
+	 * rather than the current language, so the title and body always match.
+	 */
+	lang: string;
+	/**
 	 * The train, or its stop at `from` or `to`, was cancelled when marked. The
 	 * card already showed that, so the server does not push it again.
 	 */
@@ -162,6 +167,7 @@ export function buildAlertTarget(
 		fromName,
 		toName,
 		title: `${line} ${time} ${fromName} → ${toName}`,
+		lang: getCurrentLanguage(),
 		cancelled: train.cancelled || fromRow.cancelled || toRow.cancelled,
 	};
 }
@@ -280,7 +286,6 @@ export async function subscribeTrainAlerts(
 		const response = await sendAlertsRequest("POST", {
 			subscription: subscription.toJSON(),
 			...target,
-			lang: getCurrentLanguage(),
 			removeAfter,
 		});
 		if (!response) return "error";
