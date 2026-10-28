@@ -154,4 +154,19 @@ describe("AlertsToggle", () => {
 		});
 		expect(resyncAlerts).not.toHaveBeenCalled();
 	});
+
+	it("stays off without a toast when the prompt is dismissed", async () => {
+		vi.mocked(getAlertsPreference).mockReturnValue("off");
+		vi.mocked(enableAlerts).mockResolvedValue("dismissed");
+		const { getByRole } = render(<AlertsToggle />);
+		act(() => {
+			getByRole("button", { name: "alertsToggleOff" }).click();
+		});
+		await waitFor(() => {
+			expect(getByRole("button")).not.toBeDisabled();
+		});
+		expect(getByRole("button")).toHaveAttribute("aria-pressed", "false");
+		expect(showToast).not.toHaveBeenCalled();
+		expect(resyncAlerts).not.toHaveBeenCalled();
+	});
 });

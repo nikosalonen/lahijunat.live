@@ -11,9 +11,14 @@ import {
 	snoozeOptIn,
 	subscribeTrainAlerts,
 } from "@/utils/pushAlerts";
+import { showToast } from "@/utils/toast";
 
 vi.mock("@/utils/translations", () => ({
 	t: (key: string) => key,
+}));
+
+vi.mock("@/utils/toast", () => ({
+	showToast: vi.fn(),
 }));
 
 vi.mock("@/hooks/useLanguageChange", () => ({
@@ -134,6 +139,35 @@ describe("PushAlerts", () => {
 		await waitFor(() => {
 			expect(queryByRole("dialog")).not.toBeInTheDocument();
 		});
+		expect(subscribeTrainAlerts).not.toHaveBeenCalled();
+	});
+
+	it("Yes shows the blocked toast when permission is denied", async () => {
+		vi.mocked(enableAlerts).mockResolvedValue("denied");
+		const { getByRole } = render(<PushAlerts />);
+		fireOptIn();
+		act(() => {
+			getByRole("button", { name: "alertsPromptYes" }).click();
+		});
+		await waitFor(() => {
+			expect(showToast).toHaveBeenCalledWith("alertsBlocked", "warning");
+		});
+	});
+
+	it("Yes shows no toast when the prompt is dismissed", async () => {
+		vi.mocked(enableAlerts).mockResolvedValue("dismissed");
+		const { getByRole, queryByRole } = render(<PushAlerts />);
+		fireOptIn();
+		act(() => {
+			getByRole("button", { name: "alertsPromptYes" }).click();
+		});
+		await waitFor(() => {
+			expect(enableAlerts).toHaveBeenCalledTimes(1);
+		});
+		await waitFor(() => {
+			expect(queryByRole("dialog")).not.toBeInTheDocument();
+		});
+		expect(showToast).not.toHaveBeenCalled();
 		expect(subscribeTrainAlerts).not.toHaveBeenCalled();
 	});
 

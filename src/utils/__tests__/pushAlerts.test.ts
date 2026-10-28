@@ -8,6 +8,7 @@ import {
 	type AlertTarget,
 	buildAlertTarget,
 	disableAllAlerts,
+	enableAlerts,
 	getPushSupport,
 	onFavoriteAdded,
 	resyncAlerts,
@@ -483,6 +484,30 @@ describe("resyncAlerts without a subscription", () => {
 		await resyncAlerts();
 		expect(pushManager.subscribe).toHaveBeenCalledTimes(1);
 		expect(fetchMock).not.toHaveBeenCalled();
+	});
+});
+
+describe("enableAlerts", () => {
+	it("subscribes and turns the preference on when granted", async () => {
+		const { pushManager } = stubPush("granted");
+		pushManager.getSubscription.mockResolvedValue(null as never);
+		expect(await enableAlerts()).toBe("granted");
+		expect(pushManager.subscribe).toHaveBeenCalledTimes(1);
+		expect(window.localStorage.getItem("pushAlerts")).toBe("on");
+	});
+
+	it("reports denied when the browser blocks notifications", async () => {
+		const { pushManager } = stubPush("denied");
+		expect(await enableAlerts()).toBe("denied");
+		expect(pushManager.subscribe).not.toHaveBeenCalled();
+		expect(window.localStorage.getItem("pushAlerts")).toBeNull();
+	});
+
+	it("reports dismissed when the prompt is closed without an answer", async () => {
+		const { pushManager } = stubPush("default");
+		expect(await enableAlerts()).toBe("dismissed");
+		expect(pushManager.subscribe).not.toHaveBeenCalled();
+		expect(window.localStorage.getItem("pushAlerts")).toBeNull();
 	});
 });
 

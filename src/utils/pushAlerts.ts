@@ -236,12 +236,19 @@ async function getOrCreateSubscription(): Promise<PushSubscription> {
 	});
 }
 
-export async function enableAlerts(): Promise<"granted" | "denied" | "error"> {
+/**
+ * Ask for notification permission and subscribe. "denied" means the browser
+ * blocks the site and will not ask again; "dismissed" means the prompt was
+ * closed without an answer, so the next try shows it again.
+ */
+export async function enableAlerts(): Promise<
+	"granted" | "denied" | "dismissed" | "error"
+> {
 	try {
 		const permission = await Notification.requestPermission();
 		if (permission !== "granted") {
 			notifyStateChanged();
-			return "denied";
+			return permission === "denied" ? "denied" : "dismissed";
 		}
 		await getOrCreateSubscription();
 		setAlertsPreference("on");
