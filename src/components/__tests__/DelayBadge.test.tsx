@@ -72,13 +72,13 @@ describe("DelayBadge", () => {
 	});
 
 	// Beside the duration on narrow phones, "+15 min" left no room for a long
-	// trip's duration ("1 h 15 …"), so the unit only shows from 400 px up.
-	it("shows the minutes unit only from 400 px up", () => {
+	// trip's duration ("1 h 15 …"), so the unit only shows from 440 px up.
+	it("shows the minutes unit only from 440 px up", () => {
 		const badge = renderBadge(delayedDepartureRow, 15);
 		const unit = badge.querySelector("span span");
 
 		expect(unit).toHaveTextContent("min");
-		expect(unit).toHaveClass("hidden", "min-[400px]:inline");
+		expect(unit).toHaveClass("hidden", "min-[440px]:inline");
 		// Not a direct child: the badge is a flex box, which would make the unit
 		// its own item and swap the space for the badge's wider gap.
 		expect(unit?.parentElement).not.toBe(badge);
@@ -112,6 +112,26 @@ describe("DelayBadge", () => {
 
 		expect(badge).toHaveTextContent("unknownDelay");
 		expect(badge).not.toHaveTextContent("+5 min");
+	});
+
+	// "Myöhässä" left no room for an hour-long trip's duration on narrow
+	// phones, so below 440 px the badge shows "+?" and keeps the word for
+	// screen readers only.
+	it("shows +? for an unknown delay below 440 px", () => {
+		const departureRow = {
+			...mockDepartureRow,
+			liveEstimateTime: "2024-01-01T10:05:00Z",
+			unknownDelay: true,
+		};
+
+		const badge = renderBadge(departureRow, 5);
+		const [short, word] = Array.from(badge.querySelectorAll("span span"));
+
+		expect(short).toHaveTextContent("+?");
+		expect(short).toHaveClass("min-[440px]:hidden");
+		expect(short).toHaveAttribute("aria-hidden", "true");
+		expect(word).toHaveTextContent("unknownDelay");
+		expect(word).toHaveClass("sr-only", "min-[440px]:not-sr-only");
 	});
 
 	it("should not show unknown delay badge when unknownDelay is false", () => {
