@@ -21,17 +21,11 @@ export default function Footer({ stations = [] }: Props) {
 					codes={POPULAR_STATIONS}
 					titleKey="popularStations"
 				/>
-				<p class="text-sm flex flex-wrap justify-center gap-x-3">
-					<a
-						href="/asemat/"
-						class="hover:text-blue-100 hover:underline underline-offset-2 transition-colors"
-					>
+				<p class="text-sm flex flex-wrap justify-center gap-x-4 gap-y-2">
+					<a href="/asemat/" class="footer-link">
 						{t("allStations")}
 					</a>
-					<a
-						href="/linjat/"
-						class="hover:text-blue-100 hover:underline underline-offset-2 transition-colors"
-					>
+					<a href="/linjat/" class="footer-link">
 						{t("allLines")}
 					</a>
 				</p>
@@ -39,7 +33,7 @@ export default function Footer({ stations = [] }: Props) {
 					{t("madeBy")}{" "}
 					<a
 						href="https://bsky.app/profile/niko.torttu.fi"
-						class="hover:text-blue-100 transition-colors"
+						class="footer-link"
 						target="_blank"
 						rel="noopener noreferrer"
 					>
@@ -47,30 +41,36 @@ export default function Footer({ stations = [] }: Props) {
 					</a>
 				</p>
 				<p class="text-sm">v{version}</p>
-				<p class="text-sm">
-					{t("dataSource")}:{" "}
-					<a
-						href="https://www.digitraffic.fi/"
-						class="hover:text-blue-100 transition-colors"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Fintraffic
-					</a>
-					- {t("trainIcon")}{" "}
-					<a
-						href="https://tyyliopas.hsl.fi/"
-						class="hover:text-blue-100 transition-colors"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						HSL.fi
-					</a>
+				{/* Each credit is one inline-block, so narrow screens break at the dash */}
+				<p class="text-sm px-4">
+					<span class="inline-block">
+						{t("dataSource")}:{" "}
+						<a
+							href="https://www.digitraffic.fi/"
+							class="footer-link"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							Fintraffic
+						</a>
+					</span>{" "}
+					-{" "}
+					<span class="inline-block">
+						{t("trainIcon")}{" "}
+						<a
+							href="https://tyyliopas.hsl.fi/"
+							class="footer-link"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							HSL.fi
+						</a>
+					</span>
 				</p>
 				<div class="flex items-center justify-center gap-4">
 					<a
 						href="https://github.com/nikosalonen/lahijunat.live"
-						class="text-white hover:text-blue-100 transition-colors flex items-center gap-2"
+						class="footer-link flex items-center gap-2"
 						target="_blank"
 						rel="noopener noreferrer"
 					>

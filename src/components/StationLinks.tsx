@@ -71,13 +71,10 @@ export default function StationLinks({
 	return (
 		<nav aria-label={title} class="px-4 pb-2 text-sm">
 			{showHeading && <h2 class="font-semibold mb-1">{title}</h2>}
-			<ul class="flex flex-wrap justify-center gap-x-3 gap-y-1">
+			<ul class="flex flex-wrap justify-center gap-x-4 gap-y-2">
 				{links.map((link) => (
 					<li key={link.href}>
-						<a
-							href={link.href}
-							class="hover:text-blue-100 hover:underline underline-offset-2 transition-colors"
-						>
+						<a href={link.href} class="footer-link">
 							{link.label}
 						</a>
 					</li>

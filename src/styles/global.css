@@ -96,6 +96,36 @@
 	padding-bottom: env(safe-area-inset-bottom);
 }
 
+/*
+ * Links on the purple footer. White text alone looks like a label there, so a
+ * soft underline marks them as links; hover makes it solid and thicker.
+ */
+@utility footer-link {
+	text-decoration-line: underline;
+	text-decoration-color: rgb(255 255 255 / 0.6);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+	/* Grows an inline link's tap area to about 24px without moving text */
+	padding-block: 3px;
+	transition:
+		text-decoration-color 150ms ease-out,
+		text-decoration-thickness 150ms ease-out;
+
+	/* Touch screens keep :hover after a tap, so only real pointers get it */
+	@media (hover: hover) {
+		&:hover {
+			text-decoration-color: white;
+			text-decoration-thickness: 2px;
+		}
+	}
+
+	&:focus-visible {
+		outline: 2px solid white;
+		outline-offset: 2px;
+		border-radius: 2px;
+	}
+}
+
 @font-face {
 	font-family: "Gotham Rounded";
 	src:
