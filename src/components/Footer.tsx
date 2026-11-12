@@ -22,10 +22,10 @@ export default function Footer({ stations = [] }: Props) {
 					titleKey="popularStations"
 				/>
 				<p class="text-sm flex flex-wrap justify-center gap-x-4 gap-y-2">
-					<a href="/asemat/" class="footer-link">
+					<a href="/asemat/" class="text-link">
 						{t("allStations")}
 					</a>
-					<a href="/linjat/" class="footer-link">
+					<a href="/linjat/" class="text-link">
 						{t("allLines")}
 					</a>
 				</p>
@@ -33,7 +33,7 @@ export default function Footer({ stations = [] }: Props) {
 					{t("madeBy")}{" "}
 					<a
 						href="https://bsky.app/profile/niko.torttu.fi"
-						class="footer-link"
+						class="text-link"
 						target="_blank"
 						rel="noopener noreferrer"
 					>
@@ -47,7 +47,7 @@ export default function Footer({ stations = [] }: Props) {
 						{t("dataSource")}:{" "}
 						<a
 							href="https://www.digitraffic.fi/"
-							class="footer-link"
+							class="text-link"
 							target="_blank"
 							rel="noopener noreferrer"
 						>
@@ -59,7 +59,7 @@ export default function Footer({ stations = [] }: Props) {
 						{t("trainIcon")}{" "}
 						<a
 							href="https://tyyliopas.hsl.fi/"
-							class="footer-link"
+							class="text-link"
 							target="_blank"
 							rel="noopener noreferrer"
 						>
@@ -70,7 +70,7 @@ export default function Footer({ stations = [] }: Props) {
 				<div class="flex items-center justify-center gap-4">
 					<a
 						href="https://github.com/nikosalonen/lahijunat.live"
-						class="footer-link flex items-center gap-2"
+						class="text-link flex items-center gap-2"
 						target="_blank"
 						rel="noopener noreferrer"
 					>

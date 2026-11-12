@@ -97,12 +97,14 @@
 }
 
 /*
- * Links on the purple footer. White text alone looks like a label there, so a
- * soft underline marks them as links; hover makes it solid and thicker.
+ * Links inside text. Without a visible underline they read as labels, and
+ * DaisyUI's `link-hover` only shows one on hover, which touch screens never
+ * get. A soft underline in the text's own colour marks them as links in the
+ * footer and on light and dark pages; hover makes it solid and thicker.
  */
-@utility footer-link {
+@utility text-link {
 	text-decoration-line: underline;
-	text-decoration-color: rgb(255 255 255 / 0.6);
+	text-decoration-color: color-mix(in oklab, currentColor 60%, transparent);
 	text-decoration-thickness: 1px;
 	text-underline-offset: 3px;
 	/* Grows an inline link's tap area to about 24px without moving text */
@@ -114,13 +116,13 @@
 	/* Touch screens keep :hover after a tap, so only real pointers get it */
 	@media (hover: hover) {
 		&:hover {
-			text-decoration-color: white;
+			text-decoration-color: currentColor;
 			text-decoration-thickness: 2px;
 		}
 	}
 
 	&:focus-visible {
-		outline: 2px solid white;
+		outline: 2px solid currentColor;
 		outline-offset: 2px;
 		border-radius: 2px;
 	}

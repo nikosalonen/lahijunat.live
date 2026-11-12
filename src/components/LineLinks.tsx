@@ -66,7 +66,7 @@ export default function LineLinks({ stations, lines }: Props) {
 				);
 			})}
 			<li class="text-sm text-center mt-4">
-				<a href="/" class="link link-hover">
+				<a href="/" class="text-link">
 					{t("homePage")}
 				</a>
 			</li>

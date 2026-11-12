@@ -74,7 +74,7 @@ export default function StationLinks({
 			<ul class="flex flex-wrap justify-center gap-x-4 gap-y-2">
 				{links.map((link) => (
 					<li key={link.href}>
-						<a href={link.href} class="footer-link">
+						<a href={link.href} class="text-link">
 							{link.label}
 						</a>
 					</li>
@@ -130,7 +130,7 @@ function RouteDiagram({ links }: { links: { href: string; label: string }[] }) {
 						/>
 						<a
 							href={link.href}
-							class={`link link-hover underline-offset-2 leading-snug ${
+							class={`text-link leading-snug ${
 								isTerminus ? "font-semibold" : ""
 							}`}
 						>
