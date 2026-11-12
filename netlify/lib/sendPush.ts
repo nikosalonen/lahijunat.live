@@ -1,4 +1,4 @@
-import webpush from "web-push";
+import * as webpush from "web-push";
 import { siteUrl } from "./config";
 import type { AlertLang, AlertPush, AlertRecord } from "./types";
 import { isAllowedPushEndpoint } from "./validate";

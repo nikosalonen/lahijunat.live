@@ -1,12 +1,12 @@
 // @vitest-environment node
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import webpush from "web-push";
+import * as webpush from "web-push";
 import { buildPushPayload, sendAlertPush } from "../sendPush";
 import type { AlertPush, AlertRecord } from "../types";
 
 vi.mock("web-push", () => ({
-	default: { sendNotification: vi.fn() },
+	sendNotification: vi.fn(),
 }));
 
 const sendNotification = vi.mocked(webpush.sendNotification);

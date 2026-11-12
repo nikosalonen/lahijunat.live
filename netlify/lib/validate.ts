@@ -44,8 +44,8 @@ function hasUnsafeChar(text: string): boolean {
 
 /**
  * Returns the normalized URL of an allowed push endpoint, or null.
- * web-push parses the endpoint with Node's legacy `url.parse`, so anything the
- * two parsers could read differently (ports, userinfo, backslashes) is refused.
+ * Ports, userinfo and backslashes are refused so that any URL parser reads the
+ * endpoint the same way. web-push 4 itself parses it with WHATWG `URL`.
  */
 export function normalizePushEndpoint(endpoint: string): string | null {
 	if (endpoint.length > MAX_ENDPOINT_CHARS || hasUnsafeChar(endpoint)) {
