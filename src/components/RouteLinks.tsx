@@ -12,6 +12,8 @@ interface Props {
 	/** The departure station — where the reader has to get to. The maps link
 	 * points here, not at the destination. */
 	origin?: Station;
+	/** The departure station's street address, shown in the maps link. */
+	address?: string | null;
 }
 
 /**
@@ -69,7 +71,7 @@ const nativeMapsHref = (station: Station): string | null => {
  * Rendered inside RouteInfo's panel, which StationManager prerenders, so
  * crawlers still see the links; the labels follow the language switcher.
  */
-export default function RouteLinks({ reverse, origin }: Props) {
+export default function RouteLinks({ reverse, origin, address }: Props) {
 	useLanguageChange();
 
 	// A station with no usable coordinates gets no link at all rather than one
@@ -112,6 +114,7 @@ export default function RouteLinks({ reverse, origin }: Props) {
 					</svg>
 					<a href={mapsHref} class="text-link">
 						{t("navigateToStation")}: {stationName(mapsOrigin)}
+						{address && `, ${address}`}
 					</a>
 				</p>
 			)}

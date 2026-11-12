@@ -23,7 +23,15 @@ export const getRouteStats = (
 	// too quiet to get a page of their own. Chips pointing at those 404, so
 	// only the lines a reader can actually open are worth handing back.
 	const pageable = linesWithPages(stations);
-	return { ...stats, lines: stats.lines.filter((line) => pageable.has(line)) };
+	return {
+		...stats,
+		lines: stats.lines.filter((line) => pageable.has(line)),
+		lineDurations: Object.fromEntries(
+			Object.entries(stats.lineDurations).filter(([line]) =>
+				pageable.has(line),
+			),
+		),
+	};
 };
 
 /** The timetable date the statistics were derived from, "YYYY-MM-DD". */

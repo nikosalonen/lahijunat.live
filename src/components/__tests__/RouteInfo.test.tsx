@@ -23,6 +23,8 @@ const route: RouteStats = {
 	lastDeparture: "03.37",
 	medianDuration: 34,
 	lines: ["D", "K", "R", "T", "Z"],
+	lineDurations: { D: 31, K: 38, R: 31, T: 36, Z: 28 },
+	daytimeGap: 4,
 };
 
 const station: StationStats = {
@@ -50,7 +52,7 @@ describe("RouteInfo", () => {
 		);
 
 		expect(toggle()).toHaveAttribute("aria-expanded", "false");
-		const summary = screen.getByText(/Välillä Helsinki–Kerava/);
+		const summary = screen.getByText(/Junayhteydet välillä Helsinki–Kerava/);
 		expect(summary.closest("[hidden]")).not.toBeNull();
 	});
 
@@ -69,7 +71,9 @@ describe("RouteInfo", () => {
 
 		expect(toggle()).toHaveAttribute("aria-expanded", "true");
 		expect(
-			screen.getByText(/Välillä Helsinki–Kerava/).closest("[hidden]"),
+			screen
+				.getByText(/Junayhteydet välillä Helsinki–Kerava/)
+				.closest("[hidden]"),
 		).toBeNull();
 		expect(
 			screen.getByRole("link", { name: /Vastakkainen suunta/ }),
@@ -109,8 +113,10 @@ describe("RouteInfo", () => {
 			/>,
 		);
 
-		// The summary says "34 minuuttia" too; the row holds the bare figure
-		expect(screen.getByText("34 min")).toBeInTheDocument();
+		// The fastest line, Z at 28 minutes, rather than the 34-minute median
+		expect(
+			screen.getByText((_, element) => element?.textContent === "Kesto 28 min"),
+		).toBeInTheDocument();
 		expect(toggle()).toHaveTextContent("Reitin tiedot");
 	});
 

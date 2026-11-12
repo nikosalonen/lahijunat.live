@@ -77,6 +77,16 @@ describe("RouteLinks", () => {
 		expect(href).not.toContain("60.404297");
 	});
 
+	it("puts the station's street address in the maps link", () => {
+		render(<RouteLinks origin={helsinki} address="Kaivokatu 1" />);
+
+		expect(
+			screen.getByRole("link", {
+				name: "Navigoi asemalle: Helsinki, Kaivokatu 1",
+			}),
+		).toBeInTheDocument();
+	});
+
 	it("falls back to a web maps link a crawler and any desktop can follow", () => {
 		setUserAgent("Mozilla/5.0 (X11; Linux x86_64) Chrome/120.0.0.0");
 		render(<RouteLinks origin={helsinki} />);

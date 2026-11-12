@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import EmptyState from "@/components/EmptyState";
 import { useLanguageChange } from "../hooks/useLanguageChange";
-import type { RouteStats, Station, StationStats } from "../types";
+import type {
+	RouteStats,
+	Station,
+	StationPlace,
+	StationStats,
+	Ticket,
+} from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
 import {
 	hapticLight,
@@ -38,6 +44,10 @@ interface Props {
 		lines: string[];
 		/** Whether a direct train runs the journey back. */
 		hasReverse: boolean;
+		/** HSL zone and address of the departure station. */
+		place: StationPlace | null;
+		/** The ticket the page's trip needs, on a route page. */
+		ticket: Ticket | null;
 	};
 	// For testing only:
 	openList?: "from" | "to" | null;
@@ -980,6 +990,8 @@ export default function StationManager({
 						route={pageRouteInfo.route}
 						station={pageRouteInfo.station}
 						lines={pageRouteInfo.lines}
+						place={pageRouteInfo.place}
+						ticket={pageRouteInfo.ticket}
 						reverse={
 							pageRouteInfo.hasReverse && selectedDestinationStation
 								? {

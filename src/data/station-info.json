@@ -1,0 +1,277 @@
+{
+	"feedVersion": "2026-11-12",
+	"fares": [
+		{
+			"id": "AB",
+			"price": 3.3,
+			"zones": ["A", "B"]
+		},
+		{
+			"id": "ABC",
+			"price": 4.5,
+			"zones": ["A", "B", "C"]
+		},
+		{
+			"id": "ABCD",
+			"price": 5,
+			"zones": ["A", "B", "C", "D"]
+		},
+		{
+			"id": "ABCDE",
+			"price": 6.1,
+			"zones": ["A", "B", "C", "D", "E"]
+		},
+		{
+			"id": "BC",
+			"price": 3.3,
+			"zones": ["B", "C"]
+		},
+		{
+			"id": "BCD",
+			"price": 4.5,
+			"zones": ["B", "C", "D"]
+		},
+		{
+			"id": "BCDE",
+			"price": 5,
+			"zones": ["B", "C", "D", "E"]
+		},
+		{
+			"id": "CD",
+			"price": 3.3,
+			"zones": ["C", "D"]
+		},
+		{
+			"id": "CDE",
+			"price": 4.5,
+			"zones": ["C", "D", "E"]
+		},
+		{
+			"id": "DE",
+			"price": 3.3,
+			"zones": ["D", "E"]
+		}
+	],
+	"stations": {
+		"AIN": {
+			"zone": "E",
+			"address": "Viulukonsertonkatu 7"
+		},
+		"AVP": {
+			"zone": "C",
+			"address": "Aviabulevardi 2"
+		},
+		"EPO": {
+			"zone": "C",
+			"address": "Espoonsilta"
+		},
+		"HAA": {
+			"zone": "E",
+			"address": "Haarajoen asemakatu"
+		},
+		"HKH": {
+			"zone": "C",
+			"address": "Urheilutie 29"
+		},
+		"HKI": {
+			"zone": "A",
+			"address": "Kaivokatu 1"
+		},
+		"HNN": {
+			"zone": null,
+			"address": "Asemanrinne 1"
+		},
+		"HPL": {
+			"zone": "B",
+			"address": "Kylätie 25"
+		},
+		"HY": {
+			"zone": null,
+			"address": "Rautatienkatu 9"
+		},
+		"ILA": {
+			"zone": "A",
+			"address": "Televisiokatu 9"
+		},
+		"JK": {
+			"zone": "E",
+			"address": "Asemanraitti"
+		},
+		"JP": {
+			"zone": "E",
+			"address": "Asema-aukio 1"
+		},
+		"JRS": {
+			"zone": "D",
+			"address": "Torhemintie"
+		},
+		"KAN": {
+			"zone": "B",
+			"address": "Sitratori 2"
+		},
+		"KÄP": {
+			"zone": "A",
+			"address": "Panuntie 9"
+		},
+		"KE": {
+			"zone": "D",
+			"address": "Asemanaukio 1"
+		},
+		"KEA": {
+			"zone": "B",
+			"address": "Karapellontie 14"
+		},
+		"KIL": {
+			"zone": "B",
+			"address": "Lansanpurontie 4"
+		},
+		"KKN": {
+			"zone": "D",
+			"address": "Asemankaari 12"
+		},
+		"KLH": {
+			"zone": "C",
+			"address": "Hansatie 3"
+		},
+		"KNI": {
+			"zone": "B",
+			"address": "Tunnelitie"
+		},
+		"KRS": {
+			"zone": "C",
+			"address": "Metsolantie 2"
+		},
+		"KTÖ": {
+			"zone": "C",
+			"address": "Keimolantie 10"
+		},
+		"KVH": {
+			"zone": "B",
+			"address": "Bredanportti"
+		},
+		"KVY": {
+			"zone": "C",
+			"address": "Koivukylän puistotie"
+		},
+		"LEN": {
+			"zone": "C",
+			"address": "Teletie 6"
+		},
+		"LH": {
+			"zone": null,
+			"address": "Mannerheiminkatu 15"
+		},
+		"LNÄ": {
+			"zone": "C",
+			"address": "Koivukylänväylä 54"
+		},
+		"LOH": {
+			"zone": "B",
+			"address": "Patotie 1"
+		},
+		"LPV": {
+			"zone": "B",
+			"address": "Leppävaaranaukio"
+		},
+		"MÄK": {
+			"zone": "B",
+			"address": "Turuntie 12"
+		},
+		"MAS": {
+			"zone": "D",
+			"address": "Junailijankuja 1"
+		},
+		"ML": {
+			"zone": "B",
+			"address": "Malminkaari 4"
+		},
+		"MLÄ": {
+			"zone": null,
+			"address": "Asemakatu 1"
+		},
+		"MLO": {
+			"zone": "B",
+			"address": "Luutnantintie"
+		},
+		"MRL": {
+			"zone": "B",
+			"address": "Kivivuorentie 4"
+		},
+		"MYR": {
+			"zone": "B",
+			"address": "Jönsaksentie 6"
+		},
+		"OLK": {
+			"zone": "B",
+			"address": "Oulunkylän tori 2 a"
+		},
+		"PJM": {
+			"zone": "B",
+			"address": "Pitäjänmäentie 40"
+		},
+		"PLA": {
+			"zone": "B",
+			"address": "Tapulikaupungintie 1"
+		},
+		"PMK": {
+			"zone": "B",
+			"address": "Pukinmäen aukio 1"
+		},
+		"POH": {
+			"zone": "B",
+			"address": "Kuparitie 3"
+		},
+		"PSL": {
+			"zone": "A",
+			"address": "Ratapihantie 6"
+		},
+		"RI": {
+			"zone": null,
+			"address": "Asemanaukio"
+		},
+		"RKL": {
+			"zone": "C",
+			"address": "Kasperinpolku 10"
+		},
+		"SAU": {
+			"zone": "E",
+			"address": "Ristikatu 1"
+		},
+		"SAV": {
+			"zone": "D",
+			"address": "Saviontie 80"
+		},
+		"STI": {
+			"zone": "D",
+			"address": "Ratapihantie"
+		},
+		"TKL": {
+			"zone": "C",
+			"address": "Ratatie 11"
+		},
+		"TNA": {
+			"zone": "B",
+			"address": "Sammaltori"
+		},
+		"TOL": {
+			"zone": "D",
+			"address": "Tolsantie 14"
+		},
+		"TRL": {
+			"zone": "C",
+			"address": "Tuomarilantie 4"
+		},
+		"VEH": {
+			"zone": "C",
+			"address": "Härkähaantie 13"
+		},
+		"VKS": {
+			"zone": "B",
+			"address": "Kivivuorentie 16"
+		},
+		"VMO": {
+			"zone": "B",
+			"address": "Valimopolku 3"
+		}
+	}
+}

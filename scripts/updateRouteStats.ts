@@ -44,6 +44,13 @@ const MIN_CORRIDOR_COVERAGE = 0.6;
  * last one of the previous evening rather than the first of the morning.
  */
 const SERVICE_DAY_START_MINUTES = 4 * 60;
+/**
+ * The daytime window a route's typical gap between trains is measured in,
+ * as minutes past midnight. Early mornings and late evenings run sparser
+ * everywhere and would make every route look rural.
+ */
+const DAYTIME_START_MINUTES = 7 * 60;
+const DAYTIME_END_MINUTES = 19 * 60;
 /** Sanity check: the commuter network has thousands of served pairs. */
 const MIN_EXPECTED_ROUTES = 500;
 
@@ -73,6 +80,8 @@ interface Accumulator {
 	departures: number[];
 	durations: number[];
 	lines: Set<string>;
+	/** Each line's journey times on this route, in minutes. */
+	lineDurations: Map<string, number[]>;
 }
 
 interface LineAccumulator {
@@ -173,6 +182,26 @@ function percentile(sorted: number[], fraction: number): number {
 	return sorted[index];
 }
 
+/**
+ * The typical wait between daytime departures, in minutes, or null when
+ * fewer than two trains leave in the daytime window. A median, so one long
+ * midday gap does not set the figure for a route that runs every 10 minutes.
+ */
+function daytimeGap(departureMinutes: number[]): number | null {
+	const daytime = departureMinutes
+		.filter(
+			(minutes) =>
+				minutes >= DAYTIME_START_MINUTES && minutes < DAYTIME_END_MINUTES,
+		)
+		.sort((a, b) => a - b);
+	if (daytime.length < 2) return null;
+	const gaps = daytime.slice(1).map((minutes, i) => minutes - daytime[i]);
+	return percentile(
+		gaps.sort((a, b) => a - b),
+		0.5,
+	);
+}
+
 async function fetchCommuterTrains(date: string): Promise<ApiTrain[]> {
 	const response = await fetch(`${TRAINS_URL}/${date}`, {
 		headers: {
@@ -214,14 +243,24 @@ function collectRoutes(
 				const key = `${from.shortCode}-${to.shortCode}`;
 				let accumulator = routes.get(key);
 				if (!accumulator) {
-					accumulator = { departures: [], durations: [], lines: new Set() };
+					accumulator = {
+						departures: [],
+						durations: [],
+						lines: new Set(),
+						lineDurations: new Map(),
+					};
 					routes.set(key, accumulator);
 				}
+				const duration = Math.round((to.arrival - from.departure) / 60_000);
 				accumulator.departures.push(from.departure);
-				accumulator.durations.push(
-					Math.round((to.arrival - from.departure) / 60_000),
-				);
-				if (train.commuterLineID) accumulator.lines.add(train.commuterLineID);
+				accumulator.durations.push(duration);
+				const line = train.commuterLineID;
+				if (line) {
+					accumulator.lines.add(line);
+					const lineDurations = accumulator.lineDurations.get(line) ?? [];
+					lineDurations.push(duration);
+					accumulator.lineDurations.set(line, lineDurations);
+				}
 			}
 		}
 	}
@@ -420,6 +459,20 @@ async function main(): Promise<void> {
 			lastDeparture: formatMinutes(departures[departures.length - 1]),
 			medianDuration: percentile(durations, 0.5),
 			lines: [...accumulator.lines].sort(),
+			// The same trip can take 13 minutes on one line and 43 on another
+			// that goes round the ring, so each line gets its own figure
+			lineDurations: Object.fromEntries(
+				[...accumulator.lineDurations]
+					.sort(([a], [b]) => a.localeCompare(b))
+					.map(([line, values]) => [
+						line,
+						percentile(
+							[...values].sort((a, b) => a - b),
+							0.5,
+						),
+					]),
+			),
+			daytimeGap: daytimeGap(departures),
 		};
 	}
 

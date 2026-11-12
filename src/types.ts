@@ -53,7 +53,29 @@ export interface RouteStats {
 	medianDuration: number;
 	/** Commuter line letters serving the route, e.g. ["I", "P"]. */
 	lines: string[];
+	/** Each line's median journey time on this route, in minutes. */
+	lineDurations: Record<string, number>;
+	/**
+	 * The typical wait between weekday departures from 07 to 19, in minutes;
+	 * null when fewer than two trains leave in that window.
+	 */
+	daytimeGap: number | null;
 }
+
+/** A station's place in HSL's fare system, from src/data/station-info.json. */
+export interface StationPlace {
+	/** HSL fare zone, e.g. "C"; null for a station outside the HSL area. */
+	zone: string | null;
+	/** Street address, e.g. "Ratatie 11". */
+	address: string | null;
+}
+
+/**
+ * What ticket a trip needs: the cheapest HSL tickets that cover it (several
+ * when they cost the same, e.g. AB or BC), or a VR ticket once either end is
+ * outside the HSL area.
+ */
+export type Ticket = { kind: "hsl"; fares: string[] } | { kind: "outsideHsl" };
 
 /** Build-time facts about departures from one station. */
 export interface StationStats {

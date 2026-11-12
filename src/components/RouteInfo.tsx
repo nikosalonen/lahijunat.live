@@ -2,9 +2,16 @@
 
 import { useId, useState } from "preact/hooks";
 import { useLanguageChange } from "../hooks/useLanguageChange";
-import type { RouteStats, Station, StationStats } from "../types";
+import type {
+	RouteStats,
+	Station,
+	StationPlace,
+	StationStats,
+	Ticket,
+} from "../types";
 import { hapticLight } from "../utils/haptics";
-import { t, tf } from "../utils/translations";
+import { t } from "../utils/translations";
+import LineBadge from "./LineBadge";
 import RouteLinks from "./RouteLinks";
 import RouteSummary from "./RouteSummary";
 
@@ -19,6 +26,10 @@ interface Props {
 	lines: string[];
 	/** The same journey the other way, when a direct train runs it. */
 	reverse?: { href: string; from: Station; to: Station };
+	/** HSL zone and street address of `from`, when HSL lists the station. */
+	place?: StationPlace | null;
+	/** The ticket the trip needs, on a route page. */
+	ticket?: Ticket | null;
 }
 
 /**
@@ -29,30 +40,12 @@ interface Props {
 const shownLineCount = (total: number, fit: number): number =>
 	total > fit ? fit - 1 : total;
 
-const LineBadge = ({
-	line,
-	class: extraClass = "",
-}: {
-	line: string;
-	class?: string;
-}) => (
-	<li class={extraClass}>
-		<a
-			href={`/linja/${line.toLowerCase()}/`}
-			aria-label={tf("lineHeading", { line })}
-			class="inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-md bg-primary text-primary-content text-xs font-bold hover:opacity-80 transition-opacity"
-		>
-			{line}
-		</a>
-	</li>
-);
-
 /**
  * Facts about the page's route or station, folded into one row under the
  * station picker.
  *
  * The closed row keeps what helps at a glance in view: the lines and the
- * typical trip time. The summary text and the links open below it. The panel
+ * fastest trip time. The facts and the links open below it. The panel
  * is hidden with the `hidden` attribute rather than left out, so its text is
  * still in the prerendered HTML for crawlers (see RouteSummary).
  */
@@ -63,6 +56,8 @@ export default function RouteInfo({
 	station,
 	lines,
 	reverse,
+	place,
+	ticket,
 }: Props) {
 	useLanguageChange();
 	const [isOpen, setIsOpen] = useState(false);
@@ -78,13 +73,25 @@ export default function RouteInfo({
 			: index < phoneCount
 				? "hidden min-[390px]:block"
 				: "hidden sm:block";
-	// The panel repeats the full list wherever the row had to fold some away
-	const panelLinesClass =
-		phoneCount < lines.length
+	// The panel repeats the full list wherever the row had to fold some away,
+	// unless the travel times there already list every line
+	const travelTimesListAll =
+		to !== undefined &&
+		route != null &&
+		lines.every((line) => line in route.lineDurations);
+	const panelLinesClass = travelTimesListAll
+		? null
+		: phoneCount < lines.length
 			? "sm:hidden"
 			: narrowCount < lines.length
 				? "min-[390px]:hidden"
 				: null;
+
+	// The fastest line, not the median over all trains: Helsinki–Tikkurila is
+	// 14 minutes on an R train, and the slow ring trains pull the median to 20
+	const lineMinutes = route ? Object.values(route.lineDurations) : [];
+	const fastestMinutes =
+		lineMinutes.length > 0 ? Math.min(...lineMinutes) : route?.medianDuration;
 
 	const toggle = () => {
 		hapticLight();
@@ -113,7 +120,9 @@ export default function RouteInfo({
 				{lines.length > 0 && (
 					<ul aria-label={t("allLines")} class="flex flex-wrap gap-1 min-w-0">
 						{lines.map((line, index) => (
-							<LineBadge key={line} line={line} class={badgeClass(index)} />
+							<li key={line} class={badgeClass(index)}>
+								<LineBadge line={line} />
+							</li>
 						))}
 						{narrowCount < lines.length &&
 							moreChip(lines.length - narrowCount, "min-[390px]:hidden")}
@@ -136,7 +145,7 @@ export default function RouteInfo({
 							<path d="M256 0a256 256 0 1 1 0 512A256 256 0 0 1 256 0zm-24 120v136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
 						</svg>
 						<span class="sr-only">{t("duration")} </span>
-						{route.medianDuration} min
+						{fastestMinutes} min
 					</span>
 				)}
 
@@ -176,12 +185,21 @@ export default function RouteInfo({
 						class={`${panelLinesClass} flex flex-wrap gap-1`}
 					>
 						{lines.map((line) => (
-							<LineBadge key={line} line={line} />
+							<li key={line}>
+								<LineBadge line={line} />
+							</li>
 						))}
 					</ul>
 				)}
-				<RouteSummary from={from} to={to} route={route} station={station} />
-				<RouteLinks reverse={reverse} origin={from} />
+				<RouteSummary
+					from={from}
+					to={to}
+					route={route}
+					station={station}
+					ticket={ticket}
+					zone={place?.zone ?? null}
+				/>
+				<RouteLinks reverse={reverse} origin={from} address={place?.address} />
 			</div>
 		</section>
 	);

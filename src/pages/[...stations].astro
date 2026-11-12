@@ -6,6 +6,7 @@ import {
 	getStationStats,
 	isServedRoute,
 } from "../data/routeStats";
+import { getStationPlace, getTicket } from "../data/stationInfo";
 import { fetchStations } from "../utils/api";
 import { buildRoutePath, resolveShortCode } from "../utils/stationRoute";
 
@@ -149,6 +150,8 @@ const routeInfo = {
 	// line calling at a single station.
 	lines: routeStats?.lines ?? stationStats?.lines ?? [],
 	hasReverse,
+	place: getStationPlace(validFromStation),
+	ticket: getTicket(validFromStation, validToStation),
 };
 
 const pageTitle = generateTitle();

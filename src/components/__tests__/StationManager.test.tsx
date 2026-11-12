@@ -787,6 +787,8 @@ describe("StationManager", () => {
 						},
 						lines: ["R"],
 						hasReverse: false,
+						place: { zone: "A", address: "Kaivokatu 1" },
+						ticket: null,
 					}}
 				/>,
 			);
@@ -818,6 +820,8 @@ describe("StationManager", () => {
 						station: null,
 						lines: [],
 						hasReverse: false,
+						place: null,
+						ticket: null,
 					}}
 				/>,
 			);

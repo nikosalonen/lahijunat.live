@@ -38,20 +38,26 @@ jobs:
       - name: Regenerate route statistics
         run: pnpm run update-route-stats
 
+      # Zones and addresses rarely change, so a failed HSL download should not
+      # hold back the route statistics; the committed file stays as it was
+      - name: Regenerate station zones and addresses
+        continue-on-error: true
+        run: pnpm run update-station-info
+
       - name: Check for changes
         id: git-check
         run: |
-          git diff --exit-code src/data/route-stats.json || echo "changes=true" >> $GITHUB_OUTPUT
+          git diff --exit-code src/data/route-stats.json src/data/station-info.json || echo "changes=true" >> $GITHUB_OUTPUT
 
       - name: Commit and push changes
         if: steps.git-check.outputs.changes == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add src/data/route-stats.json
+          git add src/data/route-stats.json src/data/station-info.json
           git commit -m "chore: refresh route statistics
 
-          Regenerated from the most recent Tuesday's commuter timetable on $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          Regenerated from the most recent Tuesday's commuter timetable and HSL's GTFS feed on $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
