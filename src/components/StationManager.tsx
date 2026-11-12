@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import EmptyState from "@/components/EmptyState";
 import { useLanguageChange } from "../hooks/useLanguageChange";
-import type { Station } from "../types";
+import type { RouteStats, Station, StationStats } from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
 import {
 	hapticLight,
@@ -19,6 +19,7 @@ import {
 } from "../utils/stationRoute";
 import { t } from "../utils/translations";
 import ErrorState from "./ErrorState";
+import RouteInfo from "./RouteInfo";
 import StationList from "./StationList";
 import TrainList from "./TrainList";
 
@@ -26,6 +27,18 @@ interface Props {
 	stations: Station[];
 	initialFromStation?: string | null;
 	initialToStation?: string | null;
+	/**
+	 * Build-time facts about the page's own route or station, shown in a row
+	 * under the picker. They describe only the initial selection, so the row
+	 * hides once the reader picks another route.
+	 */
+	routeInfo?: {
+		route: RouteStats | null;
+		station: StationStats | null;
+		lines: string[];
+		/** Whether a direct train runs the journey back. */
+		hasReverse: boolean;
+	};
 	// For testing only:
 	openList?: "from" | "to" | null;
 	setOpenList?: (v: "from" | "to" | null) => void;
@@ -58,6 +71,7 @@ export default function StationManager({
 	stations,
 	initialFromStation,
 	initialToStation,
+	routeInfo,
 	openList: openListProp,
 	setOpenList: setOpenListProp,
 }: Props) {
@@ -581,6 +595,17 @@ export default function StationManager({
 				selectedDestinationStation.shortCode,
 			)
 		: null;
+	// The selection changes without a page load, and routeInfo was built for
+	// the page's own route only
+	const isPageRoute =
+		selectedOrigin === (initialFromStation ?? null) &&
+		selectedDestination === (initialToStation ?? null);
+	// An unserved pair has no figures, and so no row
+	const pageRouteInfo =
+		isPageRoute && (routeInfo?.route || routeInfo?.station)
+			? routeInfo
+			: undefined;
+
 	const heading =
 		originName && destinationName
 			? `${t("h1Trains")} ${originName} → ${destinationName}`
@@ -946,6 +971,27 @@ export default function StationManager({
 					)}
 				</div>
 			</div>
+
+			{pageRouteInfo && selectedOriginStation && (
+				<div className="mt-4">
+					<RouteInfo
+						from={selectedOriginStation}
+						to={selectedDestinationStation}
+						route={pageRouteInfo.route}
+						station={pageRouteInfo.station}
+						lines={pageRouteInfo.lines}
+						reverse={
+							pageRouteInfo.hasReverse && selectedDestinationStation
+								? {
+										href: buildRoutePath(selectedDestination, selectedOrigin),
+										from: selectedDestinationStation,
+										to: selectedOriginStation,
+									}
+								: undefined
+						}
+					/>
+				</div>
+			)}
 
 			{selectedOrigin && selectedDestination ? (
 				<div className="mt-6">

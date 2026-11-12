@@ -36,9 +36,9 @@ const formatLines = (lines: string[]): string => {
  * per-route figures already committed in route-stats.json, so every page says
  * something only true of itself.
  *
- * A Preact island rather than Astro markup so the prose follows the language
- * switcher, which is client-side; Astro renders it at build time, so the text
- * is in the HTML a crawler receives.
+ * Rendered inside RouteInfo's panel, which StationManager prerenders. The
+ * panel is closed by default but stays in the HTML, so a crawler still reads
+ * the text, and the prose follows the client-side language switcher.
  */
 export default function RouteSummary({ from, to, route, station }: Props) {
 	useLanguageChange();
@@ -106,13 +106,13 @@ export default function RouteSummary({ from, to, route, station }: Props) {
 	);
 
 	return (
-		<section class="w-full max-w-3xl mx-auto px-2 sm:px-6 md:px-8 lg:px-12 mt-10">
-			<h2 class="text-base font-semibold mb-2 dark:text-white">
+		<div>
+			<h2 class="text-sm font-semibold mb-1 dark:text-white">
 				{content.heading}
 			</h2>
 			<p class="text-sm leading-relaxed opacity-80 dark:text-white">
 				{sentences.join(" ")}
 			</p>
-		</section>
+		</div>
 	);
 }

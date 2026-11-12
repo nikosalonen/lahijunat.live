@@ -50,6 +50,9 @@ export const translations = {
 			"Junat kulkevat klo {first}–{last}. Valitse asema nähdäksesi sen reaaliaikaiset lähdöt.",
 		reverseDirection: "Vastakkainen suunta",
 		navigateToStation: "Navigoi asemalle",
+		routeInfo: "Reitin tiedot",
+		stationInfo: "Aseman tiedot",
+		showAllLines: "Näytä kaikki linjat",
 		routeSummaryHeading: "Junayhteydet välillä {from}–{to}",
 		routeSummaryTrains:
 			"Välillä {from}–{to} kulkee arkivuorokaudessa {trains} lähijunaa.",
@@ -235,6 +238,9 @@ export const translations = {
 			"Trains run from {first} to {last}. Choose a station to see its live departures.",
 		reverseDirection: "Opposite direction",
 		navigateToStation: "Navigate to station",
+		routeInfo: "Route info",
+		stationInfo: "Station info",
+		showAllLines: "Show all lines",
 		routeSummaryHeading: "Train service from {from} to {to}",
 		routeSummaryTrains:
 			"{trains} commuter trains run from {from} to {to} on a weekday.",
@@ -420,6 +426,9 @@ export const translations = {
 			"Tågen går kl. {first}–{last}. Välj en station för att se dess avgångar i realtid.",
 		reverseDirection: "Motsatt riktning",
 		navigateToStation: "Navigera till stationen",
+		routeInfo: "Om rutten",
+		stationInfo: "Om stationen",
+		showAllLines: "Visa alla linjer",
 		routeSummaryHeading: "Tågförbindelser {from}–{to}",
 		routeSummaryTrains:
 			"Mellan {from} och {to} går {trains} pendeltåg per vardag.",

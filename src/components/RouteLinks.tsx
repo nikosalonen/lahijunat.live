@@ -4,18 +4,10 @@ import { useEffect, useState } from "preact/hooks";
 import { useLanguageChange } from "../hooks/useLanguageChange";
 import type { Station } from "../types";
 import { getLocalizedStationName } from "../utils/stationNames";
-import { t, tf } from "../utils/translations";
+import { t } from "../utils/translations";
 
 interface Props {
-	/** Commuter line letters serving this page's route or station. */
-	lines: string[];
-	/**
-	 * The same journey the other way, when a direct train runs it.
-	 *
-	 * Carries the two stations rather than a lookup list: island props are
-	 * serialised into the HTML of every one of the ~8,850 route pages, and the
-	 * whole station list cost ~18 kB a page to localise these two names.
-	 */
+	/** The same journey the other way, when a direct train runs it. */
 	reverse?: { href: string; from: Station; to: Station };
 	/** The departure station — where the reader has to get to. The maps link
 	 * points here, not at the destination. */
@@ -72,13 +64,12 @@ const nativeMapsHref = (station: Station): string | null => {
 };
 
 /**
- * The lines serving a page's route, the journey back, and a way to get to the
- * station.
+ * The journey back and a way to get to the station.
  *
- * A Preact island rather than Astro markup so the labels follow the language
- * switcher; Astro renders it at build time, so crawlers still see the links.
+ * Rendered inside RouteInfo's panel, which StationManager prerenders, so
+ * crawlers still see the links; the labels follow the language switcher.
  */
-export default function RouteLinks({ lines, reverse, origin }: Props) {
+export default function RouteLinks({ reverse, origin }: Props) {
 	useLanguageChange();
 
 	// A station with no usable coordinates gets no link at all rather than one
@@ -97,67 +88,54 @@ export default function RouteLinks({ lines, reverse, origin }: Props) {
 		if (native) setMapsHref(native);
 	}, [mapsOrigin]);
 
-	if (lines.length === 0 && !reverse && !mapsOrigin) return null;
+	if (!reverse && !mapsOrigin) return null;
 
 	const stationName = (station: Station): string =>
 		getLocalizedStationName(station.name, station.shortCode);
 
 	return (
-		<section class="w-full max-w-3xl mx-auto px-2 sm:px-6 md:px-8 lg:px-12 mt-10">
-			<div class="rounded-2xl border border-base-300 p-4 sm:p-5 flex flex-col gap-3">
-				{lines.length > 0 && (
-					<div class="flex items-center gap-3">
-						<span class="text-xs opacity-60 dark:text-white">
-							{t("allLines")}
-						</span>
-						<span class="flex flex-wrap gap-1">
-							{lines.map((line) => (
-								<a
-									key={line}
-									href={`/linja/${line.toLowerCase()}/`}
-									aria-label={tf("lineHeading", { line })}
-									class="inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-md bg-primary text-primary-content text-xs font-bold hover:opacity-80 transition-opacity"
-								>
-									{line}
-								</a>
-							))}
-						</span>
-					</div>
-				)}
+		<div class="flex flex-col gap-2 text-sm dark:text-white">
+			{mapsOrigin && (
+				<p>
+					<svg
+						aria-hidden="true"
+						class="inline-block w-4 h-4 mr-1.5 -mt-0.5 align-middle"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+						<circle cx="12" cy="10" r="3" />
+					</svg>
+					<a href={mapsHref} class="text-link">
+						{t("navigateToStation")}: {stationName(mapsOrigin)}
+					</a>
+				</p>
+			)}
 
-				{reverse && (
-					<p class="text-sm">
-						<a href={reverse.href} class="link link-hover">
-							{t("reverseDirection")}: {stationName(reverse.from)} &rarr;{" "}
-							{stationName(reverse.to)}
-						</a>
-					</p>
-				)}
-
-				{mapsOrigin && (
-					<p class="text-sm">
-						<a
-							href={mapsHref}
-							class="link link-hover inline-flex items-center gap-1.5"
-						>
-							<svg
-								aria-hidden="true"
-								class="w-4 h-4 shrink-0"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-							>
-								<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-								<circle cx="12" cy="10" r="3" />
-							</svg>
-							{t("navigateToStation")}: {stationName(mapsOrigin)}
-						</a>
-					</p>
-				)}
-			</div>
-		</section>
+			{reverse && (
+				<p>
+					<svg
+						aria-hidden="true"
+						class="inline-block w-4 h-4 mr-1.5 -mt-0.5 align-middle"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+					</svg>
+					<a href={reverse.href} class="text-link">
+						{t("reverseDirection")}: {stationName(reverse.from)} &rarr;{" "}
+						{stationName(reverse.to)}
+					</a>
+				</p>
+			)}
+		</div>
 	);
 }

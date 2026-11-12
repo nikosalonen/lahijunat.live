@@ -32,6 +32,7 @@ vi.mock("../../utils/translations", () => ({
 		};
 		return translations[key] || key;
 	},
+	tf: (key: string) => key,
 }));
 
 // Mock useLanguageChange hook
@@ -768,6 +769,62 @@ describe("StationManager", () => {
 					"/hki/tpe/",
 				);
 			});
+		});
+
+		it("shows the page's own route info only while that route is selected", async () => {
+			setUrl("/hki/");
+			render(
+				<StationManager
+					stations={mockStations}
+					initialFromStation="HKI"
+					routeInfo={{
+						route: null,
+						station: {
+							destinations: 2,
+							lines: ["R"],
+							firstDeparture: "05.00",
+							lastDeparture: "23.00",
+						},
+						lines: ["R"],
+						hasReverse: false,
+					}}
+				/>,
+			);
+
+			expect(
+				screen.getByRole("button", { name: /stationInfo/ }),
+			).toBeInTheDocument();
+
+			// The figures were built for HKI, so they must not describe Tampere
+			setUrl("/tpe/");
+			fireEvent(window, new PopStateEvent("popstate"));
+
+			await waitFor(() => {
+				expect(
+					screen.queryByRole("button", { name: /stationInfo/ }),
+				).not.toBeInTheDocument();
+			});
+		});
+
+		it("leaves the route info out for a pair with no direct train", () => {
+			setUrl("/hki/tku/");
+			render(
+				<StationManager
+					stations={mockStations}
+					initialFromStation="HKI"
+					initialToStation="TKU"
+					routeInfo={{
+						route: null,
+						station: null,
+						lines: [],
+						hasReverse: false,
+					}}
+				/>,
+			);
+
+			expect(
+				screen.queryByRole("button", { name: /routeInfo/ }),
+			).not.toBeInTheDocument();
 		});
 
 		it("handles browser back button", async () => {

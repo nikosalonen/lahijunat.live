@@ -42,25 +42,9 @@ afterEach(() => {
 });
 
 describe("RouteLinks", () => {
-	it("links each serving line to its own page", () => {
-		render(<RouteLinks lines={["K", "R"]} />);
-
-		expect(screen.getByText("K").closest("a")).toHaveAttribute(
-			"href",
-			"/linja/k/",
-		);
-		expect(screen.getByText("R").closest("a")).toHaveAttribute(
-			"href",
-			"/linja/r/",
-		);
-	});
-
 	it("offers the journey back when one was passed", () => {
 		render(
-			<RouteLinks
-				lines={["K"]}
-				reverse={{ href: "/ke/hki/", from: kerava, to: helsinki }}
-			/>,
+			<RouteLinks reverse={{ href: "/ke/hki/", from: kerava, to: helsinki }} />,
 		);
 
 		expect(screen.getByRole("link", { name: /Kerava/ })).toHaveAttribute(
@@ -70,7 +54,7 @@ describe("RouteLinks", () => {
 	});
 
 	it("leaves the reverse link out when no direct train runs it", () => {
-		render(<RouteLinks lines={["K"]} />);
+		render(<RouteLinks />);
 
 		expect(
 			screen.queryByRole("link", { name: /Kerava/ }),
@@ -80,7 +64,6 @@ describe("RouteLinks", () => {
 	it("navigates to the departure station, not the destination", () => {
 		render(
 			<RouteLinks
-				lines={["K"]}
 				origin={helsinki}
 				reverse={{ href: "/ke/hki/", from: kerava, to: helsinki }}
 			/>,
@@ -96,7 +79,7 @@ describe("RouteLinks", () => {
 
 	it("falls back to a web maps link a crawler and any desktop can follow", () => {
 		setUserAgent("Mozilla/5.0 (X11; Linux x86_64) Chrome/120.0.0.0");
-		render(<RouteLinks lines={[]} origin={helsinki} />);
+		render(<RouteLinks origin={helsinki} />);
 
 		expect(screen.getByRole("link", { name: /Helsinki/ })).toHaveAttribute(
 			"href",
@@ -106,7 +89,7 @@ describe("RouteLinks", () => {
 
 	it("hands an Android reader a geo: link for their default maps app", () => {
 		setUserAgent("Mozilla/5.0 (Linux; Android 14) Chrome/120");
-		render(<RouteLinks lines={[]} origin={jarvenpaa} />);
+		render(<RouteLinks origin={jarvenpaa} />);
 
 		// The label is percent-encoded, or the pin name breaks on any station
 		// with a Finnish vowel in it
@@ -121,7 +104,7 @@ describe("RouteLinks", () => {
 		setUserAgent(
 			"Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Safari/605",
 		);
-		render(<RouteLinks lines={[]} origin={helsinki} />);
+		render(<RouteLinks origin={helsinki} />);
 
 		// https rather than maps://, which is a dead tap once Maps is deleted
 		expect(
@@ -134,7 +117,7 @@ describe("RouteLinks", () => {
 			"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605",
 			5,
 		);
-		render(<RouteLinks lines={[]} origin={helsinki} />);
+		render(<RouteLinks origin={helsinki} />);
 
 		expect(
 			screen.getByRole("link", { name: /Helsinki/ }).getAttribute("href"),
@@ -148,7 +131,7 @@ describe("RouteLinks", () => {
 			"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605",
 			1,
 		);
-		render(<RouteLinks lines={[]} origin={helsinki} />);
+		render(<RouteLinks origin={helsinki} />);
 
 		expect(
 			screen.getByRole("link", { name: /Helsinki/ }).getAttribute("href"),
@@ -157,7 +140,7 @@ describe("RouteLinks", () => {
 
 	it("keeps a touchless Mac on the web link too", () => {
 		setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605");
-		render(<RouteLinks lines={[]} origin={helsinki} />);
+		render(<RouteLinks origin={helsinki} />);
 
 		expect(
 			screen.getByRole("link", { name: /Helsinki/ }).getAttribute("href"),
@@ -172,19 +155,18 @@ describe("RouteLinks", () => {
 			shortCode: "RIK",
 			location: { latitude: null, longitude: null },
 		} as unknown as Station;
-		render(<RouteLinks lines={["K"]} origin={broken} />);
+		const { container } = render(<RouteLinks origin={broken} />);
 
-		expect(screen.getByText("K")).toBeInTheDocument();
 		expect(
 			screen.queryByRole("link", { name: /Navigoi asemalle/ }),
 		).not.toBeInTheDocument();
+		expect(container).toBeEmptyDOMElement();
 	});
 
 	it("localises the station names it renders", () => {
 		window.localStorage.setItem("lang", "sv");
 		render(
 			<RouteLinks
-				lines={[]}
 				origin={helsinki}
 				reverse={{ href: "/ke/hki/", from: kerava, to: helsinki }}
 			/>,
@@ -201,7 +183,7 @@ describe("RouteLinks", () => {
 	});
 
 	it("follows the language switcher without a reload", () => {
-		render(<RouteLinks lines={[]} origin={helsinki} />);
+		render(<RouteLinks origin={helsinki} />);
 		expect(screen.getByText(/Navigoi asemalle: Helsinki/)).toBeInTheDocument();
 
 		act(() => {
@@ -214,7 +196,7 @@ describe("RouteLinks", () => {
 	});
 
 	it("renders nothing when there is nothing to link to", () => {
-		const { container } = render(<RouteLinks lines={[]} />);
+		const { container } = render(<RouteLinks />);
 
 		expect(container).toBeEmptyDOMElement();
 	});
