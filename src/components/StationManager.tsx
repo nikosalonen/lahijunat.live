@@ -3,13 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import EmptyState from "@/components/EmptyState";
 import { useLanguageChange } from "../hooks/useLanguageChange";
-import type {
-	RouteStats,
-	Station,
-	StationPlace,
-	StationStats,
-	Ticket,
-} from "../types";
+import type { RouteInfoData, Station } from "../types";
 import { fetchTrainsLeavingFromStation } from "../utils/api";
 import {
 	hapticLight,
@@ -17,6 +11,7 @@ import {
 	hapticNotification,
 } from "../utils/haptics";
 import { calculateDistance, isInFinland } from "../utils/location";
+import { fetchRouteInfo } from "../utils/routeInfo";
 import { getLocalizedStationName } from "../utils/stationNames";
 import {
 	buildRoutePath,
@@ -35,20 +30,10 @@ interface Props {
 	initialToStation?: string | null;
 	/**
 	 * Build-time facts about the page's own route or station, shown in a row
-	 * under the picker. They describe only the initial selection, so the row
-	 * hides once the reader picks another route.
+	 * under the picker. They describe only the initial selection; for any
+	 * other route the row fetches its facts instead.
 	 */
-	routeInfo?: {
-		route: RouteStats | null;
-		station: StationStats | null;
-		lines: string[];
-		/** Whether a direct train runs the journey back. */
-		hasReverse: boolean;
-		/** HSL zone and address of the departure station. */
-		place: StationPlace | null;
-		/** The ticket the page's trip needs, on a route page. */
-		ticket: Ticket | null;
-	};
+	routeInfo?: RouteInfoData;
 	// For testing only:
 	openList?: "from" | "to" | null;
 	setOpenList?: (v: "from" | "to" | null) => void;
@@ -606,15 +591,41 @@ export default function StationManager({
 			)
 		: null;
 	// The selection changes without a page load, and routeInfo was built for
-	// the page's own route only
+	// the page's own route only. Any other route, such as one restored on the
+	// home page, gets its facts from the departure station's build-time file.
 	const isPageRoute =
 		selectedOrigin === (initialFromStation ?? null) &&
 		selectedDestination === (initialToStation ?? null);
+	const routeKey = `${selectedOrigin}-${selectedDestination}`;
+	const [fetchedRouteInfo, setFetchedRouteInfo] = useState<{
+		key: string;
+		info: RouteInfoData | null;
+	} | null>(null);
+	useEffect(() => {
+		if (isPageRoute || !selectedOrigin) return;
+		let isCurrent = true;
+		fetchRouteInfo(selectedOrigin, selectedDestination).then((info) => {
+			if (isCurrent) {
+				setFetchedRouteInfo({
+					key: `${selectedOrigin}-${selectedDestination}`,
+					info,
+				});
+			}
+		});
+		return () => {
+			isCurrent = false;
+		};
+	}, [isPageRoute, selectedOrigin, selectedDestination]);
+	const selectedRouteInfo = isPageRoute
+		? routeInfo
+		: fetchedRouteInfo?.key === routeKey
+			? fetchedRouteInfo.info
+			: null;
 	// An unserved pair has no figures, and so no row
-	const pageRouteInfo =
-		isPageRoute && (routeInfo?.route || routeInfo?.station)
-			? routeInfo
-			: undefined;
+	const shownRouteInfo =
+		selectedRouteInfo?.route || selectedRouteInfo?.station
+			? selectedRouteInfo
+			: null;
 
 	const heading =
 		originName && destinationName
@@ -982,18 +993,18 @@ export default function StationManager({
 				</div>
 			</div>
 
-			{pageRouteInfo && selectedOriginStation && (
+			{shownRouteInfo && selectedOriginStation && (
 				<div className="mt-4">
 					<RouteInfo
 						from={selectedOriginStation}
 						to={selectedDestinationStation}
-						route={pageRouteInfo.route}
-						station={pageRouteInfo.station}
-						lines={pageRouteInfo.lines}
-						place={pageRouteInfo.place}
-						ticket={pageRouteInfo.ticket}
+						route={shownRouteInfo.route}
+						station={shownRouteInfo.station}
+						lines={shownRouteInfo.lines}
+						place={shownRouteInfo.place}
+						ticket={shownRouteInfo.ticket}
 						reverse={
-							pageRouteInfo.hasReverse && selectedDestinationStation
+							shownRouteInfo.hasReverse && selectedDestinationStation
 								? {
 										href: buildRoutePath(selectedDestination, selectedOrigin),
 										from: selectedDestinationStation,

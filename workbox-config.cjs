@@ -1,8 +1,9 @@
 module.exports = {
 	globDirectory: "dist/",
 	globPatterns: ["**/*.{js,css,xml,eot,ttf,woff,woff2,png,svg,json}"],
-	// Avoid precaching HTML pages to keep install size small; use runtime caching instead
-	globIgnores: ["**/*.html"],
+	// Avoid precaching HTML pages to keep install size small; use runtime caching instead.
+	// The route-info files are fetched one at a time as readers pick stations.
+	globIgnores: ["**/*.html", "route-info/**"],
 	swDest: "dist/sw.js",
 	mode: "production",
 

@@ -86,6 +86,29 @@ export interface StationStats {
 	lastDeparture: string;
 }
 
+/** Build-time facts for the info row under the station picker. */
+export interface RouteInfoData {
+	route: RouteStats | null;
+	station: StationStats | null;
+	/** The lines a reader can board: a route's own lines, or a station's. */
+	lines: string[];
+	/** Whether a direct train runs the journey back. */
+	hasReverse: boolean;
+	/** HSL zone and address of the departure station. */
+	place: StationPlace | null;
+	/** The ticket the trip needs, on a route. */
+	ticket: Ticket | null;
+}
+
+/**
+ * One departure station's file under /route-info/: the station's own info
+ * and every direct route from it, keyed by destination short code.
+ */
+export interface OriginRouteInfo {
+	station: RouteInfoData;
+	routes: Record<string, RouteInfoData>;
+}
+
 /** Build-time facts about one commuter line, e.g. I or K. */
 export interface LineStats {
 	trainsPerDay: number;

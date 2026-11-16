@@ -13,6 +13,7 @@ import {
 } from "vitest";
 import type { Station } from "../../types";
 import { fetchTrainsLeavingFromStation } from "../../utils/api";
+import { fetchRouteInfo } from "../../utils/routeInfo";
 import type { Props } from "../StationManager";
 import StationManager from "../StationManager";
 
@@ -44,6 +45,10 @@ vi.mock("../hooks/useLanguageChange", () => ({
 vi.mock("../../utils/api", () => ({
 	fetchTrainsLeavingFromStation: vi.fn(),
 	fetchTrains: vi.fn(),
+}));
+
+vi.mock("../../utils/routeInfo", () => ({
+	fetchRouteInfo: vi.fn(),
 }));
 
 // Mock localStorage
@@ -112,6 +117,7 @@ describe("StationManager", () => {
 				typeof fetchTrainsLeavingFromStation
 			>
 		).mockResolvedValue(mockDestinations);
+		(fetchRouteInfo as Mock<typeof fetchRouteInfo>).mockResolvedValue(null);
 	});
 
 	describe("restoring the last route", () => {
@@ -806,6 +812,68 @@ describe("StationManager", () => {
 					screen.queryByRole("button", { name: /stationInfo/ }),
 				).not.toBeInTheDocument();
 			});
+		});
+
+		it("shows route info for the last route restored on the home page", async () => {
+			setUrl("/");
+			localStorageMock.setItem("selectedOrigin", "HKI");
+			localStorageMock.setItem("selectedDestination", "TPE");
+			(fetchRouteInfo as Mock<typeof fetchRouteInfo>).mockResolvedValue({
+				route: {
+					trainsPerDay: 40,
+					firstDeparture: "05.00",
+					lastDeparture: "23.00",
+					medianDuration: 90,
+					lines: ["R"],
+					lineDurations: { R: 90 },
+					daytimeGap: null,
+				},
+				station: null,
+				lines: ["R"],
+				hasReverse: true,
+				place: null,
+				ticket: { kind: "outsideHsl" },
+			});
+
+			render(<StationManager stations={mockStations} />);
+
+			expect(
+				await screen.findByRole("button", { name: /routeInfo/ }),
+			).toBeInTheDocument();
+			expect(fetchRouteInfo).toHaveBeenCalledWith("HKI", "TPE");
+		});
+
+		it("shows route info for a station picked without a page load", async () => {
+			setUrl("/hki/");
+			(fetchRouteInfo as Mock<typeof fetchRouteInfo>).mockImplementation(
+				async (origin) =>
+					origin === "TPE"
+						? {
+								route: null,
+								station: {
+									destinations: 5,
+									lines: ["R"],
+									firstDeparture: "05.00",
+									lastDeparture: "23.00",
+								},
+								lines: ["R"],
+								hasReverse: false,
+								place: null,
+								ticket: null,
+							}
+						: null,
+			);
+			render(
+				<StationManager stations={mockStations} initialFromStation="HKI" />,
+			);
+
+			setUrl("/tpe/");
+			fireEvent(window, new PopStateEvent("popstate"));
+
+			expect(
+				await screen.findByRole("button", { name: /stationInfo/ }),
+			).toBeInTheDocument();
+			expect(fetchRouteInfo).toHaveBeenCalledWith("TPE", null);
 		});
 
 		it("leaves the route info out for a pair with no direct train", () => {

@@ -1,12 +1,8 @@
 ---
 import StationManager from "../components/StationManager";
 import Layout from "../layouts/Layout.astro";
-import {
-	getRouteStats,
-	getStationStats,
-	isServedRoute,
-} from "../data/routeStats";
-import { getStationPlace, getTicket } from "../data/stationInfo";
+import { buildRouteInfo } from "../data/routeInfo";
+import { isServedRoute } from "../data/routeStats";
 import { fetchStations } from "../utils/api";
 import { buildRoutePath, resolveShortCode } from "../utils/stationRoute";
 
@@ -118,12 +114,12 @@ const generateBreadcrumbs = () => {
 	return breadcrumbs;
 };
 
-// Feeds the meta description's numbers and the route info row under the
-// station picker.
-const routeStats = getRouteStats(validFromStation, validToStation, stations);
-const stationStats = validToStation
-	? null
-	: getStationStats(validFromStation, stations);
+// Feeds the route info row under the station picker and the meta
+// description's numbers. StationManager finds the station objects in its own
+// list, so only the figures travel in the island's props.
+const routeInfo = buildRouteInfo(validFromStation, validToStation, stations);
+const routeStats = routeInfo.route;
+const stationStats = routeInfo.station;
 
 // A pair with no direct train has nothing on the page but an empty state.
 // Keep following the links so the footer still passes authority on.
@@ -131,28 +127,6 @@ const robots =
 	validFromStation && validToStation && !isServedRoute(validFromStation, validToStation)
 		? "noindex, follow"
 		: "index, follow";
-
-// Only offer the journey back when a direct train runs it, so the link
-// points at a route with real departures. isServedRoute covers a full week
-// (see its own note), so a weekend-only reverse can still be quiet midweek.
-const hasReverse = Boolean(
-	validFromStation &&
-		validToStation &&
-		isServedRoute(validToStation, validFromStation),
-);
-
-// StationManager finds the station objects in its own list, so only the
-// figures travel in the island's props.
-const routeInfo = {
-	route: routeStats,
-	station: stationStats,
-	// The lines a reader can actually board here: a pair's own lines, or every
-	// line calling at a single station.
-	lines: routeStats?.lines ?? stationStats?.lines ?? [],
-	hasReverse,
-	place: getStationPlace(validFromStation),
-	ticket: getTicket(validFromStation, validToStation),
-};
 
 const pageTitle = generateTitle();
 const pageDescription = generateDescription();
