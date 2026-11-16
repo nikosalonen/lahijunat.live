@@ -1,7 +1,7 @@
 /** @format */
 
 import { useEffect, useRef, useState } from "preact/hooks";
-import { formatValidityHelsinki } from "../utils/helsinkiTime";
+import { formatHelsinkiDateTime } from "../utils/helsinkiTime";
 import type { ActiveMessage } from "../utils/passengerInfo";
 import { t } from "../utils/translations";
 
@@ -90,8 +90,8 @@ export default function PassengerInfoCarousel({
 	const validity =
 		current.startValidity && current.endValidity
 			? t("passengerInfoValidityRange")
-					.replace("{start}", formatValidityHelsinki(current.startValidity))
-					.replace("{end}", formatValidityHelsinki(current.endValidity))
+					.replace("{start}", formatHelsinkiDateTime(current.startValidity))
+					.replace("{end}", formatHelsinkiDateTime(current.endValidity))
 			: null;
 
 	return (

@@ -2,6 +2,7 @@
 
 import type { ServiceStatusInfo } from "../utils/api";
 import { hapticLight } from "../utils/haptics";
+import { formatHelsinkiDateTime } from "../utils/helsinkiTime";
 import { t } from "../utils/translations";
 
 export type ErrorType =
@@ -189,15 +190,9 @@ const getErrorConfig = (type: ErrorType) => {
 	}
 };
 
-// Format date string for display
-const formatIssueDate = (dateStr: string): string => {
-	try {
-		const date = new Date(dateStr.replace(" +0000 UTC", "Z"));
-		return date.toLocaleString();
-	} catch {
-		return dateStr;
-	}
-};
+// Status page dates look like "2026-11-15 10:00:00 +0000 UTC".
+const formatIssueDate = (dateStr: string): string =>
+	formatHelsinkiDateTime(dateStr.replace(" +0000 UTC", "Z"));
 
 export default function ErrorState({
 	type,

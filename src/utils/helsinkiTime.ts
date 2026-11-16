@@ -63,6 +63,24 @@ export function helsinkiParts(d: Date): HelsinkiParts {
 }
 
 /**
+ * The instant of the next midnight in Helsinki after `now` (epoch ms).
+ */
+export function startOfNextHelsinkiDay(now: number): number {
+	const { hour, minute } = helsinkiParts(new Date(now));
+	// Helsinki's UTC offset is whole hours, so seconds match UTC seconds.
+	const startOfMinute = now - (now % 60_000);
+	const minutesLeft = 24 * 60 - (hour * 60 + minute);
+	const guess = startOfMinute + minutesLeft * 60_000;
+	// If the clocks change later today, `guess` lands an hour off midnight
+	// (01:00 or 23:00). Move it back onto midnight.
+	const landed = helsinkiParts(new Date(guess));
+	const landedMinutes = landed.hour * 60 + landed.minute;
+	const drift =
+		landedMinutes < 12 * 60 ? landedMinutes : landedMinutes - 24 * 60;
+	return guess - drift * 60_000;
+}
+
+/**
  * Parse a Helsinki wall-clock `H:mm` or `HH:mm` string into minutes since midnight.
  * Returns null if the input cannot be parsed.
  */
@@ -76,7 +94,7 @@ export function toMinutes(t: string | undefined): number | null {
 	return hours * 60 + minutes;
 }
 
-const validityFormatter = new Intl.DateTimeFormat("fi-FI", {
+const dateTimeFormatter = new Intl.DateTimeFormat("fi-FI", {
 	timeZone: "Europe/Helsinki",
 	year: "numeric",
 	month: "2-digit",
@@ -86,11 +104,11 @@ const validityFormatter = new Intl.DateTimeFormat("fi-FI", {
 });
 
 /**
- * Format an ISO timestamp as Helsinki-local `d.M.YYYY HH:mm` style for the
- * banner validity footer.
+ * Format an ISO timestamp as a Finnish date and time in Helsinki time,
+ * e.g. `15.11.2026 klo 12.00`. Returns the input unchanged if it can't be parsed.
  */
-export function formatValidityHelsinki(iso: string): string {
+export function formatHelsinkiDateTime(iso: string): string {
 	const d = new Date(iso);
 	if (Number.isNaN(d.getTime())) return iso;
-	return validityFormatter.format(d);
+	return dateTimeFormatter.format(d);
 }

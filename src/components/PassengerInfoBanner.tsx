@@ -1,6 +1,7 @@
 /** @format */
 
 import { useCallback, useEffect, useId, useState } from "preact/hooks";
+import { startOfNextHelsinkiDay } from "../utils/helsinkiTime";
 import type { ActiveMessage } from "../utils/passengerInfo";
 import { t } from "../utils/translations";
 import PassengerInfoCarousel from "./PassengerInfoCarousel";
@@ -10,12 +11,6 @@ interface Props {
 }
 
 const PREF_STORAGE_KEY = "passengerInfoPref";
-
-function endOfLocalDay(now: number): number {
-	const d = new Date(now);
-	d.setHours(24, 0, 0, 0);
-	return d.getTime();
-}
 
 type PassengerInfoPref =
 	| { mode: "never" }
@@ -108,7 +103,7 @@ export default function PassengerInfoBanner({ messages }: Props) {
 		if (pref.mode === "daily") {
 			const next: PassengerInfoPref = {
 				mode: "daily",
-				snoozedUntil: endOfLocalDay(Date.now()),
+				snoozedUntil: startOfNextHelsinkiDay(Date.now()),
 			};
 			writePref(next);
 			setPref(next);
@@ -127,7 +122,7 @@ export default function PassengerInfoBanner({ messages }: Props) {
 	const chooseDaily = useCallback(() => {
 		const next: PassengerInfoPref = {
 			mode: "daily",
-			snoozedUntil: endOfLocalDay(Date.now()),
+			snoozedUntil: startOfNextHelsinkiDay(Date.now()),
 		};
 		writePref(next);
 		setPref(next);
