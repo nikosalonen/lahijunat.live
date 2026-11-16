@@ -139,6 +139,10 @@ export const translations = {
 		newFeaturesTrainAnnouncements: "Junan tiedotteet näkyvät junakortissa",
 		newFeaturesAnnouncementAlerts:
 			"Ilmoitus, kun suosikkijunalle tulee uusi tiedote",
+		newFeaturesRouteInfo:
+			"Matka-aika, lippu ja aseman osoite heti asemavalinnan alla",
+		newFeaturesFinnishTime:
+			"Ajat aina Suomen aikaa, vaikka selain olisi muulla aikavyöhykkeellä",
 		newFeaturesDismiss: "Selvä!",
 		// Accessibility
 		skipToContent: "Siirry sisältöön",
@@ -324,6 +328,10 @@ export const translations = {
 			"Train announcements right on the train card",
 		newFeaturesAnnouncementAlerts:
 			"A heads-up when a favorite train gets a new announcement",
+		newFeaturesRouteInfo:
+			"Trip time, ticket and station address right under the station picker",
+		newFeaturesFinnishTime:
+			"Times always in Finnish time, whatever your browser's time zone",
 		newFeaturesDismiss: "Got it!",
 		// Accessibility
 		skipToContent: "Skip to content",
@@ -510,6 +518,10 @@ export const translations = {
 		newFeaturesTrainAnnouncements: "Tågmeddelanden direkt på tågkortet",
 		newFeaturesAnnouncementAlerts:
 			"En avisering när ett favorittåg får ett nytt meddelande",
+		newFeaturesRouteInfo:
+			"Restid, biljett och stationens adress direkt under stationsväljaren",
+		newFeaturesFinnishTime:
+			"Tiderna alltid i finsk tid, oavsett webbläsarens tidszon",
 		newFeaturesDismiss: "Uppfattat!",
 		// Accessibility
 		skipToContent: "Hoppa till innehåll",
