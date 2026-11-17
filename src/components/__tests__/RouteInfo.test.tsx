@@ -133,12 +133,12 @@ describe("RouteInfo", () => {
 		const lines = ["A", "D", "E", "I", "K", "L", "P"];
 		render(<RouteInfo from={helsinki} station={station} lines={lines} />);
 
-		// One chip per phone width, and CSS shows only one of them: three
-		// badges fit beside it under 390 px, four from there up to sm
+		// One chip per phone width, and CSS shows only one of them: two
+		// badges fit beside it under 390 px, three from there up to sm
 		const chips = screen.getAllByRole("button", {
 			name: "Näytä kaikki linjat",
 		});
-		expect(chips.map((chip) => chip.textContent)).toEqual(["+4", "+3"]);
+		expect(chips.map((chip) => chip.textContent)).toEqual(["+5", "+4"]);
 
 		fireEvent.click(chips[0]);
 
@@ -151,12 +151,30 @@ describe("RouteInfo", () => {
 				from={helsinki}
 				to={kerava}
 				route={route}
-				lines={["D", "K", "R", "T"]}
+				lines={["D", "K", "R"]}
 			/>,
 		);
 
 		expect(
 			screen.queryByRole("button", { name: "Näytä kaikki linjat" }),
 		).not.toBeInTheDocument();
+	});
+
+	it("folds four lines only on the narrowest phones", () => {
+		render(
+			<RouteInfo
+				from={helsinki}
+				to={kerava}
+				route={route}
+				lines={["D", "K", "R", "T"]}
+			/>,
+		);
+
+		// Four badges fit from 390 px up, so only the narrow chip is rendered
+		const chips = screen.getAllByRole("button", {
+			name: "Näytä kaikki linjat",
+		});
+		expect(chips.map((chip) => chip.textContent)).toEqual(["+2"]);
+		expect(chips[0].parentElement).toHaveClass("min-[390px]:hidden");
 	});
 });

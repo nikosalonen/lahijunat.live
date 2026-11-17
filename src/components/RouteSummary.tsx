@@ -121,10 +121,10 @@ export default function RouteSummary({
 			<>
 				{groups.length > 0 && (
 					<Fact label={t("travelTime")}>
-						<ul class="flex flex-col gap-1.5">
+						<ul class="flex flex-col gap-2">
 							{groups.map((group) => (
 								<li key={group.lines.join()} class="flex items-center gap-2">
-									<span class="flex flex-wrap gap-1">
+									<span class="flex flex-wrap gap-2">
 										{group.lines.map((line) => (
 											<LineBadge key={line} line={line} />
 										))}

@@ -33,12 +33,16 @@ interface Props {
 }
 
 /**
- * How many of `total` line badges the closed row shows when `fit` items fit:
- * all of them, or one fewer to make room for a "+N" chip. Helsinki–Pasila
- * alone has 13 lines; from the sm breakpoint up, every list fits.
+ * How many of `total` line badges the closed row shows: all of them when
+ * `fit` badges fit, or else `withChip` of them followed by a "+N" chip.
+ * Helsinki–Pasila alone has 13 lines; from the sm breakpoint up, every list
+ * fits.
  */
-const shownLineCount = (total: number, fit: number): number =>
-	total > fit ? fit - 1 : total;
+const shownLineCount = (
+	total: number,
+	fit: number,
+	withChip: number,
+): number => (total <= fit ? total : withChip);
 
 /**
  * Facts about the page's route or station, folded into one row under the
@@ -63,10 +67,12 @@ export default function RouteInfo({
 	const [isOpen, setIsOpen] = useState(false);
 	const panelId = useId();
 
-	// Four items fit a 360 px phone and five a 390 px one. Class names stay
+	// The badges sit 8 px apart so that their tap areas can be 32 px wide.
+	// A 360 px phone then fits three badges, or two and the wider "+N" chip.
+	// A 390 px phone fits four, or three and the chip. Class names stay
 	// written out in full so Tailwind finds them.
-	const narrowCount = shownLineCount(lines.length, 4);
-	const phoneCount = shownLineCount(lines.length, 5);
+	const narrowCount = shownLineCount(lines.length, 3, 2);
+	const phoneCount = shownLineCount(lines.length, 4, 3);
 	const badgeClass = (index: number): string =>
 		index < narrowCount
 			? ""
@@ -107,7 +113,9 @@ export default function RouteInfo({
 				}}
 				aria-label={t("showAllLines")}
 				aria-controls={panelId}
-				class="inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-md border border-primary/40 text-primary dark:text-white text-xs font-bold"
+				// Same tap area as a tall LineBadge. The offsets are 1 px larger
+				// because `after` is placed from inside the border.
+				class="relative after:absolute after:-inset-x-[5px] after:-inset-y-[11px] inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-md border border-primary/40 text-primary dark:text-white text-xs font-bold"
 			>
 				+{count}
 			</button>
@@ -118,10 +126,10 @@ export default function RouteInfo({
 		<section class="rounded-2xl border border-base-300 dark:text-white">
 			<div class="flex items-center gap-2 min-h-11 pl-3 pr-1 py-1">
 				{lines.length > 0 && (
-					<ul aria-label={t("allLines")} class="flex flex-wrap gap-1 min-w-0">
+					<ul aria-label={t("allLines")} class="flex flex-wrap gap-2 min-w-0">
 						{lines.map((line, index) => (
 							<li key={line} class={badgeClass(index)}>
-								<LineBadge line={line} />
+								<LineBadge line={line} tall />
 							</li>
 						))}
 						{narrowCount < lines.length &&
@@ -182,7 +190,7 @@ export default function RouteInfo({
 				{panelLinesClass && (
 					<ul
 						aria-label={t("allLines")}
-						class={`${panelLinesClass} flex flex-wrap gap-1`}
+						class={`${panelLinesClass} flex flex-wrap gap-2`}
 					>
 						{lines.map((line) => (
 							<li key={line}>
