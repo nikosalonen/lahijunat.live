@@ -317,7 +317,7 @@ exports[`TrainCard > snapshots > matches snapshot for highlighted train 1`] = `
               <button
                 aria-label="Raide 1. clickToSeeArrivalTrack"
                 aria-pressed="false"
-                class="group cursor-pointer focus-ring bg-transparent border-0 p-0"
+                class="relative after:absolute after:-inset-x-1 after:-inset-y-2 group cursor-pointer focus-ring bg-transparent border-0 p-0"
                 type="button"
               >
                 <div
@@ -567,7 +567,7 @@ exports[`TrainCard > snapshots > matches snapshot for normal train 1`] = `
               <button
                 aria-label="Raide 1. clickToSeeArrivalTrack"
                 aria-pressed="false"
-                class="group cursor-pointer focus-ring bg-transparent border-0 p-0"
+                class="relative after:absolute after:-inset-x-1 after:-inset-y-2 group cursor-pointer focus-ring bg-transparent border-0 p-0"
                 type="button"
               >
                 <div

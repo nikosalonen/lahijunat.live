@@ -101,7 +101,7 @@ export default function FeatureAnnouncement() {
 						<button
 							type="button"
 							onClick={handleDismiss}
-							className="btn btn-sm bg-white/20 hover:bg-white/30 border-white/30 hover:border-white/50 text-white font-medium transition-all"
+							className="relative after:absolute after:inset-x-0 after:-inset-y-1.5 btn btn-sm bg-white/20 hover:bg-white/30 border-white/30 hover:border-white/50 text-white font-medium transition-all"
 						>
 							{t("newFeaturesDismiss")}
 						</button>
@@ -109,7 +109,7 @@ export default function FeatureAnnouncement() {
 					<button
 						type="button"
 						onClick={handleDismiss}
-						className="flex-shrink-0 p-1 hover:bg-white/20 rounded-full transition-colors"
+						className="relative after:absolute after:-inset-2 flex-shrink-0 p-1 hover:bg-white/20 rounded-full transition-colors"
 						aria-label={t("dismiss")}
 					>
 						<svg

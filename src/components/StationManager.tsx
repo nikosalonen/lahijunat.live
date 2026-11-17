@@ -627,16 +627,23 @@ export default function StationManager({
 			? selectedRouteInfo
 			: null;
 
-	const heading =
-		originName && destinationName
-			? `${t("h1Trains")} ${originName} → ${destinationName}`
-			: originName
-				? `${t("h1DeparturesFrom")} ${originName}`
-				: t("h1title");
+	// The station names are one inline-block, so a heading too long for a
+	// phone breaks before them instead of leaving one name alone on a line.
+	const headingPrefix = destinationName ? t("h1Trains") : t("h1DeparturesFrom");
+	const heading = originName ? (
+		<>
+			{headingPrefix}{" "}
+			<span className="inline-block">
+				{destinationName ? `${originName} → ${destinationName}` : originName}
+			</span>
+		</>
+	) : (
+		t("h1title")
+	);
 
 	return (
 		<div className="w-full max-w-3xl mx-auto px-2 sm:px-6 md:px-8 lg:px-12 py-2 sm:py-6 md:py-8">
-			<h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center dark:text-white">
+			<h1 className="text-xl min-[390px]:text-2xl sm:text-3xl font-bold mb-6 text-center text-balance dark:text-white">
 				{heading}
 			</h1>
 
@@ -919,8 +926,8 @@ export default function StationManager({
 												localStorage.setItem("hideDestinationHint", "true");
 											}
 										}}
-										className="btn btn-ghost btn-sm ml-2 p-2 hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-all duration-150 touch-manipulation select-none active:scale-95"
-										aria-label="Sulje vihje"
+										className="relative after:absolute after:-inset-1.5 btn btn-ghost btn-sm ml-2 p-2 hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-600 rounded-lg transition-all duration-150 touch-manipulation select-none active:scale-95"
+										aria-label={t("closeHint")}
 									>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"

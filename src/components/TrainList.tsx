@@ -869,13 +869,15 @@ export default function TrainList({
 					</div>
 				</div>
 
-				{/* Mobile horizontal progress bar and filter toggle */}
+				{/* Mobile horizontal progress bar and filter toggle. Both are
+				    thin, so an invisible `after` layer makes each tap area 44 px
+				    tall. */}
 				{!hasNoTrains && (
 					<div class="sm:hidden w-full mb-4 flex items-center gap-3">
 						<button
 							type="button"
 							onClick={() => void loadTrains()}
-							class="flex-grow cursor-pointer bg-transparent border-0 p-0 text-left touch-manipulation"
+							class="relative after:absolute after:inset-x-0 after:-inset-y-[19px] flex-grow cursor-pointer bg-transparent border-0 p-0 text-left touch-manipulation"
 							aria-label={t("tapToRefresh")}
 						>
 							<LinearProgress
@@ -886,25 +888,14 @@ export default function TrainList({
 							/>
 						</button>
 						{hasSlowTrains && (
-							<label
-								class="flex items-center gap-1.5 cursor-pointer select-none flex-shrink-0 text-xs text-gray-500 dark:text-gray-400"
-								title={t("hideSlowTrains")}
-							>
+							<label class="relative after:absolute after:-inset-x-1.5 after:-inset-y-3.5 flex items-center gap-1.5 cursor-pointer select-none flex-shrink-0 text-xs text-gray-600 dark:text-gray-400">
 								<input
 									type="checkbox"
 									checked={hideSlowTrains}
 									onChange={toggleHideSlowTrains}
 									class="checkbox checkbox-xs checkbox-primary"
 								/>
-								<span class="sr-only">{t("hideSlowTrains")}</span>
-								<svg
-									class="w-3.5 h-3.5"
-									viewBox="0 0 24 24"
-									fill="currentColor"
-									aria-hidden="true"
-								>
-									<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-								</svg>
+								{t("hideSlowTrains")}
 							</label>
 						)}
 					</div>

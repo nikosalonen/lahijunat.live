@@ -162,7 +162,8 @@ export default function RouteInfo({
 					onClick={toggle}
 					aria-expanded={isOpen}
 					aria-controls={panelId}
-					class="btn btn-ghost btn-sm ml-auto shrink-0 gap-1 px-2 font-medium"
+					// `after` stretches the 32 px button's tap area to the row height
+					class="relative after:absolute after:inset-x-0 after:-inset-y-1.5 btn btn-ghost btn-sm ml-auto shrink-0 gap-1 px-2 font-medium"
 				>
 					{to ? t("routeInfo") : t("stationInfo")}
 					<svg

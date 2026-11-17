@@ -21,11 +21,18 @@ export default function Footer({ stations = [] }: Props) {
 					codes={POPULAR_STATIONS}
 					titleKey="popularStations"
 				/>
-				<p class="text-sm flex flex-wrap justify-center gap-x-4 gap-y-2">
-					<a href="/asemat/" class="text-link">
+				{/* Same tap areas and 16 px gaps as the station links above */}
+				<p class="text-sm flex flex-wrap justify-center gap-4">
+					<a
+						href="/asemat/"
+						class="text-link relative after:absolute after:-inset-2"
+					>
 						{t("allStations")}
 					</a>
-					<a href="/linjat/" class="text-link">
+					<a
+						href="/linjat/"
+						class="text-link relative after:absolute after:-inset-2"
+					>
 						{t("allLines")}
 					</a>
 				</p>

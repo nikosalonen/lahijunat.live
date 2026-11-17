@@ -71,10 +71,15 @@ export default function StationLinks({
 	return (
 		<nav aria-label={title} class="px-4 pb-2 text-sm">
 			{showHeading && <h2 class="font-semibold mb-1">{title}</h2>}
-			<ul class="flex flex-wrap justify-center gap-x-4 gap-y-2">
+			{/* The links are 25 px tall. `after` grows each tap area to 41 px,
+			    and the 16 px gaps keep the areas of two links apart. */}
+			<ul class="flex flex-wrap justify-center gap-4">
 				{links.map((link) => (
 					<li key={link.href}>
-						<a href={link.href} class="text-link">
+						<a
+							href={link.href}
+							class="text-link relative after:absolute after:-inset-2"
+						>
 							{link.label}
 						</a>
 					</li>

@@ -1060,7 +1060,9 @@ export default function TrainCard({
 															: `${arrivalRow ? `${t("arrivalTrack")} ${arrivalRow.commercialTrack}` : `${t("track")} ${departureRow.commercialTrack}`}${trackChangeInfo.changedSide === "arrival" && isTrackChanged ? ` (${t("changed")})` : ""}. ${t("clickToSeeDepartureTrack")}`
 													}
 													aria-pressed={isTrackFlipped}
-													class="group cursor-pointer focus-ring bg-transparent border-0 p-0"
+													// The badge is 28 px tall; `after` grows the tap
+													// area to 44 px
+													class="relative after:absolute after:-inset-x-1 after:-inset-y-2 group cursor-pointer focus-ring bg-transparent border-0 p-0"
 												>
 													<div
 														class="relative inline-block"

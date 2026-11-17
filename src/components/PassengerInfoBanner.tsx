@@ -194,7 +194,7 @@ export default function PassengerInfoBanner({ messages }: Props) {
 				</button>
 				<button
 					type="button"
-					class="flex-shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full text-gray-500 dark:text-gray-400 hover:bg-amber-200/70 dark:hover:bg-amber-900/60 transition-colors"
+					class="relative after:absolute after:-inset-1.5 flex-shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full text-gray-500 dark:text-gray-400 hover:bg-amber-200/70 dark:hover:bg-amber-900/60 transition-colors"
 					aria-label={t("passengerInfoDismiss")}
 					onClick={(event) => {
 						event.stopPropagation();
