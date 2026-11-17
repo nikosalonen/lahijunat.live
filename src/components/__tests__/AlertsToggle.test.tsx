@@ -60,6 +60,20 @@ describe("AlertsToggle", () => {
 		expect(queryByRole("button")).not.toBeInTheDocument();
 	});
 
+	it("explains the Home Screen step on an iPhone Safari tab", () => {
+		vi.mocked(getPushSupport).mockReturnValue("needs-home-screen");
+		// Safari has no Notification global outside a Home Screen app
+		vi.stubGlobal("Notification", undefined);
+		const { getByRole } = render(<AlertsToggle />);
+
+		const button = getByRole("button", { name: "alertsToggleOff" });
+		expect(button).toHaveAttribute("aria-pressed", "false");
+		button.click();
+
+		expect(showToast).toHaveBeenCalledWith("alertsHomeScreenHint", "info");
+		expect(enableAlerts).not.toHaveBeenCalled();
+	});
+
 	it("is hidden when the feature is disabled", () => {
 		vi.mocked(isAlertsFeatureEnabled).mockReturnValue(false);
 		const { queryByRole } = render(<AlertsToggle />);

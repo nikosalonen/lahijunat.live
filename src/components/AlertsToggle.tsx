@@ -16,15 +16,25 @@ import { t } from "../utils/translations";
 
 function readIsOn(): boolean {
 	return (
-		getAlertsPreference() !== "off" && Notification.permission === "granted"
+		// iPhone Safari has no Notification outside a Home Screen app
+		typeof Notification !== "undefined" &&
+		getAlertsPreference() !== "off" &&
+		Notification.permission === "granted"
 	);
 }
 
-/** Header button that turns train alerts on or off for this device. */
+/**
+ * Header button that turns train alerts on or off for this device.
+ *
+ * On an iPhone the button also shows in a Safari tab, where push does not
+ * work yet. Hiding it there would hide the feature from most phone users, so
+ * a tap explains that the app must be added to the Home Screen first.
+ */
 export default function AlertsToggle() {
 	// Support can only be checked in the browser, so wait for mount to avoid a
 	// server/client mismatch.
 	const [available, setAvailable] = useState(false);
+	const [needsHomeScreen, setNeedsHomeScreen] = useState(false);
 	const [isOn, setIsOn] = useState(false);
 	// A second tap while the first is still talking to the server could turn
 	// alerts back on before the device is unsubscribed, so wait for it.
@@ -32,9 +42,15 @@ export default function AlertsToggle() {
 	useLanguageChange();
 
 	useEffect(() => {
-		if (isAlertsFeatureEnabled() && getPushSupport() === "supported") {
-			setAvailable(true);
-			setIsOn(readIsOn());
+		if (isAlertsFeatureEnabled()) {
+			const support = getPushSupport();
+			if (support === "supported") {
+				setAvailable(true);
+				setIsOn(readIsOn());
+			} else if (support === "needs-home-screen") {
+				setAvailable(true);
+				setNeedsHomeScreen(true);
+			}
 		}
 		// Alerts can change elsewhere, for example in the first-favorite prompt.
 		const syncState = () => setIsOn(readIsOn());
@@ -45,6 +61,10 @@ export default function AlertsToggle() {
 	if (!available) return null;
 
 	const handleClick = async () => {
+		if (needsHomeScreen) {
+			showToast(t("alertsHomeScreenHint"), "info");
+			return;
+		}
 		if (busy) return;
 		setBusy(true);
 		try {
