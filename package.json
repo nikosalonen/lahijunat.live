@@ -31,12 +31,12 @@
 		]
 	},
 	"dependencies": {
-		"@astrojs/preact": "^6.1.4",
-		"@astrojs/sitemap": "^3.7.4",
+		"@astrojs/preact": "^6.1.6",
+		"@astrojs/sitemap": "^3.7.5",
 		"@netlify/blobs": "^11.1.9",
 		"@netlify/functions": "^6.1.1",
 		"@tailwindcss/vite": "^4.3.5",
-		"astro": "^7.4.10",
+		"astro": "^7.4.12",
 		"preact": "^11.2.0",
 		"qrcode-generator": "^2.0.4",
 		"tailwindcss": "^4.3.5",
