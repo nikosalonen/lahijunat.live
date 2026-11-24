@@ -1,10 +1,6 @@
-import "@testing-library/jest-dom";
-import * as matchers from "@testing-library/jest-dom/matchers";
+import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/preact";
-import { afterEach, expect } from "vitest";
-
-// Extend Vitest's expect method with methods from react-testing-library
-expect.extend(matchers);
+import { afterEach } from "vitest";
 
 // Mock window.matchMedia for components that use media queries.
 // Guarded so test files using `// @vitest-environment node` can share this setup.

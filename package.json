@@ -2,7 +2,7 @@
 	"name": "lahijunat-live",
 	"type": "module",
 	"version": "1.21.0",
-	"packageManager": "pnpm@12.18.0+sha512.9d7882d5dc82147ecfc4e062aa34834e0ad0296710a1837a1115ae012127d36b7109e321ac1598a1dd0a65597681b1e99917e12ed0d749eae91187943363beb3",
+	"packageManager": "pnpm@12.23.0+sha512.02da94ffaf133f46074322afe552f90d40b5f71ae259aefbccdacc5085b1d617e98d65e0131f5748b9b67445978ee5055d7d59a473f1eef0d504854fefcd5975",
 	"engines": {
 		"node": ">=24"
 	},
@@ -31,12 +31,12 @@
 		]
 	},
 	"dependencies": {
-		"@astrojs/preact": "^6.1.4",
-		"@astrojs/sitemap": "^3.7.4",
-		"@netlify/blobs": "^11.1.9",
+		"@astrojs/preact": "^6.1.6",
+		"@astrojs/sitemap": "^3.7.6",
+		"@netlify/blobs": "^11.1.10",
 		"@netlify/functions": "^6.1.1",
 		"@tailwindcss/vite": "^4.3.5",
-		"astro": "^7.4.10",
+		"astro": "^7.4.13",
 		"preact": "^11.2.0",
 		"qrcode-generator": "^2.0.4",
 		"tailwindcss": "^4.3.5",
@@ -44,18 +44,18 @@
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.12",
-		"@biomejs/biome": "^2.6.6",
-		"@testing-library/jest-dom": "^7.0.1",
+		"@biomejs/biome": "^2.6.8",
+		"@testing-library/jest-dom": "^8.0.0",
 		"@testing-library/preact": "^3.2.6",
 		"@types/node": "^24.19.2",
 		"@types/web-push": "^3.6.4",
-		"daisyui": "^5.7.50",
+		"daisyui": "^5.8.2",
 		"husky": "^9.1.7",
-		"jsdom": "^31.0.0",
-		"lint-staged": "^17.6.0",
+		"jsdom": "^31.0.1",
+		"lint-staged": "^17.6.2",
 		"tsx": "^4.23.15",
 		"typescript": "^6.0.3",
-		"vitest": "^5.1.0",
+		"vitest": "^5.1.1",
 		"workbox-cli": "^7.4.1"
 	}
 }
