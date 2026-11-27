@@ -30,6 +30,9 @@ vi.mock("../../utils/translations", () => ({
 			swapDirection: "Vaihda suuntaa",
 			loading: "Ladataan...",
 			placeholder: "placeholder",
+			locationUnsupported: "Selaimesi ei tue paikannusta",
+			locationOutsideFinland: "Paikannus toimii vain Suomessa",
+			locationBlocked: "Paikannus on estetty. Salli se selaimen asetuksista.",
 		};
 		return translations[key] || key;
 	},
@@ -422,7 +425,7 @@ describe("StationManager", () => {
 			fireEvent.click(locationButton);
 
 			expect(
-				screen.getByText("Paikannus ei ole tuettu selaimessasi"),
+				screen.getByText("Selaimesi ei tue paikannusta"),
 			).toBeInTheDocument();
 		});
 
@@ -446,7 +449,7 @@ describe("StationManager", () => {
 			await waitFor(() => {
 				expect(
 					screen.getByText(
-						"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.",
+						"Paikannus on estetty. Salli se selaimen asetuksista.",
 					),
 				).toBeInTheDocument();
 			});

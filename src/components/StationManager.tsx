@@ -344,7 +344,7 @@ export default function StationManager({
 			hapticNotification();
 			setLocationError({
 				type: "location",
-				message: "Paikannus ei ole tuettu selaimessasi",
+				message: t("locationUnsupported"),
 			});
 			return;
 		}
@@ -369,7 +369,7 @@ export default function StationManager({
 			if (!isInFinland(userLocation)) {
 				setLocationError({
 					type: "location",
-					message: "Paikannus toimii vain Suomessa",
+					message: t("locationOutsideFinland"),
 				});
 				return;
 			}
@@ -387,7 +387,7 @@ export default function StationManager({
 			console.error("Location error:", error);
 			hapticNotification();
 
-			let errorMessage = "Paikannusta ei voitu suorittaa";
+			let errorMessage = t("locationErrorMessage");
 
 			if (
 				error &&
@@ -395,8 +395,7 @@ export default function StationManager({
 				"code" in error &&
 				error.code === 1 // PERMISSION_DENIED
 			) {
-				errorMessage =
-					"Paikannus on estetty. Ole hyvä ja salli paikannus selaimen asetuksista.";
+				errorMessage = t("locationBlocked");
 			} else if (
 				error &&
 				typeof error === "object" &&
